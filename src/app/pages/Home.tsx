@@ -1,6 +1,7 @@
 import { SparklesIcon } from "@heroicons/react/24/outline";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import portraitImage from "../../assets/carole-redesign-portrait.png";
 import workingImage from "../../assets/carole-redesign-working.png";
@@ -16,6 +17,7 @@ import documentEditIcon from "../../assets/icons/document-edit.svg?raw";
 import growthArrowIcon from "../../assets/icons/growth-arrow.svg?raw";
 
 type Service = {
+  slug: string;
   title: string;
   accent: string;
   description: string;
@@ -49,6 +51,7 @@ type VisualTuning = {
 type VisualTuningKey = keyof VisualTuning;
 
 const VISUAL_TUNING_STORAGE_KEY = "carole-visual-tuning";
+const SHOW_VISUAL_TUNING_PANEL = false;
 const DEFAULT_VISUAL_TUNING: VisualTuning = {
   heroScale: 1.24,
   heroY: -10,
@@ -257,9 +260,9 @@ export default function Home() {
 
   return (
     <div className="overflow-hidden bg-[#fcf9f8] text-[#1c1b1b]">
-      <section className="relative flex min-h-[calc(100svh-4rem)] items-center bg-[linear-gradient(160deg,#fffafa_0%,#fcf9f8_42%,#fbf8f7_100%)] px-5 pb-12 pt-24 sm:px-8 sm:pt-28 md:min-h-[755px] lg:px-10 lg:pb-16 lg:pt-28">
+      <section className="relative flex min-h-[calc(100svh-4rem)] items-center bg-[linear-gradient(160deg,#fffafa_0%,#fcf9f8_42%,#fbf8f7_100%)] px-5 pb-12 pt-24 sm:px-8 sm:pt-28 md:min-h-[755px] lg:px-8 lg:pb-16 lg:pt-28">
         <div className="pointer-events-none absolute right-[-14rem] top-[-13rem] size-[38rem] rounded-full bg-[#ffd9e4]/35 blur-[90px]" />
-        <div className="mx-auto grid w-full max-w-[1088px] items-center gap-8 lg:grid-cols-[1.02fr_0.98fr] lg:gap-10">
+        <div className="mx-auto grid w-full max-w-[1200px] items-center gap-8 lg:grid-cols-[1.02fr_0.98fr] lg:gap-10">
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
@@ -293,12 +296,13 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
+            whileHover={{ y: -6 }}
             transition={{ delay: 0.15, duration: 0.55, ease: "easeOut" }}
-            className="relative mx-auto flex min-h-[300px] w-full max-w-[350px] items-center justify-center sm:min-h-[360px] sm:max-w-[390px] lg:min-h-[460px] lg:max-w-[430px]"
+            className="group relative mx-auto flex min-h-[300px] w-full max-w-[350px] items-center justify-center sm:min-h-[360px] sm:max-w-[390px] lg:min-h-[460px] lg:max-w-[430px]"
           >
-            <div className="organic-shape absolute inset-x-4 inset-y-7 rotate-[-4deg] bg-[#f9b3cc]/42" />
-            <div className="organic-shape-alt absolute inset-x-7 inset-y-5 rotate-6 border border-[#854d63]/28" />
-            <div className="organic-shape relative z-10 aspect-[4/5] w-[74%] max-w-[330px] overflow-hidden bg-[#fbaa51] shadow-[0_24px_60px_rgba(28,27,27,0.18)] sm:max-w-[350px] lg:max-w-[360px]">
+            <div className="organic-shape absolute inset-x-4 inset-y-7 rotate-[-4deg] bg-[#f9b3cc]/42 transition duration-500 ease-out group-hover:-translate-y-2 group-hover:rotate-[-6deg]" />
+            <div className="organic-shape-alt absolute inset-x-7 inset-y-5 rotate-6 border border-[#854d63]/28 transition duration-500 ease-out group-hover:translate-y-2 group-hover:rotate-[8deg]" />
+            <div className="organic-shape relative z-10 aspect-[4/5] w-[74%] max-w-[330px] overflow-hidden bg-[#fbaa51] shadow-[0_24px_60px_rgba(28,27,27,0.18)] transition duration-500 ease-out group-hover:shadow-[0_32px_74px_rgba(28,27,27,0.2)] sm:max-w-[350px] lg:max-w-[360px]">
               <img
                 src={portraitImage}
                 alt={t("hero.imageAlt")}
@@ -309,7 +313,7 @@ export default function Home() {
                 }}
               />
             </div>
-            <div className="absolute bottom-7 left-6 z-20 flex rotate-[-3deg] items-center gap-3 rounded-2xl border border-white/70 bg-white/90 p-4 shadow-[0_16px_38px_rgba(28,27,27,0.14)] backdrop-blur-md">
+            <div className="absolute bottom-7 left-6 z-20 flex rotate-[-3deg] items-center gap-3 rounded-2xl border border-white/70 bg-white/90 p-4 shadow-[0_16px_38px_rgba(28,27,27,0.14)] backdrop-blur-md transition duration-500 ease-out group-hover:-translate-y-3 group-hover:rotate-[-5deg]">
               <span className="flex size-10 items-center justify-center rounded-full bg-[#ffd9e4] text-[#854d63]">
                 <SparklesIcon className="size-4" />
               </span>
@@ -323,7 +327,14 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="manifesto" className="relative bg-[#fcf9f8] px-5 py-16 sm:px-8 lg:py-24">
+      <motion.section
+        id="manifesto"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.35 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="relative bg-[#fcf9f8] px-5 py-16 sm:px-8 lg:py-24"
+      >
         <div className="relative mx-auto max-w-[48rem] text-center">
           <h2 className="font-serif text-[clamp(2rem,4vw,3.45rem)] leading-[1.04]">
             {t("manifesto.titleTop")}
@@ -343,10 +354,17 @@ export default function Home() {
             <p>{t("manifesto.p2")}</p>
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      <section id="about" className="bg-white px-5 py-16 sm:px-8 lg:py-24">
-        <div className="mx-auto grid max-w-[64rem] items-center gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:gap-16">
+      <motion.section
+        id="about"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.25 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="bg-white px-5 py-16 sm:px-8 lg:py-24"
+      >
+        <div className="mx-auto grid max-w-[1120px] items-center gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:gap-16">
           <div className="relative mx-auto w-full max-w-[350px] sm:max-w-[380px]">
             <div className="organic-shape absolute -inset-4 rotate-12 bg-[#ffdcbd]/55" />
             <div className="organic-shape-third relative aspect-[4/5] overflow-hidden bg-[#ffafcd] shadow-[0_18px_52px_rgba(28,27,27,0.15)]">
@@ -390,10 +408,17 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      <section id="services" className="bg-[#f6f3f2]/80 px-5 py-16 sm:px-8 lg:py-24">
-        <div className="mx-auto max-w-[64rem]">
+      <motion.section
+        id="services"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="bg-[#f6f3f2]/80 px-5 py-16 sm:px-8 lg:py-24"
+      >
+        <div className="mx-auto max-w-[1200px]">
           <div className="mx-auto mb-10 max-w-[40rem] text-center">
             <h2 className="font-serif text-[clamp(2.1rem,3.7vw,3.1rem)] leading-none">
               <span className="italic text-[#854d63]">{t("services.titleAccent")}</span>{" "}
@@ -407,9 +432,10 @@ export default function Home() {
               const accent = serviceAccents[index] ?? serviceAccents[0];
               const isWide = index === 1 || index === 2;
               return (
-                <article
+                <Link
+                  to={`/services/${service.slug}`}
                   key={`${service.title}-${service.accent}`}
-                  className={`group relative overflow-hidden rounded-lg border border-[#e4bfb2]/25 bg-white p-6 shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(28,27,27,0.08)] sm:p-7 ${
+                  className={`group relative overflow-hidden rounded-lg border border-[#e4bfb2]/25 bg-white p-6 text-left no-underline shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(28,27,27,0.08)] sm:p-7 ${
                     isWide ? "md:col-span-2" : ""
                   }`}
                 >
@@ -423,14 +449,21 @@ export default function Home() {
                     <span className={`italic ${accent.title}`}>{service.accent}</span>
                   </h3>
                   <p className="relative mt-4 max-w-2xl text-sm leading-6 text-[#5b4137]">{service.description}</p>
-                </article>
+                </Link>
               );
             })}
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      <section id="testimonials" className="mx-auto max-w-[64rem] px-5 py-16 sm:px-8 lg:py-24">
+      <motion.section
+        id="testimonials"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="mx-auto max-w-[1200px] px-5 py-16 sm:px-8 lg:px-8 lg:py-24"
+      >
         <div className="mx-auto mb-10 max-w-[40rem] text-center">
           <SectionEyebrow>{t("testimonials.eyebrow")}</SectionEyebrow>
           <h2 className="mt-3 font-serif text-[clamp(1.9rem,3.2vw,2.75rem)] leading-tight">
@@ -463,8 +496,8 @@ export default function Home() {
             </article>
           ))}
         </div>
-      </section>
-      {isDev ? (
+      </motion.section>
+      {isDev && SHOW_VISUAL_TUNING_PANEL ? (
         <VisualTuningPanel
           tuning={visualTuning}
           onChange={handleVisualTuningChange}

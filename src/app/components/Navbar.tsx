@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import {
   Bars3Icon,
   CheckIcon,
@@ -20,15 +20,20 @@ const languages: { code: Lang; flag: string }[] = [
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLangOpen, setIsLangOpen] = useState(false);
+  const [isCompact, setIsCompact] = useState(false);
+  const [isForcedOpen, setIsForcedOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
+  const lastScrollYRef = useRef(0);
   const { t } = useTranslation();
   const { lang, setLang } = useLang();
+  const location = useLocation();
 
   const navLinks = [
     { name: t("nav.services"), href: "#services" },
     { name: t("nav.manifesto"), href: "#manifesto" },
     { name: t("nav.about"), href: "#about" },
     { name: t("nav.testimonials"), href: "#testimonials" },
+    { name: t("nav.blog"), href: "/blog" },
   ];
 
   useEffect(() => {
@@ -42,11 +47,43 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      const isScrollingDown = currentY > lastScrollYRef.current;
+
+      if (currentY < 96 || !isScrollingDown) {
+        setIsCompact(false);
+        setIsForcedOpen(false);
+      } else if (!isForcedOpen) {
+        setIsCompact(true);
+        setIsMobileMenuOpen(false);
+        setIsLangOpen(false);
+      }
+
+      lastScrollYRef.current = currentY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isForcedOpen]);
+
   const scrollToSection = (
     event: React.MouseEvent<HTMLAnchorElement>,
     href: string
   ) => {
+    if (!href.startsWith("#")) {
+      setIsMobileMenuOpen(false);
+      setIsCompact(false);
+      return;
+    }
+
     event.preventDefault();
+    if (location.pathname !== "/") {
+      window.location.href = `/${href}`;
+      return;
+    }
+
     document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
     setIsMobileMenuOpen(false);
   };
@@ -57,8 +94,34 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed inset-x-0 top-0 z-50 border-b border-[#e5e2e1]/70 bg-white/82 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-[1152px] items-center justify-between px-5 sm:px-8 md:h-[88px] lg:px-10">
+    <>
+    <AnimatePresence>
+      {isCompact && !isForcedOpen ? (
+        <motion.button
+          type="button"
+          onClick={() => {
+            setIsForcedOpen(true);
+            setIsCompact(false);
+          }}
+          initial={{ opacity: 0, y: -20, scale: 0.94 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -16, scale: 0.96 }}
+          transition={{ duration: 0.22, ease: "easeOut" }}
+          className="fixed left-1/2 top-3 z-[60] flex h-14 w-28 -translate-x-1/2 items-center justify-center rounded-full bg-[#1c1b1b] shadow-[0_18px_48px_rgba(28,27,27,0.18)]"
+          aria-label={t("nav.openHeader")}
+        >
+          <img src={caroleLogoSymbol} alt="" aria-hidden="true" className="size-9 invert" />
+        </motion.button>
+      ) : null}
+    </AnimatePresence>
+
+    <motion.nav
+      initial={false}
+      animate={isCompact && !isForcedOpen ? { y: -112, opacity: 0 } : { y: 0, opacity: 1 }}
+      transition={{ duration: 0.24, ease: "easeOut" }}
+      className="fixed inset-x-0 top-0 z-50 border-b border-[#e5e2e1]/70 bg-white/82 backdrop-blur-xl"
+    >
+      <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-5 sm:px-8 md:h-[88px] lg:px-8">
         <Link
           to="/"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -199,6 +262,7 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </motion.nav>
+    </>
   );
 }
