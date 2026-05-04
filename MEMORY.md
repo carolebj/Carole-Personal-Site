@@ -15,7 +15,10 @@ Last reviewed: 2026-05-04 16:19 WAT
 - Vercel build settings: framework `Vite`, build command `npm run build`, output directory `dist`.
 - `vercel.json` rewrites all routes to `/index.html` so React Router deep links can load correctly on Vercel.
 - Vercel project `carole-portfolio` exists under `stevens-projects-db687a83`; current public alias is `https://carole-portfolio.vercel.app`.
-- GitHub integration still needs to be connected in Vercel UI because CLI connection failed for `mrstev3n/Carole-Portfolio-version-1.0`.
+- Vercel GitHub integration is connected to `mrstev3n/Carole-Portfolio-version-1.0`.
+- Git author email is now `stevenkejjad@gmail.com`; this fixed Vercel's commit-author validation.
+- Current production alias points to the `main` deployment; current `dev` branch preview is `https://carole-portfolio-git-dev-stevens-projects-db687a83.vercel.app`.
+- Vercel Authentication is still enabled for non-custom-domain deployments, so preview URLs return `401` unless protection is disabled or a shareable link is created.
 
 ## Active Redesign Direction
 
