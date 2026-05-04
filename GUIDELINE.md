@@ -1,4 +1,6 @@
-# AGENTS.md
+# GUIDELINE.md
+
+Canonical implementation guide for the Carole Portfolio repo. Use this file for commands, architecture, and coding rules. Use `MEMORY.md` for current product/design decisions and living project context.
 
 ## Project Description
 
@@ -53,13 +55,13 @@ If you add any of the following, update this file:
 - formatting
 - typecheck-only script
 
-## Architecture Overview
-
 ## Project Memory
 
 - `MEMORY.md` is the project-level memory file.
 - Update it when there is a major product, design, branch, architecture, command, or content-direction change.
 - Keep it short and reusable; do not turn it into a granular changelog.
+
+## Architecture Overview
 
 ## Boot Flow
 
@@ -151,7 +153,7 @@ Styles and assets:
 
 Project guidance:
 
-- `guidelines/Guidelines.md`: repo-specific design and implementation rules
+- `GUIDELINE.md`: canonical repo-specific implementation guide
 - `MEMORY.md`: current project memory and redesign notes
 
 ## Coding Conventions
@@ -192,6 +194,8 @@ Follow the existing codebase before introducing new patterns.
 - Maintain both `fr` and `en` locales together
 - French copy quality matters: correct spelling, accents, and punctuation
 - Avoid em dashes in French copy
+- Use French quotation marks (`« »`) when the surrounding copy is francophone
+- Respect French spacing before double punctuation where feasible (`:`, `;`, `!`, `?`)
 
 ### Icons and UI Libraries
 
@@ -199,6 +203,7 @@ Follow the existing codebase before introducing new patterns.
 - Use Lucide only when Heroicons lacks the needed symbol
 - Do not casually mix icon libraries inside a single component
 - The `ui/` directory contains reusable primitives; do not duplicate a primitive before checking there
+- For Heroicons, import from `@heroicons/react/24/outline` and size icons with Tailwind classes rather than a `size` prop
 
 ### Error Handling
 
@@ -211,7 +216,7 @@ Follow the existing codebase before introducing new patterns.
 - `src/app/components/ui/`: shared primitives, likely reused across features
 - `src/styles/theme.css`: central theme and token definitions
 - `src/app/i18n/locales/`: translation source of truth
-- `guidelines/Guidelines.md`: local project rules may intentionally be stricter than generic best practices
+- `MEMORY.md`: living product/design memory that should stay short and current
 
 ## Change Guidance for Future Agents
 
