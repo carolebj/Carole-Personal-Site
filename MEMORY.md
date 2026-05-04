@@ -11,6 +11,9 @@ Last reviewed: 2026-05-04 16:19 WAT
 - Main production history lives on `main`.
 - Redesign work should happen on `dev`, which tracks `origin/dev`.
 - Use `npm run build` as the primary regression check because the repo has no formal test, lint, or formatter scripts yet.
+- Vercel should keep `main` as the production branch and use `dev` as the review/preview branch until Carole validates the redesign.
+- Vercel build settings: framework `Vite`, build command `npm run build`, output directory `dist`.
+- `vercel.json` rewrites all routes to `/index.html` so React Router deep links can load correctly on Vercel.
 
 ## Active Redesign Direction
 
