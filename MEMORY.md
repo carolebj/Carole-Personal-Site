@@ -14,6 +14,8 @@ Last reviewed: 2026-05-04 16:19 WAT
 - Vercel should keep `main` as the production branch and use `dev` as the review/preview branch until Carole validates the redesign.
 - Vercel build settings: framework `Vite`, build command `npm run build`, output directory `dist`.
 - `vercel.json` rewrites all routes to `/index.html` so React Router deep links can load correctly on Vercel.
+- Vercel project `carole-portfolio` exists under `stevens-projects-db687a83`; current public alias is `https://carole-portfolio.vercel.app`.
+- GitHub integration still needs to be connected in Vercel UI because CLI connection failed for `mrstev3n/Carole-Portfolio-version-1.0`.
 
 ## Active Redesign Direction
 
