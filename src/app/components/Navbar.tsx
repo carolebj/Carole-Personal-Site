@@ -9,6 +9,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslation } from "react-i18next";
+import caroleLogoSymbol from "../../assets/logos/carole-CT-logo.svg";
 import { langLabels, useLang, type Lang } from "../i18n/LanguageContext";
 
 const languages: { code: Lang; flag: string }[] = [
@@ -57,13 +58,25 @@ export default function Navbar() {
 
   return (
     <nav className="fixed inset-x-0 top-0 z-50 border-b border-[#e5e2e1]/70 bg-white/82 backdrop-blur-xl">
-      <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-5 sm:px-8 lg:px-10">
+      <div className="mx-auto flex h-16 max-w-[1152px] items-center justify-between px-5 sm:px-8 md:h-[88px] lg:px-10">
         <Link
           to="/"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="font-serif text-[1.35rem] italic text-[#1c1b1b]"
+          className="flex items-center gap-2 text-[#1c1b1b]"
+          aria-label="Carole Tonoukouen"
         >
-          Carole T.
+          <img
+            src={caroleLogoSymbol}
+            alt=""
+            aria-hidden="true"
+            className="size-10 md:size-12"
+          />
+          <span className="hidden h-10 w-px bg-[#854d63] sm:block" />
+          <span className="hidden w-[124px] font-serif text-[20px] italic leading-5 sm:block">
+            Carole
+            <br />
+            Tonoukouen
+          </span>
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">
@@ -72,7 +85,7 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               onClick={(event) => scrollToSection(event, link.href)}
-              className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[#5b4137] transition hover:text-[#854d63]"
+              className="text-[16px] font-normal capitalize leading-4 tracking-[2px] text-[#5b4137] transition hover:text-[#854d63]"
             >
               {link.name}
             </a>
@@ -83,12 +96,16 @@ export default function Navbar() {
           <div ref={langRef} className="relative">
             <button
               onClick={() => setIsLangOpen((current) => !current)}
-              className="flex h-10 items-center gap-2 rounded-full border border-[#e5e2e1] px-4 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[#5b4137] transition hover:border-[#854d63]/40 hover:text-[#854d63]"
+              className="flex h-[52px] items-center justify-center gap-2 rounded-full border border-[#e5e2e1] px-6 text-[#5b4137] transition hover:border-[#854d63]/40 hover:text-[#854d63]"
               aria-label={t("nav.language")}
             >
-              <GlobeAltIcon className="size-4" />
-              {lang.toUpperCase()}
-              <ChevronDownIcon className={`size-3 transition ${isLangOpen ? "rotate-180" : ""}`} />
+              <GlobeAltIcon className="size-6" />
+              <span className="flex items-center gap-4">
+                <span className="text-[14px] font-semibold uppercase leading-4 tracking-[1px]">
+                  {lang.toUpperCase()}
+                </span>
+                <ChevronDownIcon className={`size-4 transition ${isLangOpen ? "rotate-180" : ""}`} />
+              </span>
             </button>
             <AnimatePresence>
               {isLangOpen && (
@@ -121,7 +138,7 @@ export default function Navbar() {
           <a
             href="#contact"
             onClick={(event) => scrollToSection(event, "#contact")}
-            className="inline-flex h-10 items-center rounded-full bg-[#854d63] px-6 text-[0.68rem] font-semibold uppercase tracking-[0.15em] text-white shadow-sm transition hover:bg-[#6a364b]"
+            className="inline-flex h-[52px] items-center rounded-full bg-[#854d63] px-6 text-[14px] font-semibold uppercase leading-4 tracking-[2px] text-white shadow-sm transition hover:bg-[#6a364b]"
           >
             {t("nav.contact")}
           </a>
@@ -151,7 +168,7 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={(event) => scrollToSection(event, link.href)}
-                  className="rounded-2xl bg-[#fcf9f8] px-4 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-[#5b4137]"
+                  className="rounded-lg bg-[#fcf9f8] px-4 py-4 text-[16px] font-normal capitalize leading-5 tracking-[1px] text-[#5b4137]"
                 >
                   {link.name}
                 </a>
@@ -174,7 +191,7 @@ export default function Navbar() {
               <a
                 href="#contact"
                 onClick={(event) => scrollToSection(event, "#contact")}
-                className="mt-2 inline-flex h-12 items-center justify-center rounded-full bg-[#854d63] text-sm font-semibold uppercase tracking-[0.16em] text-white"
+                className="mt-2 inline-flex h-10 items-center justify-center rounded-full bg-[#854d63] text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-white"
               >
                 {t("nav.contact")}
               </a>

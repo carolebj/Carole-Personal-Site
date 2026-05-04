@@ -57,9 +57,10 @@ If you add any of the following, update this file:
 
 ## Project Memory
 
-- `MEMORY.md` is the project-level memory file.
-- Update it when there is a major product, design, branch, architecture, command, or content-direction change.
-- Keep it short and reusable; do not turn it into a granular changelog.
+- Every project should keep a project-level memory file named `MEMORY.md`.
+- `MEMORY.md` acts as secondary memory for important project-specific information. It complements the agent's personal memory, which may occasionally miss details.
+- Update `MEMORY.md` when there is a major product, design, branch, architecture, command, or content-direction change.
+- Keep `MEMORY.md` short, current, and reusable; do not turn it into a granular changelog.
 
 ## Architecture Overview
 

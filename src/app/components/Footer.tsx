@@ -13,10 +13,10 @@ export default function Footer() {
   return (
     <footer id="contact" className="relative overflow-hidden border-t border-[#e5e2e1]/70 bg-white">
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(to_top,rgba(255,217,228,0.28),rgba(255,217,228,0))]" />
-      <div className="relative mx-auto flex max-w-6xl flex-col items-center justify-between gap-8 px-5 py-12 sm:px-8 lg:flex-row lg:px-10 lg:py-14">
+      <div className="relative mx-auto flex max-w-[66rem] flex-col items-center justify-between gap-7 px-5 py-10 sm:px-8 lg:flex-row lg:px-10 lg:py-12">
         <div className="text-center lg:text-left">
           <p className="font-serif text-xl italic text-[#1c1b1b]">Carole T.</p>
-          <p className="mt-2 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[#5b4137]">
+          <p className="mt-2 text-[12px] font-semibold uppercase tracking-[2px] text-[#5b4137]">
             © {year} {t("footer.signature")}
           </p>
         </div>
@@ -25,16 +25,16 @@ export default function Footer() {
           <label className="sr-only" htmlFor="newsletter-email">
             {t("footer.newsletterLabel")}
           </label>
-          <div className="flex rounded-full border border-[#e4bfb2]/45 bg-[#fcf9f8] p-1 shadow-sm focus-within:border-[#854d63]/70">
+          <div className="flex flex-col gap-2 rounded-lg border border-[#e4bfb2]/45 bg-[#fcf9f8] p-1.5 shadow-sm focus-within:border-[#854d63]/70 sm:flex-row sm:rounded-full sm:p-1">
             <input
               id="newsletter-email"
               type="email"
               placeholder={t("footer.newsletterPlaceholder")}
-              className="min-w-0 flex-1 rounded-full border-none bg-transparent px-5 py-2.5 text-sm text-[#1c1b1b] outline-none placeholder:text-[#5b4137]/55"
+              className="min-w-0 flex-1 rounded-full border-none bg-transparent px-4 py-3 text-sm text-[#1c1b1b] outline-none placeholder:text-[#5b4137]/55 sm:px-5"
             />
             <button
               type="submit"
-              className="rounded-full bg-[#854d63] px-5 py-2.5 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-[#6a364b] sm:px-6"
+              className="rounded-full bg-[#854d63] px-5 py-3 text-[12px] font-semibold uppercase tracking-[1px] text-white transition hover:bg-[#6a364b] sm:px-6"
             >
               {t("footer.newsletterCta")}
             </button>
@@ -46,7 +46,7 @@ export default function Footer() {
             <a
               key={link.label}
               href={link.href}
-              className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[#5b4137] transition hover:text-[#854d63]"
+              className="text-[12px] font-semibold uppercase tracking-[2px] text-[#5b4137] transition hover:text-[#854d63]"
             >
               {link.label}
             </a>

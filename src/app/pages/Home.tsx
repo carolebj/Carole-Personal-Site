@@ -117,7 +117,7 @@ const testimonialImages = [clientOneImage, clientTwoImage, clientThreeImage];
 
 function SectionEyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-[#854d63]">
+    <p className="text-[12px] font-semibold uppercase tracking-[3px] text-[#854d63]">
       {children}
     </p>
   );
@@ -170,11 +170,11 @@ function VisualTuningPanel({
       {isOpen ? (
         <div className="w-[min(22rem,calc(100vw-2rem))] rounded-2xl border border-[#e4bfb2]/40 bg-white/95 p-4 shadow-[0_24px_80px_rgba(28,27,27,0.16)] backdrop-blur">
           <div className="mb-3 flex items-center justify-between gap-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#854d63]">Visual tuning</p>
+            <p className="text-xs font-semibold uppercase tracking-[2px] text-[#854d63]">Visual tuning</p>
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="rounded-full border border-[#e5e2e1] px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em]"
+              className="rounded-full border border-[#e5e2e1] px-3 py-1 text-xs font-semibold uppercase tracking-[1px]"
             >
               Close
             </button>
@@ -202,14 +202,14 @@ function VisualTuningPanel({
             <button
               type="button"
               onClick={() => void navigator.clipboard?.writeText(exportedValues)}
-              className="flex-1 rounded-full bg-[#1c1b1b] px-3 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-white"
+              className="flex-1 rounded-full bg-[#1c1b1b] px-3 py-2 text-xs font-semibold uppercase tracking-[1px] text-white"
             >
               Copy values
             </button>
             <button
               type="button"
               onClick={onReset}
-              className="rounded-full border border-[#e5e2e1] px-3 py-2 text-xs font-semibold uppercase tracking-[0.1em]"
+              className="rounded-full border border-[#e5e2e1] px-3 py-2 text-xs font-semibold uppercase tracking-[1px]"
             >
               Reset
             </button>
@@ -222,7 +222,7 @@ function VisualTuningPanel({
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="rounded-full bg-[#854d63] px-4 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-[0_16px_44px_rgba(133,77,99,0.3)]"
+          className="rounded-full bg-[#854d63] px-4 py-3 text-xs font-semibold uppercase tracking-[1px] text-white shadow-[0_16px_44px_rgba(133,77,99,0.3)]"
         >
           Tune
         </button>
@@ -257,33 +257,33 @@ export default function Home() {
 
   return (
     <div className="overflow-hidden bg-[#fcf9f8] text-[#1c1b1b]">
-      <section className="relative flex min-h-[calc(100svh-6rem)] items-center bg-[linear-gradient(160deg,#fffafa_0%,#fcf9f8_42%,#fbf8f7_100%)] px-5 pb-12 pt-28 sm:px-8 lg:px-10 lg:pb-16 lg:pt-28">
+      <section className="relative flex min-h-[calc(100svh-4rem)] items-center bg-[linear-gradient(160deg,#fffafa_0%,#fcf9f8_42%,#fbf8f7_100%)] px-5 pb-12 pt-24 sm:px-8 sm:pt-28 md:min-h-[755px] lg:px-10 lg:pb-16 lg:pt-28">
         <div className="pointer-events-none absolute right-[-14rem] top-[-13rem] size-[38rem] rounded-full bg-[#ffd9e4]/35 blur-[90px]" />
-        <div className="mx-auto grid w-full max-w-[68rem] items-center gap-10 lg:grid-cols-[1.02fr_0.98fr]">
+        <div className="mx-auto grid w-full max-w-[1088px] items-center gap-8 lg:grid-cols-[1.02fr_0.98fr] lg:gap-10">
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: "easeOut" }}
-            className="max-w-2xl"
+            className="max-w-[672px]"
           >
-            <h1 className="max-w-[11.8ch] font-serif text-[clamp(2.4rem,4.55vw,4.15rem)] leading-[1.02] text-[#1c1b1b]">
+            <h1 className="max-w-[672px] font-serif text-[40px] leading-[44px] text-[#1c1b1b] sm:text-[48px] sm:leading-[52px] lg:text-[56px] lg:leading-[60px] 2xl:text-[64px] 2xl:leading-[68px]">
               {t("hero.titleStart")}{" "}
               <span className="italic text-[#854d63]">{t("hero.titleAccent")}</span>{" "}
               {t("hero.titleEnd")}
             </h1>
-            <p className="mt-6 max-w-[33rem] text-[1rem] leading-7 text-[#5b4137] sm:text-[1.03rem] sm:leading-8">
+            <p className="mt-6 max-w-[528px] text-[16px] leading-7 text-[#5b4137] md:text-[18px] md:leading-8">
               {t("hero.description")}
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-8 flex flex-wrap gap-3">
               <a
                 href="#contact"
-                className="inline-flex h-12 items-center justify-center rounded-full bg-[#1c1b1b] px-7 text-xs font-semibold uppercase tracking-[0.12em] text-[#fcf9f8] shadow-[0_14px_32px_rgba(28,27,27,0.13)] transition hover:bg-[#854d63] sm:px-8"
+                className="inline-flex h-10 min-w-[144px] items-center justify-center rounded-full bg-[#1c1b1b] px-6 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#fcf9f8] shadow-[0_14px_32px_rgba(28,27,27,0.13)] transition hover:bg-[#854d63] md:h-[52px] md:min-w-[176px] md:px-8 md:tracking-[1px]"
               >
                 {t("hero.primaryCta")}
               </a>
               <a
                 href="#services"
-                className="inline-flex h-12 items-center justify-center rounded-full border border-[#1c1b1b]/20 px-7 text-xs font-semibold uppercase tracking-[0.12em] text-[#1c1b1b] transition hover:border-[#854d63] hover:text-[#854d63] sm:px-8"
+                className="inline-flex h-10 min-w-[144px] items-center justify-center rounded-full border border-[#1c1b1b]/20 px-6 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#1c1b1b] transition hover:border-[#854d63] hover:text-[#854d63] md:h-[52px] md:min-w-[172px] md:px-8 md:tracking-[1px]"
               >
                 {t("hero.secondaryCta")}
               </a>
@@ -294,11 +294,11 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.15, duration: 0.55, ease: "easeOut" }}
-            className="relative mx-auto flex min-h-[340px] w-full max-w-[430px] items-center justify-center sm:min-h-[400px] lg:min-h-[460px]"
+            className="relative mx-auto flex min-h-[300px] w-full max-w-[350px] items-center justify-center sm:min-h-[360px] sm:max-w-[390px] lg:min-h-[460px] lg:max-w-[430px]"
           >
             <div className="organic-shape absolute inset-x-4 inset-y-7 rotate-[-4deg] bg-[#f9b3cc]/42" />
             <div className="organic-shape-alt absolute inset-x-7 inset-y-5 rotate-6 border border-[#854d63]/28" />
-            <div className="organic-shape relative z-10 aspect-[4/5] w-[76%] max-w-[360px] overflow-hidden bg-[#fbaa51] shadow-[0_28px_70px_rgba(28,27,27,0.2)]">
+            <div className="organic-shape relative z-10 aspect-[4/5] w-[74%] max-w-[330px] overflow-hidden bg-[#fbaa51] shadow-[0_24px_60px_rgba(28,27,27,0.18)] sm:max-w-[350px] lg:max-w-[360px]">
               <img
                 src={portraitImage}
                 alt={t("hero.imageAlt")}
@@ -309,11 +309,11 @@ export default function Home() {
                 }}
               />
             </div>
-            <div className="absolute bottom-8 left-3 z-20 flex rotate-[-3deg] items-center gap-3 rounded-2xl border border-white/70 bg-white/90 p-4 shadow-[0_18px_44px_rgba(28,27,27,0.15)] backdrop-blur-md sm:left-7">
+            <div className="absolute bottom-7 left-6 z-20 flex rotate-[-3deg] items-center gap-3 rounded-2xl border border-white/70 bg-white/90 p-4 shadow-[0_16px_38px_rgba(28,27,27,0.14)] backdrop-blur-md">
               <span className="flex size-10 items-center justify-center rounded-full bg-[#ffd9e4] text-[#854d63]">
                 <SparklesIcon className="size-4" />
               </span>
-              <p className="font-serif text-base leading-[1.05] text-[#1c1b1b]">
+              <p className="font-serif text-[16px] leading-4 text-[#1c1b1b]">
                 {t("hero.badgeTop")}
                 <br />
                 <span className="italic text-[#854d63]">{t("hero.badgeBottom")}</span>
@@ -323,9 +323,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="manifesto" className="relative bg-[#fcf9f8] px-5 py-20 sm:px-8 lg:py-32">
-        <div className="relative mx-auto max-w-4xl text-center">
-          <h2 className="font-serif text-[clamp(2.3rem,4.6vw,4rem)] leading-[1.04]">
+      <section id="manifesto" className="relative bg-[#fcf9f8] px-5 py-16 sm:px-8 lg:py-24">
+        <div className="relative mx-auto max-w-[48rem] text-center">
+          <h2 className="font-serif text-[clamp(2rem,4vw,3.45rem)] leading-[1.04]">
             {t("manifesto.titleTop")}
             <br />
             <span className="relative isolate inline-block font-liberation-serif italic text-[#854d63]">
@@ -338,68 +338,68 @@ export default function Home() {
               />
             </span>
           </h2>
-          <div className="mx-auto mt-10 max-w-2xl space-y-6 text-base leading-7 text-[#5b4137] sm:text-lg sm:leading-8">
+          <div className="mx-auto mt-8 max-w-[42rem] space-y-5 text-base leading-7 text-[#5b4137] sm:text-[18px] sm:leading-8">
             <p>{t("manifesto.p1")}</p>
             <p>{t("manifesto.p2")}</p>
           </div>
         </div>
       </section>
 
-      <section id="about" className="bg-white px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[0.78fr_1.22fr] lg:gap-20">
-        <div className="relative mx-auto w-full max-w-[420px]">
-          <div className="organic-shape absolute -inset-5 rotate-12 bg-[#ffdcbd]/55" />
-          <div className="organic-shape-third relative aspect-[4/5] overflow-hidden bg-[#ffafcd] shadow-[0_20px_60px_rgba(28,27,27,0.16)]">
-            <img
-              src={workingImage}
-              alt={t("about.imageAlt")}
-              className="h-full w-full object-cover"
-              style={{
-                objectPosition: `50% ${visualTuning.aboutObjectY}%`,
-                transform: `translateY(${visualTuning.aboutY}%) scale(${visualTuning.aboutScale})`,
-                filter: `brightness(${visualTuning.aboutBrightness}) contrast(1.06) saturate(0.95)`,
-              }}
-            />
+      <section id="about" className="bg-white px-5 py-16 sm:px-8 lg:py-24">
+        <div className="mx-auto grid max-w-[64rem] items-center gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:gap-16">
+          <div className="relative mx-auto w-full max-w-[350px] sm:max-w-[380px]">
+            <div className="organic-shape absolute -inset-4 rotate-12 bg-[#ffdcbd]/55" />
+            <div className="organic-shape-third relative aspect-[4/5] overflow-hidden bg-[#ffafcd] shadow-[0_18px_52px_rgba(28,27,27,0.15)]">
+              <img
+                src={workingImage}
+                alt={t("about.imageAlt")}
+                className="h-full w-full object-cover"
+                style={{
+                  objectPosition: `50% ${visualTuning.aboutObjectY}%`,
+                  transform: `translateY(${visualTuning.aboutY}%) scale(${visualTuning.aboutScale})`,
+                  filter: `brightness(${visualTuning.aboutBrightness}) contrast(1.06) saturate(0.95)`,
+                }}
+              />
+            </div>
           </div>
-        </div>
-        <div>
-          <h2 className="font-serif text-[clamp(2.25rem,4vw,3.55rem)] leading-[1.06]">
-            {t("about.titleTop")}
-            <br />
-            <span className="italic text-[#854d63]">{t("about.titleAccent")}</span>
-          </h2>
-          <div className="mt-6 max-w-2xl space-y-5 text-base leading-7 text-[#5b4137] sm:text-[1.05rem] sm:leading-8">
-            <p>{t("about.p1")}</p>
-            <p>{t("about.p2")}</p>
+          <div>
+            <h2 className="font-serif text-[clamp(2rem,3.7vw,3.2rem)] leading-[1.06]">
+              {t("about.titleTop")}
+              <br />
+              <span className="italic text-[#854d63]">{t("about.titleAccent")}</span>
+            </h2>
+            <div className="mt-5 max-w-[42rem] space-y-4 text-base leading-7 text-[#5b4137] sm:text-[16px] sm:leading-8">
+              <p>{t("about.p1")}</p>
+              <p>{t("about.p2")}</p>
+            </div>
+            <div className="mt-7 grid grid-cols-3 gap-4 border-t border-[#e5e2e1]/80 pt-7 sm:flex sm:flex-wrap sm:gap-7">
+              {traits.map((trait, index) => {
+                const icon = traitIcons[index] ?? documentEditIcon;
+                const accent = traitAccents[index] ?? traitAccents[0];
+                return (
+                  <div key={trait.label} className="flex min-w-0 flex-col items-center gap-3 text-center sm:min-w-24">
+                    <span className={`flex size-10 items-center justify-center rounded-full ${accent.icon}`}>
+                      <InlineIcon src={icon} className={`size-5 ${accent.glyph}`} />
+                    </span>
+                    <span className="text-[12px] font-semibold uppercase tracking-[1px] text-[#5b4137] sm:tracking-[2px]">
+                      {trait.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-          <div className="mt-8 flex flex-wrap gap-7 border-t border-[#e5e2e1]/80 pt-8">
-            {traits.map((trait, index) => {
-              const icon = traitIcons[index] ?? documentEditIcon;
-              const accent = traitAccents[index] ?? traitAccents[0];
-              return (
-                <div key={trait.label} className="flex min-w-24 flex-col items-center gap-3">
-                  <span className={`flex size-11 items-center justify-center rounded-full ${accent.icon}`}>
-                    <InlineIcon src={icon} className={`size-5 ${accent.glyph}`} />
-                  </span>
-                  <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#5b4137]">
-                    {trait.label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
         </div>
       </section>
 
-      <section id="services" className="bg-[#f6f3f2]/80 px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto max-w-6xl">
-          <div className="mx-auto mb-12 max-w-2xl text-center">
-            <h2 className="font-serif text-[clamp(2.35rem,4vw,3.45rem)] leading-none">
+      <section id="services" className="bg-[#f6f3f2]/80 px-5 py-16 sm:px-8 lg:py-24">
+        <div className="mx-auto max-w-[64rem]">
+          <div className="mx-auto mb-10 max-w-[40rem] text-center">
+            <h2 className="font-serif text-[clamp(2.1rem,3.7vw,3.1rem)] leading-none">
               <span className="italic text-[#854d63]">{t("services.titleAccent")}</span>{" "}
               {t("services.titleRest")}
             </h2>
-            <p className="mt-4 text-base leading-7 text-[#5b4137] sm:text-lg">{t("services.subtitle")}</p>
+            <p className="mt-4 text-base leading-7 text-[#5b4137] sm:text-[18px]">{t("services.subtitle")}</p>
           </div>
           <div className="grid gap-5 md:grid-cols-3 lg:gap-6">
             {services.map((service, index) => {
@@ -409,20 +409,20 @@ export default function Home() {
               return (
                 <article
                   key={`${service.title}-${service.accent}`}
-                  className={`group relative overflow-hidden rounded-[1.5rem] border border-[#e4bfb2]/25 bg-white p-7 shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(28,27,27,0.08)] sm:p-8 ${
+                  className={`group relative overflow-hidden rounded-lg border border-[#e4bfb2]/25 bg-white p-6 shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(28,27,27,0.08)] sm:p-7 ${
                     isWide ? "md:col-span-2" : ""
                   }`}
                 >
                   <div className={`absolute right-0 top-0 size-28 -translate-y-24 translate-x-24 rounded-bl-full ${accent.corner} opacity-0 transition duration-500 ease-out group-hover:-translate-y-9 group-hover:translate-x-9 group-hover:opacity-100`} />
-                  <span className={`relative flex size-12 items-center justify-center rounded-full ${accent.icon}`}>
+                  <span className={`relative flex size-11 items-center justify-center rounded-full ${accent.icon}`}>
                     <InlineIcon src={icon} className={`size-5 ${accent.glyph}`} />
                   </span>
-                  <h3 className="relative mt-7 font-serif text-[1.55rem] leading-tight text-[#1c1b1b] sm:text-[1.7rem]">
+                  <h3 className="relative mt-6 font-serif text-[24px] leading-7 text-[#1c1b1b]">
                     {service.title}
                     <br />
                     <span className={`italic ${accent.title}`}>{service.accent}</span>
                   </h3>
-                  <p className="relative mt-4 max-w-2xl text-sm leading-6 text-[#5b4137] sm:text-[0.95rem]">{service.description}</p>
+                  <p className="relative mt-4 max-w-2xl text-sm leading-6 text-[#5b4137]">{service.description}</p>
                 </article>
               );
             })}
@@ -430,19 +430,19 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="testimonials" className="mx-auto max-w-6xl px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto mb-12 max-w-2xl text-center">
+      <section id="testimonials" className="mx-auto max-w-[64rem] px-5 py-16 sm:px-8 lg:py-24">
+        <div className="mx-auto mb-10 max-w-[40rem] text-center">
           <SectionEyebrow>{t("testimonials.eyebrow")}</SectionEyebrow>
-          <h2 className="mt-3 font-serif text-[clamp(2rem,3.6vw,3rem)] leading-tight">
+          <h2 className="mt-3 font-serif text-[clamp(1.9rem,3.2vw,2.75rem)] leading-tight">
             {t("testimonials.titleStart")}{" "}
             <span className="italic text-[#854d63]">{t("testimonials.titleAccent")}</span>
           </h2>
         </div>
-        <div className="grid gap-9 pt-7 md:grid-cols-3 md:gap-6 lg:gap-8">
+        <div className="grid gap-9 pt-7 md:grid-cols-3 md:gap-5 lg:gap-6">
           {testimonials.map((testimonial, index) => (
             <article
               key={testimonial.name}
-              className={`relative flex min-h-[315px] flex-col justify-between rounded-[1.5rem] border p-7 pt-12 text-center shadow-[0_1px_2px_rgba(28,27,27,0.04)] ${
+              className={`relative flex min-h-[290px] flex-col justify-between rounded-lg border p-6 pt-11 text-center shadow-[0_1px_2px_rgba(28,27,27,0.04)] ${
                 index === 1
                   ? "border-[#854d63]/10 bg-[#ffd9e4]/40 md:-mt-6"
                   : "border-[#e4bfb2]/25 bg-white"
@@ -456,7 +456,7 @@ export default function Home() {
               <p className="text-sm italic leading-6 text-[#5b4137]">"{testimonial.quote}"</p>
               <div className="mt-7 border-t border-[#e5e2e1]/70 pt-5">
                 <p className="font-serif text-lg text-[#1c1b1b]">{testimonial.name}</p>
-                <p className="mt-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[#854d63]">
+                <p className="mt-2 text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63]">
                   {testimonial.role}
                 </p>
               </div>
