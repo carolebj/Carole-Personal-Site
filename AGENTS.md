@@ -3,7 +3,7 @@
 ## Project Description
 
 Carole Portfolio is a bilingual personal portfolio site built with React, Vite, TypeScript, and Tailwind CSS v4.
-It renders a single-page marketing-style experience for Carole Tonoukouen with animated sections for hero content, about, skills, metrics, experience, projects, certifications, and contact.
+It renders a single-page editorial social media direction experience for Carole Tonoukouen with sections for hero content, manifesto, about/presentation, services, testimonials, and contact/newsletter footer.
 Routing is handled with `react-router` in data-router style, even though the current public surface is effectively a single home page plus error and fallback routes.
 Translations are managed with `react-i18next` and support French and English, with browser/localStorage-based language selection.
 
@@ -35,6 +35,7 @@ Notes:
 
 - There is no dedicated `preview` script. If needed, use `npx vite preview` after a build.
 - The project already has `node_modules/` and builds successfully with `npm run build`.
+- In the restricted Codex sandbox, the Vite dev server may fail to bind `127.0.0.1:5173` with `EPERM`; rerun the dev command with elevated local permissions when needed.
 
 ## Test and Quality Commands
 
@@ -53,6 +54,12 @@ If you add any of the following, update this file:
 - typecheck-only script
 
 ## Architecture Overview
+
+## Project Memory
+
+- `MEMORY.md` is the project-level memory file.
+- Update it when there is a major product, design, branch, architecture, command, or content-direction change.
+- Keep it short and reusable; do not turn it into a granular changelog.
 
 ## Boot Flow
 
@@ -117,14 +124,7 @@ Routing and layout:
 
 Major page sections:
 
-- `src/app/components/Hero.tsx`
-- `src/app/components/About.tsx`
-- `src/app/components/Skills.tsx`
-- `src/app/components/Metrics.tsx`
-- `src/app/components/Experience.tsx`
-- `src/app/components/Projects.tsx`
-- `src/app/components/Certifications.tsx`
-- `src/app/components/Contact.tsx`
+- `src/app/pages/Home.tsx`: current redesigned home page composition
 - `src/app/components/Navbar.tsx`
 - `src/app/components/Footer.tsx`
 
@@ -147,10 +147,12 @@ Styles and assets:
 - `src/styles/theme.css`
 - `src/styles/fonts.css`
 - `src/assets/`
+- `src/assets/carole-redesign-*.png`: current Figma-derived redesign image assets
 
 Project guidance:
 
 - `guidelines/Guidelines.md`: repo-specific design and implementation rules
+- `MEMORY.md`: current project memory and redesign notes
 
 ## Coding Conventions
 
@@ -216,6 +218,7 @@ Follow the existing codebase before introducing new patterns.
 - Verify structural changes with `npm run build`
 - If adding tooling, add scripts to `package.json` and document them here
 - If adding a route, update routing, error boundaries, and navigation as needed
-- If adding a section to the home page, place it in `src/app/components/` and compose it from `src/app/pages/Home.tsx`
+- If adding or changing a section on the current redesigned home page, update `src/app/pages/Home.tsx` and keep reusable layout pieces in `src/app/components/` only when they are shared
 - If changing copy or labels, update both locale files in the same change
 - If changing visual direction, prefer token or shared-style updates over scattered literal values
+- If the redesign direction changes materially, update `MEMORY.md` in the same change

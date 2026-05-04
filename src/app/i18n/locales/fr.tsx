@@ -1,163 +1,115 @@
 const fr = {
   nav: {
+    services: "Services",
+    manifesto: "Manifesto",
     about: "À propos",
-    skills: "Compétences",
-    experience: "Expérience",
-    projects: "Projets",
+    testimonials: "Avis",
     contact: "Contact",
+    language: "Choisir la langue",
+    menu: "Ouvrir le menu",
   },
 
   hero: {
-    subtitle: "Communication Digitale & Community Manager",
-    greeting: "Bonjour, je suis",
+    eyebrow: "Social Media Agency Paris",
+    titleStart: "Construire une présence sociale",
+    titleAccent: "claire & engageante",
+    titleEnd: "pour votre marque.",
     description:
-      "Je crée des <strong>histoires</strong> captivantes qui construisent des <strong>communautés</strong> engagées et stimulent la croissance digitale.",
-    viewWork: "Voir mes projets",
-    contactMe: "Me contacter",
-    yearsCount: "5+ Ans",
-    yearsLabel: "d'Expertise Digitale",
+      "Je vous accompagne dans la définition et la mise en œuvre d'une stratégie éditoriale sur mesure pour développer votre communauté avec authenticité.",
+    primaryCta: "Discutons-en",
+    secondaryCta: "Mes services",
+    badgeTop: "Direction",
+    badgeBottom: "Créative",
+    imageAlt: "Portrait de Carole Tonoukouen",
+  },
+
+  manifesto: {
+    titleTop: "Publier sans stratégie",
+    titleAccent: "ne suffit plus.",
+    p1: "Dans un environnement digital saturé, l'attention est la ressource la plus rare. Une présence sociale réussie ne repose pas sur le volume, mais sur la pertinence, la clarté et l'authenticité de votre message.",
+    p2: "Il est temps de passer d'une communication réactive à une direction éditoriale intentionnelle.",
   },
 
   about: {
-    title: "À propos",
-    intro:
-      "Je suis une Community Manager & spécialiste en Communication Digitale passionnée, avec une solide expérience dans le développement de communautés en ligne engagées.",
-    p1: "Avec plus de 5 ans d'expérience dans le paysage digital, je me spécialise dans l'élaboration de stratégies qui non seulement atteignent les audiences mais résonnent avec elles. Mon approche combine des analyses basées sur les données avec un storytelling créatif pour créer des connexions authentiques entre les marques et leurs clients.",
-    p2: "Mon expertise couvre la stratégie des réseaux sociaux, la création de contenu, l'engagement communautaire et la coordination d'événements digitaux. Je m'épanouis dans des environnements dynamiques où je peux exploiter mes compétences pour amplifier la voix des marques et générer des résultats significatifs.",
-  },
-
-  skills: {
-    title: "Mes Compétences",
-    items: [
-      {
-        name: "Stratégie Réseaux Sociaux",
-        description:
-          "Élaboration de plans complets pour accroître la notoriété de la marque et l'engagement sur toutes les plateformes.",
-      },
-      {
-        name: "Community Management",
-        description:
-          "Construction et animation de communautés en ligne pour favoriser la fidélité et le plaidoyer.",
-      },
-      {
-        name: "Design Graphique",
-        description:
-          "Création de contenus visuellement attrayants avec des outils comme Canva, Photoshop et Illustrator.",
-      },
-      {
-        name: "Rédaction SEO",
-        description:
-          "Rédaction de contenu optimisé qui se positionne bien sur les moteurs de recherche et génère du trafic organique.",
-      },
-      {
-        name: "Communication Événementielle",
-        description:
-          "Promotion et gestion de la communication digitale pour les webinaires, lancements et événements en direct.",
-      },
-      {
-        name: "Reporting & Analytique",
-        description:
-          "Analyse des indicateurs de performance pour affiner les stratégies et démontrer le ROI.",
-      },
+    titleTop: "Enchantée,",
+    titleAccent: "moi c'est Carole",
+    p1: "J'aide les petites entreprises et les organisations à transmettre leur message et maximiser leur impact tout en restant rentables et authentiques.",
+    p2: "Je prends en charge la réflexion stratégique, la conception éditoriale et la création de contenus. Vous et moi collaborerons sur la vision créative, sur les sujets qui vous passionnent et que vous maîtrisez, pour bâtir une communauté engagée.",
+    imageAlt: "Carole travaillant sur une direction éditoriale",
+    traits: [
+      { label: "Rédactrice" },
+      { label: "Stratège" },
+      { label: "Coffee lover" },
     ],
   },
 
-  metrics: {
-    audienceGrowth: "Croissance d'Audience",
-    organicTraffic: "Trafic Organique",
-    campaigns: "Campagnes",
-    events: "Événements",
-  },
-
-  experience: {
-    title: "Parcours Professionnel",
-    items: [
-      {
-        role: "Responsable Communication Digitale",
-        company: "TechInnovate Africa",
-        period: "2021 - Présent",
-        location: "Cotonou, Bénin",
-        description:
-          "Direction de la stratégie digitale pour un hub technologique panafricain. Augmentation de l'engagement sur les réseaux sociaux de 200 % et lancement réussi de 3 sommets virtuels majeurs.",
-      },
-      {
-        role: "Community Manager",
-        company: "GreenLeaf Agency",
-        period: "2019 - 2021",
-        location: "Remote",
-        description:
-          "Gestion des communautés en ligne pour plus de 5 marques de mode de vie durable. Croissance du nombre d'abonnés Instagram de 5k à 25k abonnés organiques en 18 mois.",
-      },
-      {
-        role: "Créatrice de Contenu Junior",
-        company: "Creative Digital",
-        period: "2018 - 2019",
-        location: "Cotonou, Bénin",
-        description:
-          "Assistance à la création d'éléments visuels et rédaction pour les articles de blog. Apprentissage des fondamentaux du SEO et du storytelling digital.",
-      },
-    ],
-  },
-
-  projects: {
-    title: "Projets Sélectionnés",
+  services: {
+    titleAccent: "Mes",
+    titleRest: "Services",
     subtitle:
-      "Une vitrine de mes collaborations récentes et campagnes réussies.",
-    viewAll: "Voir tous les projets",
+      "Des solutions sur mesure pour structurer et amplifier votre voix digitale.",
     items: [
       {
-        title: "Stratégie Digitale & Rebranding",
-        category: "Identité de Marque",
+        title: "Stratégie",
+        accent: "Éditoriale",
         description:
-          "Refonte digitale complète pour un détaillant de mode de premier plan, résultant en une augmentation de 40 % des ventes en ligne.",
+          "Définition de votre ligne éditoriale, de vos piliers de contenu et de votre positionnement unique sur les réseaux sociaux.",
       },
       {
-        title: "Éco-Sommet 2023",
-        category: "Communication Événementielle",
+        title: "Direction",
+        accent: "Social Media",
         description:
-          "Gestion de la couverture en direct sur les réseaux sociaux et de l'engagement communautaire pour une conférence internationale de 3 jours sur le développement durable.",
+          "Pilotage de votre présence en ligne, création de calendriers éditoriaux engageants et gestion de vos campagnes digitales pour maximiser votre impact au quotidien.",
       },
       {
-        title: "Campagne de Croissance Communautaire",
-        category: "Réseaux Sociaux",
+        title: "Création de",
+        accent: "Contenu",
         description:
-          "Exécution d'une campagne hashtag virale qui a fait croître la communauté de la marque de 15 000 membres actifs en 3 mois.",
+          "Rédaction de posts à forte valeur ajoutée, conception de visuels percutants et production de formats adaptés aux exigences de chaque plateforme.",
+      },
+      {
+        title: "Audit &",
+        accent: "Consulting",
+        description:
+          "Analyse approfondie de l'existant et recommandations stratégiques pour optimiser vos performances.",
       },
     ],
   },
 
-  certifications: {
-    title: "Formation Continue",
+  testimonials: {
+    eyebrow: "Témoignages",
+    titleStart: "Mots doux de",
+    titleAccent: "mes clients",
     items: [
-      "Google Digital Garage - Fundamentals of Digital Marketing",
-      "HubSpot Social Media Marketing Certification",
-      "Meta Certified Community Manager",
-      "LinkedIn Marketing Strategy",
+      {
+        quote:
+          "J'attire enfin les bonnes personnes dans ma messagerie ! En quelques semaines, j'ai converti un prospect en client long terme grâce à un post LinkedIn. Merci Carole d'avoir structuré ma présence.",
+        name: "Uzoma Obidike",
+        role: "Fondatrice, She Leads",
+      },
+      {
+        quote:
+          "Carole comprend ma marque, ce qu'elle représente, et génère un contenu qui est véritablement aligné avec ma vision. Elle fait un travail magnifique pour capturer ma voix unique.",
+        name: "Cynthia S.",
+        role: "Hôte de podcast",
+      },
+      {
+        quote:
+          "Elle nous a appris comment utiliser efficacement chaque plateforme et rester au top de ce qui est pertinent aujourd'hui. Je recommande définitivement l'investissement.",
+        name: "Julian F.",
+        role: "Directeur conseil",
+      },
     ],
-  },
-
-  contact: {
-    title: "Travaillons Ensemble",
-    subtitle:
-      "Vous avez un projet en tête ou souhaitez discuter de la façon dont nous pouvons développer votre communauté ? Je suis toujours ouverte aux nouvelles opportunités et collaborations.",
-    email: "Email",
-    phone: "Téléphone",
-    location: "Localisation",
-    locationValue: "Cotonou, Bénin & Remote",
-    nameLabel: "Nom",
-    namePlaceholder: "Votre nom",
-    emailLabel: "Email",
-    emailPlaceholder: "votre@email.com",
-    subjectLabel: "Objet",
-    subjectPlaceholder: "Demande de projet",
-    messageLabel: "Message",
-    messagePlaceholder: "Parlez-moi de votre projet…",
-    send: "Envoyer le message",
   },
 
   footer: {
-    role: "Communication Digitale & Community Manager",
-    rights: "Tous droits réservés.",
+    signature: "Social Media Direction.",
+    newsletterLabel: "Adresse email pour rejoindre la newsletter",
+    newsletterPlaceholder: "Rejoindre la newsletter",
+    newsletterCta: "S'inscrire",
+    instagram: "Instagram",
+    linkedin: "LinkedIn",
+    contact: "Contact",
   },
 
   errorPages: {
@@ -166,7 +118,7 @@ const fr = {
       description:
         "La page que vous recherchez n'existe pas ou a été déplacée. Vérifiez l'adresse ou revenez à l'accueil.",
       backHome: "Retour à l'accueil",
-      explore: "Explorer les projets",
+      explore: "Explorer les services",
     },
     routeError: {
       title: "Une erreur est survenue",

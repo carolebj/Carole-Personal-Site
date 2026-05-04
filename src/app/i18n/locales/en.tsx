@@ -1,163 +1,115 @@
 const en = {
   nav: {
+    services: "Services",
+    manifesto: "Manifesto",
     about: "About",
-    skills: "Skills",
-    experience: "Experience",
-    projects: "Projects",
+    testimonials: "Reviews",
     contact: "Contact",
+    language: "Choose language",
+    menu: "Open menu",
   },
 
   hero: {
-    subtitle: "Digital Communication & Community Manager",
-    greeting: "Hi, I'm",
+    eyebrow: "Social Media Agency Paris",
+    titleStart: "Build a social presence",
+    titleAccent: "clear & engaging",
+    titleEnd: "for your brand.",
     description:
-      "I craft compelling <strong>stories</strong> that build engaged <strong>communities</strong> and drive digital growth.",
-    viewWork: "View Work",
-    contactMe: "Contact Me",
-    yearsCount: "5+ Years",
-    yearsLabel: "of Digital Expertise",
+      "I help you define and execute a tailored editorial strategy that grows your community with clarity and authenticity.",
+    primaryCta: "Let's talk",
+    secondaryCta: "My services",
+    badgeTop: "Creative",
+    badgeBottom: "Direction",
+    imageAlt: "Portrait of Carole Tonoukouen",
+  },
+
+  manifesto: {
+    titleTop: "Posting without strategy",
+    titleAccent: "is no longer enough.",
+    p1: "In a saturated digital environment, attention is the rarest resource. A successful social presence is not built on volume, but on relevance, clarity, and authenticity.",
+    p2: "It is time to move from reactive communication to intentional editorial direction.",
   },
 
   about: {
-    title: "About Me",
-    intro:
-      "I am a passionate Digital Communication & Community Manager with a proven track record of growing engaged online communities.",
-    p1: "With over 5 years of experience in the digital landscape, I specialize in crafting strategies that not only reach audiences but resonate with them. My approach combines data-driven insights with creative storytelling to build authentic connections between brands and their customers.",
-    p2: "My expertise spans across social media strategy, content creation, community engagement, and digital event coordination. I thrive in dynamic environments where I can leverage my skills to amplify brand voices and drive meaningful results.",
-  },
-
-  skills: {
-    title: "My Expertise",
-    items: [
-      {
-        name: "Social Media Strategy",
-        description:
-          "Developing comprehensive plans to increase brand awareness and engagement across platforms.",
-      },
-      {
-        name: "Community Management",
-        description:
-          "Building and nurturing online communities to foster loyalty and advocacy.",
-      },
-      {
-        name: "Graphic Design",
-        description:
-          "Creating visually appealing content using tools like Canva, Photoshop, and Illustrator.",
-      },
-      {
-        name: "SEO Writing",
-        description:
-          "Crafting optimized content that ranks well on search engines and drives organic traffic.",
-      },
-      {
-        name: "Event Communication",
-        description:
-          "Promoting and managing digital communication for webinars, launches, and live events.",
-      },
-      {
-        name: "Reporting & Analytics",
-        description:
-          "Analyzing performance metrics to refine strategies and demonstrate ROI.",
-      },
+    titleTop: "Lovely to meet you,",
+    titleAccent: "I'm Carole",
+    p1: "I help small businesses and organizations share their message and maximize their impact while staying profitable and authentic.",
+    p2: "I lead strategic thinking, editorial design, and content creation. Together, we shape the creative vision, the topics you care about, and the ideas you master to build an engaged community.",
+    imageAlt: "Carole working on editorial direction",
+    traits: [
+      { label: "Writer" },
+      { label: "Strategist" },
+      { label: "Coffee lover" },
     ],
   },
 
-  metrics: {
-    audienceGrowth: "Audience Growth",
-    organicTraffic: "Organic Traffic",
-    campaigns: "Campaigns",
-    events: "Events",
-  },
-
-  experience: {
-    title: "Professional Journey",
-    items: [
-      {
-        role: "Digital Communication Manager",
-        company: "TechInnovate Africa",
-        period: "2021 - Present",
-        location: "Cotonou, Benin",
-        description:
-          "Leading the digital strategy for a pan-African tech hub. Increased social media engagement by 200% and successfully launched 3 major virtual summits.",
-      },
-      {
-        role: "Community Manager",
-        company: "GreenLeaf Agency",
-        period: "2019 - 2021",
-        location: "Remote",
-        description:
-          "Managed online communities for 5+ sustainable lifestyle brands. Grew Instagram following from 5k to 25k organic followers in 18 months.",
-      },
-      {
-        role: "Junior Content Creator",
-        company: "Creative Digital",
-        period: "2018 - 2019",
-        location: "Cotonou, Benin",
-        description:
-          "Assisted in creating visual assets and copywriting for blog posts. Learned the fundamentals of SEO and digital storytelling.",
-      },
-    ],
-  },
-
-  projects: {
-    title: "Selected Works",
+  services: {
+    titleAccent: "My",
+    titleRest: "Services",
     subtitle:
-      "A showcase of my recent collaborations and successful campaigns.",
-    viewAll: "View All Projects",
+      "Tailored solutions to structure and amplify your digital voice.",
     items: [
       {
-        title: "Digital Strategy & Rebranding",
-        category: "Brand Identity",
+        title: "Editorial",
+        accent: "Strategy",
         description:
-          "Complete digital overhaul for a leading fashion retailer, resulting in a 40% increase in online sales.",
+          "Definition of your editorial line, content pillars, and distinctive positioning across social platforms.",
       },
       {
-        title: "Eco-Summit 2023",
-        category: "Event Communication",
+        title: "Social Media",
+        accent: "Direction",
         description:
-          "Managed live social media coverage and community engagement for a 3-day international sustainability conference.",
+          "Stewardship of your online presence, engaging editorial calendars, and digital campaign management to maximize day-to-day impact.",
       },
       {
-        title: "Community Growth Campaign",
-        category: "Social Media",
+        title: "Content",
+        accent: "Creation",
         description:
-          "Executed a viral hashtag campaign that grew the brand's community by 15,000 active members in 3 months.",
+          "High-value post writing, compelling visual concepts, and formats adapted to the standards of each platform.",
+      },
+      {
+        title: "Audit &",
+        accent: "Consulting",
+        description:
+          "In-depth review of your current presence with strategic recommendations to improve performance.",
       },
     ],
   },
 
-  certifications: {
-    title: "Continuous Learning",
+  testimonials: {
+    eyebrow: "Testimonials",
+    titleStart: "Kind words from",
+    titleAccent: "my clients",
     items: [
-      "Google Digital Garage - Fundamentals of Digital Marketing",
-      "HubSpot Social Media Marketing Certification",
-      "Meta Certified Community Manager",
-      "LinkedIn Marketing Strategy",
+      {
+        quote:
+          "I finally attract the right people into my inbox. In just a few weeks, I converted a prospect into a long-term client thanks to a LinkedIn post. Thank you, Carole, for structuring my presence.",
+        name: "Uzoma Obidike",
+        role: "Founder, She Leads",
+      },
+      {
+        quote:
+          "Carole understands my brand, what it stands for, and creates content that is genuinely aligned with my vision. She does beautiful work capturing my unique voice.",
+        name: "Cynthia S.",
+        role: "Podcast host",
+      },
+      {
+        quote:
+          "She taught us how to use each platform effectively and stay on top of what is relevant today. I definitely recommend the investment.",
+        name: "Julian F.",
+        role: "Consulting director",
+      },
     ],
-  },
-
-  contact: {
-    title: "Let's Work Together",
-    subtitle:
-      "Have a project in mind or want to discuss how we can grow your community? I'm always open to new opportunities and collaborations.",
-    email: "Email",
-    phone: "Phone",
-    location: "Location",
-    locationValue: "Cotonou, Benin & Remote",
-    nameLabel: "Name",
-    namePlaceholder: "Your name",
-    emailLabel: "Email",
-    emailPlaceholder: "your@email.com",
-    subjectLabel: "Subject",
-    subjectPlaceholder: "Project inquiry",
-    messageLabel: "Message",
-    messagePlaceholder: "Tell me about your project...",
-    send: "Send Message",
   },
 
   footer: {
-    role: "Digital Communication & Community Manager",
-    rights: "All rights reserved.",
+    signature: "Social Media Direction.",
+    newsletterLabel: "Email address to join the newsletter",
+    newsletterPlaceholder: "Join the newsletter",
+    newsletterCta: "Sign up",
+    instagram: "Instagram",
+    linkedin: "LinkedIn",
+    contact: "Contact",
   },
 
   errorPages: {
@@ -166,7 +118,7 @@ const en = {
       description:
         "The page you're looking for doesn't exist or has been moved. Please check the URL or go back to the homepage.",
       backHome: "Back to homepage",
-      explore: "Explore projects",
+      explore: "Explore services",
     },
     routeError: {
       title: "Something went wrong",

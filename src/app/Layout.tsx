@@ -5,7 +5,7 @@ import "./i18n/i18n";
 
 export default function Layout() {
   return (
-    <div className="min-h-screen bg-neutral-50 text-neutral-900 font-sans antialiased selection:bg-amber-400 selection:text-emerald-950">
+    <div className="min-h-screen bg-[#fcf9f8] font-sans text-[#1c1b1b] antialiased selection:bg-[#ffd9e4] selection:text-[#4a1c30]">
       <Navbar />
       <main>
         <Outlet />
