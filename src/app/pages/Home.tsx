@@ -1,4 +1,4 @@
-import { EnvelopeIcon, PaperAirplaneIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import { ChevronLeftIcon, ChevronRightIcon, EnvelopeIcon, PaperAirplaneIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
@@ -240,6 +240,7 @@ export default function Home() {
   const traits = t("about.traits", { returnObjects: true }) as Trait[];
   const testimonials = t("testimonials.items", { returnObjects: true }) as Testimonial[];
   const [visualTuning, setVisualTuning] = useState(DEFAULT_VISUAL_TUNING);
+  const [activeTestimonial, setActiveTestimonial] = useState(1);
   const isDev = import.meta.env.DEV;
 
   useEffect(() => {
@@ -258,9 +259,28 @@ export default function Home() {
     setVisualTuning((current) => ({ ...current, [key]: value }));
   };
 
+  const scrollToSection = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    event.preventDefault();
+    document.querySelector(href)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.history.replaceState(null, "", href);
+  };
+
+  const visibleTestimonials = [-1, 0, 1].map((offset) => {
+    const index = (activeTestimonial + offset + testimonials.length) % testimonials.length;
+    return { testimonial: testimonials[index], index, offset };
+  });
+
+  const showPreviousTestimonial = () => {
+    setActiveTestimonial((current) => (current - 1 + testimonials.length) % testimonials.length);
+  };
+
+  const showNextTestimonial = () => {
+    setActiveTestimonial((current) => (current + 1) % testimonials.length);
+  };
+
   return (
     <div className="overflow-hidden bg-[#fcf9f8] text-[#1c1b1b] dark:bg-[#13100f] dark:text-[#f8f1ec]">
-      <section className="relative flex min-h-[calc(100svh-4rem)] items-center bg-[linear-gradient(160deg,#fffafa_0%,#fcf9f8_42%,#fbf8f7_100%)] px-5 pb-12 pt-24 dark:bg-[linear-gradient(160deg,#1b1515_0%,#13100f_54%,#21171a_100%)] sm:px-8 sm:pt-28 md:min-h-[755px] lg:px-8 lg:pb-16 lg:pt-28">
+      <section id="home" className="relative flex min-h-[calc(100svh-4rem)] items-center bg-[linear-gradient(160deg,#fffafa_0%,#fcf9f8_42%,#fbf8f7_100%)] px-5 pb-12 pt-24 dark:bg-[linear-gradient(160deg,#1b1515_0%,#13100f_54%,#21171a_100%)] sm:px-8 sm:pt-28 md:min-h-[755px] lg:px-8 lg:pb-16 lg:pt-28">
         <div className="pointer-events-none absolute right-[-14rem] top-[-13rem] size-[38rem] rounded-full bg-[#ffd9e4]/35 blur-[90px] dark:bg-[#854d63]/18" />
         <div className="mx-auto grid w-full max-w-[1200px] items-center gap-8 lg:grid-cols-[1.02fr_0.98fr] lg:gap-10">
           <motion.div
@@ -280,13 +300,15 @@ export default function Home() {
             <div className="mt-8 flex flex-wrap gap-3">
               <a
                 href="#contact"
+                onClick={(event) => scrollToSection(event, "#contact")}
                 className="inline-flex h-10 min-w-[144px] items-center justify-center rounded-full bg-[#1c1b1b] px-6 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#fcf9f8] shadow-[0_14px_32px_rgba(28,27,27,0.13)] transition hover:bg-[#854d63] dark:bg-[#f8f1ec] dark:text-[#1c1415] dark:hover:bg-[#f0adc4] md:h-[52px] md:min-w-[176px] md:px-8 md:tracking-[1px]"
               >
                 {t("hero.primaryCta")}
               </a>
               <a
                 href="#services"
-                className="inline-flex h-10 min-w-[144px] items-center justify-center rounded-full border border-[#1c1b1b]/20 px-6 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#1c1b1b] transition hover:border-[#854d63] hover:text-[#854d63] dark:border-white/20 dark:text-[#f8f1ec] dark:hover:border-[#f0adc4] dark:hover:text-[#f0adc4] md:h-[52px] md:min-w-[172px] md:px-8 md:tracking-[1px]"
+                onClick={(event) => scrollToSection(event, "#services")}
+                className="inline-flex h-10 min-w-[144px] items-center justify-center rounded-full border border-[#1c1b1b]/20 bg-[#ffd9e4]/18 px-6 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#1c1b1b] transition hover:border-[#854d63] hover:bg-[#ffd9e4]/44 hover:text-[#854d63] dark:border-white/20 dark:bg-[#854d63]/18 dark:text-[#f8f1ec] dark:hover:border-[#f0adc4] dark:hover:bg-[#854d63]/30 dark:hover:text-[#f0adc4] md:h-[52px] md:min-w-[172px] md:px-8 md:tracking-[1px]"
               >
                 {t("hero.secondaryCta")}
               </a>
@@ -295,14 +317,27 @@ export default function Home() {
 
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            whileHover={{ y: -6 }}
-            transition={{ delay: 0.15, duration: 0.55, ease: "easeOut" }}
-            className="group relative mx-auto flex min-h-[300px] w-full max-w-[350px] items-center justify-center sm:min-h-[360px] sm:max-w-[390px] lg:min-h-[460px] lg:max-w-[430px]"
+            animate={{ opacity: 1, scale: 1, y: [0, -8, 0] }}
+            transition={{
+              opacity: { delay: 0.15, duration: 0.55, ease: "easeOut" },
+              scale: { delay: 0.15, duration: 0.55, ease: "easeOut" },
+              y: { delay: 0.3, duration: 5.8, repeat: Infinity, ease: "easeInOut" },
+            }}
+            className="relative mx-auto flex min-h-[300px] w-full max-w-[350px] items-center justify-center sm:min-h-[360px] sm:max-w-[390px] lg:min-h-[460px] lg:max-w-[430px]"
           >
-            <div className="organic-shape absolute inset-x-4 inset-y-7 rotate-[-4deg] bg-[#f9b3cc]/42 transition duration-500 ease-out group-hover:-translate-y-2 group-hover:rotate-[-6deg]" />
-            <div className="organic-shape-alt absolute inset-x-7 inset-y-5 rotate-6 border border-[#854d63]/28 transition duration-500 ease-out group-hover:translate-y-2 group-hover:rotate-[8deg]" />
-            <div className="organic-shape relative z-10 aspect-[4/5] w-[74%] max-w-[330px] overflow-hidden bg-[#fbaa51] shadow-[0_24px_60px_rgba(28,27,27,0.18)] transition duration-500 ease-out group-hover:shadow-[0_32px_74px_rgba(28,27,27,0.2)] sm:max-w-[350px] lg:max-w-[360px]">
+            <motion.div
+              aria-hidden="true"
+              animate={{ y: [0, -10, 0], rotate: [-4, -6, -4] }}
+              transition={{ duration: 6.4, repeat: Infinity, ease: "easeInOut" }}
+              className="organic-shape absolute inset-x-4 inset-y-7 bg-[#f9b3cc]/42"
+            />
+            <motion.div
+              aria-hidden="true"
+              animate={{ y: [0, 8, 0], rotate: [6, 8, 6] }}
+              transition={{ duration: 7.2, repeat: Infinity, ease: "easeInOut" }}
+              className="organic-shape-alt absolute inset-x-7 inset-y-5 border border-[#854d63]/28"
+            />
+            <div className="organic-shape relative z-10 aspect-[4/5] w-[74%] max-w-[330px] overflow-hidden bg-[#fbaa51] shadow-[0_24px_60px_rgba(28,27,27,0.18)] sm:max-w-[350px] lg:max-w-[360px]">
               <img
                 src={portraitImage}
                 alt={t("hero.imageAlt")}
@@ -313,7 +348,11 @@ export default function Home() {
                 }}
               />
             </div>
-            <div className="absolute bottom-7 left-6 z-20 flex rotate-[-3deg] items-center gap-3 rounded-2xl border border-white/70 bg-white/90 p-4 shadow-[0_16px_38px_rgba(28,27,27,0.14)] backdrop-blur-md transition duration-500 ease-out group-hover:-translate-y-3 group-hover:rotate-[-5deg] dark:border-white/10 dark:bg-[#201817]/90">
+            <motion.div
+              animate={{ y: [0, -12, 0], rotate: [-3, -5, -3] }}
+              transition={{ duration: 5.4, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute bottom-7 left-6 z-20 flex items-center gap-3 rounded-2xl border border-white/70 bg-white/90 p-4 shadow-[0_16px_38px_rgba(28,27,27,0.14)] backdrop-blur-md dark:border-white/10 dark:bg-[#201817]/90"
+            >
               <span className="flex size-10 items-center justify-center rounded-full bg-[#ffd9e4] text-[#854d63]">
                 <SparklesIcon className="size-4" />
               </span>
@@ -322,7 +361,7 @@ export default function Home() {
                 <br />
                 <span className="italic text-[#854d63]">{t("hero.badgeBottom")}</span>
               </p>
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -471,30 +510,71 @@ export default function Home() {
             <span className="italic text-[#854d63] dark:text-[#f0adc4]">{t("testimonials.titleAccent")}</span>
           </h2>
         </div>
-        <div className="mx-auto grid max-w-[1200px] gap-9 pt-7 md:grid-cols-3 md:gap-5 lg:gap-6">
-          {testimonials.map((testimonial, index) => (
-            <article
-              key={testimonial.name}
-              className={`relative flex min-h-[290px] flex-col justify-between rounded-lg border p-6 pt-11 text-center shadow-[0_1px_2px_rgba(28,27,27,0.04)] ${
-                index === 1
-                  ? "border-[#854d63]/10 bg-[#ffd9e4]/40 dark:border-[#f0adc4]/24 dark:bg-[#3a2028]/72 md:-mt-6"
-                  : "border-[#e4bfb2]/25 bg-white dark:border-[#d8a4c7]/14 dark:bg-[#171111]"
-              }`}
+        <div className="relative mx-auto max-w-[1200px] pt-7">
+          <button
+            type="button"
+            onClick={showPreviousTestimonial}
+            className="absolute left-0 top-1/2 z-20 hidden size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#e5e2e1]/70 bg-white/58 text-[#854d63] shadow-sm backdrop-blur-md transition hover:bg-white hover:text-[#6a364b] dark:border-white/10 dark:bg-white/8 dark:text-[#f0adc4] dark:hover:bg-white/14 md:flex"
+            aria-label={t("testimonials.previous")}
+          >
+            <ChevronLeftIcon className="size-5" />
+          </button>
+          <button
+            type="button"
+            onClick={showNextTestimonial}
+            className="absolute right-0 top-1/2 z-20 hidden size-11 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-[#e5e2e1]/70 bg-white/58 text-[#854d63] shadow-sm backdrop-blur-md transition hover:bg-white hover:text-[#6a364b] dark:border-white/10 dark:bg-white/8 dark:text-[#f0adc4] dark:hover:bg-white/14 md:flex"
+            aria-label={t("testimonials.next")}
+          >
+            <ChevronRightIcon className="size-5" />
+          </button>
+          <div className="grid gap-9 md:grid-cols-3 md:gap-5 lg:gap-6">
+            {visibleTestimonials.map(({ testimonial, index, offset }) => {
+              const isActive = offset === 0;
+
+              return (
+                <motion.article
+                  key={`${testimonial.name}-${index}`}
+                  layout
+                  className={`relative flex min-h-[290px] flex-col justify-between rounded-lg border p-6 pt-11 text-center shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition ${
+                    isActive
+                      ? "border-[#854d63]/10 bg-[#ffd9e4]/40 dark:border-[#f0adc4]/24 dark:bg-[#3a2028]/72 md:-mt-6"
+                      : "border-[#e4bfb2]/25 bg-white dark:border-[#d8a4c7]/14 dark:bg-[#171111]"
+                  }`}
+                >
+                  <img
+                    src={testimonialImages[index] ?? testimonialImages[0]}
+                    alt={testimonial.name}
+                    className="absolute left-1/2 top-0 size-16 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-[#fcf9f8] object-cover shadow-sm dark:border-[#13100f]"
+                  />
+                  <p className="text-sm italic leading-6 text-[#5b4137] dark:text-[#ded7d2]">"{testimonial.quote}"</p>
+                  <div className="mt-7 border-t border-[#e5e2e1]/70 pt-5 dark:border-white/10">
+                    <p className="font-serif text-lg text-[#1c1b1b] dark:text-[#f8f1ec]">{testimonial.name}</p>
+                    <p className="mt-2 text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">
+                      {testimonial.role}
+                    </p>
+                  </div>
+                </motion.article>
+              );
+            })}
+          </div>
+          <div className="mt-8 flex justify-center gap-3 md:hidden">
+            <button
+              type="button"
+              onClick={showPreviousTestimonial}
+              className="flex size-11 items-center justify-center rounded-full border border-[#e5e2e1]/70 bg-white/58 text-[#854d63] backdrop-blur-md dark:border-white/10 dark:bg-white/8 dark:text-[#f0adc4]"
+              aria-label={t("testimonials.previous")}
             >
-              <img
-                src={testimonialImages[index]}
-                alt={testimonial.name}
-                className="absolute left-1/2 top-0 size-16 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-[#fcf9f8] object-cover shadow-sm dark:border-[#13100f]"
-              />
-              <p className="text-sm italic leading-6 text-[#5b4137] dark:text-[#ded7d2]">"{testimonial.quote}"</p>
-              <div className="mt-7 border-t border-[#e5e2e1]/70 pt-5 dark:border-white/10">
-                <p className="font-serif text-lg text-[#1c1b1b] dark:text-[#f8f1ec]">{testimonial.name}</p>
-                <p className="mt-2 text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">
-                  {testimonial.role}
-                </p>
-              </div>
-            </article>
-          ))}
+              <ChevronLeftIcon className="size-5" />
+            </button>
+            <button
+              type="button"
+              onClick={showNextTestimonial}
+              className="flex size-11 items-center justify-center rounded-full border border-[#e5e2e1]/70 bg-white/58 text-[#854d63] backdrop-blur-md dark:border-white/10 dark:bg-white/8 dark:text-[#f0adc4]"
+              aria-label={t("testimonials.next")}
+            >
+              <ChevronRightIcon className="size-5" />
+            </button>
+          </div>
         </div>
       </motion.section>
 

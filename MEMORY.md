@@ -47,6 +47,10 @@ Last reviewed: 2026-05-05 WAT
   - the desktop header collapses on downward scroll into a centered logo pill, returns on upward scroll or when the pill is clicked, and collapses again on the next downward scroll
   - the main navigation now uses an icon-only theme toggle; language switching belongs in the footer
   - the testimonials section should sit on a white background in light mode
+  - desktop navigation order is Accueil, À propos, Services, Avis, Blog; Manifesto remains a section but is not a menu item
+  - Services is both a scroll link and a hover mega menu with links to individual service pages
+  - testimonials use a three-card carousel with the centered card as the active state
+  - subtle audio haptics are enabled by default for interactive elements and can be toggled from the logo right-click menu
 
 ## Implementation Notes
 
@@ -54,6 +58,7 @@ Last reviewed: 2026-05-05 WAT
 - Keep all user-facing copy in `src/app/i18n/locales/fr.tsx` and `src/app/i18n/locales/en.tsx`.
 - Language selection is detected from browser language, then persisted in `localStorage` under `portfolio-lang`.
 - Theme selection is handled by `src/app/theme/ThemeContext.tsx`, follows `prefers-color-scheme` on first visit, and persists the explicit choice in `localStorage` under `portfolio-theme`.
+- Haptic feedback is handled by `src/app/interactions/HapticContext.tsx` and persists its on/off preference under `portfolio-haptics`.
 - The redesigned home page lives in `src/app/pages/Home.tsx`.
 - The redesigned navigation and footer live in `src/app/components/Navbar.tsx` and `src/app/components/Footer.tsx`.
 - Figma image assets downloaded into `src/assets/` use the `carole-redesign-*` prefix.

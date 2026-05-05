@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router";
 import Layout from "./Layout";
 import Home from "./pages/Home";
 import Blog from "./pages/Blog";
+import Cv from "./pages/Cv";
 import ServiceDetail from "./pages/ServiceDetail";
 import ErrorPage from "./components/ErrorPage";
 import RouteErrorBoundary from "./components/RouteErrorBoundary";
@@ -21,6 +22,11 @@ export const router = createBrowserRouter([
       {
         path: "blog",
         Component: Blog,
+        ErrorBoundary: RouteErrorBoundary,
+      },
+      {
+        path: "cv",
+        Component: Cv,
         ErrorBoundary: RouteErrorBoundary,
       },
       {

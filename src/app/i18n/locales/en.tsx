@@ -1,5 +1,6 @@
 const en = {
   nav: {
+    home: "Home",
     services: "Services",
     manifesto: "Manifesto",
     about: "About",
@@ -11,6 +12,10 @@ const en = {
     lightTheme: "Switch to light theme",
     menu: "Open menu",
     openHeader: "Show full menu",
+    cv: "Curriculum Vitae - CV",
+    haptics: "Haptic feedback",
+    preview: "Preview",
+    openService: "Open service",
   },
 
   hero: {
@@ -120,6 +125,8 @@ const en = {
     eyebrow: "Testimonials",
     titleStart: "Kind words from",
     titleAccent: "my clients",
+    previous: "Previous testimonial",
+    next: "Next testimonial",
     items: [
       {
         quote:
@@ -155,7 +162,7 @@ const en = {
     titleStart: "Tell me what",
     titleAccent: "you need",
     description:
-      "Share a few details about your brand, your channels, or the support you are looking for. Carole will get back to you with a clear next step.",
+      "Share a few details about your brand, your channels, or the support you are looking for. I will get back to you with a clear next step.",
     name: "Name",
     email: "Email",
     subject: "Subject",
@@ -167,6 +174,12 @@ const en = {
     title: "Blog",
     subtitle:
       "This page is under construction. It will soon host notes on editorial strategy, social media, and content creation.",
+  },
+
+  cv: {
+    eyebrow: "Background",
+    description:
+      "This page will host Carole's background, experience, and references in a readable and downloadable format.",
   },
 
   serviceDetail: {

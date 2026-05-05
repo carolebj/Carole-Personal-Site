@@ -1,5 +1,6 @@
 const fr = {
   nav: {
+    home: "Accueil",
     services: "Services",
     manifesto: "Manifesto",
     about: "À propos",
@@ -11,6 +12,10 @@ const fr = {
     lightTheme: "Passer au thème clair",
     menu: "Ouvrir le menu",
     openHeader: "Afficher le menu complet",
+    cv: "Curriculum Vitæ - CV",
+    haptics: "Retour haptique",
+    preview: "Aperçu",
+    openService: "Ouvrir le service",
   },
 
   hero: {
@@ -120,6 +125,8 @@ const fr = {
     eyebrow: "Témoignages",
     titleStart: "Mots doux de",
     titleAccent: "mes clients",
+    previous: "Témoignage précédent",
+    next: "Témoignage suivant",
     items: [
       {
         quote:
@@ -155,7 +162,7 @@ const fr = {
     titleStart: "Parlez-moi de",
     titleAccent: "votre besoin",
     description:
-      "Partagez quelques informations sur votre marque, vos canaux ou l'accompagnement recherché. Carole vous répondra avec une prochaine étape claire.",
+      "Partagez quelques informations sur votre marque, vos canaux ou l'accompagnement recherché. Je vous répondrai avec une prochaine étape claire.",
     name: "Nom",
     email: "Email",
     subject: "Sujet",
@@ -167,6 +174,12 @@ const fr = {
     title: "Blog",
     subtitle:
       "Cette page est en cours de construction. Elle accueillera bientôt des notes sur la stratégie éditoriale, les réseaux sociaux et la création de contenu.",
+  },
+
+  cv: {
+    eyebrow: "Parcours",
+    description:
+      "Cette page accueillera le parcours, les expériences et les références de Carole dans une version lisible et téléchargeable.",
   },
 
   serviceDetail: {
