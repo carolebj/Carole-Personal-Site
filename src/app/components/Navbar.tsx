@@ -24,6 +24,9 @@ type ServicePreview = {
   title: string;
   accent: string;
   description: string;
+  metricValue: string;
+  metricLabel: string;
+  bullets: string[];
 };
 
 export default function Navbar() {
@@ -271,9 +274,9 @@ export default function Navbar() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 8, scale: 0.98 }}
                         transition={{ duration: 0.18, ease: "easeOut" }}
-                        className="absolute left-1/2 top-8 z-[75] grid w-[720px] -translate-x-1/2 grid-cols-[1.15fr_0.85fr] overflow-hidden rounded-lg border border-[#e5e2e1]/80 bg-white/95 shadow-[0_24px_70px_rgba(28,27,27,0.14)] backdrop-blur-xl dark:border-white/10 dark:bg-[#171312]/95"
+                        className="fixed left-1/2 top-[104px] z-[75] grid w-[min(1120px,calc(100vw-3rem))] -translate-x-1/2 grid-cols-[1.12fr_0.88fr] overflow-hidden rounded-[28px] border border-[#e5e2e1]/80 bg-white/96 shadow-[0_28px_88px_rgba(28,27,27,0.16)] backdrop-blur-xl dark:border-white/10 dark:bg-[#171312]/96"
                       >
-                        <div className="grid grid-cols-2 gap-2 p-3">
+                        <div className="grid grid-cols-2 gap-x-5 gap-y-2 p-8">
                           {services.map((service, index) => (
                             <Link
                               key={service.slug}
@@ -301,7 +304,7 @@ export default function Navbar() {
                             </Link>
                           ))}
                         </div>
-                        <div className="border-l border-[#e5e2e1]/70 bg-[#fcf9f8]/80 p-4 dark:border-white/10 dark:bg-[#211817]/70">
+                        <div className="border-l border-[#e5e2e1]/70 bg-[#fcf9f8]/80 p-8 dark:border-white/10 dark:bg-[#211817]/70">
                           <p className="text-[11px] font-semibold uppercase tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">
                             {t("nav.preview")}
                           </p>
@@ -314,6 +317,24 @@ export default function Navbar() {
                           <p className="mt-3 text-sm leading-6 text-[#5b4137] dark:text-[#ded7d2]">
                             {services[previewedService]?.description}
                           </p>
+                          <div className="mt-5 grid grid-cols-2 gap-3">
+                            <div className="rounded-lg border border-[#e5e2e1]/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/5">
+                              <p className="text-[11px] font-semibold uppercase tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">
+                                {services[previewedService]?.metricValue}
+                              </p>
+                              <p className="mt-1 text-xs leading-5 text-[#5b4137] dark:text-[#ded7d2]">
+                                {services[previewedService]?.metricLabel}
+                              </p>
+                            </div>
+                            <div className="rounded-lg border border-[#e5e2e1]/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/5">
+                              <p className="text-[11px] font-semibold uppercase tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">
+                                {t("serviceDetail.includes")}
+                              </p>
+                              <p className="mt-1 text-xs leading-5 text-[#5b4137] dark:text-[#ded7d2]">
+                                {services[previewedService]?.bullets?.slice(0, 2).join(" · ")}
+                              </p>
+                            </div>
+                          </div>
                           <p className="mt-4 text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">
                             {t("nav.openService")}
                           </p>
@@ -342,7 +363,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={toggleTheme}
-            className="flex h-[52px] w-[52px] items-center justify-center rounded-full border border-[#e5e2e1] bg-[#ffd9e4]/18 text-[#5b4137] transition hover:border-[#854d63]/40 hover:bg-[#ffd9e4]/44 hover:text-[#854d63] dark:border-white/15 dark:bg-[#854d63]/18 dark:text-[#f8f1ec] dark:hover:border-[#f0adc4]/50 dark:hover:bg-[#854d63]/30 dark:hover:text-[#f0adc4]"
+            className="flex h-[52px] w-[52px] items-center justify-center rounded-full border border-[#e5e2e1] text-[#5b4137] transition hover:border-[#854d63]/40 hover:bg-[#ffd9e4]/44 hover:text-[#854d63] dark:border-white/15 dark:text-[#f8f1ec] dark:hover:border-[#f0adc4]/50 dark:hover:bg-[#854d63]/30 dark:hover:text-[#f0adc4]"
             aria-label={theme === "dark" ? t("nav.lightTheme") : t("nav.darkTheme")}
             title={theme === "dark" ? t("nav.lightTheme") : t("nav.darkTheme")}
           >

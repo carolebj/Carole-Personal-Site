@@ -248,6 +248,15 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    if (typeof window === "undefined" || window.location.hash !== "#services") {
+      return;
+    }
+
+    window.history.replaceState(null, "", window.location.pathname);
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, []);
+
+  useEffect(() => {
     if (!isDev || typeof window === "undefined") {
       return;
     }
@@ -262,7 +271,6 @@ export default function Home() {
   const scrollToSection = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     event.preventDefault();
     document.querySelector(href)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    window.history.replaceState(null, "", href);
   };
 
   const visibleTestimonials = [-1, 0, 1].map((offset) => {
@@ -308,7 +316,7 @@ export default function Home() {
               <a
                 href="#services"
                 onClick={(event) => scrollToSection(event, "#services")}
-                className="inline-flex h-10 min-w-[144px] items-center justify-center rounded-full border border-[#1c1b1b]/20 bg-[#ffd9e4]/18 px-6 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#1c1b1b] transition hover:border-[#854d63] hover:bg-[#ffd9e4]/44 hover:text-[#854d63] dark:border-white/20 dark:bg-[#854d63]/18 dark:text-[#f8f1ec] dark:hover:border-[#f0adc4] dark:hover:bg-[#854d63]/30 dark:hover:text-[#f0adc4] md:h-[52px] md:min-w-[172px] md:px-8 md:tracking-[1px]"
+                className="inline-flex h-10 min-w-[144px] items-center justify-center rounded-full border border-[#1c1b1b]/20 px-6 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#1c1b1b] transition hover:border-[#854d63] hover:bg-[#ffd9e4]/44 hover:text-[#854d63] dark:border-white/20 dark:text-[#f8f1ec] dark:hover:border-[#f0adc4] dark:hover:bg-[#854d63]/30 dark:hover:text-[#f0adc4] md:h-[52px] md:min-w-[172px] md:px-8 md:tracking-[1px]"
               >
                 {t("hero.secondaryCta")}
               </a>
