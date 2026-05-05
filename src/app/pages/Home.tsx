@@ -89,25 +89,25 @@ const serviceAccents = [
     icon: "bg-[#ffd9e4]",
     corner: "bg-[#ffd9e4]/55",
     glyph: "text-[#854d63]",
-    title: "text-[#854d63]",
+    title: "text-[#854d63] dark:text-[#d8a4c7]",
   },
   {
     icon: "bg-[#ffdcbd]",
     corner: "bg-[#ffdcbd]/55",
     glyph: "text-[#8a5100]",
-    title: "text-[#8a5100]",
+    title: "text-[#8a5100] dark:text-[#ffbf8c]",
   },
   {
     icon: "bg-[#ffdbcf]",
     corner: "bg-[#ffdbcf]/55",
     glyph: "text-[#a83900]",
-    title: "text-[#a83900]",
+    title: "text-[#a83900] dark:text-[#ff9a66]",
   },
   {
     icon: "bg-[#e5e2e1]",
     corner: "bg-[#e5e2e1]/70",
     glyph: "text-[#5b4137]",
-    title: "text-[#5b4137]",
+    title: "text-[#5b4137] dark:text-[#ded7d2]",
   },
 ];
 const traitIcons = [documentEditIcon, brandFlagIcon, coffeeCupIcon];
@@ -416,7 +416,7 @@ export default function Home() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="bg-[#f6f3f2]/80 px-5 py-16 dark:bg-[#211817] sm:px-8 lg:py-24"
+        className="bg-[#f6f3f2]/80 px-5 py-16 dark:bg-[#1f1716] sm:px-8 lg:py-24"
       >
         <div className="mx-auto max-w-[1200px]">
           <div className="mx-auto mb-10 max-w-[40rem] text-center">
@@ -424,7 +424,7 @@ export default function Home() {
               <span className="italic text-[#854d63] dark:text-[#f0adc4]">{t("services.titleAccent")}</span>{" "}
               {t("services.titleRest")}
             </h2>
-            <p className="mt-4 text-base leading-7 text-[#5b4137] dark:text-[#dbc9c0] sm:text-[18px]">{t("services.subtitle")}</p>
+            <p className="mt-4 text-base leading-7 text-[#5b4137] dark:text-[#ded7d2] sm:text-[18px]">{t("services.subtitle")}</p>
           </div>
           <div className="grid gap-5 md:grid-cols-3 lg:gap-6">
             {services.map((service, index) => {
@@ -435,7 +435,7 @@ export default function Home() {
                 <Link
                   to={`/services/${service.slug}`}
                   key={`${service.title}-${service.accent}`}
-                  className={`group relative overflow-hidden rounded-lg border border-[#e4bfb2]/25 bg-white p-6 text-left no-underline shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(28,27,27,0.08)] dark:border-white/10 dark:bg-[#181312] dark:hover:shadow-[0_18px_42px_rgba(0,0,0,0.24)] sm:p-7 ${
+                  className={`group relative overflow-hidden rounded-lg border border-[#e4bfb2]/25 bg-white p-6 text-left no-underline shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(28,27,27,0.08)] dark:border-[#d8a4c7]/16 dark:bg-[#171111] dark:hover:border-[#d8a4c7]/28 dark:hover:shadow-[0_18px_42px_rgba(0,0,0,0.24)] sm:p-7 ${
                     isWide ? "md:col-span-2" : ""
                   }`}
                 >
@@ -448,7 +448,7 @@ export default function Home() {
                     <br />
                     <span className={`italic ${accent.title}`}>{service.accent}</span>
                   </h3>
-                  <p className="relative mt-4 max-w-2xl text-sm leading-6 text-[#5b4137] dark:text-[#dbc9c0]">{service.description}</p>
+                  <p className="relative mt-4 max-w-2xl text-sm leading-6 text-[#5b4137] dark:text-[#ded7d2]">{service.description}</p>
                 </Link>
               );
             })}
@@ -477,8 +477,8 @@ export default function Home() {
               key={testimonial.name}
               className={`relative flex min-h-[290px] flex-col justify-between rounded-lg border p-6 pt-11 text-center shadow-[0_1px_2px_rgba(28,27,27,0.04)] ${
                 index === 1
-                  ? "border-[#854d63]/10 bg-[#ffd9e4]/40 dark:border-[#f0adc4]/20 dark:bg-[#854d63]/18 md:-mt-6"
-                  : "border-[#e4bfb2]/25 bg-white dark:border-white/10 dark:bg-[#181312]"
+                  ? "border-[#854d63]/10 bg-[#ffd9e4]/40 dark:border-[#f0adc4]/24 dark:bg-[#3a2028]/72 md:-mt-6"
+                  : "border-[#e4bfb2]/25 bg-white dark:border-[#d8a4c7]/14 dark:bg-[#171111]"
               }`}
             >
               <img
@@ -486,7 +486,7 @@ export default function Home() {
                 alt={testimonial.name}
                 className="absolute left-1/2 top-0 size-16 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-[#fcf9f8] object-cover shadow-sm dark:border-[#13100f]"
               />
-              <p className="text-sm italic leading-6 text-[#5b4137] dark:text-[#dbc9c0]">"{testimonial.quote}"</p>
+              <p className="text-sm italic leading-6 text-[#5b4137] dark:text-[#ded7d2]">"{testimonial.quote}"</p>
               <div className="mt-7 border-t border-[#e5e2e1]/70 pt-5 dark:border-white/10">
                 <p className="font-serif text-lg text-[#1c1b1b] dark:text-[#f8f1ec]">{testimonial.name}</p>
                 <p className="mt-2 text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">

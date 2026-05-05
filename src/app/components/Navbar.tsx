@@ -83,7 +83,7 @@ export default function Navbar() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -16, scale: 0.96 }}
           transition={{ duration: 0.22, ease: "easeOut" }}
-          className="fixed left-1/2 top-3 z-[60] flex h-14 w-28 -translate-x-1/2 items-center justify-center rounded-full bg-[#1c1b1b] shadow-[0_18px_48px_rgba(28,27,27,0.18)] dark:bg-[#f8f1ec] dark:shadow-[0_18px_48px_rgba(0,0,0,0.34)]"
+          className="fixed left-1/2 top-3 z-[60] flex h-14 w-28 -translate-x-1/2 items-center justify-center rounded-full border border-white/35 bg-[#1c1b1b]/56 shadow-[0_18px_48px_rgba(28,27,27,0.18)] backdrop-blur-xl dark:border-white/18 dark:bg-[#f8f1ec]/72 dark:shadow-[0_18px_48px_rgba(0,0,0,0.34)]"
           aria-label={t("nav.openHeader")}
         >
           <img src={caroleLogoSymbol} alt="" aria-hidden="true" className="size-9 invert dark:invert-0" />
