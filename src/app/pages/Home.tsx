@@ -1,4 +1,4 @@
-import { SparklesIcon } from "@heroicons/react/24/outline";
+import { EnvelopeIcon, PaperAirplaneIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
@@ -120,7 +120,7 @@ const testimonialImages = [clientOneImage, clientTwoImage, clientThreeImage];
 
 function SectionEyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[12px] font-semibold uppercase tracking-[3px] text-[#854d63]">
+    <p className="text-[12px] font-semibold uppercase tracking-[3px] text-[#854d63] dark:text-[#f0adc4]">
       {children}
     </p>
   );
@@ -259,9 +259,9 @@ export default function Home() {
   };
 
   return (
-    <div className="overflow-hidden bg-[#fcf9f8] text-[#1c1b1b]">
-      <section className="relative flex min-h-[calc(100svh-4rem)] items-center bg-[linear-gradient(160deg,#fffafa_0%,#fcf9f8_42%,#fbf8f7_100%)] px-5 pb-12 pt-24 sm:px-8 sm:pt-28 md:min-h-[755px] lg:px-8 lg:pb-16 lg:pt-28">
-        <div className="pointer-events-none absolute right-[-14rem] top-[-13rem] size-[38rem] rounded-full bg-[#ffd9e4]/35 blur-[90px]" />
+    <div className="overflow-hidden bg-[#fcf9f8] text-[#1c1b1b] dark:bg-[#13100f] dark:text-[#f8f1ec]">
+      <section className="relative flex min-h-[calc(100svh-4rem)] items-center bg-[linear-gradient(160deg,#fffafa_0%,#fcf9f8_42%,#fbf8f7_100%)] px-5 pb-12 pt-24 dark:bg-[linear-gradient(160deg,#1b1515_0%,#13100f_54%,#21171a_100%)] sm:px-8 sm:pt-28 md:min-h-[755px] lg:px-8 lg:pb-16 lg:pt-28">
+        <div className="pointer-events-none absolute right-[-14rem] top-[-13rem] size-[38rem] rounded-full bg-[#ffd9e4]/35 blur-[90px] dark:bg-[#854d63]/18" />
         <div className="mx-auto grid w-full max-w-[1200px] items-center gap-8 lg:grid-cols-[1.02fr_0.98fr] lg:gap-10">
           <motion.div
             initial={{ opacity: 0, y: 18 }}
@@ -269,24 +269,24 @@ export default function Home() {
             transition={{ duration: 0.55, ease: "easeOut" }}
             className="max-w-[672px]"
           >
-            <h1 className="max-w-[672px] font-serif text-[40px] leading-[44px] text-[#1c1b1b] sm:text-[48px] sm:leading-[52px] lg:text-[56px] lg:leading-[60px] 2xl:text-[64px] 2xl:leading-[68px]">
+            <h1 className="max-w-[672px] font-serif text-[40px] leading-[44px] text-[#1c1b1b] dark:text-[#f8f1ec] sm:text-[48px] sm:leading-[52px] lg:text-[56px] lg:leading-[60px] 2xl:text-[64px] 2xl:leading-[68px]">
               {t("hero.titleStart")}{" "}
-              <span className="italic text-[#854d63]">{t("hero.titleAccent")}</span>{" "}
+              <span className="italic text-[#854d63] dark:text-[#f0adc4]">{t("hero.titleAccent")}</span>{" "}
               {t("hero.titleEnd")}
             </h1>
-            <p className="mt-6 max-w-[528px] text-[16px] leading-7 text-[#5b4137] md:text-[18px] md:leading-8">
+            <p className="mt-6 max-w-[528px] text-[16px] leading-7 text-[#5b4137] dark:text-[#dbc9c0] md:text-[18px] md:leading-8">
               {t("hero.description")}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a
                 href="#contact"
-                className="inline-flex h-10 min-w-[144px] items-center justify-center rounded-full bg-[#1c1b1b] px-6 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#fcf9f8] shadow-[0_14px_32px_rgba(28,27,27,0.13)] transition hover:bg-[#854d63] md:h-[52px] md:min-w-[176px] md:px-8 md:tracking-[1px]"
+                className="inline-flex h-10 min-w-[144px] items-center justify-center rounded-full bg-[#1c1b1b] px-6 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#fcf9f8] shadow-[0_14px_32px_rgba(28,27,27,0.13)] transition hover:bg-[#854d63] dark:bg-[#f8f1ec] dark:text-[#1c1415] dark:hover:bg-[#f0adc4] md:h-[52px] md:min-w-[176px] md:px-8 md:tracking-[1px]"
               >
                 {t("hero.primaryCta")}
               </a>
               <a
                 href="#services"
-                className="inline-flex h-10 min-w-[144px] items-center justify-center rounded-full border border-[#1c1b1b]/20 px-6 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#1c1b1b] transition hover:border-[#854d63] hover:text-[#854d63] md:h-[52px] md:min-w-[172px] md:px-8 md:tracking-[1px]"
+                className="inline-flex h-10 min-w-[144px] items-center justify-center rounded-full border border-[#1c1b1b]/20 px-6 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#1c1b1b] transition hover:border-[#854d63] hover:text-[#854d63] dark:border-white/20 dark:text-[#f8f1ec] dark:hover:border-[#f0adc4] dark:hover:text-[#f0adc4] md:h-[52px] md:min-w-[172px] md:px-8 md:tracking-[1px]"
               >
                 {t("hero.secondaryCta")}
               </a>
@@ -313,11 +313,11 @@ export default function Home() {
                 }}
               />
             </div>
-            <div className="absolute bottom-7 left-6 z-20 flex rotate-[-3deg] items-center gap-3 rounded-2xl border border-white/70 bg-white/90 p-4 shadow-[0_16px_38px_rgba(28,27,27,0.14)] backdrop-blur-md transition duration-500 ease-out group-hover:-translate-y-3 group-hover:rotate-[-5deg]">
+            <div className="absolute bottom-7 left-6 z-20 flex rotate-[-3deg] items-center gap-3 rounded-2xl border border-white/70 bg-white/90 p-4 shadow-[0_16px_38px_rgba(28,27,27,0.14)] backdrop-blur-md transition duration-500 ease-out group-hover:-translate-y-3 group-hover:rotate-[-5deg] dark:border-white/10 dark:bg-[#201817]/90">
               <span className="flex size-10 items-center justify-center rounded-full bg-[#ffd9e4] text-[#854d63]">
                 <SparklesIcon className="size-4" />
               </span>
-              <p className="font-serif text-[16px] leading-4 text-[#1c1b1b]">
+              <p className="font-serif text-[16px] leading-4 text-[#1c1b1b] dark:text-[#f8f1ec]">
                 {t("hero.badgeTop")}
                 <br />
                 <span className="italic text-[#854d63]">{t("hero.badgeBottom")}</span>
@@ -333,13 +333,13 @@ export default function Home() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.35 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="relative bg-[#fcf9f8] px-5 py-16 sm:px-8 lg:py-24"
+        className="relative bg-[#fcf9f8] px-5 py-16 dark:bg-[#13100f] sm:px-8 lg:py-24"
       >
         <div className="relative mx-auto max-w-[48rem] text-center">
-          <h2 className="font-serif text-[clamp(2rem,4vw,3.45rem)] leading-[1.04]">
+          <h2 className="font-serif text-[clamp(2rem,4vw,3.45rem)] leading-[1.04] dark:text-[#f8f1ec]">
             {t("manifesto.titleTop")}
             <br />
-            <span className="relative isolate inline-block font-liberation-serif italic text-[#854d63]">
+            <span className="relative isolate inline-block font-liberation-serif italic text-[#854d63] dark:text-[#f0adc4]">
               {t("manifesto.titleAccent")}
               <img
                 src={decorativeArc}
@@ -349,7 +349,7 @@ export default function Home() {
               />
             </span>
           </h2>
-          <div className="mx-auto mt-8 max-w-[42rem] space-y-5 text-base leading-7 text-[#5b4137] sm:text-[18px] sm:leading-8">
+          <div className="mx-auto mt-8 max-w-[42rem] space-y-5 text-base leading-7 text-[#5b4137] dark:text-[#dbc9c0] sm:text-[18px] sm:leading-8">
             <p>{t("manifesto.p1")}</p>
             <p>{t("manifesto.p2")}</p>
           </div>
@@ -362,7 +362,7 @@ export default function Home() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.25 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="bg-white px-5 py-16 sm:px-8 lg:py-24"
+        className="bg-white px-5 py-16 dark:bg-[#181312] sm:px-8 lg:py-24"
       >
         <div className="mx-auto grid max-w-[1120px] items-center gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:gap-16">
           <div className="relative mx-auto w-full max-w-[350px] sm:max-w-[380px]">
@@ -381,16 +381,16 @@ export default function Home() {
             </div>
           </div>
           <div>
-            <h2 className="font-serif text-[clamp(2rem,3.7vw,3.2rem)] leading-[1.06]">
+            <h2 className="font-serif text-[clamp(2rem,3.7vw,3.2rem)] leading-[1.06] dark:text-[#f8f1ec]">
               {t("about.titleTop")}
               <br />
-              <span className="italic text-[#854d63]">{t("about.titleAccent")}</span>
+              <span className="italic text-[#854d63] dark:text-[#f0adc4]">{t("about.titleAccent")}</span>
             </h2>
-            <div className="mt-5 max-w-[42rem] space-y-4 text-base leading-7 text-[#5b4137] sm:text-[16px] sm:leading-8">
+            <div className="mt-5 max-w-[42rem] space-y-4 text-base leading-7 text-[#5b4137] dark:text-[#dbc9c0] sm:text-[16px] sm:leading-8">
               <p>{t("about.p1")}</p>
               <p>{t("about.p2")}</p>
             </div>
-            <div className="mt-7 grid grid-cols-3 gap-4 border-t border-[#e5e2e1]/80 pt-7 sm:flex sm:flex-wrap sm:gap-7">
+            <div className="mt-7 grid grid-cols-3 gap-4 border-t border-[#e5e2e1]/80 pt-7 dark:border-white/10 sm:flex sm:flex-wrap sm:gap-7">
               {traits.map((trait, index) => {
                 const icon = traitIcons[index] ?? documentEditIcon;
                 const accent = traitAccents[index] ?? traitAccents[0];
@@ -399,7 +399,7 @@ export default function Home() {
                     <span className={`flex size-10 items-center justify-center rounded-full ${accent.icon}`}>
                       <InlineIcon src={icon} className={`size-5 ${accent.glyph}`} />
                     </span>
-                    <span className="text-[12px] font-semibold uppercase tracking-[1px] text-[#5b4137] sm:tracking-[2px]">
+                    <span className="text-[12px] font-semibold uppercase tracking-[1px] text-[#5b4137] dark:text-[#cdb9ae] sm:tracking-[2px]">
                       {trait.label}
                     </span>
                   </div>
@@ -416,15 +416,15 @@ export default function Home() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="bg-[#f6f3f2]/80 px-5 py-16 sm:px-8 lg:py-24"
+        className="bg-[#f6f3f2]/80 px-5 py-16 dark:bg-[#211817] sm:px-8 lg:py-24"
       >
         <div className="mx-auto max-w-[1200px]">
           <div className="mx-auto mb-10 max-w-[40rem] text-center">
             <h2 className="font-serif text-[clamp(2.1rem,3.7vw,3.1rem)] leading-none">
-              <span className="italic text-[#854d63]">{t("services.titleAccent")}</span>{" "}
+              <span className="italic text-[#854d63] dark:text-[#f0adc4]">{t("services.titleAccent")}</span>{" "}
               {t("services.titleRest")}
             </h2>
-            <p className="mt-4 text-base leading-7 text-[#5b4137] sm:text-[18px]">{t("services.subtitle")}</p>
+            <p className="mt-4 text-base leading-7 text-[#5b4137] dark:text-[#dbc9c0] sm:text-[18px]">{t("services.subtitle")}</p>
           </div>
           <div className="grid gap-5 md:grid-cols-3 lg:gap-6">
             {services.map((service, index) => {
@@ -435,7 +435,7 @@ export default function Home() {
                 <Link
                   to={`/services/${service.slug}`}
                   key={`${service.title}-${service.accent}`}
-                  className={`group relative overflow-hidden rounded-lg border border-[#e4bfb2]/25 bg-white p-6 text-left no-underline shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(28,27,27,0.08)] sm:p-7 ${
+                  className={`group relative overflow-hidden rounded-lg border border-[#e4bfb2]/25 bg-white p-6 text-left no-underline shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(28,27,27,0.08)] dark:border-white/10 dark:bg-[#181312] dark:hover:shadow-[0_18px_42px_rgba(0,0,0,0.24)] sm:p-7 ${
                     isWide ? "md:col-span-2" : ""
                   }`}
                 >
@@ -443,12 +443,12 @@ export default function Home() {
                   <span className={`relative flex size-11 items-center justify-center rounded-full ${accent.icon}`}>
                     <InlineIcon src={icon} className={`size-5 ${accent.glyph}`} />
                   </span>
-                  <h3 className="relative mt-6 font-serif text-[24px] leading-7 text-[#1c1b1b]">
+                  <h3 className="relative mt-6 font-serif text-[24px] leading-7 text-[#1c1b1b] dark:text-[#f8f1ec]">
                     {service.title}
                     <br />
                     <span className={`italic ${accent.title}`}>{service.accent}</span>
                   </h3>
-                  <p className="relative mt-4 max-w-2xl text-sm leading-6 text-[#5b4137]">{service.description}</p>
+                  <p className="relative mt-4 max-w-2xl text-sm leading-6 text-[#5b4137] dark:text-[#dbc9c0]">{service.description}</p>
                 </Link>
               );
             })}
@@ -462,39 +462,118 @@ export default function Home() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="mx-auto max-w-[1200px] px-5 py-16 sm:px-8 lg:px-8 lg:py-24"
+        className="bg-white px-5 py-16 dark:bg-[#13100f] sm:px-8 lg:px-8 lg:py-24"
       >
         <div className="mx-auto mb-10 max-w-[40rem] text-center">
           <SectionEyebrow>{t("testimonials.eyebrow")}</SectionEyebrow>
-          <h2 className="mt-3 font-serif text-[clamp(1.9rem,3.2vw,2.75rem)] leading-tight">
+          <h2 className="mt-3 font-serif text-[clamp(1.9rem,3.2vw,2.75rem)] leading-tight dark:text-[#f8f1ec]">
             {t("testimonials.titleStart")}{" "}
-            <span className="italic text-[#854d63]">{t("testimonials.titleAccent")}</span>
+            <span className="italic text-[#854d63] dark:text-[#f0adc4]">{t("testimonials.titleAccent")}</span>
           </h2>
         </div>
-        <div className="grid gap-9 pt-7 md:grid-cols-3 md:gap-5 lg:gap-6">
+        <div className="mx-auto grid max-w-[1200px] gap-9 pt-7 md:grid-cols-3 md:gap-5 lg:gap-6">
           {testimonials.map((testimonial, index) => (
             <article
               key={testimonial.name}
               className={`relative flex min-h-[290px] flex-col justify-between rounded-lg border p-6 pt-11 text-center shadow-[0_1px_2px_rgba(28,27,27,0.04)] ${
                 index === 1
-                  ? "border-[#854d63]/10 bg-[#ffd9e4]/40 md:-mt-6"
-                  : "border-[#e4bfb2]/25 bg-white"
+                  ? "border-[#854d63]/10 bg-[#ffd9e4]/40 dark:border-[#f0adc4]/20 dark:bg-[#854d63]/18 md:-mt-6"
+                  : "border-[#e4bfb2]/25 bg-white dark:border-white/10 dark:bg-[#181312]"
               }`}
             >
               <img
                 src={testimonialImages[index]}
                 alt={testimonial.name}
-                className="absolute left-1/2 top-0 size-16 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-[#fcf9f8] object-cover shadow-sm"
+                className="absolute left-1/2 top-0 size-16 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-[#fcf9f8] object-cover shadow-sm dark:border-[#13100f]"
               />
-              <p className="text-sm italic leading-6 text-[#5b4137]">"{testimonial.quote}"</p>
-              <div className="mt-7 border-t border-[#e5e2e1]/70 pt-5">
-                <p className="font-serif text-lg text-[#1c1b1b]">{testimonial.name}</p>
-                <p className="mt-2 text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63]">
+              <p className="text-sm italic leading-6 text-[#5b4137] dark:text-[#dbc9c0]">"{testimonial.quote}"</p>
+              <div className="mt-7 border-t border-[#e5e2e1]/70 pt-5 dark:border-white/10">
+                <p className="font-serif text-lg text-[#1c1b1b] dark:text-[#f8f1ec]">{testimonial.name}</p>
+                <p className="mt-2 text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">
                   {testimonial.role}
                 </p>
               </div>
             </article>
           ))}
+        </div>
+      </motion.section>
+
+      <motion.section
+        id="contact"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="bg-[#fcf9f8] px-5 py-16 dark:bg-[#1a1413] sm:px-8 lg:py-24"
+      >
+        <div className="mx-auto grid max-w-[1120px] gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+          <div>
+            <SectionEyebrow>{t("contactSection.eyebrow")}</SectionEyebrow>
+            <h2 className="mt-3 font-serif text-[clamp(2rem,3.6vw,3.25rem)] leading-[1.06] dark:text-[#f8f1ec]">
+              {t("contactSection.titleStart")}{" "}
+              <span className="italic text-[#854d63] dark:text-[#f0adc4]">{t("contactSection.titleAccent")}</span>
+            </h2>
+            <p className="mt-5 max-w-[32rem] text-base leading-7 text-[#5b4137] dark:text-[#dbc9c0]">
+              {t("contactSection.description")}
+            </p>
+            <a
+              href="mailto:hello@carole.com"
+              className="mt-7 inline-flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[2px] text-[#854d63] transition hover:text-[#6a364b] dark:text-[#f0adc4] dark:hover:text-[#f8d7e3]"
+            >
+              <EnvelopeIcon className="size-5" />
+              hello@carole.com
+            </a>
+          </div>
+
+          <form
+            action="mailto:hello@carole.com"
+            method="post"
+            encType="text/plain"
+            className="rounded-lg border border-[#e4bfb2]/30 bg-white p-5 shadow-[0_18px_48px_rgba(28,27,27,0.06)] dark:border-white/10 dark:bg-[#13100f] dark:shadow-[0_18px_48px_rgba(0,0,0,0.22)] sm:p-7"
+          >
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block text-sm font-semibold text-[#5b4137] dark:text-[#dbc9c0]">
+                {t("contactSection.name")}
+                <input
+                  name="name"
+                  required
+                  className="mt-2 h-12 w-full rounded-md border border-[#e5e2e1] bg-[#fcf9f8] px-4 text-base font-normal text-[#1c1b1b] outline-none transition focus:border-[#854d63] dark:border-white/10 dark:bg-white/5 dark:text-[#f8f1ec] dark:focus:border-[#f0adc4]"
+                />
+              </label>
+              <label className="block text-sm font-semibold text-[#5b4137] dark:text-[#dbc9c0]">
+                {t("contactSection.email")}
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  className="mt-2 h-12 w-full rounded-md border border-[#e5e2e1] bg-[#fcf9f8] px-4 text-base font-normal text-[#1c1b1b] outline-none transition focus:border-[#854d63] dark:border-white/10 dark:bg-white/5 dark:text-[#f8f1ec] dark:focus:border-[#f0adc4]"
+                />
+              </label>
+            </div>
+            <label className="mt-4 block text-sm font-semibold text-[#5b4137] dark:text-[#dbc9c0]">
+              {t("contactSection.subject")}
+              <input
+                name="subject"
+                className="mt-2 h-12 w-full rounded-md border border-[#e5e2e1] bg-[#fcf9f8] px-4 text-base font-normal text-[#1c1b1b] outline-none transition focus:border-[#854d63] dark:border-white/10 dark:bg-white/5 dark:text-[#f8f1ec] dark:focus:border-[#f0adc4]"
+              />
+            </label>
+            <label className="mt-4 block text-sm font-semibold text-[#5b4137] dark:text-[#dbc9c0]">
+              {t("contactSection.message")}
+              <textarea
+                name="message"
+                required
+                rows={5}
+                className="mt-2 w-full resize-none rounded-md border border-[#e5e2e1] bg-[#fcf9f8] px-4 py-3 text-base font-normal leading-7 text-[#1c1b1b] outline-none transition focus:border-[#854d63] dark:border-white/10 dark:bg-white/5 dark:text-[#f8f1ec] dark:focus:border-[#f0adc4]"
+              />
+            </label>
+            <button
+              type="submit"
+              className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1c1b1b] px-6 text-[12px] font-semibold uppercase tracking-[1px] text-white transition hover:bg-[#854d63] dark:bg-[#f8f1ec] dark:text-[#1c1415] dark:hover:bg-[#f0adc4] sm:w-auto"
+            >
+              <PaperAirplaneIcon className="size-4" />
+              {t("contactSection.submit")}
+            </button>
+          </form>
         </div>
       </motion.section>
       {isDev && SHOW_VISUAL_TUNING_PANEL ? (

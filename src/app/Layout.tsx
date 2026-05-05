@@ -1,17 +1,20 @@
 import { Outlet, ScrollRestoration } from "react-router";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import { ThemeProvider } from "./theme/ThemeContext";
 import "./i18n/i18n";
 
 export default function Layout() {
   return (
-    <div className="min-h-screen bg-[#fcf9f8] font-sans text-[#1c1b1b] antialiased selection:bg-[#ffd9e4] selection:text-[#4a1c30]">
-      <Navbar />
-      <main>
-        <Outlet />
-      </main>
-      <Footer />
-      <ScrollRestoration />
-    </div>
+    <ThemeProvider>
+      <div className="min-h-screen bg-[#fcf9f8] font-sans text-[#1c1b1b] antialiased selection:bg-[#ffd9e4] selection:text-[#4a1c30] dark:bg-[#13100f] dark:text-[#f8f1ec] dark:selection:bg-[#854d63] dark:selection:text-white">
+        <Navbar />
+        <main>
+          <Outlet />
+        </main>
+        <Footer />
+        <ScrollRestoration />
+      </div>
+    </ThemeProvider>
   );
 }

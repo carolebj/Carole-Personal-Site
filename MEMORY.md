@@ -4,7 +4,7 @@
 
 This file is the project-level memory for the Carole Portfolio repo. Keep it short, current, and useful for future agents working on the site.
 
-Last reviewed: 2026-05-04 WAT
+Last reviewed: 2026-05-05 WAT
 
 ## Current Branch Workflow
 
@@ -33,7 +33,8 @@ Last reviewed: 2026-05-04 WAT
   - services bento grid
   - service detail routes at `/services/:slug`
   - testimonials
-  - simplified contact footer
+  - contact/get-in-touch form section
+  - simplified footer with social/contact links and language switcher
   - blog placeholder route at `/blog`
 - Current design decisions:
   - keep the globally reduced scale validated on a 13-inch MacBook: lower nav height, smaller max content width, lower hero title/image caps, tighter buttons, and reduced section padding
@@ -43,12 +44,16 @@ Last reviewed: 2026-05-04 WAT
   - show service card color corners on hover only
   - keep motion subtle: light section entry fades, service hover lifts, and hero visual levitation only
   - hide the visual tuning panel for now; the code remains in `Home.tsx` behind `SHOW_VISUAL_TUNING_PANEL`
-  - the desktop header collapses on downward scroll into a centered black logo pill, and returns on upward scroll or when the pill is clicked
+  - the desktop header collapses on downward scroll into a centered logo pill, returns on upward scroll or when the pill is clicked, and collapses again on the next downward scroll
+  - the main navigation now uses an icon-only theme toggle; language switching belongs in the footer
+  - the testimonials section should sit on a white background in light mode
 
 ## Implementation Notes
 
 - Keep routing in `src/app/routes.tsx` -> `Layout`, with `Home`, `Blog`, and `ServiceDetail`.
 - Keep all user-facing copy in `src/app/i18n/locales/fr.tsx` and `src/app/i18n/locales/en.tsx`.
+- Language selection is detected from browser language, then persisted in `localStorage` under `portfolio-lang`.
+- Theme selection is handled by `src/app/theme/ThemeContext.tsx`, follows `prefers-color-scheme` on first visit, and persists the explicit choice in `localStorage` under `portfolio-theme`.
 - The redesigned home page lives in `src/app/pages/Home.tsx`.
 - The redesigned navigation and footer live in `src/app/components/Navbar.tsx` and `src/app/components/Footer.tsx`.
 - Figma image assets downloaded into `src/assets/` use the `carole-redesign-*` prefix.

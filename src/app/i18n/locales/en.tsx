@@ -7,6 +7,8 @@ const en = {
     blog: "Blog",
     contact: "Contact",
     language: "Choose language",
+    darkTheme: "Switch to dark theme",
+    lightTheme: "Switch to light theme",
     menu: "Open menu",
     openHeader: "Show full menu",
   },
@@ -145,6 +147,20 @@ const en = {
     instagram: "Instagram",
     linkedin: "LinkedIn",
     contact: "Contact",
+    language: "Language",
+  },
+
+  contactSection: {
+    eyebrow: "Get in touch",
+    titleStart: "Tell me what",
+    titleAccent: "you need",
+    description:
+      "Share a few details about your brand, your channels, or the support you are looking for. Carole will get back to you with a clear next step.",
+    name: "Name",
+    email: "Email",
+    subject: "Subject",
+    message: "Message",
+    submit: "Send message",
   },
 
   blog: {
