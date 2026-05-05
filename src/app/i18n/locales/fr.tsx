@@ -16,6 +16,9 @@ const fr = {
     haptics: "Retour haptique",
     preview: "Aperçu",
     openService: "Ouvrir le service",
+    caseStudies: "Études de cas",
+    caseStudyTitle: "Structurer une présence sociale claire, cohérente et mémorable",
+    caseStudyMeta: "3 min de lecture",
   },
 
   hero: {

@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 import {
+  ArrowUpRightIcon,
   Bars3Icon,
   BriefcaseIcon,
-  CheckIcon,
+  ChartBarIcon,
   ChevronRightIcon,
   DocumentTextIcon,
-  HomeIcon,
+  MegaphoneIcon,
   MoonIcon,
+  PencilSquareIcon,
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
   SunIcon,
@@ -33,7 +35,6 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isLogoMenuOpen, setIsLogoMenuOpen] = useState(false);
-  const [previewedService, setPreviewedService] = useState(0);
   const [activeSection, setActiveSection] = useState("home");
   const [isCompact, setIsCompact] = useState(false);
   const [isForcedOpen, setIsForcedOpen] = useState(false);
@@ -46,6 +47,7 @@ export default function Navbar() {
   const { enabled: hapticsEnabled, toggleEnabled: toggleHaptics } = useHaptics();
   const location = useLocation();
   const services = t("services.items", { returnObjects: true }) as ServicePreview[];
+  const serviceIcons = [DocumentTextIcon, MegaphoneIcon, PencilSquareIcon, ChartBarIcon];
 
   const navLinks = [
     { name: t("nav.home"), href: "#home" },
@@ -274,71 +276,56 @@ export default function Navbar() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 8, scale: 0.98 }}
                         transition={{ duration: 0.18, ease: "easeOut" }}
-                        className="fixed left-1/2 top-[104px] z-[75] grid w-[min(1120px,calc(100vw-3rem))] -translate-x-1/2 grid-cols-[1.12fr_0.88fr] overflow-hidden rounded-[28px] border border-[#e5e2e1]/80 bg-white/96 shadow-[0_28px_88px_rgba(28,27,27,0.16)] backdrop-blur-xl dark:border-white/10 dark:bg-[#171312]/96"
+                        className="fixed left-1/2 top-[104px] z-[75] grid w-[min(1080px,calc(100vw-3rem))] -translate-x-1/2 grid-cols-[0.96fr_1.04fr] overflow-hidden rounded-[26px] border border-[#e5e2e1]/80 bg-white/96 shadow-[0_28px_88px_rgba(28,27,27,0.14)] backdrop-blur-xl dark:border-white/10 dark:bg-[#171312]/96"
                       >
-                        <div className="grid grid-cols-2 gap-x-5 gap-y-2 p-8">
-                          {services.map((service, index) => (
-                            <Link
-                              key={service.slug}
-                              to={`/services/${service.slug}`}
-                              onMouseEnter={() => setPreviewedService(index)}
-                              onClick={() => setIsServicesOpen(false)}
-                              className={`group flex items-center gap-3 rounded-md p-3 text-left transition ${
-                                previewedService === index
-                                  ? "bg-[#ffd9e4]/45 text-[#854d63] dark:bg-[#854d63]/24 dark:text-[#f0adc4]"
-                                  : "text-[#5b4137] hover:bg-[#fcf9f8] hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
-                              }`}
-                            >
-                              <span className="flex size-9 items-center justify-center rounded-full bg-white shadow-sm dark:bg-white/10">
-                                <BriefcaseIcon className="size-4" />
-                              </span>
-                              <span className="min-w-0 flex-1">
-                                <span className="block font-serif text-[17px] leading-5 text-[#1c1b1b] dark:text-[#f8f1ec]">
-                                  {service.title} <span className="italic text-current">{service.accent}</span>
+                        <div className="space-y-3 p-8">
+                          {services.map((service, index) => {
+                            const ServiceIcon = serviceIcons[index % serviceIcons.length];
+
+                            return (
+                              <Link
+                                key={service.slug}
+                                to={`/services/${service.slug}`}
+                                onClick={() => setIsServicesOpen(false)}
+                                className="group flex items-center gap-4 rounded-lg px-2 py-2 text-left text-[#5b4137] transition hover:bg-[#fcf9f8] hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
+                              >
+                                <span className="flex size-12 shrink-0 items-center justify-center rounded-[2px] border border-[#f2b3c8] bg-[#2f2f32] text-white shadow-[inset_2px_0_0_#d79caf,inset_0_-2px_0_#f0adc4] transition group-hover:bg-[#854d63] dark:border-[#f0adc4]/40 dark:bg-[#24201f]">
+                                  <ServiceIcon className="size-5" />
                                 </span>
-                                <span className="mt-1 line-clamp-1 block text-xs leading-5 text-[#5b4137] dark:text-[#cdb9ae]">
-                                  {service.description}
+                                <span className="min-w-0 flex-1">
+                                  <span className="block text-[16px] font-semibold leading-5 text-[#1c1b1b] dark:text-[#f8f1ec]">
+                                    {service.title} <span className="italic text-[#854d63] dark:text-[#f0adc4]">{service.accent}</span>
+                                  </span>
+                                  <span className="mt-1 line-clamp-1 block text-sm leading-5 text-[#6d625d] dark:text-[#cdb9ae]">
+                                    {service.description}
+                                  </span>
                                 </span>
-                              </span>
-                              <ChevronRightIcon className="size-4 opacity-50" />
-                            </Link>
-                          ))}
+                                <ChevronRightIcon className="size-4 opacity-0 transition group-hover:opacity-60" />
+                              </Link>
+                            );
+                          })}
                         </div>
-                        <div className="border-l border-[#e5e2e1]/70 bg-[#fcf9f8]/80 p-8 dark:border-white/10 dark:bg-[#211817]/70">
-                          <p className="text-[11px] font-semibold uppercase tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">
-                            {t("nav.preview")}
-                          </p>
-                          <p className="mt-3 font-serif text-[24px] leading-7 text-[#1c1b1b] dark:text-[#f8f1ec]">
-                            {services[previewedService]?.title}{" "}
-                            <span className="italic text-[#854d63] dark:text-[#f0adc4]">
-                              {services[previewedService]?.accent}
+                        <Link
+                          to="/services/direction-social-media"
+                          onClick={() => setIsServicesOpen(false)}
+                          className="group m-8 ml-0 flex min-h-[260px] flex-col justify-between rounded-[2px] bg-[#f7f6f4] p-8 text-[#1c1b1b] transition hover:bg-[#f3ecec] dark:bg-white/6 dark:text-[#f8f1ec] dark:hover:bg-white/10"
+                        >
+                          <span className="flex items-start justify-between gap-6">
+                            <span className="text-[13px] font-semibold uppercase leading-5 tracking-[2px] text-[#6d625d] dark:text-[#cdb9ae]">
+                              {t("nav.caseStudies")}
                             </span>
-                          </p>
-                          <p className="mt-3 text-sm leading-6 text-[#5b4137] dark:text-[#ded7d2]">
-                            {services[previewedService]?.description}
-                          </p>
-                          <div className="mt-5 grid grid-cols-2 gap-3">
-                            <div className="rounded-lg border border-[#e5e2e1]/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/5">
-                              <p className="text-[11px] font-semibold uppercase tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">
-                                {services[previewedService]?.metricValue}
-                              </p>
-                              <p className="mt-1 text-xs leading-5 text-[#5b4137] dark:text-[#ded7d2]">
-                                {services[previewedService]?.metricLabel}
-                              </p>
-                            </div>
-                            <div className="rounded-lg border border-[#e5e2e1]/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/5">
-                              <p className="text-[11px] font-semibold uppercase tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">
-                                {t("serviceDetail.includes")}
-                              </p>
-                              <p className="mt-1 text-xs leading-5 text-[#5b4137] dark:text-[#ded7d2]">
-                                {services[previewedService]?.bullets?.slice(0, 2).join(" · ")}
-                              </p>
-                            </div>
-                          </div>
-                          <p className="mt-4 text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">
-                            {t("nav.openService")}
-                          </p>
-                        </div>
+                            <ArrowUpRightIcon className="size-5 text-[#6d625d] transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#854d63] dark:text-[#cdb9ae] dark:group-hover:text-[#f0adc4]" />
+                          </span>
+                          <span>
+                            <span className="block max-w-[440px] text-[25px] font-semibold leading-[1.18] tracking-[-0.01em] text-[#1c1b1b] dark:text-[#f8f1ec]">
+                              {t("nav.caseStudyTitle")}
+                            </span>
+                            <span className="mt-5 flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[2px] text-[#6d625d] dark:text-[#cdb9ae]">
+                              <BriefcaseIcon className="size-4" />
+                              {t("nav.caseStudyMeta")}
+                            </span>
+                          </span>
+                        </Link>
                       </motion.div>
                     ) : null}
                   </AnimatePresence>

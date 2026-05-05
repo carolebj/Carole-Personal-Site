@@ -16,6 +16,9 @@ const en = {
     haptics: "Haptic feedback",
     preview: "Preview",
     openService: "Open service",
+    caseStudies: "Case studies",
+    caseStudyTitle: "Structuring a clear, coherent, and memorable social presence",
+    caseStudyMeta: "3 min read",
   },
 
   hero: {
