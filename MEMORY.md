@@ -22,7 +22,7 @@ Last reviewed: 2026-05-05 WAT
 
 ## Active Redesign Direction
 
-- The portfolio is being refactored from a classic community-manager portfolio into an editorial social media direction site for Carole T.
+- The portfolio is being refactored from a classic community-manager portfolio into a digital communications officer portfolio for Carole T., with social media as one part of a broader communication role.
 - Design source: Figma file `bHEzxP453lgz2LGEqWnOZl`, node `1:3`.
 - Supporting export: `/Users/mrsteven/Downloads/stitch_carole_tonoukouen_portfolio_design.zip`.
 - The visual direction is warm editorial minimalism: cream surface, plum/rose accents, peach/terracotta support colors, large Newsreader headlines, compact Inter navigation and labels.
@@ -34,6 +34,7 @@ Last reviewed: 2026-05-05 WAT
   - service detail routes at `/services/:slug`
   - testimonials
   - contact/get-in-touch form section
+  - CV route at `/cv` with Carole's education, skills, achievements, languages, and communications experience
   - simplified footer with social/contact links and language switcher
   - blog placeholder route at `/blog`
 - Current design decisions:

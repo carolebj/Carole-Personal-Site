@@ -306,13 +306,12 @@ export default function Home() {
               {t("hero.description")}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <a
-                href="#contact"
-                onClick={(event) => scrollToSection(event, "#contact")}
+              <Link
+                to="/contact"
                 className="inline-flex h-10 min-w-[144px] items-center justify-center rounded-full bg-[#1c1b1b] px-6 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#fcf9f8] shadow-[0_14px_32px_rgba(28,27,27,0.13)] transition hover:bg-[#854d63] dark:bg-[#f8f1ec] dark:text-[#1c1415] dark:hover:bg-[#f0adc4] md:h-[52px] md:min-w-[176px] md:px-8 md:tracking-[1px]"
               >
                 {t("hero.primaryCta")}
-              </a>
+              </Link>
               <a
                 href="#services"
                 onClick={(event) => scrollToSection(event, "#services")}
@@ -604,17 +603,17 @@ export default function Home() {
             <p className="mt-5 max-w-[32rem] text-base leading-7 text-[#5b4137] dark:text-[#dbc9c0]">
               {t("contactSection.description")}
             </p>
-            <a
-              href="mailto:hello@carole.com"
+            <Link
+              to="/contact?mode=meeting"
               className="mt-7 inline-flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[2px] text-[#854d63] transition hover:text-[#6a364b] dark:text-[#f0adc4] dark:hover:text-[#f8d7e3]"
             >
               <EnvelopeIcon className="size-5" />
-              hello@carole.com
-            </a>
+              {t("contactSection.meetingLink")}
+            </Link>
           </div>
 
           <form
-            action="mailto:hello@carole.com"
+            action="mailto:caroletonoukouen@gmail.com"
             method="post"
             encType="text/plain"
             className="rounded-lg border border-[#e4bfb2]/30 bg-white p-5 shadow-[0_18px_48px_rgba(28,27,27,0.06)] dark:border-white/10 dark:bg-[#13100f] dark:shadow-[0_18px_48px_rgba(0,0,0,0.22)] sm:p-7"

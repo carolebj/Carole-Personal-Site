@@ -89,7 +89,7 @@ export default function ServiceDetail() {
         </div>
 
         <Link
-          to="/#contact"
+          to="/contact"
           className="mt-12 inline-flex h-[52px] items-center rounded-full bg-[#1c1b1b] px-8 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#fcf9f8] transition hover:bg-[#854d63]"
         >
           {t("serviceDetail.cta")}

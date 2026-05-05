@@ -357,13 +357,12 @@ export default function Navbar() {
           >
             {theme === "dark" ? <SunIcon className="size-5" /> : <MoonIcon className="size-5" />}
           </button>
-          <a
-            href="#contact"
-            onClick={(event) => scrollToSection(event, "#contact")}
+          <Link
+            to="/contact"
             className="inline-flex h-[52px] items-center rounded-full bg-[#854d63] px-6 text-[14px] font-semibold uppercase leading-4 tracking-[2px] text-white shadow-sm transition hover:bg-[#6a364b] dark:bg-[#d79caf] dark:text-[#1c1415] dark:hover:bg-[#f0adc4]"
           >
             {t("nav.contact")}
-          </a>
+          </Link>
         </div>
 
         <button
@@ -403,13 +402,13 @@ export default function Navbar() {
                 {theme === "dark" ? <SunIcon className="size-4" /> : <MoonIcon className="size-4" />}
                 {theme === "dark" ? t("nav.lightTheme") : t("nav.darkTheme")}
               </button>
-              <a
-                href="#contact"
-                onClick={(event) => scrollToSection(event, "#contact")}
+              <Link
+                to="/contact"
+                onClick={() => setIsMobileMenuOpen(false)}
                 className="mt-2 inline-flex h-10 items-center justify-center rounded-full bg-[#854d63] text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-white dark:bg-[#d79caf] dark:text-[#1c1415]"
               >
                 {t("nav.contact")}
-              </a>
+              </Link>
             </div>
           </motion.div>
         )}

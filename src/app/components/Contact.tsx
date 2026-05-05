@@ -51,10 +51,10 @@ export default function Contact() {
                     {t("contact.email")}
                   </h4>
                   <a
-                    href="mailto:hello@carole.com"
+                    href="mailto:caroletonoukouen@gmail.com"
                     className="text-stone-400 hover:text-amber-400 transition-colors"
                   >
-                    hello@carole.com
+                    caroletonoukouen@gmail.com
                   </a>
                 </div>
               </div>

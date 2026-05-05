@@ -13,9 +13,9 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   const links = [
-    { label: t("footer.instagram"), href: "https://www.instagram.com/" },
-    { label: t("footer.linkedin"), href: "https://www.linkedin.com/" },
-    { label: t("footer.contact"), href: "#contact" },
+    { label: t("footer.behance"), href: "https://www.behance.net/caroletonoukouen" },
+    { label: t("footer.linkedin"), href: "https://www.linkedin.com/in/caroletonoukouen/" },
+    { label: t("footer.contact"), href: "/contact" },
   ];
 
   return (

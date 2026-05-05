@@ -17,37 +17,37 @@ const en = {
     preview: "Preview",
     openService: "Open service",
     caseStudies: "Case studies",
-    caseStudyTitle: "Structuring a clear, coherent, and memorable social presence",
+    caseStudyTitle: "Structuring clear and memorable digital communication",
     caseStudyMeta: "3 min read",
   },
 
   hero: {
-    eyebrow: "Social Media Agency Paris",
-    titleStart: "Build a social presence",
+    eyebrow: "Digital communications officer",
+    titleStart: "Build digital communication",
     titleAccent: "clear & engaging",
     titleEnd: "for your brand.",
     description:
-      "I help you define and execute a tailored editorial strategy that grows your community with clarity and authenticity.",
+      "I help coordinate your content, campaigns, and visibility actions so your communication becomes clearer, more consistent, and easier to activate.",
     primaryCta: "Let's talk",
     secondaryCta: "My services",
-    badgeTop: "Creative",
-    badgeBottom: "Direction",
+    badgeTop: "Digital",
+    badgeBottom: "Communication",
     imageAlt: "Portrait of Carole Tonoukouen",
   },
 
   manifesto: {
     titleTop: "Posting without strategy",
     titleAccent: "is no longer enough.",
-    p1: "In a saturated digital environment, attention is the rarest resource. A successful social presence is not built on volume, but on relevance, clarity, and authenticity.",
-    p2: "It is time to move from reactive communication to intentional editorial direction.",
+    p1: "In a saturated digital environment, attention is the rarest resource. Strong communication is not built on volume, but on relevance, clarity, and consistency.",
+    p2: "It is time to move from reactive communication to intentional editorial organization.",
   },
 
   about: {
     titleTop: "Lovely to meet you,",
     titleAccent: "I'm Carole",
-    p1: "I help small businesses and organizations share their message and maximize their impact while staying profitable and authentic.",
-    p2: "I lead strategic thinking, editorial design, and content creation. Together, we shape the creative vision, the topics you care about, and the ideas you master to build an engaged community.",
-    imageAlt: "Carole working on editorial direction",
+    p1: "I help businesses, organizations, and projects clarify their message, organize their content, and strengthen their digital visibility.",
+    p2: "I support editorial coordination, writing, visual production follow-up, and communication actions. Together, we turn your ideas, key moments, and priorities into clear public-facing messages.",
+    imageAlt: "Carole working on digital communication",
     traits: [
       { label: "Writer" },
       { label: "Strategist" },
@@ -59,7 +59,7 @@ const en = {
     titleAccent: "My",
     titleRest: "Services",
     subtitle:
-      "Tailored solutions to structure and amplify your digital voice.",
+      "Tailored support to structure your content and communication actions.",
     items: [
       {
         slug: "editorial-strategy",
@@ -79,10 +79,10 @@ const en = {
       },
       {
         slug: "social-media-direction",
-        title: "Social Media",
-        accent: "Direction",
+        title: "Digital",
+        accent: "Communication",
         description:
-          "Stewardship of your online presence, engaging editorial calendars, and digital campaign management to maximize day-to-day impact.",
+          "Online presence coordination, editorial calendars, and campaign support to strengthen day-to-day visibility.",
         menuDescription: "Guide every brand conversation.",
         detailIntro:
           "Ongoing guidance to keep a creative direction, publish intentionally, and connect content to business goals.",
@@ -157,8 +157,8 @@ const en = {
   },
 
   footer: {
-    signature: "Social Media Direction.",
-    instagram: "Instagram",
+    signature: "Digital communication.",
+    behance: "Behance",
     linkedin: "LinkedIn",
     contact: "Contact",
     language: "Language",
@@ -175,18 +175,125 @@ const en = {
     subject: "Subject",
     message: "Message",
     submit: "Send message",
+    meetingLink: "Or choose to book a call",
   },
 
   blog: {
     title: "Blog",
     subtitle:
-      "This page is under construction. It will soon host notes on editorial strategy, social media, and content creation.",
+      "This page is under construction. It will soon host notes on digital communication, social platforms, and content creation.",
   },
 
   cv: {
-    eyebrow: "Background",
+    eyebrow: "Curriculum vitae",
+    role: "Communications officer",
+    summary:
+      "As a young communications professional, I have gained hands-on experience in content management, activity coordination, and support for communication strategy deployment. Organized and proactive, I am looking to grow within a structure where I can strengthen my skills while actively contributing to projects.",
+    contacts: [
+      { label: "Email", value: "caroletonoukouen@gmail.com", href: "mailto:caroletonoukouen@gmail.com" },
+      { label: "Phone", value: "+229 01 95 93 44 54", href: "tel:+2290195934454" },
+      { label: "Location", value: "Cotonou, Benin" },
+      { label: "Portfolio", value: "Behance.net", href: "https://www.behance.net/caroletonoukouen" },
+    ],
+    sidebar: [
+      {
+        title: "Education",
+        items: [
+          "Bachelor's degree in American literature and civilization · University of Parakou · 2020",
+          "Growth marketing · Digital Valley · 2026",
+          "Social media strategy · Impacter · 2022",
+          "SEO web writing · LFI · 2022",
+          "Graphic design · EtriLabs · 2019",
+        ],
+      },
+      {
+        title: "Skills",
+        items: [
+          "Content writing, storytelling, and institutional communication",
+          "Graphic design with Canva and Adobe Suite",
+          "Community management",
+          "Event coordination",
+          "FR/EN translation and adaptation",
+          "Meta Business Suite, Trello, and WordPress",
+          "Performance analysis and reporting",
+        ],
+      },
+      {
+        title: "Selected achievements",
+        items: [
+          "Contributed to the visual positioning strategy of Réseau Revia Afrique",
+          "Volunteer graphic designer for Women in Tech Benin",
+        ],
+      },
+      {
+        title: "Languages",
+        items: ["French: fluent, native language", "English: B2, upper-intermediate"],
+      },
+    ],
+    experienceTitle: "Experience",
+    experiences: [
+      {
+        title: "Digital communications officer",
+        organization: "Investir au Bénin",
+        period: "May 2024 - August 2025",
+        bullets: [
+          "Contributed to the development and deployment of the communication strategy",
+          "Wrote articles about investment opportunities in Benin",
+          "Managed and animated digital platforms",
+          "Coordinated events and visibility activities",
+        ],
+      },
+      {
+        title: "Digital communications officer",
+        organization: "Wegal Space / Wegal Connect",
+        period: "August 2024 - August 2025",
+        bullets: [
+          "Planned and created content for social media and the blog",
+          "Contributed to editorial calendar structuring",
+          "Coordinated program-related communication actions",
+          "Supervised visual asset production",
+          "Contributed to internal and external communication",
+        ],
+      },
+      {
+        title: "SEO web writer",
+        organization: "Light Innovation",
+        period: "August 2023 - April 2024",
+        bullets: [
+          "Wrote web content, articles, and SEO-optimized copy",
+          "Updated and managed website content",
+          "Managed and monitored web hosting subscriptions and services",
+        ],
+      },
+      {
+        title: "Communications assistant",
+        organization: "ONG Je Veux Briller",
+        period: "June 2021 - Feb. 2023",
+        bullets: [
+          "Supported the creation of educational content for social platforms",
+          "Coordinated logistics for the WomenIT program",
+          "Followed up with participants and supported field activities",
+          "Drafted activity reports",
+        ],
+      },
+    ],
+  },
+
+  contactPage: {
+    eyebrow: "Contact",
+    titleStart: "Choose how",
+    titleAccent: "to connect",
     description:
-      "This page will host Carole's background, experience, and references in a readable and downloadable format.",
+      "You can send me a detailed request or schedule a call directly depending on how urgent and specific your need is.",
+    formOption: "Send a request",
+    formOptionDescription: "I will respond with a clear next step within up to 48 hours.",
+    meetingOption: "Schedule a call",
+    meetingOptionDescription: "Book a slot to discuss your need, priorities, and expected support.",
+    formTitle: "Describe your need",
+    meetingTitle: "Book a time",
+    meetingDescription:
+      "A Calendly or Cal.com embed can be connected here. For now, use the direct link to suggest a meeting.",
+    meetingCta: "Suggest a meeting",
   },
 
   serviceDetail: {
