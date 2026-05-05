@@ -13,9 +13,9 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   const links = [
-    { label: t("footer.behance"), href: "https://www.behance.net/caroletonoukouen" },
-    { label: t("footer.linkedin"), href: "https://www.linkedin.com/in/caroletonoukouen/" },
-    { label: t("footer.contact"), href: "/contact" },
+    { label: t("footer.behance"), href: "https://www.behance.net/caroletonoukouen", external: true },
+    { label: t("footer.linkedin"), href: "https://www.linkedin.com/in/caroletonoukouen/", external: true },
+    { label: t("footer.contact"), href: "/contact", external: false },
   ];
 
   return (
@@ -54,6 +54,8 @@ export default function Footer() {
             <a
               key={link.label}
               href={link.href}
+              target={link.external ? "_blank" : undefined}
+              rel={link.external ? "noreferrer" : undefined}
               className="text-[12px] font-semibold uppercase tracking-[2px] text-[#5b4137] transition hover:text-[#854d63] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
             >
               {link.label}
