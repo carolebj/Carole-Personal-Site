@@ -291,9 +291,9 @@ const en = {
     meetingOptionDescription: "Book a slot to discuss your need, priorities, and expected support.",
     formTitle: "Describe your need",
     meetingTitle: "Book a time",
-    meetingDescription:
-      "A Calendly or Cal.com embed can be connected here. For now, use the direct link to suggest a meeting.",
-    meetingCta: "Suggest a meeting",
+    meetingDescription: "Choose the time that works for you so we can talk through your request directly.",
+    meetingCta: "Book a call",
+    calendarTitle: "Appointment calendar with Carole",
   },
 
   serviceDetail: {

@@ -1,12 +1,50 @@
+import Cal, { getCalApi } from "@calcom/embed-react";
 import {
   CalendarDaysIcon,
-  ClockIcon,
   PaperAirplaneIcon,
 } from "@heroicons/react/24/outline";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 
 type ContactMode = "form" | "meeting";
+
+function CalMeetingEmbed() {
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    (async () => {
+      const cal = await getCalApi({ namespace: "meet-carole" });
+      cal("ui", {
+        cssVarsPerTheme: {
+          light: { "cal-brand": "#64173b" },
+          dark: { "cal-brand": "#ffd7f1" },
+        },
+        hideEventTypeDetails: true,
+        layout: "week_view",
+      });
+    })();
+  }, []);
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-[#e5e2e1]/80 bg-white dark:border-white/10 dark:bg-[#fbf7f5]">
+      <Cal
+        namespace="meet-carole"
+        calLink="mrstev3n/meet-carole"
+        config={{
+          layout: "week_view",
+          useSlotsViewOnSmallScreen: "true",
+        }}
+        style={{
+          width: "100%",
+          height: "680px",
+          overflow: "scroll",
+        }}
+        aria-label={t("contactPage.calendarTitle")}
+      />
+    </div>
+  );
+}
 
 export default function Contact() {
   const { t } = useTranslation();
@@ -104,21 +142,7 @@ export default function Contact() {
                 </button>
               </form>
             ) : (
-              <div className="min-h-[420px] rounded-2xl border border-dashed border-[#854d63]/35 bg-[#ffd9e4]/18 p-8 dark:border-[#f0adc4]/35 dark:bg-[#854d63]/16">
-                <div className="flex size-14 items-center justify-center rounded-full bg-[#1c1b1b] text-white dark:bg-[#f8f1ec] dark:text-[#1c1415]">
-                  <ClockIcon className="size-6" />
-                </div>
-                <h2 className="mt-8 font-serif text-[36px] leading-none">{t("contactPage.meetingTitle")}</h2>
-                <p className="mt-5 max-w-[34rem] text-base leading-7 text-[#5b4137] dark:text-[#dbc9c0]">
-                  {t("contactPage.meetingDescription")}
-                </p>
-                <a
-                  href="mailto:caroletonoukouen@gmail.com?subject=Demande%20de%20rendez-vous"
-                  className="mt-8 inline-flex h-12 items-center rounded-full bg-[#854d63] px-7 text-[12px] font-semibold uppercase tracking-[1px] text-white transition hover:bg-[#6a364b] dark:bg-[#d79caf] dark:text-[#1c1415] dark:hover:bg-[#f0adc4]"
-                >
-                  {t("contactPage.meetingCta")}
-                </a>
-              </div>
+              <CalMeetingEmbed />
             )}
           </div>
         </div>

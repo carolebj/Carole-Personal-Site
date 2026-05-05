@@ -291,9 +291,9 @@ const fr = {
     meetingOptionDescription: "Réservez un créneau pour discuter de votre besoin, de vos priorités et du type d'accompagnement attendu.",
     formTitle: "Décrivez votre besoin",
     meetingTitle: "Réserver un créneau",
-    meetingDescription:
-      "L'intégration Calendly ou Cal.com pourra être connectée ici. En attendant, utilisez le lien direct pour proposer un rendez-vous.",
-    meetingCta: "Proposer un rendez-vous",
+    meetingDescription: "Choisissez directement le créneau qui vous convient pour que nous puissions échanger.",
+    meetingCta: "Réserver un rendez-vous",
+    calendarTitle: "Calendrier de rendez-vous avec Carole",
   },
 
   serviceDetail: {
