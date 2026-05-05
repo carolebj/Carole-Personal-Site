@@ -67,6 +67,7 @@ const fr = {
         accent: "Éditoriale",
         description:
           "Définition de votre ligne éditoriale, de vos piliers de contenu et de votre positionnement unique sur les réseaux sociaux.",
+        menuDescription: "Clarifier votre ligne éditoriale.",
         detailIntro:
           "Une fondation claire pour transformer vos idées en ligne éditoriale durable, lisible et cohérente sur chaque canal.",
         metricValue: "3 à 5",
@@ -82,6 +83,7 @@ const fr = {
         accent: "Social Media",
         description:
           "Pilotage de votre présence en ligne, création de calendriers éditoriaux engageants et gestion de vos campagnes digitales pour maximiser votre impact au quotidien.",
+        menuDescription: "Piloter vos prises de parole.",
         detailIntro:
           "Un accompagnement continu pour garder un cap créatif, publier avec intention et relier les contenus aux objectifs business.",
         metricValue: "+4",
@@ -97,6 +99,7 @@ const fr = {
         accent: "Contenu",
         description:
           "Rédaction de posts à forte valeur ajoutée, conception de visuels percutants et production de formats adaptés aux exigences de chaque plateforme.",
+        menuDescription: "Créer des contenus réguliers.",
         detailIntro:
           "Des contenus pensés pour porter la voix de la marque, faciliter la régularité et créer une relation plus naturelle avec l'audience.",
         metricValue: "12+",
@@ -112,6 +115,7 @@ const fr = {
         accent: "Consulting",
         description:
           "Analyse approfondie de l'existant et recommandations stratégiques pour optimiser vos performances.",
+        menuDescription: "Identifier les priorités d'action.",
         detailIntro:
           "Une lecture franche de votre présence actuelle pour identifier ce qui freine la compréhension, l'engagement ou la conversion.",
         metricValue: "48h",

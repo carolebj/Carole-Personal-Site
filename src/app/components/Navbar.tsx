@@ -26,6 +26,7 @@ type ServicePreview = {
   title: string;
   accent: string;
   description: string;
+  menuDescription: string;
   metricValue: string;
   metricLabel: string;
   bullets: string[];
@@ -276,9 +277,9 @@ export default function Navbar() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 8, scale: 0.98 }}
                         transition={{ duration: 0.18, ease: "easeOut" }}
-                        className="fixed left-1/2 top-[104px] z-[75] grid w-[min(1080px,calc(100vw-3rem))] -translate-x-1/2 grid-cols-[0.96fr_1.04fr] overflow-hidden rounded-[26px] border border-[#e5e2e1]/80 bg-white/96 shadow-[0_28px_88px_rgba(28,27,27,0.14)] backdrop-blur-xl dark:border-white/10 dark:bg-[#171312]/96"
+                        className="fixed left-1/2 top-[98px] z-[75] grid w-[min(1040px,calc(100vw-3rem))] -translate-x-1/2 grid-cols-[0.96fr_1.04fr] overflow-hidden rounded-[24px] border border-[#e5e2e1]/80 bg-white/96 shadow-[0_24px_72px_rgba(28,27,27,0.14)] backdrop-blur-xl dark:border-white/10 dark:bg-[#171312]/96"
                       >
-                        <div className="space-y-3 p-8">
+                        <div className="space-y-1.5 p-6">
                           {services.map((service, index) => {
                             const ServiceIcon = serviceIcons[index % serviceIcons.length];
 
@@ -287,17 +288,17 @@ export default function Navbar() {
                                 key={service.slug}
                                 to={`/services/${service.slug}`}
                                 onClick={() => setIsServicesOpen(false)}
-                                className="group flex items-center gap-4 rounded-lg px-2 py-2 text-left text-[#5b4137] transition hover:bg-[#fcf9f8] hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
+                                className="group flex items-center gap-3 rounded-lg px-2 py-1.5 text-left text-[#5b4137] transition hover:bg-[#fcf9f8] hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
                               >
-                                <span className="flex size-12 shrink-0 items-center justify-center rounded-[2px] border border-[#f2b3c8] bg-[#2f2f32] text-white shadow-[inset_2px_0_0_#d79caf,inset_0_-2px_0_#f0adc4] transition group-hover:bg-[#854d63] dark:border-[#f0adc4]/40 dark:bg-[#24201f]">
-                                  <ServiceIcon className="size-5" />
+                                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-[#f2b3c8] bg-[#2f2f32] text-white shadow-[inset_2px_0_0_#d79caf,inset_0_-2px_0_#f0adc4] transition group-hover:bg-[#854d63] dark:border-[#f0adc4]/40 dark:bg-[#24201f]">
+                                  <ServiceIcon className="size-[18px]" />
                                 </span>
                                 <span className="min-w-0 flex-1">
-                                  <span className="block text-[16px] font-semibold leading-5 text-[#1c1b1b] dark:text-[#f8f1ec]">
+                                  <span className="block text-[15px] font-semibold leading-5 text-[#1c1b1b] dark:text-[#f8f1ec]">
                                     {service.title} <span className="italic text-[#854d63] dark:text-[#f0adc4]">{service.accent}</span>
                                   </span>
-                                  <span className="mt-1 line-clamp-1 block text-sm leading-5 text-[#6d625d] dark:text-[#cdb9ae]">
-                                    {service.description}
+                                  <span className="mt-0.5 line-clamp-2 block text-[13px] leading-[18px] text-[#6d625d] dark:text-[#cdb9ae]">
+                                    {service.menuDescription}
                                   </span>
                                 </span>
                                 <ChevronRightIcon className="size-4 opacity-0 transition group-hover:opacity-60" />
@@ -308,19 +309,19 @@ export default function Navbar() {
                         <Link
                           to="/services/direction-social-media"
                           onClick={() => setIsServicesOpen(false)}
-                          className="group m-8 ml-0 flex min-h-[260px] flex-col justify-between rounded-[2px] bg-[#f7f6f4] p-8 text-[#1c1b1b] transition hover:bg-[#f3ecec] dark:bg-white/6 dark:text-[#f8f1ec] dark:hover:bg-white/10"
+                          className="group m-6 ml-0 flex min-h-[218px] flex-col justify-between rounded-2xl bg-[#f7f6f4] p-6 text-[#1c1b1b] transition hover:bg-[#f3ecec] dark:bg-white/6 dark:text-[#f8f1ec] dark:hover:bg-white/10"
                         >
                           <span className="flex items-start justify-between gap-6">
-                            <span className="text-[13px] font-semibold uppercase leading-5 tracking-[2px] text-[#6d625d] dark:text-[#cdb9ae]">
+                            <span className="text-[12px] font-semibold uppercase leading-5 tracking-[2px] text-[#6d625d] dark:text-[#cdb9ae]">
                               {t("nav.caseStudies")}
                             </span>
                             <ArrowUpRightIcon className="size-5 text-[#6d625d] transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#854d63] dark:text-[#cdb9ae] dark:group-hover:text-[#f0adc4]" />
                           </span>
                           <span>
-                            <span className="block max-w-[440px] text-[25px] font-semibold leading-[1.18] tracking-[-0.01em] text-[#1c1b1b] dark:text-[#f8f1ec]">
+                            <span className="block max-w-[420px] text-[22px] font-semibold leading-[1.18] tracking-[-0.01em] text-[#1c1b1b] dark:text-[#f8f1ec]">
                               {t("nav.caseStudyTitle")}
                             </span>
-                            <span className="mt-5 flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[2px] text-[#6d625d] dark:text-[#cdb9ae]">
+                            <span className="mt-4 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[2px] text-[#6d625d] dark:text-[#cdb9ae]">
                               <BriefcaseIcon className="size-4" />
                               {t("nav.caseStudyMeta")}
                             </span>

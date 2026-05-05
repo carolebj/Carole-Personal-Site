@@ -67,6 +67,7 @@ const en = {
         accent: "Strategy",
         description:
           "Definition of your editorial line, content pillars, and distinctive positioning across social platforms.",
+        menuDescription: "Clarify your editorial line.",
         detailIntro:
           "A clear foundation that turns scattered ideas into a durable editorial line people can understand and follow.",
         metricValue: "3 to 5",
@@ -82,6 +83,7 @@ const en = {
         accent: "Direction",
         description:
           "Stewardship of your online presence, engaging editorial calendars, and digital campaign management to maximize day-to-day impact.",
+        menuDescription: "Guide every brand conversation.",
         detailIntro:
           "Ongoing guidance to keep a creative direction, publish intentionally, and connect content to business goals.",
         metricValue: "+4",
@@ -97,6 +99,7 @@ const en = {
         accent: "Creation",
         description:
           "High-value post writing, compelling visual concepts, and formats adapted to the standards of each platform.",
+        menuDescription: "Create consistent content.",
         detailIntro:
           "Content designed to carry the brand voice, support consistency, and build a more natural relationship with the audience.",
         metricValue: "12+",
@@ -112,6 +115,7 @@ const en = {
         accent: "Consulting",
         description:
           "In-depth review of your current presence with strategic recommendations to improve performance.",
+        menuDescription: "Spot the next priority moves.",
         detailIntro:
           "A direct read of your current presence to identify what slows understanding, engagement, or conversion.",
         metricValue: "48h",
