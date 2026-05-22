@@ -1,9 +1,7 @@
 import { createBrowserRouter } from "react-router";
 import Layout from "./Layout";
-import Home from "./pages/Home";
 import ErrorPage from "./components/ErrorPage";
 import RouteErrorBoundary from "./components/RouteErrorBoundary";
-import NotFoundPage from "./components/NotFoundPage";
 
 export const router = createBrowserRouter([
   {
@@ -13,12 +11,32 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        Component: Home,
+        lazy: async () => ({ Component: (await import("./pages/Home")).default }),
+        ErrorBoundary: RouteErrorBoundary,
+      },
+      {
+        path: "blog",
+        lazy: async () => ({ Component: (await import("./pages/Blog")).default }),
+        ErrorBoundary: RouteErrorBoundary,
+      },
+      {
+        path: "cv",
+        lazy: async () => ({ Component: (await import("./pages/Cv")).default }),
+        ErrorBoundary: RouteErrorBoundary,
+      },
+      {
+        path: "contact",
+        lazy: async () => ({ Component: (await import("./pages/Contact")).default }),
+        ErrorBoundary: RouteErrorBoundary,
+      },
+      {
+        path: "services/:slug",
+        lazy: async () => ({ Component: (await import("./pages/ServiceDetail")).default }),
         ErrorBoundary: RouteErrorBoundary,
       },
       {
         path: "*",
-        Component: NotFoundPage,
+        lazy: async () => ({ Component: (await import("./components/NotFoundPage")).default }),
       },
     ],
   },

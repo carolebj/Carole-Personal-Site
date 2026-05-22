@@ -4,7 +4,7 @@
 
 This file is the project-level memory for the Carole Portfolio repo. Keep it short, current, and useful for future agents working on the site.
 
-Last reviewed: 2026-05-04 16:19 WAT
+Last reviewed: 2026-05-05 WAT
 
 ## Current Branch Workflow
 
@@ -15,11 +15,15 @@ Last reviewed: 2026-05-04 16:19 WAT
 - Vercel build settings: framework `Vite`, build command `npm run build`, output directory `dist`.
 - `vercel.json` rewrites all routes to `/index.html` so React Router deep links can load correctly on Vercel.
 - Vercel project `carole-portfolio` exists under `stevens-projects-db687a83`; current public alias is `https://carole-portfolio.vercel.app`.
-- GitHub integration still needs to be connected in Vercel UI because CLI connection failed for `mrstev3n/Carole-Portfolio-version-1.0`.
+- Vercel GitHub integration is connected to `mrstev3n/Carole-Portfolio-version-1.0`.
+- Git author email is now `stevenkejjad@gmail.com`; this fixed Vercel's commit-author validation.
+- Current production alias points to the `main` deployment; current `dev` branch preview is `https://carole-portfolio-git-dev-stevens-projects-db687a83.vercel.app`.
+- Vercel Authentication is disabled for the project; both production and `dev` preview URLs are publicly reachable without login.
+- The pre-redesign `main` state is archived with Git tag `archive-main-design-before-redesign-2026-05-22` at commit `49d37b2391f08608aae2d0f98ea3a57f33ed579c`.
 
 ## Active Redesign Direction
 
-- The portfolio is being refactored from a classic community-manager portfolio into an editorial social media direction site for Carole T.
+- The portfolio is being refactored from a classic community-manager portfolio into a digital communications officer portfolio for Carole T., with social media as one part of a broader communication role.
 - Design source: Figma file `bHEzxP453lgz2LGEqWnOZl`, node `1:3`.
 - Supporting export: `/Users/mrsteven/Downloads/stitch_carole_tonoukouen_portfolio_design.zip`.
 - The visual direction is warm editorial minimalism: cream surface, plum/rose accents, peach/terracotta support colors, large Newsreader headlines, compact Inter navigation and labels.
@@ -28,19 +32,37 @@ Last reviewed: 2026-05-04 16:19 WAT
   - manifesto
   - about/presentation
   - services bento grid
+  - service detail routes at `/services/:slug`
   - testimonials
-  - newsletter/contact footer
+  - contact/get-in-touch form section
+  - CV route at `/cv` with Carole's education, skills, achievements, languages, and communications experience
+  - simplified footer with social/contact links and language switcher
+  - blog placeholder route at `/blog`
 - Current design decisions:
   - keep the globally reduced scale validated on a 13-inch MacBook: lower nav height, smaller max content width, lower hero title/image caps, tighter buttons, and reduced section padding
   - use the Figma-derived hero/about portraits and exported decorative arc
   - use local Liberation Serif Italic for manifesto accent text
   - keep hero and manifesto backgrounds visually continuous, with the about section on white
   - show service card color corners on hover only
+  - keep motion subtle: light section entry fades, service hover lifts, and hero visual levitation only
+  - hide the visual tuning panel for now; the code remains in `Home.tsx` behind `SHOW_VISUAL_TUNING_PANEL`
+  - the desktop header collapses on downward scroll into a centered logo pill, returns on upward scroll or when the pill is clicked, and collapses again on the next downward scroll
+  - the main navigation now uses an icon-only theme toggle; language switching belongs in the footer
+  - the testimonials section should sit on a white background in light mode
+  - desktop navigation order is Accueil, À propos, Services, Avis, Blog; Manifesto remains a section but is not a menu item
+  - Services is both a scroll link and a hover mega menu with links to individual service pages
+  - testimonials use a three-card carousel with the centered card as the active state
+  - subtle audio haptics are enabled by default for interactive elements and can be toggled from the logo right-click menu
 
 ## Implementation Notes
 
-- Keep routing as-is: `src/app/routes.tsx` -> `Layout` -> `Home`.
+- Keep routing in `src/app/routes.tsx` -> `Layout`, with `Home`, `Blog`, and `ServiceDetail`.
 - Keep all user-facing copy in `src/app/i18n/locales/fr.tsx` and `src/app/i18n/locales/en.tsx`.
+- Language selection is detected from browser language, then persisted in `localStorage` under `portfolio-lang`.
+- Theme selection is handled by `src/app/theme/ThemeContext.tsx`, follows `prefers-color-scheme` on first visit, and persists the explicit choice in `localStorage` under `portfolio-theme`.
+- Haptic feedback is handled by `src/app/interactions/HapticContext.tsx` and persists its on/off preference under `portfolio-haptics`.
+- Public pages are route-lazy-loaded in `src/app/routes.tsx` to keep the initial bundle light; keep heavy third-party widgets out of the root route chunk.
+- The Cal.com booking widget is isolated in `src/app/components/CalMeetingEmbed.tsx` and lazy-loaded only when the `/contact` meeting mode is shown.
 - The redesigned home page lives in `src/app/pages/Home.tsx`.
 - The redesigned navigation and footer live in `src/app/components/Navbar.tsx` and `src/app/components/Footer.tsx`.
 - Figma image assets downloaded into `src/assets/` use the `carole-redesign-*` prefix.

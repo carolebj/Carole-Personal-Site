@@ -1,134 +1,66 @@
-import { Linkedin, Twitter } from "lucide-react";
-import { GlobeAltIcon, CheckIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
-import { motion, AnimatePresence } from "motion/react";
-import { useState, useRef, useEffect } from "react";
+import { CheckIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
-import { useLang, langLabels, type Lang } from "../i18n/LanguageContext";
+import { langLabels, useLang, type Lang } from "../i18n/LanguageContext";
 
 const languages: { code: Lang; flag: string }[] = [
-  { code: "fr", flag: "🇫🇷" },
-  { code: "en", flag: "🇬🇧" },
+  { code: "fr", flag: "FR" },
+  { code: "en", flag: "EN" },
 ];
 
 export default function Footer() {
   const { t } = useTranslation();
   const { lang, setLang } = useLang();
-  const [isLangOpen, setIsLangOpen] = useState(false);
-  const langRef = useRef<HTMLDivElement>(null);
+  const year = new Date().getFullYear();
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (langRef.current && !langRef.current.contains(e.target as Node)) {
-        setIsLangOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleSelectLang = (code: Lang) => {
-    setLang(code);
-    setIsLangOpen(false);
-  };
+  const links = [
+    { label: t("footer.behance"), href: "https://www.behance.net/caroletonoukouen", external: true },
+    { label: t("footer.linkedin"), href: "https://www.linkedin.com/in/caroletonoukouen/", external: true },
+    { label: t("footer.contact"), href: "/contact", external: false },
+  ];
 
   return (
-    <footer className="bg-emerald-950 text-stone-300 py-12 border-t border-emerald-900">
-      <div className="container mx-auto px-6">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <div className="mb-6 md:mb-0 text-center md:text-left">
-            <h2 className="text-2xl font-serif font-bold text-amber-400 mb-2">
-              Carole Tonoukouen
-            </h2>
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={lang + "-footer-role"}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="text-sm opacity-80"
-              >
-                {t("footer.role")}
-              </motion.p>
-            </AnimatePresence>
-          </div>
-
-          <div className="flex items-center space-x-6">
-            {/* Language Switcher */}
-            <div ref={langRef} className="relative">
-              <button
-                onClick={() => setIsLangOpen((prev) => !prev)}
-                className="flex items-center gap-2 text-sm font-medium text-stone-400 hover:text-amber-400 transition-colors border border-stone-700 hover:border-amber-400/50 rounded-full px-3.5 py-1.5"
-                aria-label="Select language"
-              >
-                <GlobeAltIcon className="w-3.5 h-3.5" />
-                <span>{lang.toUpperCase()}</span>
-              </button>
-
-              <AnimatePresence>
-                {isLangOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-44 bg-emerald-900 border border-emerald-700 rounded-xl shadow-2xl overflow-hidden z-[60]"
-                  >
-                    {languages.map((l) => (
-                      <button
-                        key={l.code}
-                        onClick={() => handleSelectLang(l.code)}
-                        className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors ${
-                          lang === l.code
-                            ? "bg-amber-500/15 text-amber-400"
-                            : "text-stone-200 hover:bg-emerald-800 hover:text-stone-100"
-                        }`}
-                      >
-                        <span className="text-base">{l.flag}</span>
-                        <span className="flex-1 text-left">
-                          {langLabels[l.code]}
-                        </span>
-                        {lang === l.code && (
-                          <CheckIcon className="w-3.5 h-3.5 text-amber-400" />
-                        )}
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            <div className="w-px h-6 bg-emerald-800"></div>
-
-            <a
-              href="#"
-              className="hover:text-amber-400 transition-colors"
-              aria-label="LinkedIn"
-            >
-              <Linkedin size={24} />
-            </a>
-            <a
-              href="#"
-              className="hover:text-amber-400 transition-colors"
-              aria-label="Twitter"
-            >
-              <Twitter size={24} />
-            </a>
-            <a
-              href="mailto:contact@carole.com"
-              className="hover:text-amber-400 transition-colors"
-              aria-label="Email"
-            >
-              <EnvelopeIcon className="w-6 h-6" />
-            </a>
-          </div>
+    <footer className="relative overflow-hidden border-t border-[#e5e2e1]/70 bg-white dark:border-white/10 dark:bg-[#13100f]">
+      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(to_top,rgba(255,217,228,0.28),rgba(255,217,228,0))] dark:bg-[linear-gradient(to_top,rgba(133,77,99,0.16),rgba(133,77,99,0))]" />
+      <div className="relative mx-auto grid max-w-[1200px] gap-8 px-5 py-10 sm:px-8 lg:grid-cols-[1fr_auto_1fr] lg:items-center lg:px-8 lg:py-12">
+        <div className="text-center lg:text-left">
+          <p className="font-serif text-xl italic text-[#1c1b1b] dark:text-[#f8f1ec]">Carole T.</p>
+          <p className="mt-2 text-[12px] font-semibold uppercase tracking-[2px] text-[#5b4137] dark:text-[#cdb9ae]">
+            © {year} {t("footer.signature")}
+          </p>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-emerald-900/50 text-center text-xs opacity-60">
-          <p>
-            &copy; {new Date().getFullYear()} Carole Tonoukouen.{" "}
-            {t("footer.rights")}
-          </p>
+        <div className="flex justify-center gap-2">
+          {languages.map((language) => (
+            <button
+              key={language.code}
+              type="button"
+              onClick={() => setLang(language.code)}
+              className={`inline-flex h-10 items-center gap-2 rounded-full border px-4 text-[12px] font-semibold uppercase tracking-[1px] transition ${
+                lang === language.code
+                  ? "border-[#854d63] bg-[#ffd9e4]/70 text-[#854d63] dark:border-[#f0adc4]/60 dark:bg-[#854d63]/30 dark:text-[#f8d7e3]"
+                  : "border-[#e5e2e1] text-[#5b4137] hover:border-[#854d63]/40 hover:text-[#854d63] dark:border-white/15 dark:text-[#cdb9ae] dark:hover:border-[#f0adc4]/50 dark:hover:text-[#f0adc4]"
+              }`}
+              aria-label={`${t("footer.language")} ${langLabels[language.code]}`}
+            >
+              {language.flag}
+              <span className="hidden sm:inline">{langLabels[language.code]}</span>
+              {lang === language.code ? <CheckIcon className="size-4" /> : null}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex flex-nowrap justify-center gap-6 whitespace-nowrap lg:justify-end">
+          {links.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              target={link.external ? "_blank" : undefined}
+              rel={link.external ? "noreferrer" : undefined}
+              className="text-[12px] font-semibold uppercase tracking-[2px] text-[#5b4137] transition hover:text-[#854d63] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
+            >
+              {link.label}
+            </a>
+          ))}
         </div>
       </div>
     </footer>
