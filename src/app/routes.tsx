@@ -15,6 +15,11 @@ export const router = createBrowserRouter([
         ErrorBoundary: RouteErrorBoundary,
       },
       {
+        path: "about",
+        lazy: async () => ({ Component: (await import("./pages/About")).default }),
+        ErrorBoundary: RouteErrorBoundary,
+      },
+      {
         path: "blog",
         lazy: async () => ({ Component: (await import("./pages/Blog")).default }),
         ErrorBoundary: RouteErrorBoundary,
@@ -25,6 +30,16 @@ export const router = createBrowserRouter([
         ErrorBoundary: RouteErrorBoundary,
       },
       {
+        path: "carnet/outils-inspirations",
+        lazy: async () => ({ Component: (await import("./pages/ToolsInspirations")).default }),
+        ErrorBoundary: RouteErrorBoundary,
+      },
+      {
+        path: "carnet/lectures-references",
+        lazy: async () => ({ Component: (await import("./pages/ReadingsReferences")).default }),
+        ErrorBoundary: RouteErrorBoundary,
+      },
+      {
         path: "cv",
         lazy: async () => ({ Component: (await import("./pages/Cv")).default }),
         ErrorBoundary: RouteErrorBoundary,
@@ -32,6 +47,11 @@ export const router = createBrowserRouter([
       {
         path: "contact",
         lazy: async () => ({ Component: (await import("./pages/Contact")).default }),
+        ErrorBoundary: RouteErrorBoundary,
+      },
+      {
+        path: "services",
+        lazy: async () => ({ Component: (await import("./pages/Services")).default }),
         ErrorBoundary: RouteErrorBoundary,
       },
       {

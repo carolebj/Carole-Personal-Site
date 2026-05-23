@@ -313,7 +313,7 @@ function CircularTestimonials({
         ))}
       </div>
 
-      <div className="flex h-[26rem] flex-col justify-between overflow-hidden rounded-lg border border-[#e4bfb2]/28 bg-[#fcf9f8] p-6 shadow-[0_18px_48px_rgba(91,65,55,0.06)] dark:border-white/10 dark:bg-[#171111] sm:h-[24rem] sm:p-8 lg:h-[25rem]">
+      <div className="grid h-[27rem] grid-rows-[1fr_auto] overflow-hidden rounded-lg border border-[#e4bfb2]/28 bg-[#fcf9f8] p-6 pb-7 shadow-[0_18px_48px_rgba(91,65,55,0.06)] dark:border-white/10 dark:bg-[#171111] sm:h-[25rem] sm:p-8 sm:pb-7 lg:h-[26rem]">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeIndex}
@@ -328,7 +328,7 @@ function CircularTestimonials({
             <p className="mt-2 text-[12px] font-semibold uppercase tracking-[2.4px] text-[#854d63] dark:text-[#f0adc4]">
               {activeTestimonial.role}
             </p>
-            <motion.p className="mt-7 min-h-[11.5rem] text-[17px] italic leading-8 text-[#5b4137] dark:text-[#ded7d2] sm:text-[18px] sm:leading-8 lg:min-h-[12rem]">
+            <motion.p className="mt-6 min-h-[9.75rem] text-[17px] italic leading-8 text-[#5b4137] dark:text-[#ded7d2] sm:text-[18px] sm:leading-8 lg:min-h-[10.5rem]">
               {activeTestimonial.quote.split(" ").map((word, index) => (
                 <motion.span
                   key={`${word}-${index}`}
@@ -344,7 +344,7 @@ function CircularTestimonials({
           </motion.div>
         </AnimatePresence>
 
-        <div className="mt-9 flex items-center gap-4">
+        <div className="mt-6 flex items-center gap-4 pb-1">
           <button
             type="button"
             onClick={handlePrevious}
@@ -548,11 +548,6 @@ export default function Home() {
     setVisualTuning((current) => ({ ...current, [key]: value }));
   };
 
-  const scrollToSection = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    event.preventDefault();
-    document.querySelector(href)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
   const clearContactError = (name: string) => {
     setInvalidFields((current) => current.filter((field) => field !== name));
     if (contactFormError) {
@@ -618,13 +613,12 @@ export default function Home() {
               >
                 {t("hero.primaryCta")}
               </Link>
-              <a
-                href="#services"
-                onClick={(event) => scrollToSection(event, "#services")}
+              <Link
+                to="/services"
                 className="inline-flex h-10 min-w-[144px] items-center justify-center rounded-full border border-[#1c1b1b]/20 px-6 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#1c1b1b] transition hover:border-[#854d63] hover:bg-[#ffd9e4]/44 hover:text-[#854d63] dark:border-white/20 dark:text-[#f8f1ec] dark:hover:border-[#f0adc4] dark:hover:bg-[#854d63]/30 dark:hover:text-[#f0adc4] md:h-[52px] md:min-w-[172px] md:px-8 md:tracking-[1px]"
               >
                 {t("hero.secondaryCta")}
-              </a>
+              </Link>
             </div>
           </motion.div>
 

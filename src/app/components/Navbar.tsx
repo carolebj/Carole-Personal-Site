@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router";
 import {
   ArrowUpRightIcon,
   Bars3Icon,
+  BookOpenIcon,
   BriefcaseIcon,
   ChartBarIcon,
   ChevronDownIcon,
@@ -11,6 +12,7 @@ import {
   MegaphoneIcon,
   MoonIcon,
   PencilSquareIcon,
+  SparklesIcon,
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
   SunIcon,
@@ -68,6 +70,7 @@ function useDropdownTransition(isOpen: boolean) {
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const [isCarnetOpen, setIsCarnetOpen] = useState(false);
   const [isLogoMenuOpen, setIsLogoMenuOpen] = useState(false);
   const [hoveredNavId, setHoveredNavId] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState("home");
@@ -76,8 +79,9 @@ export default function Navbar() {
   const logoRef = useRef<HTMLAnchorElement>(null);
   const logoMenuRef = useRef<HTMLDivElement>(null);
   const servicesMenuRef = useRef<HTMLLIElement>(null);
+  const carnetMenuRef = useRef<HTMLLIElement>(null);
   const lastScrollYRef = useRef(0);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { theme, toggleTheme } = useTheme();
   const { enabled: hapticsEnabled, toggleEnabled: toggleHaptics } = useHaptics();
   const location = useLocation();
@@ -87,10 +91,10 @@ export default function Navbar() {
 
   const navLinks = [
     { id: "home", name: t("nav.home"), href: "#home" },
-    { id: "about", name: t("nav.about"), href: "#about" },
-    { id: "services", name: t("nav.services"), href: "#services", hasMenu: true },
-    { id: "testimonials", name: t("nav.testimonials"), href: "#testimonials" },
-    { id: "blog", name: t("nav.blog"), href: "/blog" },
+    { id: "about", name: t("nav.about"), href: "/about", isPageLink: true },
+    { id: "services", name: t("nav.services"), href: "/services", hasMenu: true, isPageLink: true },
+    { id: "carnet", name: t("nav.carnet"), href: "#carnet", hasCarnetMenu: true },
+    { id: "blog", name: t("nav.blog"), href: "/blog", isPageLink: true },
   ];
 
   useEffect(() => {
@@ -122,6 +126,10 @@ export default function Navbar() {
         setIsServicesOpen(false);
       }
 
+      if (carnetMenuRef.current && !carnetMenuRef.current.contains(target)) {
+        setIsCarnetOpen(false);
+      }
+
       if (
         logoRef.current &&
         logoMenuRef.current &&
@@ -138,7 +146,17 @@ export default function Navbar() {
 
   useEffect(() => {
     if (location.pathname !== "/") {
-      setActiveSection(location.pathname.startsWith("/blog") ? "blog" : "");
+      setActiveSection(
+        location.pathname.startsWith("/blog")
+          ? "blog"
+          : location.pathname === "/about"
+            ? "about"
+            : location.pathname.startsWith("/services")
+              ? "services"
+              : location.pathname.startsWith("/carnet")
+                ? "carnet"
+                : ""
+      );
       return;
     }
 
@@ -285,8 +303,10 @@ export default function Navbar() {
           {navLinks.map((link) => {
             const sectionId = link.href.replace("#", "");
             const isActive =
-              link.href.startsWith("#") ? activeSection === sectionId : activeSection === "blog";
-            const isHighlighted = hoveredNavId === link.id || isActive || (link.hasMenu && isServicesOpen);
+              link.href.startsWith("#")
+                ? activeSection === sectionId
+                : activeSection === link.id || location.pathname === link.href;
+            const isHighlighted = hoveredNavId === link.id || isActive || (link.hasMenu && isServicesOpen) || (link.hasCarnetMenu && isCarnetOpen);
             const linkClass = `portfolio-nav-link group relative z-10 inline-flex h-10 cursor-pointer items-center justify-center gap-1.5 rounded-full px-4 text-[13px] font-semibold capitalize leading-4 tracking-[1.8px] transition-colors duration-300 ${
               isHighlighted
                 ? "text-[#854d63] dark:text-[#f0adc4]"
@@ -316,9 +336,12 @@ export default function Navbar() {
                     setIsServicesOpen(false);
                   }}
                 >
-                  <a
-                    href={link.href}
-                    onClick={(event) => scrollToSection(event, link.href)}
+                  <Link
+                    to={link.href}
+                    onClick={() => {
+                      setIsServicesOpen(false);
+                      setHoveredNavId(null);
+                    }}
                     className={linkClass}
                   >
                     {hoverBackground}
@@ -328,7 +351,7 @@ export default function Navbar() {
                         isServicesOpen ? "rotate-180" : ""
                       }`}
                     />
-                  </a>
+                  </Link>
                   <AnimatePresence>
                     {isServicesOpen ? (
                       <div className="absolute left-1/2 top-full z-[75] w-max -translate-x-1/2 pt-4">
@@ -358,7 +381,7 @@ export default function Navbar() {
                                         className="group flex items-start gap-3 rounded-xl p-2 text-left text-[#5b4137] transition-colors duration-300 hover:bg-[#fcf9f8] hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
                               >
                                         <span className="flex size-9 shrink-0 items-center justify-center rounded-md border border-[#854d63]/20 bg-[#2f2f32] text-white transition-colors duration-300 group-hover:border-[#854d63] group-hover:bg-[#854d63] dark:border-[#f0adc4]/30 dark:bg-[#24201f] dark:group-hover:bg-[#f0adc4] dark:group-hover:text-[#171312]">
-                                  <ServiceIcon className="size-[18px]" />
+                                   <ServiceIcon className="size-[18px]" />
                                 </span>
                                         <span className="w-max min-w-0 leading-5">
                                           <span className="block text-[14px] font-semibold text-[#1c1b1b] dark:text-[#f8f1ec]">
@@ -375,7 +398,7 @@ export default function Navbar() {
                             </ul>
                         </div>
                         <Link
-                          to="/services/direction-social-media"
+                          to={i18n.language === "fr" ? "/services/communication-digitale" : "/services/digital-communication"}
                           onClick={() => setIsServicesOpen(false)}
                             className="group flex min-h-[230px] w-[280px] shrink-0 flex-col justify-between rounded-xl border border-[#e5e2e1]/70 bg-[#f7f6f4] p-5 text-[#1c1b1b] transition-colors duration-300 hover:bg-[#f3ecec] dark:border-white/10 dark:bg-[#211a19] dark:text-[#f8f1ec] dark:hover:bg-[#29201f]"
                         >
@@ -400,6 +423,112 @@ export default function Navbar() {
                       </div>
                     ) : null}
                   </AnimatePresence>
+                </li>
+              );
+            }
+
+            if (link.hasCarnetMenu) {
+              return (
+                <li
+                  key={link.href}
+                  ref={carnetMenuRef}
+                  className="relative"
+                  onMouseEnter={() => {
+                    setHoveredNavId(link.id);
+                    setIsCarnetOpen(true);
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredNavId(null);
+                    setIsCarnetOpen(false);
+                  }}
+                >
+                  <a
+                    href={link.href}
+                    onClick={(event) => event.preventDefault()}
+                    className={linkClass}
+                  >
+                    {hoverBackground}
+                    <span className="relative z-10">{link.name}</span>
+                    <ChevronDownIcon
+                      className={`relative z-10 size-4 transition-transform duration-300 ${
+                        isCarnetOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </a>
+                  <AnimatePresence>
+                    {isCarnetOpen ? (
+                      <div className="absolute left-1/2 top-full z-[75] w-max -translate-x-1/2 pt-4">
+                        <motion.div
+                          layoutId="portfolio-carnet-menu"
+                          initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                          transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                          className="w-80 overflow-hidden rounded-2xl border border-[#e5e2e1]/80 bg-white p-3 shadow-[0_24px_72px_rgba(28,27,27,0.14)] dark:border-white/10 dark:bg-[#171312]"
+                        >
+                          <ul className="flex flex-col gap-1">
+                            <li>
+                              <Link
+                                to="/carnet/outils-inspirations"
+                                onClick={() => setIsCarnetOpen(false)}
+                                className="group flex items-start gap-3 rounded-xl p-3 text-left text-[#5b4137] transition-colors duration-300 hover:bg-[#fcf9f8] hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
+                              >
+                                <span className="flex size-9 shrink-0 items-center justify-center rounded-md border border-[#854d63]/20 bg-[#2f2f32] text-white transition-colors duration-300 group-hover:border-[#854d63] group-hover:bg-[#854d63] dark:border-[#f0adc4]/30 dark:bg-[#24201f] dark:group-hover:bg-[#f0adc4] dark:group-hover:text-[#171312]">
+                                  <SparklesIcon className="size-[18px]" />
+                                </span>
+                                <span className="leading-5">
+                                  <span className="block text-[14px] font-semibold text-[#1c1b1b] dark:text-[#f8f1ec]">
+                                    {t("nav.toolsAndInspirations")}
+                                  </span>
+                                  <span className="mt-1 block text-[11px] text-[#6d625d] transition-colors duration-300 group-hover:text-[#1c1b1b] dark:text-[#cdb9ae] dark:group-hover:text-[#f8f1ec]">
+                                    {i18n.language === "fr" ? "Outils & veille créative" : "Tools & creative research"}
+                                  </span>
+                                </span>
+                              </Link>
+                            </li>
+                            <li>
+                              <Link
+                                to="/carnet/lectures-references"
+                                onClick={() => setIsCarnetOpen(false)}
+                                className="group flex items-start gap-3 rounded-xl p-3 text-left text-[#5b4137] transition-colors duration-300 hover:bg-[#fcf9f8] hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
+                              >
+                                <span className="flex size-9 shrink-0 items-center justify-center rounded-md border border-[#854d63]/20 bg-[#2f2f32] text-white transition-colors duration-300 group-hover:border-[#854d63] group-hover:bg-[#854d63] dark:border-[#f0adc4]/30 dark:bg-[#24201f] dark:group-hover:bg-[#f0adc4] dark:group-hover:text-[#171312]">
+                                  <BookOpenIcon className="size-[18px]" />
+                                </span>
+                                <span className="leading-5">
+                                  <span className="block text-[14px] font-semibold text-[#1c1b1b] dark:text-[#f8f1ec]">
+                                    {t("nav.readingsAndReferences")}
+                                  </span>
+                                  <span className="mt-1 block text-[11px] text-[#6d625d] transition-colors duration-300 group-hover:text-[#1c1b1b] dark:text-[#cdb9ae] dark:group-hover:text-[#f8f1ec]">
+                                    {i18n.language === "fr" ? "Livres, articles & newsletters" : "Books, articles & newsletters"}
+                                  </span>
+                                </span>
+                              </Link>
+                            </li>
+                          </ul>
+                        </motion.div>
+                      </div>
+                    ) : null}
+                  </AnimatePresence>
+                </li>
+              );
+            }
+
+            if (link.isPageLink) {
+              return (
+                <li
+                  key={link.href}
+                  className="relative"
+                  onMouseEnter={() => setHoveredNavId(link.id)}
+                  onMouseLeave={() => setHoveredNavId(null)}
+                >
+                  <Link
+                    to={link.href}
+                    className={linkClass}
+                  >
+                    {hoverBackground}
+                    <span className="relative z-10">{link.name}</span>
+                  </Link>
                 </li>
               );
             }
@@ -465,19 +594,86 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.18 }}
-            className="border-t border-[#e5e2e1]/70 bg-white px-6 py-6 shadow-xl dark:border-white/10 dark:bg-[#171312] md:hidden"
+            className="max-h-[80vh] overflow-y-auto border-t border-[#e5e2e1]/70 bg-white px-6 py-6 shadow-xl dark:border-white/10 dark:bg-[#171312] md:hidden"
           >
-            <div className="flex flex-col gap-4">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={(event) => scrollToSection(event, link.href)}
-                  className="rounded-lg bg-[#fcf9f8] px-4 py-4 text-[16px] font-medium capitalize leading-5 tracking-[1px] text-[#5b4137] dark:bg-white/5 dark:text-[#dbc9c0]"
-                >
-                  {link.name}
-                </a>
-              ))}
+            <div className="flex flex-col gap-3">
+              {navLinks.map((link) => {
+                if (link.hasMenu) {
+                  return (
+                    <div key={link.id} className="flex flex-col gap-1.5 rounded-lg bg-[#fcf9f8] p-3 dark:bg-white/5">
+                      <Link
+                        to="/services"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="px-2 py-2 text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63] transition hover:text-[#6a364b] dark:text-[#f0adc4] dark:hover:text-[#f8f1ec]"
+                      >
+                        {link.name}
+                      </Link>
+                      <div className="grid gap-1 pl-2">
+                        {services.map((service) => (
+                          <Link
+                            key={service.slug}
+                            to={`/services/${service.slug}`}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="rounded-md py-2 text-[14px] font-medium text-[#5b4137] dark:text-[#dbc9c0]"
+                          >
+                            {service.title} <span className="italic text-[#854d63] dark:text-[#f0adc4]">{service.accent}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+
+                if (link.hasCarnetMenu) {
+                  return (
+                    <div key={link.id} className="flex flex-col gap-1.5 rounded-lg bg-[#fcf9f8] p-3 dark:bg-white/5">
+                      <span className="px-2 text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">
+                        {link.name}
+                      </span>
+                      <div className="grid gap-1 pl-2">
+                        <Link
+                          to="/carnet/outils-inspirations"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="rounded-md py-2 text-[14px] font-medium text-[#5b4137] dark:text-[#dbc9c0]"
+                        >
+                          {t("nav.toolsAndInspirations")}
+                        </Link>
+                        <Link
+                          to="/carnet/lectures-references"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="rounded-md py-2 text-[14px] font-medium text-[#5b4137] dark:text-[#dbc9c0]"
+                        >
+                          {t("nav.readingsAndReferences")}
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                }
+
+                if (link.isPageLink) {
+                  return (
+                    <Link
+                      key={link.id}
+                      to={link.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="rounded-lg bg-[#fcf9f8] px-4 py-4 text-[16px] font-medium capitalize leading-5 tracking-[1px] text-[#5b4137] dark:bg-white/5 dark:text-[#dbc9c0]"
+                    >
+                      {link.name}
+                    </Link>
+                  );
+                }
+
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    onClick={(event) => scrollToSection(event, link.href)}
+                    className="rounded-lg bg-[#fcf9f8] px-4 py-4 text-[16px] font-medium capitalize leading-5 tracking-[1px] text-[#5b4137] dark:bg-white/5 dark:text-[#dbc9c0]"
+                  >
+                    {link.name}
+                  </a>
+                );
+              })}
               <button
                 type="button"
                 onClick={toggleTheme}

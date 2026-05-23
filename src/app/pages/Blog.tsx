@@ -101,7 +101,7 @@ export default function Blog() {
       </motion.section>
 
       <section className="mx-auto mt-16 max-w-[1160px]">
-        <div className="mb-7 grid gap-6 lg:grid-cols-[0.55fr_1fr] lg:items-end">
+        <div className="mb-8 space-y-6">
           <div>
             <p className="text-[12px] font-semibold uppercase tracking-[3px] text-[#854d63] dark:text-[#f0adc4]">
               {t("blog.latestEyebrow")}
@@ -112,7 +112,7 @@ export default function Blog() {
           </div>
           <motion.div
             layout
-            className="rounded-lg border border-[#e4bfb2]/28 bg-white/78 p-3 shadow-[0_18px_44px_rgba(91,65,55,0.06)] dark:border-white/10 dark:bg-[#171111]"
+            className="max-w-[820px] rounded-lg border border-[#e4bfb2]/28 bg-white/78 p-3 shadow-[0_18px_44px_rgba(91,65,55,0.06)] dark:border-white/10 dark:bg-[#171111]"
           >
             <label className="relative block">
               <span className="sr-only">{t("blog.searchLabel")}</span>
