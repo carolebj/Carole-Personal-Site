@@ -179,9 +179,159 @@ const en = {
   },
 
   blog: {
+    eyebrow: "Editorial journal",
     title: "Blog",
     subtitle:
-      "This page is under construction. It will soon host notes on digital communication, social platforms, and content creation.",
+      "A personal space where I share reflections, methods, and field notes on digital communication, social platforms, and content creation.",
+    cmsNote: "Local source before CMS",
+    categoryLabel: "Digital communication",
+    featured: "Featured article",
+    latestEyebrow: "Latest notes",
+    latestTitle: "Read now",
+    readArticle: "Read article",
+    backToBlog: "Back to blog",
+    takeawaysTitle: "Key takeaways",
+    allCategories: "All",
+    searchLabel: "Search articles",
+    searchPlaceholder: "Search by title, topic, or category",
+    emptyState: "No article matches this search.",
+    posts: [
+      {
+        slug: "clarifier-sa-ligne-editoriale",
+        featured: true,
+        title: "Clarify your editorial line before publishing",
+        excerpt:
+          "A simple method to turn scattered ideas into regular, coherent, and useful brand messages.",
+        category: "Editorial strategy",
+        date: "May 23, 2026",
+        readingTime: "5 min",
+        takeaways: [
+          "An editorial line helps you decide faster, not limit creativity.",
+          "Strong content starts with a clear promise and a precise audience.",
+          "Three to five pillars are enough to organize a month of publishing.",
+        ],
+        sections: [
+          {
+            title: "Start with the message, not the format",
+            body: [
+              "Before choosing between a LinkedIn post, a carousel, or a newsletter, the brand needs to know what it wants people to understand. The format comes after, like a vehicle. The message remains the direction.",
+              "A useful starting question is simple: after reading this content, what should the person remember? That answer gives the copy, visual direction, and call to action a clear line.",
+            ],
+          },
+          {
+            title: "Name the audience precisely",
+            body: [
+              "Publishing for everyone often creates content that feels too general. A precise audience helps you use the right examples, the right words, and the right problems.",
+              "This is not only a demographic profile. You need to understand the person's level of awareness, objections, priorities, and the moment when they discover your brand.",
+            ],
+          },
+          {
+            title: "Build three to five pillars",
+            body: [
+              "Editorial pillars are the main subject families a brand can cover without scattering its message. They help vary angles while keeping a recognizable coherence.",
+              "One pillar can be educational, another can show behind-the-scenes work, and a third can focus on proof or experience. The goal is a structure that is clear enough to plan with and flexible enough to stay alive.",
+            ],
+          },
+          {
+            title: "Create a rhythm you can sustain",
+            body: [
+              "Consistency does not only depend on motivation. It mostly depends on a system: a list of ideas, prepared angles, production time, and a way to reuse strong content.",
+              "A useful editorial line should answer a practical question: how can we publish without starting from zero every time? That is when it becomes a real working tool.",
+            ],
+          },
+        ],
+      },
+      {
+        slug: "creer-un-calendrier-editorial-soutenable",
+        title: "Create an editorial calendar you can sustain",
+        excerpt:
+          "A simple structure to plan content without turning every publication into a last-minute emergency.",
+        category: "Organization",
+        date: "May 18, 2026",
+        readingTime: "4 min",
+        takeaways: [
+          "A strong calendar reduces repeated decisions.",
+          "Consistency comes from a realistic rhythm, not an overly ambitious plan.",
+          "Brand moments should guide the most important content.",
+        ],
+        sections: [
+          {
+            title: "Start with important brand moments",
+            body: [
+              "An editorial calendar becomes useful when it starts with real moments: launches, events, public statements, offers, campaigns, or internal news.",
+              "These markers create hierarchy. Some content prepares the audience, some explains, and some reopens the conversation.",
+            ],
+          },
+          {
+            title: "Plan less, but better",
+            body: [
+              "A sustainable rhythm is stronger than an impressive cadence that cannot last. Three thoughtful publications can create more clarity than ten improvised posts.",
+              "The goal is to make production smoother, with prepared angles and formats that are easy to adapt.",
+            ],
+          },
+        ],
+      },
+      {
+        slug: "adapter-un-message-a-chaque-reseau-social",
+        title: "Adapt one message to each social platform",
+        excerpt:
+          "How to keep the same strategic idea while changing the angle, rhythm, and format for each platform.",
+        category: "Social media",
+        date: "May 11, 2026",
+        readingTime: "6 min",
+        takeaways: [
+          "Adapting does not mean rewriting the whole strategy.",
+          "Each platform has a different reading and interaction logic.",
+          "The same message can become a post, carousel, or short note.",
+        ],
+        sections: [
+          {
+            title: "Separate the idea from the format",
+            body: [
+              "The idea is the main message. The format is the way it becomes visible on a specific platform.",
+              "When this distinction is clear, it becomes easier to repurpose a message without repeating it mechanically.",
+            ],
+          },
+          {
+            title: "Respect the reading context",
+            body: [
+              "LinkedIn often rewards precision and point of view. Instagram asks for a more immediate visual hook. A newsletter can take more time to develop an idea.",
+              "Adapting content means choosing the right rhythm for the right context.",
+            ],
+          },
+        ],
+      },
+      {
+        slug: "auditer-sa-presence-digitale",
+        title: "Audit your digital presence without scattering your focus",
+        excerpt:
+          "The essential points to review when deciding what needs to be clarified, strengthened, or removed from your communication.",
+        category: "Audit",
+        date: "May 3, 2026",
+        readingTime: "5 min",
+        takeaways: [
+          "A useful audit starts with communication goals.",
+          "Coherence is checked across the profile, content, and calls to action.",
+          "Recommendations need priorities to become actionable.",
+        ],
+        sections: [
+          {
+            title: "Look at first impressions",
+            body: [
+              "Can a visitor quickly understand who you help, what you offer, and why they should trust you? This first reading often reveals the most important gaps.",
+              "The audit should therefore start with visible points: bio, homepage, recent posts, visuals, and links.",
+            ],
+          },
+          {
+            title: "Turn analysis into priorities",
+            body: [
+              "Listing every problem can become discouraging. It is better to identify three priorities: what blocks understanding, what reduces trust, and what slows action.",
+              "With this hierarchy, the audit becomes a work plan rather than a simple observation.",
+            ],
+          },
+        ],
+      },
+    ],
   },
 
   cv: {
