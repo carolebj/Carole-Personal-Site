@@ -15,6 +15,28 @@ type ServiceDetail = {
   bullets: string[];
 };
 
+function AnimatedDigits({ value }: { value: string }) {
+  const chars = Array.from(value);
+
+  return (
+    <span className="t-digit-group is-animating" aria-label={value}>
+      {chars.map((char, index) => {
+        const staggerIndex = index >= chars.length - 2 ? index - chars.length + 3 : undefined;
+        return (
+          <span
+            key={`${char}-${index}`}
+            aria-hidden="true"
+            className="t-digit"
+            data-stagger={staggerIndex}
+          >
+            {char}
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
 export default function ServiceDetail() {
   const { slug } = useParams();
   const { t } = useTranslation();
@@ -22,7 +44,7 @@ export default function ServiceDetail() {
   const service = services.find((item) => item.slug === slug) ?? services[0];
 
   return (
-    <main className="bg-[#fcf9f8] px-5 pb-20 pt-32 sm:px-8 md:pt-40 lg:px-8">
+    <main className="bg-surface-page px-5 pb-20 pt-32 text-text-primary sm:px-8 md:pt-40 lg:px-8">
       <motion.section
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -31,29 +53,29 @@ export default function ServiceDetail() {
       >
         <Link
           to="/#services"
-          className="text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63] transition hover:text-[#1c1b1b]"
+          className="text-[12px] font-semibold uppercase tracking-[2px] text-text-accent transition hover:text-text-primary"
         >
           {t("serviceDetail.back")}
         </Link>
 
         <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_0.72fr] lg:gap-14">
           <div>
-            <p className="text-[12px] font-semibold uppercase tracking-[3px] text-[#854d63]">
+            <p className="text-[12px] font-semibold uppercase tracking-[3px] text-text-accent">
               {t("serviceDetail.eyebrow")}
             </p>
-            <h1 className="mt-5 max-w-[720px] font-serif text-[48px] leading-[52px] text-[#1c1b1b] md:text-[64px] md:leading-[68px]">
+            <h1 className="mt-5 max-w-[720px] font-serif text-[48px] leading-[52px] text-text-primary md:text-[64px] md:leading-[68px]">
               {service.title}
               <br />
-              <span className="italic text-[#854d63]">{service.accent}</span>
+              <span className="italic text-text-accent">{service.accent}</span>
             </h1>
-            <p className="mt-6 max-w-[640px] text-[18px] leading-8 text-[#5b4137]">
+            <p className="mt-6 max-w-[640px] text-[18px] leading-8 text-text-secondary">
               {service.detailIntro}
             </p>
             <div className="mt-10 grid gap-3 sm:grid-cols-3">
               {service.bullets.map((bullet) => (
                 <span
                   key={bullet}
-                  className="rounded-full border border-[#e4bfb2]/55 bg-white px-5 py-3 text-center text-[12px] font-semibold uppercase tracking-[1px] text-[#5b4137]"
+                  className="rounded-full border border-border-accent bg-surface-panel px-5 py-3 text-center text-[12px] font-semibold uppercase tracking-[1px] text-text-secondary"
                 >
                   {bullet}
                 </span>
@@ -62,26 +84,26 @@ export default function ServiceDetail() {
           </div>
 
           <aside className="space-y-5">
-            <div className="rounded-lg border border-[#e4bfb2]/35 bg-white p-7 shadow-[0_18px_42px_rgba(28,27,27,0.05)]">
-              <p className="text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63]">
+            <div className="rounded-lg border border-border-accent-muted bg-surface-panel p-7 shadow-[var(--shadow-panel)]">
+              <p className="text-[12px] font-semibold uppercase tracking-[2px] text-text-accent">
                 {t("serviceDetail.metric")}
               </p>
-              <p className="mt-5 font-serif text-[56px] leading-none text-[#1c1b1b]">
-                {service.metricValue}
+              <p className="mt-5 font-serif text-[56px] leading-none text-text-primary">
+                <AnimatedDigits value={service.metricValue} />
               </p>
-              <p className="mt-4 text-[16px] leading-7 text-[#5b4137]">
+              <p className="mt-4 text-[16px] leading-7 text-text-secondary">
                 {service.metricLabel}
               </p>
             </div>
 
-            <div className="rounded-lg border border-[#e4bfb2]/35 bg-[#ffd9e4]/35 p-7">
-              <p className="text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63]">
+            <div className="rounded-lg border border-border-accent-muted bg-surface-accent-muted p-7">
+              <p className="text-[12px] font-semibold uppercase tracking-[2px] text-text-accent">
                 {t("serviceDetail.project")}
               </p>
-              <h2 className="mt-4 font-serif text-[28px] leading-8 text-[#1c1b1b]">
+              <h2 className="mt-4 font-serif text-[28px] leading-8 text-text-primary">
                 {service.projectTitle}
               </h2>
-              <p className="mt-4 text-[16px] leading-7 text-[#5b4137]">
+              <p className="mt-4 text-[16px] leading-7 text-text-secondary">
                 {service.projectDescription}
               </p>
             </div>
@@ -90,7 +112,7 @@ export default function ServiceDetail() {
 
         <Link
           to="/contact"
-          className="mt-12 inline-flex h-[52px] items-center rounded-full bg-[#1c1b1b] px-8 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#fcf9f8] transition hover:bg-[#854d63]"
+          className="mt-12 inline-flex h-[52px] items-center rounded-full bg-action-strong px-8 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-text-on-strong transition hover:bg-action-strong-hover"
         >
           {t("serviceDetail.cta")}
         </Link>

@@ -44,7 +44,14 @@ export default function Footer() {
             >
               {language.flag}
               <span className="hidden sm:inline">{langLabels[language.code]}</span>
-              {lang === language.code ? <CheckIcon className="size-4" /> : null}
+              <span
+                className="t-icon-swap size-4"
+                data-state={lang === language.code ? "b" : "a"}
+                aria-hidden="true"
+              >
+                <span className="t-icon size-4" data-icon="a" />
+                <CheckIcon className="t-icon size-4" data-icon="b" />
+              </span>
             </button>
           ))}
         </div>

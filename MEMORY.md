@@ -67,7 +67,8 @@ Last reviewed: 2026-05-05 WAT
 - Figma image assets downloaded into `src/assets/` use the `carole-redesign-*` prefix.
 - SVG pictograms live in `src/assets/icons/` with descriptive kebab-case names.
 - Liberation Serif local font files live in `src/assets/fonts/` and are declared in `src/styles/fonts.css`.
-- The organic image shapes are defined as utilities in `src/styles/theme.css`.
+- Design tokens are split from global design styles: `src/styles/tokens.css` holds primitive tokens, semantic tokens, dark-mode overrides, and Tailwind `@theme` mappings; `src/styles/global.css` holds base styles and utilities that consume those semantics.
+- The organic image shapes are defined as utilities in `src/styles/global.css`.
 
 ## Update Rule
 

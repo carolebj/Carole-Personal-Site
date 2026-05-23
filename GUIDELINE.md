@@ -97,9 +97,11 @@ Any new route should include `ErrorBoundary: RouteErrorBoundary`.
 
 - `src/styles/index.css` is the global CSS entrypoint
 - `src/styles/tailwind.css` imports Tailwind v4 and declares source scanning
-- `src/styles/theme.css` defines theme variables, color tokens, radius tokens, typography defaults, and dark-mode token overrides
+- `src/styles/tokens.css` defines primitive tokens, semantic tokens, dark-mode token overrides, and Tailwind `@theme` mappings
+- `src/styles/global.css` defines global/base styles and design utilities that consume semantic tokens
 - Components mainly use Tailwind utility classes inline
-- Typography relies on theme variables and font families defined in CSS rather than ad hoc per-component declarations
+- Components should prefer semantic token utilities such as `bg-surface-page`, `bg-surface-panel`, `text-text-primary`, `text-text-secondary`, `text-text-accent`, `border-border-subtle`, and `bg-action-strong` over raw hex values
+- Typography relies on tokenized font families and weights rather than ad hoc per-component declarations
 
 ## UI Composition
 
@@ -147,7 +149,7 @@ Styles and assets:
 
 - `src/styles/index.css`
 - `src/styles/tailwind.css`
-- `src/styles/theme.css`
+- `src/styles/global.css`
 - `src/styles/fonts.css`
 - `src/assets/`
 - `src/assets/carole-redesign-*.png`: current Figma-derived redesign image assets
@@ -178,7 +180,7 @@ Follow the existing codebase before introducing new patterns.
 ### Styling
 
 - Prefer Tailwind utility classes for component styling
-- Reuse theme tokens from `theme.css` instead of inventing one-off values when a token exists
+- Reuse semantic tokens from `tokens.css` instead of inventing one-off values when a token exists
 - Default to flex/grid layouts
 - Use `absolute` positioning only when it is genuinely layout-critical
 - Preserve responsive behavior; mobile interactions must have a non-hover fallback
@@ -215,7 +217,8 @@ Follow the existing codebase before introducing new patterns.
 ### Files to Treat Carefully
 
 - `src/app/components/ui/`: shared primitives, likely reused across features
-- `src/styles/theme.css`: central theme and token definitions
+- `src/styles/tokens.css`: central primitive and semantic token definitions
+- `src/styles/global.css`: global styles and utilities that consume tokens
 - `src/app/i18n/locales/`: translation source of truth
 - `MEMORY.md`: living product/design memory that should stay short and current
 

@@ -5,6 +5,7 @@ import {
   Bars3Icon,
   BriefcaseIcon,
   ChartBarIcon,
+  ChevronDownIcon,
   ChevronRightIcon,
   DocumentTextIcon,
   MegaphoneIcon,
@@ -32,16 +33,49 @@ type ServicePreview = {
   bullets: string[];
 };
 
+type DropdownPhase = "closed" | "open" | "closing";
+
+const getDropdownCloseDuration = () => {
+  const closeDuration = getComputedStyle(document.documentElement)
+    .getPropertyValue("--dropdown-close-dur")
+    .trim();
+
+  return Number.parseFloat(closeDuration) || 150;
+};
+
+function useDropdownTransition(isOpen: boolean) {
+  const [phase, setPhase] = useState<DropdownPhase>(isOpen ? "open" : "closed");
+
+  useEffect(() => {
+    let timeoutId: number | undefined;
+
+    if (isOpen) {
+      setPhase("open");
+      return undefined;
+    }
+
+    setPhase((current) => (current === "closed" ? "closed" : "closing"));
+    timeoutId = window.setTimeout(() => setPhase("closed"), getDropdownCloseDuration());
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [isOpen]);
+
+  return phase;
+}
+
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isLogoMenuOpen, setIsLogoMenuOpen] = useState(false);
+  const [hoveredNavId, setHoveredNavId] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState("home");
   const [isCompact, setIsCompact] = useState(false);
   const [isForcedOpen, setIsForcedOpen] = useState(false);
   const logoRef = useRef<HTMLAnchorElement>(null);
   const logoMenuRef = useRef<HTMLDivElement>(null);
-  const servicesMenuRef = useRef<HTMLDivElement>(null);
+  const servicesMenuRef = useRef<HTMLLIElement>(null);
   const lastScrollYRef = useRef(0);
   const { t } = useTranslation();
   const { theme, toggleTheme } = useTheme();
@@ -49,13 +83,14 @@ export default function Navbar() {
   const location = useLocation();
   const services = t("services.items", { returnObjects: true }) as ServicePreview[];
   const serviceIcons = [DocumentTextIcon, MegaphoneIcon, PencilSquareIcon, ChartBarIcon];
+  const logoDropdownPhase = useDropdownTransition(isLogoMenuOpen);
 
   const navLinks = [
-    { name: t("nav.home"), href: "#home" },
-    { name: t("nav.about"), href: "#about" },
-    { name: t("nav.services"), href: "#services", hasMenu: true },
-    { name: t("nav.testimonials"), href: "#testimonials" },
-    { name: t("nav.blog"), href: "/blog" },
+    { id: "home", name: t("nav.home"), href: "#home" },
+    { id: "about", name: t("nav.about"), href: "#about" },
+    { id: "services", name: t("nav.services"), href: "#services", hasMenu: true },
+    { id: "testimonials", name: t("nav.testimonials"), href: "#testimonials" },
+    { id: "blog", name: t("nav.blog"), href: "/blog" },
   ];
 
   useEffect(() => {
@@ -152,6 +187,7 @@ export default function Navbar() {
     target?.scrollIntoView({ behavior: "smooth", block: "start" });
     setIsMobileMenuOpen(false);
     setIsServicesOpen(false);
+    setHoveredNavId(null);
   };
 
   const handleLogoContextMenu = (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -209,110 +245,142 @@ export default function Navbar() {
             Tonoukouen
           </span>
         </Link>
-        <AnimatePresence>
-          {isLogoMenuOpen ? (
-            <motion.div
-              ref={logoMenuRef}
-              initial={{ opacity: 0, y: -8, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -8, scale: 0.96 }}
-              transition={{ duration: 0.16 }}
-              className="fixed left-[max(1.25rem,calc((100vw-1200px)/2+1.25rem))] top-[76px] z-[70] w-72 overflow-hidden rounded-lg border border-[#e5e2e1]/80 bg-white/94 p-2 shadow-[0_24px_70px_rgba(28,27,27,0.16)] backdrop-blur-xl dark:border-white/10 dark:bg-[#171312]/94"
+        {logoDropdownPhase !== "closed" ? (
+          <div
+            ref={logoMenuRef}
+            data-origin="top-left"
+            className={`t-dropdown fixed left-[max(1.25rem,calc((100vw-1200px)/2+1.25rem))] top-[76px] z-[70] w-72 overflow-hidden rounded-lg border border-[#e5e2e1]/80 bg-white p-2 shadow-[0_24px_70px_rgba(28,27,27,0.16)] dark:border-white/10 dark:bg-[#171312] ${logoDropdownPhase === "open" ? "is-open" : "is-closing"}`}
+          >
+            <Link
+              to="/cv"
+              onClick={() => setIsLogoMenuOpen(false)}
+              className="flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium text-[#5b4137] transition hover:bg-[#ffd9e4]/35 hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
             >
-              <Link
-                to="/cv"
-                onClick={() => setIsLogoMenuOpen(false)}
-                className="flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium text-[#5b4137] transition hover:bg-[#ffd9e4]/35 hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
+              <DocumentTextIcon className="size-5" />
+              <span className="flex-1">{t("nav.cv")}</span>
+              <ChevronRightIcon className="size-4 opacity-50" />
+            </Link>
+            <button
+              type="button"
+              onClick={toggleHaptics}
+              className="mt-1 flex w-full items-center gap-3 rounded-md px-3 py-3 text-left text-sm font-medium text-[#5b4137] transition hover:bg-[#ffd9e4]/35 hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
+            >
+              <span
+                className="t-icon-swap size-5"
+                data-state={hapticsEnabled ? "a" : "b"}
+                aria-hidden="true"
               >
-                <DocumentTextIcon className="size-5" />
-                <span className="flex-1">{t("nav.cv")}</span>
-                <ChevronRightIcon className="size-4 opacity-50" />
-              </Link>
-              <button
-                type="button"
-                onClick={toggleHaptics}
-                className="mt-1 flex w-full items-center gap-3 rounded-md px-3 py-3 text-left text-sm font-medium text-[#5b4137] transition hover:bg-[#ffd9e4]/35 hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
-              >
-                {hapticsEnabled ? <SpeakerWaveIcon className="size-5" /> : <SpeakerXMarkIcon className="size-5" />}
-                <span className="flex-1">{t("nav.haptics")}</span>
-                <span className={`relative h-6 w-10 rounded-full transition ${hapticsEnabled ? "bg-[#854d63] dark:bg-[#f0adc4]" : "bg-[#e5e2e1] dark:bg-white/20"}`}>
-                  <span className={`absolute top-1 size-4 rounded-full bg-white transition ${hapticsEnabled ? "left-5 dark:bg-[#1c1415]" : "left-1"}`} />
-                </span>
-              </button>
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
+                <SpeakerWaveIcon className="t-icon size-5" data-icon="a" />
+                <SpeakerXMarkIcon className="t-icon size-5" data-icon="b" />
+              </span>
+              <span className="flex-1">{t("nav.haptics")}</span>
+              <span className={`relative h-6 w-10 rounded-full transition ${hapticsEnabled ? "bg-[#854d63] dark:bg-[#f0adc4]" : "bg-[#e5e2e1] dark:bg-white/20"}`}>
+                <span className={`absolute top-1 size-4 rounded-full bg-white transition ${hapticsEnabled ? "left-5 dark:bg-[#1c1415]" : "left-1"}`} />
+              </span>
+            </button>
+          </div>
+        ) : null}
 
-        <div className="hidden items-center gap-8 md:flex">
+        <ul className="relative hidden items-center gap-0 md:flex">
           {navLinks.map((link) => {
             const sectionId = link.href.replace("#", "");
             const isActive =
               link.href.startsWith("#") ? activeSection === sectionId : activeSection === "blog";
-            const linkClass = `relative text-[16px] font-medium capitalize leading-4 tracking-[2px] transition ${
-              isActive
+            const isHighlighted = hoveredNavId === link.id || isActive || (link.hasMenu && isServicesOpen);
+            const linkClass = `portfolio-nav-link group relative z-10 inline-flex h-10 cursor-pointer items-center justify-center gap-1.5 rounded-full px-4 text-[13px] font-semibold capitalize leading-4 tracking-[1.8px] transition-colors duration-300 ${
+              isHighlighted
                 ? "text-[#854d63] dark:text-[#f0adc4]"
-                : "text-[#5b4137] hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:text-[#f0adc4]"
+                : "text-[#5b4137] dark:text-[#dbc9c0]"
             }`;
+
+            const hoverBackground = isHighlighted ? (
+              <motion.span
+                layoutId="portfolio-nav-hover-bg"
+                className="absolute inset-0 rounded-full bg-[#ffd9e4]/50 dark:bg-white/8"
+                transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              />
+            ) : null;
 
             if (link.hasMenu) {
               return (
-                <div
+                <li
                   key={link.href}
                   ref={servicesMenuRef}
                   className="relative"
-                  onMouseEnter={() => setIsServicesOpen(true)}
-                  onMouseLeave={() => setIsServicesOpen(false)}
+                  onMouseEnter={() => {
+                    setHoveredNavId(link.id);
+                    setIsServicesOpen(true);
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredNavId(null);
+                    setIsServicesOpen(false);
+                  }}
                 >
                   <a
                     href={link.href}
                     onClick={(event) => scrollToSection(event, link.href)}
                     className={linkClass}
                   >
-                    {link.name}
+                    {hoverBackground}
+                    <span className="relative z-10">{link.name}</span>
+                    <ChevronDownIcon
+                      className={`relative z-10 size-4 transition-transform duration-300 ${
+                        isServicesOpen ? "rotate-180" : ""
+                      }`}
+                    />
                   </a>
                   <AnimatePresence>
                     {isServicesOpen ? (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 8, scale: 0.98 }}
-                        transition={{ duration: 0.18, ease: "easeOut" }}
-                        className="fixed left-1/2 top-[98px] z-[75] grid w-[min(1040px,calc(100vw-3rem))] -translate-x-1/2 grid-cols-[0.96fr_1.04fr] overflow-hidden rounded-[24px] border border-[#e5e2e1]/80 bg-white/96 shadow-[0_24px_72px_rgba(28,27,27,0.14)] backdrop-blur-xl dark:border-white/10 dark:bg-[#171312]/96"
+                      <div className="absolute left-1/2 top-full z-[75] w-max -translate-x-1/2 pt-4">
+                        <motion.div
+                          layoutId="portfolio-services-menu"
+                          initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                          transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                          className="w-[min(900px,calc(100vw-3rem))] overflow-hidden rounded-2xl border border-[#e5e2e1]/80 bg-white p-4 shadow-[0_24px_72px_rgba(28,27,27,0.14)] dark:border-white/10 dark:bg-[#171312]"
                       >
-                        <div className="space-y-1.5 p-6">
+                        <div className="flex w-full gap-8 overflow-hidden">
+                          <div className="w-[520px] shrink-0">
+                            <h3 className="mb-4 px-2 text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">
+                              {t("nav.services")}
+                            </h3>
+                            <ul className="grid grid-cols-2 gap-x-5 gap-y-4">
                           {services.map((service, index) => {
                             const ServiceIcon = serviceIcons[index % serviceIcons.length];
 
                             return (
-                              <Link
+                                    <li key={service.slug}>
+                                      <Link
                                 key={service.slug}
                                 to={`/services/${service.slug}`}
                                 onClick={() => setIsServicesOpen(false)}
-                                className="group flex items-center gap-3 rounded-lg px-2 py-1.5 text-left text-[#5b4137] transition hover:bg-[#fcf9f8] hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
+                                        className="group flex items-start gap-3 rounded-xl p-2 text-left text-[#5b4137] transition-colors duration-300 hover:bg-[#fcf9f8] hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
                               >
-                                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-[#f2b3c8] bg-[#2f2f32] text-white shadow-[inset_2px_0_0_#d79caf,inset_0_-2px_0_#f0adc4] transition group-hover:bg-[#854d63] dark:border-[#f0adc4]/40 dark:bg-[#24201f]">
+                                        <span className="flex size-9 shrink-0 items-center justify-center rounded-md border border-[#854d63]/20 bg-[#2f2f32] text-white transition-colors duration-300 group-hover:border-[#854d63] group-hover:bg-[#854d63] dark:border-[#f0adc4]/30 dark:bg-[#24201f] dark:group-hover:bg-[#f0adc4] dark:group-hover:text-[#171312]">
                                   <ServiceIcon className="size-[18px]" />
                                 </span>
-                                <span className="min-w-0 flex-1">
-                                  <span className="block text-[15px] font-semibold leading-5 text-[#1c1b1b] dark:text-[#f8f1ec]">
+                                        <span className="w-max min-w-0 leading-5">
+                                          <span className="block text-[14px] font-semibold text-[#1c1b1b] dark:text-[#f8f1ec]">
                                     {service.title} <span className="italic text-[#854d63] dark:text-[#f0adc4]">{service.accent}</span>
                                   </span>
-                                  <span className="mt-0.5 line-clamp-2 block text-[13px] leading-[18px] text-[#6d625d] dark:text-[#cdb9ae]">
+                                          <span className="mt-1 block max-w-[190px] text-[12px] text-[#6d625d] transition-colors duration-300 group-hover:text-[#1c1b1b] dark:text-[#cdb9ae] dark:group-hover:text-[#f8f1ec]">
                                     {service.menuDescription}
                                   </span>
                                 </span>
-                                <ChevronRightIcon className="size-4 opacity-0 transition group-hover:opacity-60" />
                               </Link>
+                                    </li>
                             );
                           })}
+                            </ul>
                         </div>
                         <Link
                           to="/services/direction-social-media"
                           onClick={() => setIsServicesOpen(false)}
-                          className="group m-6 ml-0 flex min-h-[218px] flex-col justify-between rounded-2xl bg-[#f7f6f4] p-6 text-[#1c1b1b] transition hover:bg-[#f3ecec] dark:bg-white/6 dark:text-[#f8f1ec] dark:hover:bg-white/10"
+                            className="group flex min-h-[230px] w-[280px] shrink-0 flex-col justify-between rounded-xl border border-[#e5e2e1]/70 bg-[#f7f6f4] p-5 text-[#1c1b1b] transition-colors duration-300 hover:bg-[#f3ecec] dark:border-white/10 dark:bg-[#211a19] dark:text-[#f8f1ec] dark:hover:bg-[#29201f]"
                         >
                           <span className="flex items-start justify-between gap-6">
-                            <span className="text-[12px] font-semibold uppercase leading-5 tracking-[2px] text-[#6d625d] dark:text-[#cdb9ae]">
+                              <span className="text-[12px] font-semibold uppercase leading-5 tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">
                               {t("nav.caseStudies")}
                             </span>
                             <ArrowUpRightIcon className="size-5 text-[#6d625d] transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#854d63] dark:text-[#cdb9ae] dark:group-hover:text-[#f0adc4]" />
@@ -327,25 +395,34 @@ export default function Navbar() {
                             </span>
                           </span>
                         </Link>
-                      </motion.div>
+                      </div>
+                        </motion.div>
+                      </div>
                     ) : null}
                   </AnimatePresence>
-                </div>
+                </li>
               );
             }
 
             return (
-              <a
+              <li
                 key={link.href}
+                className="relative"
+                onMouseEnter={() => setHoveredNavId(link.id)}
+                onMouseLeave={() => setHoveredNavId(null)}
+              >
+              <a
                 href={link.href}
                 onClick={(event) => scrollToSection(event, link.href)}
                 className={linkClass}
               >
-                {link.name}
+                  {hoverBackground}
+                  <span className="relative z-10">{link.name}</span>
               </a>
+              </li>
             );
           })}
-        </div>
+        </ul>
 
         <div className="hidden items-center gap-3 md:flex">
           <button
@@ -370,7 +447,14 @@ export default function Navbar() {
           onClick={() => setIsMobileMenuOpen((current) => !current)}
           aria-label={t("nav.menu")}
         >
-          {isMobileMenuOpen ? <XMarkIcon className="size-5" /> : <Bars3Icon className="size-5" />}
+          <span
+            className="t-icon-swap size-5"
+            data-state={isMobileMenuOpen ? "b" : "a"}
+            aria-hidden="true"
+          >
+            <Bars3Icon className="t-icon size-5" data-icon="a" />
+            <XMarkIcon className="t-icon size-5" data-icon="b" />
+          </span>
         </button>
       </div>
 

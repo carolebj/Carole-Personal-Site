@@ -20,7 +20,7 @@ export default function CalMeetingEmbed() {
   }, []);
 
   return (
-    <div className="rounded-2xl border border-[#e5e2e1]/80 bg-white dark:border-white/10 dark:bg-[#fbf7f5]">
+    <div className="mx-auto w-full max-w-[760px] rounded-2xl bg-white dark:bg-[#fbf7f5]">
       <Cal
         namespace="meet-carole"
         calLink="mrstev3n/meet-carole"
@@ -30,7 +30,7 @@ export default function CalMeetingEmbed() {
         }}
         style={{
           width: "100%",
-          height: "760px",
+          minHeight: "680px",
           overflow: "scroll",
         }}
         aria-label={t("contactPage.calendarTitle")}
