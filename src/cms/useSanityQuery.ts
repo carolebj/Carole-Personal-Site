@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getSanityClient, isSanityConfigured } from "./client";
 
 type QueryState<T> = {
@@ -18,12 +18,14 @@ export function useSanityQuery<T>(
     usingCms: false,
   });
   const stableParams = useMemo(() => params ?? {}, [params]);
+  const fallbackRef = useRef(fallback);
+  fallbackRef.current = fallback;
 
   useEffect(() => {
     const client = getSanityClient();
 
     if (!client || !isSanityConfigured) {
-      setState({ data: fallback, loading: false, usingCms: false });
+      setState({ data: fallbackRef.current, loading: false, usingCms: false });
       return;
     }
 
@@ -35,7 +37,7 @@ export function useSanityQuery<T>(
       .then((result) => {
         if (!cancelled) {
           setState({
-            data: result ?? fallback,
+            data: result ?? fallbackRef.current,
             loading: false,
             usingCms: Boolean(result),
           });
@@ -43,14 +45,14 @@ export function useSanityQuery<T>(
       })
       .catch(() => {
         if (!cancelled) {
-          setState({ data: fallback, loading: false, usingCms: false });
+          setState({ data: fallbackRef.current, loading: false, usingCms: false });
         }
       });
 
     return () => {
       cancelled = true;
     };
-  }, [fallback, query, stableParams]);
+  }, [query, stableParams]);
 
   return state;
 }
