@@ -4,7 +4,12 @@ import {
   MapPinIcon,
   PhoneIcon,
 } from "@heroicons/react/24/outline";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { toCvViewModel } from "../../cms/adapters";
+import { cvEntryQuery } from "../../cms/queries";
+import type { CmsCvEntry } from "../../cms/types";
+import { useSanityQuery } from "../../cms/useSanityQuery";
 
 type CvContact = {
   label: string;
@@ -27,10 +32,19 @@ type CvExperience = {
 const contactIcons = [EnvelopeIcon, PhoneIcon, MapPinIcon, LinkIcon];
 
 export default function Cv() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language;
+  const { data: cmsEntries } = useSanityQuery(cvEntryQuery, [] as CmsCvEntry[]);
+  const usingCms = cmsEntries.length > 0;
   const contacts = t("cv.contacts", { returnObjects: true }) as CvContact[];
-  const sidebarSections = t("cv.sidebar", { returnObjects: true }) as CvSection[];
-  const experiences = t("cv.experiences", { returnObjects: true }) as CvExperience[];
+  const cvData = useMemo(() => {
+    if (usingCms) {
+      return toCvViewModel(cmsEntries, locale);
+    }
+    return null;
+  }, [cmsEntries, usingCms, locale]);
+  const sidebarSections = usingCms && cvData ? cvData.sidebar : (t("cv.sidebar", { returnObjects: true }) as CvSection[]);
+  const experiences = usingCms && cvData ? cvData.experiences : (t("cv.experiences", { returnObjects: true }) as CvExperience[]);
 
   return (
     <main className="bg-[#fcf9f8] px-5 pb-20 pt-28 dark:bg-[#13100f] sm:px-8 lg:px-8">

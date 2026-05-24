@@ -4,7 +4,7 @@
 
 This file is the project-level memory for the Carole Portfolio repo. Keep it short, current, and useful for future agents working on the site.
 
-Last reviewed: 2026-05-05 WAT
+Last reviewed: 2026-05-24 WAT
 
 ## Current Branch Workflow
 
@@ -20,6 +20,24 @@ Last reviewed: 2026-05-05 WAT
 - Current production alias points to the `main` deployment; current `dev` branch preview is `https://carole-portfolio-git-dev-stevens-projects-db687a83.vercel.app`.
 - Vercel Authentication is disabled for the project; both production and `dev` preview URLs are publicly reachable without login.
 - The pre-redesign `main` state is archived with Git tag `archive-main-design-before-redesign-2026-05-22` at commit `49d37b2391f08608aae2d0f98ea3a57f33ed579c`.
+
+## CMS Direction
+
+- The portfolio CMS stack is Sanity Studio 4 connected to the existing Vite/React site through `@sanity/client`.
+- Sanity Studio source lives in `sanity.config.ts` and `studio/`; the static Studio build goes to `dist-studio/` and is copied into `dist/admin/` during the full build.
+- **The Studio is served at `/admin` in production** from the combined Vite build via `vercel.json` rewrites.
+- **Local CMS work now uses one command**: `npm run dev` starts the Vite site on `127.0.0.1:5173` and Sanity Studio on `127.0.0.1:3333/admin`; visiting `/admin` on the Vite site redirects to the Studio server while the command is running.
+- `npm run dev:site` and `npm run cms:dev` remain available for isolated debugging, but normal local work should not require two manually coordinated terminals.
+- Studio navigation should stay close to the UBIM-style editorial model: top-level access to Informations générales, Page d'accueil, Services, Articles du blog, Catégories, Témoignages, Ressources & communautés, and CV, with nested lists only when they make editing clearer.
+- Bilingual Studio fields use custom FR/EN side-by-side inputs with word counts, `Copier FR`, and `Traduire` actions. The translation action calls a server-side endpoint and requires `OPENAI_API_KEY`; without it, the UI should fail gracefully with an explanatory message.
+- The safer production translation architecture is Cloudflare Worker + Cloudflare AI Gateway: Studio -> Vercel `/api/translate` -> protected Worker bearer token -> AI Gateway -> OpenAI. In this mode, Vercel needs only `CLOUDFLARE_TRANSLATE_WORKER_URL` and `TRANSLATE_WORKER_TOKEN`; `OPENAI_API_KEY` should live only as a Cloudflare Worker secret.
+- If Cloudflare AI Gateway has Authenticated Gateway enabled, the Worker also needs `CLOUDFLARE_AI_GATEWAY_TOKEN` as a Cloudflare Worker secret; it is sent as `cf-aig-authorization`.
+- Keep CMS UX optimized for a non-technical editor: clear document icons, short top-level navigation, guided blog groups, image alt text, category creation from blog posts, and progressive bilingual editing.
+- Frontend CMS helpers live in `src/cms/`; CMS fetching is fallback-safe so the site keeps rendering local i18n content when Sanity env vars are absent or content is not migrated yet.
+- All content types (blog, services, testimonials, resources, CV, homepage, site settings) are ready for progressive CMS migration.
+- **Categories** are a dedicated document type (`studio/schemas/documents/category.ts`). Blog posts reference a category document, and new categories can be created inline from the blog post editor.
+- Existing blog categories were migrated via `scripts/migrate-categories.mjs` (4 categories created).
+- Required environment variables are documented in `.env.example`; configure both `VITE_SANITY_*` for the public site and `SANITY_STUDIO_*` for Studio.
 
 ## Active Redesign Direction
 
@@ -51,7 +69,14 @@ Last reviewed: 2026-05-05 WAT
   - the testimonials section should sit on a white background in light mode
   - desktop navigation order is Accueil, À propos, Services, Avis, Blog; Manifesto remains a section but is not a menu item
   - Services is both a scroll link and a hover mega menu with links to individual service pages
+  - the Carnet resources page is framed as useful resources and communities: platforms, tools, inspiring campaigns, and support groups for digital communication
+  - blog article links should use continuity/view transitions from list cards to article pages, especially image and title continuity
+  - service detail pages should clearly separate the service presentation, audience fit, and case-study/work-output areas
+  - Carnet detail pages can depart from the warmer portfolio card style and use a more minimal, document-like layout with simplified search and interactive resource cards
+  - the resources grid should stay dense on desktop, with three cards per row around 1200px wide screens
+  - the readings/reference page should use the same centered minimal Carnet language, with a clear switch between book covers and cited content/newsletters rendered as lighter paper objects
   - testimonials use a three-card carousel with the centered card as the active state
+  - the footer reveal should behave like a temporary pull-beyond-footer moment: after a short delay it returns to the footer, and the decorative shader should stay wave-like, colorful, and gently moving rather than highly animated
   - subtle audio haptics are enabled by default for interactive elements and can be toggled from the logo right-click menu
 
 ## Implementation Notes
@@ -62,13 +87,23 @@ Last reviewed: 2026-05-05 WAT
 - Theme selection is handled by `src/app/theme/ThemeContext.tsx`, follows `prefers-color-scheme` on first visit, and persists the explicit choice in `localStorage` under `portfolio-theme`.
 - Haptic feedback is handled by `src/app/interactions/HapticContext.tsx` and persists its on/off preference under `portfolio-haptics`.
 - Public pages are route-lazy-loaded in `src/app/routes.tsx` to keep the initial bundle light; keep heavy third-party widgets out of the root route chunk.
+- CMS content should be migrated progressively and keep local i18n fallback paths until Carole validates the Studio content.
 - The Cal.com booking widget is isolated in `src/app/components/CalMeetingEmbed.tsx` and lazy-loaded only when the `/contact` meeting mode is shown.
 - The redesigned home page lives in `src/app/pages/Home.tsx`.
 - The redesigned navigation and footer live in `src/app/components/Navbar.tsx` and `src/app/components/Footer.tsx`.
 - Figma image assets downloaded into `src/assets/` use the `carole-redesign-*` prefix.
 - SVG pictograms live in `src/assets/icons/` with descriptive kebab-case names.
 - Liberation Serif local font files live in `src/assets/fonts/` and are declared in `src/styles/fonts.css`.
-- The organic image shapes are defined as utilities in `src/styles/theme.css`.
+- Design tokens are split from global design styles: `src/styles/tokens.css` holds primitive tokens, semantic tokens, dark-mode overrides, and Tailwind `@theme` mappings; `src/styles/global.css` holds base styles and utilities that consume those semantics.
+- The organic image shapes are defined as utilities in `src/styles/global.css`.
+
+## Graphify (Code Navigation)
+
+- **Graphify** (`howell5/willhong-skills@graphify`) is installed as a structural AST index of the codebase.
+- CLI installed globally as `graphify` (alias `graphify-ts`).
+- Graph file: `graphify-out/graph.json` (gitignored) — 197 files, 10 862 symbols, 10 722 relationships indexed.
+- Commands: `graphify build .` (full rebuild), `graphify update <files>` (incremental), `graphify query <graph.json> <name>` (search symbols).
+- Trigger skill with `/graphify` or use `skill graphify` when exploring the codebase.
 
 ## Update Rule
 

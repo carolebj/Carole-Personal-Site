@@ -1,0 +1,18 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "carole-portfolio-translate",
+  "main": "src/index.js",
+  "compatibility_date": "2026-05-24",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "vars": {
+    "OPENAI_TRANSLATION_MODEL": "gpt-4o-mini",
+    "AI_GATEWAY_PROVIDER": "openai",
+    "CLOUDFLARE_ACCOUNT_ID": "6fe44318d1b66c5c2a4c81fb7be0a4b4",
+    "AI_GATEWAY_SLUG": "carole-portfolio-translate",
+    "MAX_TRANSLATION_CHARS": "6000"
+  }
+}

@@ -4,12 +4,21 @@ const en = {
     services: "Services",
     manifesto: "Manifesto",
     about: "About",
-    testimonials: "Reviews",
+    carnet: "Notebook",
     blog: "Blog",
+    toolsAndInspirations: "Resources & communities",
+    readingsAndReferences: "Readings & references",
     contact: "Contact",
     language: "Choose language",
+    theme: "Choose theme",
+    openTheme: "Open theme choices",
+    closeTheme: "Close theme choices",
+    systemTheme: "Use system theme",
     darkTheme: "Switch to dark theme",
     lightTheme: "Switch to light theme",
+    systemThemeDescription: "Adapts the site automatically to your device preference.",
+    lightThemeDescription: "Keeps the interface bright and crisp, ideal for daytime reading.",
+    darkThemeDescription: "Lowers brightness while keeping the editorial accents soft.",
     menu: "Open menu",
     openHeader: "Show full menu",
     cv: "Curriculum Vitae - CV",
@@ -60,6 +69,19 @@ const en = {
     titleRest: "Services",
     subtitle:
       "Tailored support to structure your content and communication actions.",
+    pageEyebrow: "Services",
+    pageTitleStart: "Services to structure",
+    pageTitleAccent: "your digital presence",
+    pageDescription:
+      "Each support offer connects strategy, editorial organization, and content creation so your communication becomes clearer, more consistent, and more useful to your audience.",
+    pageSignalOne: "Strategy before publishing",
+    pageSignalTwo: "Organization before scattering",
+    includedPreview: "Support preview",
+    pageCtaEyebrow: "Choose the right frame",
+    pageCtaTitle: "Not sure yet which support format matches your need?",
+    pageCtaDescription:
+      "Tell me about your context, channels, and priorities. I will help identify the clearest support format before we start.",
+    pageCta: "Talk about my need",
     items: [
       {
         slug: "editorial-strategy",
@@ -76,9 +98,27 @@ const en = {
         projectDescription:
           "Organizing LinkedIn angles, prioritizing expert topics, and preparing a monthly editorial calendar.",
         bullets: ["Positioning audit", "Content pillars", "Editorial calendar"],
+        presentation: "Many brands today publish out of simple habit, without a clear strategic direction. This leads to scattered efforts and a blurry message for the audience. A rigorous editorial strategy helps refocus your messaging on what truly matters, by defining authority topics and a unique tone.",
+        whatIsIncluded: [
+          "In-depth audit of your existing editorial positioning",
+          "Definition of your 3 to 5 strategic content pillars",
+          "Creation of your brand editorial guidelines (tone of voice, style, writing rules)",
+          "Setup of a sustainable, long-term content calendar model",
+          "Research of unique editorial angles tailored for your channels"
+        ],
+        targetAudience: [
+          "Founders wanting to clarify their authority on LinkedIn",
+          "Companies wishing to structure their content consistently",
+          "Brands undergoing a pivot or a product launch"
+        ],
+        concreteApplications: [
+          "Formalized LinkedIn editorial guidelines and brand playbooks",
+          "Notion content calendar templates ready to be activated",
+          "Curated expert topic grids prepared for copywriting"
+        ]
       },
       {
-        slug: "social-media-direction",
+        slug: "digital-communication",
         title: "Digital",
         accent: "Communication",
         description:
@@ -92,6 +132,24 @@ const en = {
         projectDescription:
           "Setting the cadence, coordinating content, and tracking themes that create stronger conversations.",
         bullets: ["Editorial planning", "Creative coordination", "Performance review"],
+        presentation: "Managing your digital presence daily requires precious time and a steady cadence. My role is to guide your communication channels comprehensively, aligning recurring content with your product launches, events, and brand visibility objectives.",
+        whatIsIncluded: [
+          "Comprehensive daily management of your online presence",
+          "Coordination of your monthly publishing schedules",
+          "Organization of milestone moments and visibility campaigns",
+          "Monitoring of creative production and visual assets",
+          "Monthly performance reviews and strategic angle optimizations"
+        ],
+        targetAudience: [
+          "Organizations and projects requiring a reliable communication partner",
+          "Brands seeking operational consistency and regularity",
+          "Project owners during milestone launching phases"
+        ],
+        concreteApplications: [
+          "Fully structured, end-to-end campaign editorial calendars",
+          "Consistent publishing schedules and coordinated launches",
+          "Actionable, simple analytical performance reports"
+        ]
       },
       {
         slug: "content-creation",
@@ -108,6 +166,24 @@ const en = {
         projectDescription:
           "Turning long-form ideas into posts, carousel angles, and short scripts to maintain a clear presence without starting over.",
         bullets: ["Post writing", "Carousel angles", "Short scripts"],
+        presentation: "Creating content shouldn't be left to chance. Every publication must combine meticulously crafted text and a fluid layout. I translate your ideas and expertise into engaging formats — long-form posts, visual carousels, short-form scripts — tailored to the codes of each platform.",
+        whatIsIncluded: [
+          "Writing high-value posts (LinkedIn, social networks)",
+          "Designing concepts and narrative angles for your carousels",
+          "Scriptwriting for your short-form videos (TikTok, Reels)",
+          "Visual layout design for your key assets",
+          "Creating cross-channel recyclable content formats"
+        ],
+        targetAudience: [
+          "Professionnels wishing to delegate writing for their expert posts",
+          "Brands needing high-quality, regular communication assets",
+          "Creators wanting to repurpose long-form content into short formats"
+        ],
+        concreteApplications: [
+          "Written and optimized LinkedIn posts ready for engagement",
+          "Visual templates and carousel storyboards ready to use",
+          "Short-form video scripts structured with hooks and call-to-actions"
+        ]
       },
       {
         slug: "audit-consulting",
@@ -124,6 +200,24 @@ const en = {
         projectDescription:
           "Reviewing existing content, bios, recurring messages, and the most useful editorial opportunities.",
         bullets: ["Profile diagnostic", "Content review", "Prioritized action plan"],
+        presentation: "Before taking action, it is essential to conduct a clear assessment. The audit of your digital presence pinpoints exactly what slows message comprehension, uncovers missed editorial opportunities, and delivers a prioritized action plan to optimize your results.",
+        whatIsIncluded: [
+          "Full diagnostic of your social media profiles and channels",
+          "Semantic and visual analysis of your recent publications",
+          "Identification of engagement or conversion bottlenecks",
+          "Summary of your editorial strengths, weaknesses, and opportunities",
+          "Prioritized action plan delivered within 48 hours to revive your presence"
+        ],
+        targetAudience: [
+          "Businesses experiencing a drop in engagement on their channels",
+          "Projects wanting to validate their message before a major investment",
+          "Brands wishing to restart with healthy editorial foundations"
+        ],
+        concreteApplications: [
+          "Complete, clear, and easy-to-read semantic audit reports",
+          "Immediate optimization recommendations for your profiles",
+          "Prioritized editorial roadmaps ready to be executed"
+        ]
       },
     ],
   },
@@ -179,9 +273,159 @@ const en = {
   },
 
   blog: {
+    eyebrow: "Editorial journal",
     title: "Blog",
     subtitle:
-      "This page is under construction. It will soon host notes on digital communication, social platforms, and content creation.",
+      "A personal space where I share reflections, methods, and field notes on digital communication, social platforms, and content creation.",
+    cmsNote: "Local source before CMS",
+    categoryLabel: "Digital communication",
+    featured: "Featured article",
+    latestEyebrow: "Latest notes",
+    latestTitle: "Read now",
+    readArticle: "Read article",
+    backToBlog: "Back to blog",
+    takeawaysTitle: "Key takeaways",
+    allCategories: "All",
+    searchLabel: "Search articles",
+    searchPlaceholder: "Search by title, topic, or category",
+    emptyState: "No article matches this search.",
+    posts: [
+      {
+        slug: "clarifier-sa-ligne-editoriale",
+        featured: true,
+        title: "Clarify your editorial line before publishing",
+        excerpt:
+          "A simple method to turn scattered ideas into regular, coherent, and useful brand messages.",
+        category: "Editorial strategy",
+        date: "May 23, 2026",
+        readingTime: "5 min",
+        takeaways: [
+          "An editorial line helps you decide faster, not limit creativity.",
+          "Strong content starts with a clear promise and a precise audience.",
+          "Three to five pillars are enough to organize a month of publishing.",
+        ],
+        sections: [
+          {
+            title: "Start with the message, not the format",
+            body: [
+              "Before choosing between a LinkedIn post, a carousel, or a newsletter, the brand needs to know what it wants people to understand. The format comes after, like a vehicle. The message remains the direction.",
+              "A useful starting question is simple: after reading this content, what should the person remember? That answer gives the copy, visual direction, and call to action a clear line.",
+            ],
+          },
+          {
+            title: "Name the audience precisely",
+            body: [
+              "Publishing for everyone often creates content that feels too general. A precise audience helps you use the right examples, the right words, and the right problems.",
+              "This is not only a demographic profile. You need to understand the person's level of awareness, objections, priorities, and the moment when they discover your brand.",
+            ],
+          },
+          {
+            title: "Build three to five pillars",
+            body: [
+              "Editorial pillars are the main subject families a brand can cover without scattering its message. They help vary angles while keeping a recognizable coherence.",
+              "One pillar can be educational, another can show behind-the-scenes work, and a third can focus on proof or experience. The goal is a structure that is clear enough to plan with and flexible enough to stay alive.",
+            ],
+          },
+          {
+            title: "Create a rhythm you can sustain",
+            body: [
+              "Consistency does not only depend on motivation. It mostly depends on a system: a list of ideas, prepared angles, production time, and a way to reuse strong content.",
+              "A useful editorial line should answer a practical question: how can we publish without starting from zero every time? That is when it becomes a real working tool.",
+            ],
+          },
+        ],
+      },
+      {
+        slug: "creer-un-calendrier-editorial-soutenable",
+        title: "Create an editorial calendar you can sustain",
+        excerpt:
+          "A simple structure to plan content without turning every publication into a last-minute emergency.",
+        category: "Organization",
+        date: "May 18, 2026",
+        readingTime: "4 min",
+        takeaways: [
+          "A strong calendar reduces repeated decisions.",
+          "Consistency comes from a realistic rhythm, not an overly ambitious plan.",
+          "Brand moments should guide the most important content.",
+        ],
+        sections: [
+          {
+            title: "Start with important brand moments",
+            body: [
+              "An editorial calendar becomes useful when it starts with real moments: launches, events, public statements, offers, campaigns, or internal news.",
+              "These markers create hierarchy. Some content prepares the audience, some explains, and some reopens the conversation.",
+            ],
+          },
+          {
+            title: "Plan less, but better",
+            body: [
+              "A sustainable rhythm is stronger than an impressive cadence that cannot last. Three thoughtful publications can create more clarity than ten improvised posts.",
+              "The goal is to make production smoother, with prepared angles and formats that are easy to adapt.",
+            ],
+          },
+        ],
+      },
+      {
+        slug: "adapter-un-message-a-chaque-reseau-social",
+        title: "Adapt one message to each social platform",
+        excerpt:
+          "How to keep the same strategic idea while changing the angle, rhythm, and format for each platform.",
+        category: "Social media",
+        date: "May 11, 2026",
+        readingTime: "6 min",
+        takeaways: [
+          "Adapting does not mean rewriting the whole strategy.",
+          "Each platform has a different reading and interaction logic.",
+          "The same message can become a post, carousel, or short note.",
+        ],
+        sections: [
+          {
+            title: "Separate the idea from the format",
+            body: [
+              "The idea is the main message. The format is the way it becomes visible on a specific platform.",
+              "When this distinction is clear, it becomes easier to repurpose a message without repeating it mechanically.",
+            ],
+          },
+          {
+            title: "Respect the reading context",
+            body: [
+              "LinkedIn often rewards precision and point of view. Instagram asks for a more immediate visual hook. A newsletter can take more time to develop an idea.",
+              "Adapting content means choosing the right rhythm for the right context.",
+            ],
+          },
+        ],
+      },
+      {
+        slug: "auditer-sa-presence-digitale",
+        title: "Audit your digital presence without scattering your focus",
+        excerpt:
+          "The essential points to review when deciding what needs to be clarified, strengthened, or removed from your communication.",
+        category: "Audit",
+        date: "May 3, 2026",
+        readingTime: "5 min",
+        takeaways: [
+          "A useful audit starts with communication goals.",
+          "Coherence is checked across the profile, content, and calls to action.",
+          "Recommendations need priorities to become actionable.",
+        ],
+        sections: [
+          {
+            title: "Look at first impressions",
+            body: [
+              "Can a visitor quickly understand who you help, what you offer, and why they should trust you? This first reading often reveals the most important gaps.",
+              "The audit should therefore start with visible points: bio, homepage, recent posts, visuals, and links.",
+            ],
+          },
+          {
+            title: "Turn analysis into priorities",
+            body: [
+              "Listing every problem can become discouraging. It is better to identify three priorities: what blocks understanding, what reduces trust, and what slows action.",
+              "With this hierarchy, the audit becomes a work plan rather than a simple observation.",
+            ],
+          },
+        ],
+      },
+    ],
   },
 
   cv: {
@@ -301,6 +545,20 @@ const en = {
     metric: "Useful metric",
     project: "Related project",
     includes: "What this can include",
+    audience: "Who it is for",
+    audienceTitle: "The profiles that will recognize themselves in this support",
+    applications: "Concrete applications",
+    applicationsTitle: "What this expertise can produce",
+    presentationBlockTitle: "The working frame",
+    presentationBlockText:
+      "This section gathers the deliverables and reference points that make the support scope clear.",
+    caseStudy: "Case study",
+    caseStudyTitle: "An example in practice",
+    caseStudyIntro:
+      "The project area shows how the service can become concrete actions, deliverables, and editorial decisions.",
+    caseStudyProblem: "Starting point",
+    caseStudyMethod: "Method",
+    caseStudyOutput: "Deliverable",
     back: "Back to services",
     cta: "Let's discuss this need",
   },
@@ -324,6 +582,71 @@ const en = {
       description:
         "An unexpected error occurred. Please try again or go back to the homepage.",
     },
+  },
+
+  aboutPage: {
+    eyebrow: "ABOUT",
+    titleStart: "Communication is not a matter of",
+    titleAccent: "noise",
+    titleEnd: ", it is about intent.",
+    bioParagraphs: [
+      "After several concrete experiences in editorial coordination and social media platform management, I chose to specialize in supporting brands and project owners who wish to clarify their messaging.",
+      "I deeply believe that a successful digital presence is not built on the volume of posts, but on relevance and structure. This is why I help my clients transition from reactive day-to-day posting to a planned and meaningful editorial cadence.",
+      "My role is to manage the behind-the-scenes work — structuring calendars, writing with care, and coordinating visual asset creation — so that every brand conversation builds trust with your audience."
+    ],
+    positioningTitle: "My positioning",
+    positioningIntro: "A rigorous approach centered on three key principles:",
+    positioningPillars: [
+      { title: "Strategy first", desc: "No creation without direction. Every format, every channel must serve a specific objective and target a defined audience." },
+      { title: "Operational rigor", desc: "Consistency builds trust. I organize healthy editorial systems that are easy to maintain over the long term." },
+      { title: "Clarity of the message", desc: "Simplifying the complex. Making your expertise accessible, engaging, and memorable." }
+    ],
+    methodologyTitle: "How I work",
+    methodologySteps: [
+      { step: "01", title: "Diagnostic & immersion", desc: "Understanding your brand, your objectives, and auditing your current presence to detect message gaps." },
+      { step: "02", title: "Strategic framing", desc: "Defining your editorial line, your content pillars, and your ideal publishing cadence." },
+      { step: "03", title: "Creative deployment", desc: "Writing posts, preparing visual storyboards, writing video scripts, and preparing ready-to-publish calendars." },
+      { step: "04", title: "Review & optimization", desc: "Analyzing engagement, adjusting copy angles, and continuously monitoring topics that spark the most conversations." }
+    ]
+  },
+
+  carnetPage: {
+    eyebrow: "Notebook",
+    title: "Useful resources & communities",
+    subtitle: "A selection of platforms, tools, inspiring campaigns, and support groups to feed and structure your digital communication.",
+    searchPlaceholder: "Search for a tool, source, or category",
+    emptyState: "No item matches this search.",
+    categories: ["All", "Editorial line", "Microcopy & writing", "Social media watch", "Creative inspiration"],
+    items: [
+      { title: "Good Copy", category: "Microcopy & writing", desc: "A precious resource to analyze and draw inspiration from the best email and user journey microcopy.", link: "https://www.goodcopy.co", badge: "Writing" },
+      { title: "Social Media Today", category: "Social media watch", desc: "My daily reference source to follow platform updates, algorithms, and social media trends.", link: "https://www.socialmediatoday.com", badge: "Watch" },
+      { title: "Land Book", category: "Creative inspiration", desc: "A superb landing page gallery to analyze design, copy hierarchy, and brand integration.", link: "https://land-book.com", badge: "Inspiration" },
+      { title: "Hemingway Editor", category: "Microcopy & writing", desc: "A wonderful tool to prune your writing style, eliminate complex sentences, and clarify your copy.", link: "https://hemingwayapp.com", badge: "Tool" },
+      { title: "Pinterest Creative", category: "Creative inspiration", desc: "My creative mood board to spot layout trends, typography pairings, and color palettes.", link: "https://pinterest.com", badge: "Inspiration" },
+      { title: "Buffer Resources", category: "Editorial line", desc: "Detailed guides to lay the foundations of sustainable content calendars and plan publishing cadences.", link: "https://buffer.com/library", badge: "Resource" }
+    ],
+    discoverBook: "Discover",
+    readingsTitle: "Readings & references",
+    readingsSection1Desc: "Reference reads that sharpen the eye, structure ideas, and feed the practice.",
+    readingsSection2Desc: "Newsletters and short-form pieces kept as useful watch notes to revisit.",
+    readingsSubtitle: "The books, newsletters, and key contents that accompany my professional growth and nourish my industry knowledge.",
+    readingsSections: [
+      {
+        title: "Recommended books",
+        items: [
+          { title: "Everybody Writes", author: "Ann Handley", date: "2014", desc: "I find it essential for creating content with more clarity. It helps structure ideas and tell simple stories with confidence.", link: "https://books.google.com/books?id=QGtECQAAQBAJ" },
+          { title: "Storybrand", author: "Donald Miller", date: "2017", desc: "I like how simply it brings a brand message back to what matters: the customer, their problem, and a clear promise.", link: "https://books.google.com/books?id=b3xDDgAAQBAJ" },
+          { title: "Le Bug Humain", author: "Sébastien Bohler", date: "2019", desc: "I keep it as a reference for understanding attention reflexes, biases, and what digital environments can amplify.", link: "https://books.google.com/books?id=_yODDwAAQBAJ" }
+        ]
+      },
+      {
+        title: "Articles, newsletters & cited contents",
+        items: [
+          { title: "Marketing Brew", author: "Brew Team", desc: "A tri-weekly newsletter decoding brand news, creative campaigns, and changes in the advertising sector." },
+          { title: "Growth Letter", author: "Yann Leonardi", desc: "Concrete breakdowns of marketing strategies, product positioning, and the psychology of attention." }
+        ]
+      }
+    ]
   },
 } as const;
 

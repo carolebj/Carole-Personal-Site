@@ -1,13 +1,16 @@
 import { ChevronLeftIcon, ChevronRightIcon, EnvelopeIcon, PaperAirplaneIcon, SparklesIcon } from "@heroicons/react/24/outline";
-import { motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { PortableText } from "@portabletext/react";
+import { AnimatePresence, motion } from "motion/react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
+import { toServiceViewModel, toTestimonialViewModel } from "../../cms/adapters";
+import { sanityImageUrl } from "../../cms/client";
+import { homePageQuery, servicesQuery, testimonialsQuery } from "../../cms/queries";
+import { localized, type CmsHomePage, type CmsService, type CmsTestimonial, type SanityImage } from "../../cms/types";
+import { useSanityQuery } from "../../cms/useSanityQuery";
 import portraitImage from "../../assets/carole-redesign-portrait.png";
 import workingImage from "../../assets/carole-redesign-working.png";
-import clientOneImage from "../../assets/carole-redesign-client-1.png";
-import clientTwoImage from "../../assets/carole-redesign-client-2.png";
-import clientThreeImage from "../../assets/carole-redesign-client-3.png";
 import announcementMegaphoneIcon from "../../assets/icons/announcement-megaphone.svg?raw";
 import brandFlagIcon from "../../assets/icons/brand-flag.svg?raw";
 import coffeeCupIcon from "../../assets/icons/coffee-cup.svg?raw";
@@ -15,6 +18,9 @@ import contentBriefEditIcon from "../../assets/icons/content-brief-edit.svg?raw"
 import decorativeArc from "../../assets/icons/decorative-arc.svg";
 import documentEditIcon from "../../assets/icons/document-edit.svg?raw";
 import growthArrowIcon from "../../assets/icons/growth-arrow.svg?raw";
+import testimonialCynthiaImage from "../../assets/testimonials/testimonial-cynthia.svg";
+import testimonialJulianImage from "../../assets/testimonials/testimonial-julian.svg";
+import testimonialUzomaImage from "../../assets/testimonials/testimonial-uzoma.svg";
 
 type Service = {
   slug: string;
@@ -31,6 +37,10 @@ type Testimonial = {
   quote: string;
   name: string;
   role: string;
+};
+
+type CircularTestimonial = Testimonial & {
+  src: string;
 };
 
 type InlineIconProps = {
@@ -116,7 +126,7 @@ const traitAccents = [
   { icon: "bg-[#ffdcbd]", glyph: "text-[#8a5100]" },
   { icon: "bg-[#ffdbcf]", glyph: "text-[#a83900]" },
 ];
-const testimonialImages = [clientOneImage, clientTwoImage, clientThreeImage];
+const testimonialImages = [testimonialUzomaImage, testimonialCynthiaImage, testimonialJulianImage];
 
 function SectionEyebrow({ children }: { children: React.ReactNode }) {
   return (
@@ -133,6 +143,261 @@ function InlineIcon({ src, className }: InlineIconProps) {
       className={`block [&_path]:fill-current [&_svg]:h-full [&_svg]:w-full ${className}`}
       dangerouslySetInnerHTML={{ __html: src }}
     />
+  );
+}
+
+function calculateTestimonialGap(width: number) {
+  const minWidth = 320;
+  const maxWidth = 620;
+  const minGap = 42;
+  const maxGap = 82;
+
+  if (width <= minWidth) {
+    return minGap;
+  }
+
+  if (width >= maxWidth) {
+    return maxGap;
+  }
+
+  return minGap + (maxGap - minGap) * ((width - minWidth) / (maxWidth - minWidth));
+}
+
+function CircularTestimonials({
+  testimonials,
+  previousLabel,
+  nextLabel,
+}: {
+  testimonials: CircularTestimonial[];
+  previousLabel: string;
+  nextLabel: string;
+}) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [hoveredControl, setHoveredControl] = useState<"previous" | "next" | null>(null);
+  const [containerWidth, setContainerWidth] = useState(520);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const autoplayIntervalRef = useRef<ReturnType<typeof window.setInterval> | null>(null);
+  const testimonialsLength = testimonials.length;
+  const activeTestimonial = testimonials[activeIndex];
+
+  const stopAutoplay = useCallback(() => {
+    if (autoplayIntervalRef.current) {
+      window.clearInterval(autoplayIntervalRef.current);
+      autoplayIntervalRef.current = null;
+    }
+  }, []);
+
+  const handleNext = useCallback(() => {
+    stopAutoplay();
+    setActiveIndex((current) => (current + 1) % testimonialsLength);
+  }, [stopAutoplay, testimonialsLength]);
+
+  const handlePrevious = useCallback(() => {
+    stopAutoplay();
+    setActiveIndex((current) => (current - 1 + testimonialsLength) % testimonialsLength);
+  }, [stopAutoplay, testimonialsLength]);
+
+  useEffect(() => {
+    const updateContainerWidth = () => {
+      if (imageContainerRef.current) {
+        setContainerWidth(imageContainerRef.current.offsetWidth);
+      }
+    };
+
+    updateContainerWidth();
+    window.addEventListener("resize", updateContainerWidth);
+
+    return () => window.removeEventListener("resize", updateContainerWidth);
+  }, []);
+
+  useEffect(() => {
+    autoplayIntervalRef.current = window.setInterval(() => {
+      setActiveIndex((current) => (current + 1) % testimonialsLength);
+    }, 5200);
+
+    return stopAutoplay;
+  }, [stopAutoplay, testimonialsLength]);
+
+  useEffect(() => {
+    const handleKeydown = (event: KeyboardEvent) => {
+      const target = event.target;
+      if (
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement
+      ) {
+        return;
+      }
+
+      if (event.key === "ArrowLeft") {
+        handlePrevious();
+      }
+
+      if (event.key === "ArrowRight") {
+        handleNext();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeydown);
+    return () => window.removeEventListener("keydown", handleKeydown);
+  }, [handleNext, handlePrevious]);
+
+  const getImageStyle = (index: number): CSSProperties => {
+    const gap = calculateTestimonialGap(containerWidth);
+    const lift = gap * 0.72;
+    const isActive = index === activeIndex;
+    const isLeft = (activeIndex - 1 + testimonialsLength) % testimonialsLength === index;
+    const isRight = (activeIndex + 1) % testimonialsLength === index;
+
+    if (isActive) {
+      return {
+        zIndex: 3,
+        opacity: 1,
+        pointerEvents: "auto",
+        transform: "translateX(0) translateY(0) scale(1) rotateY(0deg)",
+      };
+    }
+
+    if (isLeft) {
+      return {
+        zIndex: 2,
+        opacity: 0.9,
+        pointerEvents: "auto",
+        transform: `translateX(-${gap}px) translateY(-${lift}px) scale(0.84) rotateY(15deg)`,
+      };
+    }
+
+    if (isRight) {
+      return {
+        zIndex: 2,
+        opacity: 0.9,
+        pointerEvents: "auto",
+        transform: `translateX(${gap}px) translateY(-${lift}px) scale(0.84) rotateY(-15deg)`,
+      };
+    }
+
+    return {
+      zIndex: 1,
+      opacity: 0,
+      pointerEvents: "none",
+      transform: "translateY(18px) scale(0.74)",
+    };
+  };
+
+  return (
+    <div className="mx-auto grid max-w-[1050px] items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
+      <div
+        ref={imageContainerRef}
+        className="relative mx-auto h-[22rem] w-full max-w-[520px] [perspective:1000px] sm:h-[24rem]"
+      >
+        <div className="absolute inset-x-8 bottom-2 top-14 rounded-lg bg-[#ffdcbd]/36 blur-2xl dark:bg-[#854d63]/24" />
+        {testimonials.map((testimonial, index) => (
+          <button
+            type="button"
+            key={testimonial.name}
+            onClick={() => {
+              stopAutoplay();
+              setActiveIndex(index);
+            }}
+            aria-label={testimonial.name}
+            className="absolute inset-x-8 bottom-0 top-6 overflow-hidden rounded-lg border border-[#fcf9f8] bg-[#fff3ee] shadow-[0_22px_50px_rgba(91,65,55,0.14)] transition-[opacity,transform] duration-[780ms] ease-[cubic-bezier(.4,1.7,.3,1)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#854d63] dark:border-white/10 dark:bg-[#2b1b20] sm:inset-x-10"
+            style={getImageStyle(index)}
+          >
+            <img
+              src={testimonial.src}
+              alt={testimonial.name}
+              className="h-full w-full object-cover"
+            />
+            <span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(28,27,27,0)_46%,rgba(28,27,27,0.48)_100%)]" />
+            <span className="absolute bottom-4 left-4 right-4 text-left">
+              <span className="block font-serif text-xl leading-6 text-white">{testimonial.name}</span>
+              <span className="mt-1 block text-[11px] font-semibold uppercase tracking-[2px] text-white/78">
+                {testimonial.role}
+              </span>
+            </span>
+          </button>
+        ))}
+      </div>
+
+      <div className="grid h-[27rem] grid-rows-[1fr_auto] overflow-hidden rounded-lg border border-[#e4bfb2]/28 bg-[#fcf9f8] p-6 pb-7 shadow-[0_18px_48px_rgba(91,65,55,0.06)] dark:border-white/10 dark:bg-[#171111] sm:h-[25rem] sm:p-8 sm:pb-7 lg:h-[26rem]">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeIndex}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            <p className="font-serif text-[28px] leading-8 text-[#1c1b1b] dark:text-[#f8f1ec] sm:text-[32px] sm:leading-9">
+              {activeTestimonial.name}
+            </p>
+            <p className="mt-2 text-[12px] font-semibold uppercase tracking-[2.4px] text-[#854d63] dark:text-[#f0adc4]">
+              {activeTestimonial.role}
+            </p>
+            <motion.p className="mt-6 min-h-[9.75rem] text-[17px] italic leading-8 text-[#5b4137] dark:text-[#ded7d2] sm:text-[18px] sm:leading-8 lg:min-h-[10.5rem]">
+              {activeTestimonial.quote.split(" ").map((word, index) => (
+                <motion.span
+                  key={`${word}-${index}`}
+                  initial={{ filter: "blur(10px)", opacity: 0, y: 5 }}
+                  animate={{ filter: "blur(0px)", opacity: 1, y: 0 }}
+                  transition={{ duration: 0.22, ease: "easeInOut", delay: 0.024 * index }}
+                  className="inline-block"
+                >
+                  {word}&nbsp;
+                </motion.span>
+              ))}
+            </motion.p>
+          </motion.div>
+        </AnimatePresence>
+
+        <div className="mt-6 flex items-center gap-4 pb-1">
+          <button
+            type="button"
+            onClick={handlePrevious}
+            onMouseEnter={() => setHoveredControl("previous")}
+            onMouseLeave={() => setHoveredControl(null)}
+            className={`flex size-12 items-center justify-center rounded-full transition duration-300 ${
+              hoveredControl === "previous"
+                ? "bg-[#854d63] text-white"
+                : "bg-[#1c1b1b] text-[#fcf9f8] dark:bg-[#f8f1ec] dark:text-[#1c1415]"
+            }`}
+            aria-label={previousLabel}
+          >
+            <ChevronLeftIcon className="size-5" />
+          </button>
+          <button
+            type="button"
+            onClick={handleNext}
+            onMouseEnter={() => setHoveredControl("next")}
+            onMouseLeave={() => setHoveredControl(null)}
+            className={`flex size-12 items-center justify-center rounded-full transition duration-300 ${
+              hoveredControl === "next"
+                ? "bg-[#854d63] text-white"
+                : "bg-[#1c1b1b] text-[#fcf9f8] dark:bg-[#f8f1ec] dark:text-[#1c1415]"
+            }`}
+            aria-label={nextLabel}
+          >
+            <ChevronRightIcon className="size-5" />
+          </button>
+          <div className="ml-2 flex gap-2">
+            {testimonials.map((testimonial, index) => (
+              <button
+                type="button"
+                key={testimonial.name}
+                onClick={() => {
+                  stopAutoplay();
+                  setActiveIndex(index);
+                }}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  index === activeIndex ? "w-8 bg-[#854d63]" : "w-2 bg-[#e4bfb2] dark:bg-white/20"
+                }`}
+                aria-label={testimonial.name}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -156,6 +421,15 @@ function readStoredVisualTuning() {
   }
 }
 
+function getTransitionDurationMs(name: string, fallback: number) {
+  if (typeof window === "undefined") {
+    return fallback;
+  }
+
+  const value = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name));
+  return Number.isFinite(value) ? value : fallback;
+}
+
 function VisualTuningPanel({
   tuning,
   onChange,
@@ -171,7 +445,10 @@ function VisualTuningPanel({
   return (
     <div className="fixed bottom-4 right-4 z-[80] font-sans text-[#1c1b1b] print:hidden">
       {isOpen ? (
-        <div className="w-[min(22rem,calc(100vw-2rem))] rounded-2xl border border-[#e4bfb2]/40 bg-white/95 p-4 shadow-[0_24px_80px_rgba(28,27,27,0.16)] backdrop-blur">
+        <div
+          className="t-panel-slide w-[min(22rem,calc(100vw-2rem))] rounded-2xl border border-[#e4bfb2]/40 bg-white/95 p-4 shadow-[0_24px_80px_rgba(28,27,27,0.16)] backdrop-blur"
+          data-open="true"
+        >
           <div className="mb-3 flex items-center justify-between gap-3">
             <p className="text-xs font-semibold uppercase tracking-[2px] text-[#854d63]">Visual tuning</p>
             <button
@@ -235,12 +512,51 @@ function VisualTuningPanel({
 }
 
 export default function Home() {
-  const { t } = useTranslation();
-  const services = t("services.items", { returnObjects: true }) as Service[];
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language;
+  const { data: cmsHome } = useSanityQuery(homePageQuery, null as CmsHomePage | null);
+  const { data: cmsServices } = useSanityQuery(servicesQuery, [] as CmsService[]);
+  const { data: cmsTestimonials } = useSanityQuery(testimonialsQuery, [] as CmsTestimonial[]);
+  const usingCms = Boolean(cmsHome);
+
+  const heroData = cmsHome?.hero;
+  const manifestoData = cmsHome?.manifesto;
+  const aboutData = cmsHome?.about;
+
+  const services = useMemo(() => {
+    if (cmsServices.length > 0) {
+      return cmsServices.map((s) => toServiceViewModel(s, locale));
+    }
+    return t("services.items", { returnObjects: true }) as Service[];
+  }, [cmsServices, locale, t]);
+
   const traits = t("about.traits", { returnObjects: true }) as Trait[];
-  const testimonials = t("testimonials.items", { returnObjects: true }) as Testimonial[];
+
+  const testimonials = useMemo(() => {
+    if (cmsTestimonials.length > 0) {
+      return cmsTestimonials.map((t) => toTestimonialViewModel(t, locale));
+    }
+    return t("testimonials.items", { returnObjects: true }) as Testimonial[];
+  }, [cmsTestimonials, locale, t]);
+
+  const circularTestimonials = useMemo(
+    () =>
+      testimonials.map((testimonial, index) => {
+        let imgSrc = testimonialImages[index] ?? testimonialImages[0];
+        if (testimonial.portrait) {
+          const builder = sanityImageUrl(testimonial.portrait);
+          if (builder) {
+            const url = builder.width(400).height(500).url();
+            if (url) imgSrc = url;
+          }
+        }
+        return { ...testimonial, src: imgSrc };
+      }),
+    [testimonials]
+  );
   const [visualTuning, setVisualTuning] = useState(DEFAULT_VISUAL_TUNING);
-  const [activeTestimonial, setActiveTestimonial] = useState(1);
+  const [invalidFields, setInvalidFields] = useState<string[]>([]);
+  const [contactFormError, setContactFormError] = useState("");
   const isDev = import.meta.env.DEV;
 
   useEffect(() => {
@@ -268,22 +584,43 @@ export default function Home() {
     setVisualTuning((current) => ({ ...current, [key]: value }));
   };
 
-  const scrollToSection = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const clearContactError = (name: string) => {
+    setInvalidFields((current) => current.filter((field) => field !== name));
+    if (contactFormError) {
+      setContactFormError("");
+    }
+  };
+
+  const handleContactSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const form = event.currentTarget;
+
+    if (form.checkValidity()) {
+      return;
+    }
+
     event.preventDefault();
-    document.querySelector(href)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+    const invalidElements = Array.from(form.elements)
+      .filter(
+        (element): element is HTMLInputElement | HTMLTextAreaElement =>
+          element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement
+      )
+      .filter((element) => !element.validity.valid);
+    const invalidNames = invalidElements.map((element) => element.name).filter(Boolean);
+    const firstInvalid = invalidElements[0];
 
-  const visibleTestimonials = [-1, 0, 1].map((offset) => {
-    const index = (activeTestimonial + offset + testimonials.length) % testimonials.length;
-    return { testimonial: testimonials[index], index, offset };
-  });
+    setInvalidFields(invalidNames);
+    setContactFormError(firstInvalid?.validationMessage ?? "");
 
-  const showPreviousTestimonial = () => {
-    setActiveTestimonial((current) => (current - 1 + testimonials.length) % testimonials.length);
-  };
-
-  const showNextTestimonial = () => {
-    setActiveTestimonial((current) => (current + 1) % testimonials.length);
+    window.setTimeout(() => {
+      const shakeMs =
+        getTransitionDurationMs("--shake-dur-a", 80) * 2 +
+        getTransitionDurationMs("--shake-dur-b", 60) * 2;
+      firstInvalid?.classList.remove("is-shaking");
+      void firstInvalid?.offsetWidth;
+      firstInvalid?.classList.add("is-shaking");
+      window.setTimeout(() => firstInvalid?.classList.remove("is-shaking"), shakeMs + 20);
+      firstInvalid?.focus();
+    });
   };
 
   return (
@@ -298,27 +635,38 @@ export default function Home() {
             className="max-w-[672px]"
           >
             <h1 className="max-w-[672px] font-serif text-[40px] leading-[44px] text-[#1c1b1b] dark:text-[#f8f1ec] sm:text-[48px] sm:leading-[52px] lg:text-[56px] lg:leading-[60px] 2xl:text-[64px] 2xl:leading-[68px]">
-              {t("hero.titleStart")}{" "}
-              <span className="italic text-[#854d63] dark:text-[#f0adc4]">{t("hero.titleAccent")}</span>{" "}
-              {t("hero.titleEnd")}
+              {usingCms && heroData?.title
+                ? localized(heroData.title, locale)
+                : t("hero.titleStart")}{" "}
+              <span className="italic text-[#854d63] dark:text-[#f0adc4]">
+                {usingCms && heroData?.accent
+                  ? localized(heroData.accent, locale)
+                  : t("hero.titleAccent")}
+              </span>{" "}
+              {!usingCms && t("hero.titleEnd")}
             </h1>
             <p className="mt-6 max-w-[528px] text-[16px] leading-7 text-[#5b4137] dark:text-[#dbc9c0] md:text-[18px] md:leading-8">
-              {t("hero.description")}
+              {usingCms && heroData?.description
+                ? localized(heroData.description, locale)
+                : t("hero.description")}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 to="/contact"
                 className="inline-flex h-10 min-w-[144px] items-center justify-center rounded-full bg-[#1c1b1b] px-6 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#fcf9f8] shadow-[0_14px_32px_rgba(28,27,27,0.13)] transition hover:bg-[#854d63] dark:bg-[#f8f1ec] dark:text-[#1c1415] dark:hover:bg-[#f0adc4] md:h-[52px] md:min-w-[176px] md:px-8 md:tracking-[1px]"
               >
-                {t("hero.primaryCta")}
+                {usingCms && heroData?.primaryCta
+                  ? localized(heroData.primaryCta, locale)
+                  : t("hero.primaryCta")}
               </Link>
-              <a
-                href="#services"
-                onClick={(event) => scrollToSection(event, "#services")}
+              <Link
+                to="/services"
                 className="inline-flex h-10 min-w-[144px] items-center justify-center rounded-full border border-[#1c1b1b]/20 px-6 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#1c1b1b] transition hover:border-[#854d63] hover:bg-[#ffd9e4]/44 hover:text-[#854d63] dark:border-white/20 dark:text-[#f8f1ec] dark:hover:border-[#f0adc4] dark:hover:bg-[#854d63]/30 dark:hover:text-[#f0adc4] md:h-[52px] md:min-w-[172px] md:px-8 md:tracking-[1px]"
               >
-                {t("hero.secondaryCta")}
-              </a>
+                {usingCms && heroData?.secondaryCta
+                  ? localized(heroData.secondaryCta, locale)
+                  : t("hero.secondaryCta")}
+              </Link>
             </div>
           </motion.div>
 
@@ -383,10 +731,14 @@ export default function Home() {
       >
         <div className="relative mx-auto max-w-[48rem] text-center">
           <h2 className="font-serif text-[clamp(2rem,4vw,3.45rem)] leading-[1.04] dark:text-[#f8f1ec]">
-            {t("manifesto.titleTop")}
+            {usingCms && manifestoData?.title
+              ? localized(manifestoData.title, locale)
+              : t("manifesto.titleTop")}
             <br />
             <span className="relative isolate inline-block font-liberation-serif italic text-[#854d63] dark:text-[#f0adc4]">
-              {t("manifesto.titleAccent")}
+              {usingCms && manifestoData?.accent
+                ? localized(manifestoData.accent, locale)
+                : t("manifesto.titleAccent")}
               <img
                 src={decorativeArc}
                 alt=""
@@ -396,8 +748,9 @@ export default function Home() {
             </span>
           </h2>
           <div className="mx-auto mt-8 max-w-[42rem] space-y-5 text-base leading-7 text-[#5b4137] dark:text-[#dbc9c0] sm:text-[18px] sm:leading-8">
-            <p>{t("manifesto.p1")}</p>
-            <p>{t("manifesto.p2")}</p>
+            {usingCms && manifestoData?.body
+              ? <PortableText value={manifestoData.body[locale.startsWith("en") ? "en" : "fr"] ?? []} />
+              : <><p>{t("manifesto.p1")}</p><p>{t("manifesto.p2")}</p></>}
           </div>
         </div>
       </motion.section>
@@ -428,13 +781,20 @@ export default function Home() {
           </div>
           <div>
             <h2 className="font-serif text-[clamp(2rem,3.7vw,3.2rem)] leading-[1.06] dark:text-[#f8f1ec]">
-              {t("about.titleTop")}
+              {usingCms && aboutData?.title
+                ? localized(aboutData.title, locale)
+                : t("about.titleTop")}
               <br />
-              <span className="italic text-[#854d63] dark:text-[#f0adc4]">{t("about.titleAccent")}</span>
+              <span className="italic text-[#854d63] dark:text-[#f0adc4]">
+                {usingCms && aboutData?.accent
+                  ? localized(aboutData.accent, locale)
+                  : t("about.titleAccent")}
+              </span>
             </h2>
             <div className="mt-5 max-w-[42rem] space-y-4 text-base leading-7 text-[#5b4137] dark:text-[#dbc9c0] sm:text-[16px] sm:leading-8">
-              <p>{t("about.p1")}</p>
-              <p>{t("about.p2")}</p>
+              {usingCms && aboutData?.body
+                ? <PortableText value={aboutData.body[locale.startsWith("en") ? "en" : "fr"] ?? []} />
+                : <><p>{t("about.p1")}</p><p>{t("about.p2")}</p></>}
             </div>
             <div className="mt-7 grid grid-cols-3 gap-4 border-t border-[#e5e2e1]/80 pt-7 dark:border-white/10 sm:flex sm:flex-wrap sm:gap-7">
               {traits.map((trait, index) => {
@@ -481,7 +841,7 @@ export default function Home() {
                 <Link
                   to={`/services/${service.slug}`}
                   key={`${service.title}-${service.accent}`}
-                  className={`group relative overflow-hidden rounded-lg border border-[#e4bfb2]/25 bg-white p-6 text-left no-underline shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(28,27,27,0.08)] dark:border-[#d8a4c7]/16 dark:bg-[#171111] dark:hover:border-[#d8a4c7]/28 dark:hover:shadow-[0_18px_42px_rgba(0,0,0,0.24)] sm:p-7 ${
+                  className={`t-resize group relative overflow-hidden rounded-lg border border-[#e4bfb2]/25 bg-white p-6 text-left no-underline shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(28,27,27,0.08)] dark:border-[#d8a4c7]/16 dark:bg-[#171111] dark:hover:border-[#d8a4c7]/28 dark:hover:shadow-[0_18px_42px_rgba(0,0,0,0.24)] sm:p-7 ${
                     isWide ? "md:col-span-2" : ""
                   }`}
                 >
@@ -517,72 +877,11 @@ export default function Home() {
             <span className="italic text-[#854d63] dark:text-[#f0adc4]">{t("testimonials.titleAccent")}</span>
           </h2>
         </div>
-        <div className="relative mx-auto max-w-[1200px] pt-7">
-          <button
-            type="button"
-            onClick={showPreviousTestimonial}
-            className="absolute left-0 top-1/2 z-20 hidden size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#e5e2e1]/70 bg-white/58 text-[#854d63] shadow-sm backdrop-blur-md transition hover:bg-white hover:text-[#6a364b] dark:border-white/10 dark:bg-white/8 dark:text-[#f0adc4] dark:hover:bg-white/14 md:flex"
-            aria-label={t("testimonials.previous")}
-          >
-            <ChevronLeftIcon className="size-5" />
-          </button>
-          <button
-            type="button"
-            onClick={showNextTestimonial}
-            className="absolute right-0 top-1/2 z-20 hidden size-11 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-[#e5e2e1]/70 bg-white/58 text-[#854d63] shadow-sm backdrop-blur-md transition hover:bg-white hover:text-[#6a364b] dark:border-white/10 dark:bg-white/8 dark:text-[#f0adc4] dark:hover:bg-white/14 md:flex"
-            aria-label={t("testimonials.next")}
-          >
-            <ChevronRightIcon className="size-5" />
-          </button>
-          <div className="grid gap-9 md:grid-cols-3 md:gap-5 lg:gap-6">
-            {visibleTestimonials.map(({ testimonial, index, offset }) => {
-              const isActive = offset === 0;
-
-              return (
-                <motion.article
-                  key={`${testimonial.name}-${index}`}
-                  layout
-                  className={`relative flex min-h-[290px] flex-col justify-between rounded-lg border p-6 pt-11 text-center shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition ${
-                    isActive
-                      ? "border-[#854d63]/10 bg-[#ffd9e4]/40 dark:border-[#f0adc4]/24 dark:bg-[#3a2028]/72 md:-mt-6"
-                      : "border-[#e4bfb2]/25 bg-white dark:border-[#d8a4c7]/14 dark:bg-[#171111]"
-                  }`}
-                >
-                  <img
-                    src={testimonialImages[index] ?? testimonialImages[0]}
-                    alt={testimonial.name}
-                    className="absolute left-1/2 top-0 size-16 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-[#fcf9f8] object-cover shadow-sm dark:border-[#13100f]"
-                  />
-                  <p className="text-sm italic leading-6 text-[#5b4137] dark:text-[#ded7d2]">"{testimonial.quote}"</p>
-                  <div className="mt-7 border-t border-[#e5e2e1]/70 pt-5 dark:border-white/10">
-                    <p className="font-serif text-lg text-[#1c1b1b] dark:text-[#f8f1ec]">{testimonial.name}</p>
-                    <p className="mt-2 text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">
-                      {testimonial.role}
-                    </p>
-                  </div>
-                </motion.article>
-              );
-            })}
-          </div>
-          <div className="mt-8 flex justify-center gap-3 md:hidden">
-            <button
-              type="button"
-              onClick={showPreviousTestimonial}
-              className="flex size-11 items-center justify-center rounded-full border border-[#e5e2e1]/70 bg-white/58 text-[#854d63] backdrop-blur-md dark:border-white/10 dark:bg-white/8 dark:text-[#f0adc4]"
-              aria-label={t("testimonials.previous")}
-            >
-              <ChevronLeftIcon className="size-5" />
-            </button>
-            <button
-              type="button"
-              onClick={showNextTestimonial}
-              className="flex size-11 items-center justify-center rounded-full border border-[#e5e2e1]/70 bg-white/58 text-[#854d63] backdrop-blur-md dark:border-white/10 dark:bg-white/8 dark:text-[#f0adc4]"
-              aria-label={t("testimonials.next")}
-            >
-              <ChevronRightIcon className="size-5" />
-            </button>
-          </div>
-        </div>
+        <CircularTestimonials
+          testimonials={circularTestimonials}
+          previousLabel={t("testimonials.previous")}
+          nextLabel={t("testimonials.next")}
+        />
       </motion.section>
 
       <motion.section
@@ -616,43 +915,52 @@ export default function Home() {
             action="mailto:caroletonoukouen@gmail.com"
             method="post"
             encType="text/plain"
-            className="rounded-lg border border-[#e4bfb2]/30 bg-white p-5 shadow-[0_18px_48px_rgba(28,27,27,0.06)] dark:border-white/10 dark:bg-[#13100f] dark:shadow-[0_18px_48px_rgba(0,0,0,0.22)] sm:p-7"
+            noValidate
+            onSubmit={handleContactSubmit}
+            className={`t-input-wrap rounded-lg border border-[#e4bfb2]/30 bg-white p-5 shadow-[0_18px_48px_rgba(28,27,27,0.06)] dark:border-white/10 dark:bg-[#13100f] dark:shadow-[0_18px_48px_rgba(0,0,0,0.22)] sm:p-7 ${contactFormError ? "is-error" : ""}`}
           >
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="block text-sm font-semibold text-[#5b4137] dark:text-[#dbc9c0]">
+              <label className={`t-input-wrap block text-sm font-semibold text-[#5b4137] dark:text-[#dbc9c0] ${invalidFields.includes("name") ? "is-error" : ""}`}>
                 {t("contactSection.name")}
                 <input
                   name="name"
                   required
-                  className="mt-2 h-12 w-full rounded-md border border-[#e5e2e1] bg-[#fcf9f8] px-4 text-base font-normal text-[#1c1b1b] outline-none transition focus:border-[#854d63] dark:border-white/10 dark:bg-white/5 dark:text-[#f8f1ec] dark:focus:border-[#f0adc4]"
+                  onInput={() => clearContactError("name")}
+                  className={`t-input mt-2 h-12 w-full rounded-md border bg-[#fcf9f8] px-4 text-base font-normal text-[#1c1b1b] outline-none transition focus:border-[#854d63] dark:bg-white/5 dark:text-[#f8f1ec] dark:focus:border-[#f0adc4] ${invalidFields.includes("name") ? "is-error border-[#d4183d] dark:border-[#ff8aa1]" : "border-[#e5e2e1] dark:border-white/10"}`}
                 />
               </label>
-              <label className="block text-sm font-semibold text-[#5b4137] dark:text-[#dbc9c0]">
+              <label className={`t-input-wrap block text-sm font-semibold text-[#5b4137] dark:text-[#dbc9c0] ${invalidFields.includes("email") ? "is-error" : ""}`}>
                 {t("contactSection.email")}
                 <input
                   type="email"
                   name="email"
                   required
-                  className="mt-2 h-12 w-full rounded-md border border-[#e5e2e1] bg-[#fcf9f8] px-4 text-base font-normal text-[#1c1b1b] outline-none transition focus:border-[#854d63] dark:border-white/10 dark:bg-white/5 dark:text-[#f8f1ec] dark:focus:border-[#f0adc4]"
+                  onInput={() => clearContactError("email")}
+                  className={`t-input mt-2 h-12 w-full rounded-md border bg-[#fcf9f8] px-4 text-base font-normal text-[#1c1b1b] outline-none transition focus:border-[#854d63] dark:bg-white/5 dark:text-[#f8f1ec] dark:focus:border-[#f0adc4] ${invalidFields.includes("email") ? "is-error border-[#d4183d] dark:border-[#ff8aa1]" : "border-[#e5e2e1] dark:border-white/10"}`}
                 />
               </label>
             </div>
-            <label className="mt-4 block text-sm font-semibold text-[#5b4137] dark:text-[#dbc9c0]">
+            <label className={`t-input-wrap mt-4 block text-sm font-semibold text-[#5b4137] dark:text-[#dbc9c0] ${invalidFields.includes("subject") ? "is-error" : ""}`}>
               {t("contactSection.subject")}
               <input
                 name="subject"
-                className="mt-2 h-12 w-full rounded-md border border-[#e5e2e1] bg-[#fcf9f8] px-4 text-base font-normal text-[#1c1b1b] outline-none transition focus:border-[#854d63] dark:border-white/10 dark:bg-white/5 dark:text-[#f8f1ec] dark:focus:border-[#f0adc4]"
+                onInput={() => clearContactError("subject")}
+                className={`t-input mt-2 h-12 w-full rounded-md border bg-[#fcf9f8] px-4 text-base font-normal text-[#1c1b1b] outline-none transition focus:border-[#854d63] dark:bg-white/5 dark:text-[#f8f1ec] dark:focus:border-[#f0adc4] ${invalidFields.includes("subject") ? "is-error border-[#d4183d] dark:border-[#ff8aa1]" : "border-[#e5e2e1] dark:border-white/10"}`}
               />
             </label>
-            <label className="mt-4 block text-sm font-semibold text-[#5b4137] dark:text-[#dbc9c0]">
+            <label className={`t-input-wrap mt-4 block text-sm font-semibold text-[#5b4137] dark:text-[#dbc9c0] ${invalidFields.includes("message") ? "is-error" : ""}`}>
               {t("contactSection.message")}
               <textarea
                 name="message"
                 required
                 rows={5}
-                className="mt-2 w-full resize-none rounded-md border border-[#e5e2e1] bg-[#fcf9f8] px-4 py-3 text-base font-normal leading-7 text-[#1c1b1b] outline-none transition focus:border-[#854d63] dark:border-white/10 dark:bg-white/5 dark:text-[#f8f1ec] dark:focus:border-[#f0adc4]"
+                onInput={() => clearContactError("message")}
+                className={`t-input mt-2 w-full resize-none rounded-md border bg-[#fcf9f8] px-4 py-3 text-base font-normal leading-7 text-[#1c1b1b] outline-none transition focus:border-[#854d63] dark:bg-white/5 dark:text-[#f8f1ec] dark:focus:border-[#f0adc4] ${invalidFields.includes("message") ? "is-error border-[#d4183d] dark:border-[#ff8aa1]" : "border-[#e5e2e1] dark:border-white/10"}`}
               />
             </label>
+            <p className="t-error-msg mt-3 text-sm font-medium text-[#d4183d] dark:text-[#ff8aa1]">
+              {contactFormError}
+            </p>
             <button
               type="submit"
               className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1c1b1b] px-6 text-[12px] font-semibold uppercase tracking-[1px] text-white transition hover:bg-[#854d63] dark:bg-[#f8f1ec] dark:text-[#1c1415] dark:hover:bg-[#f0adc4] sm:w-auto"

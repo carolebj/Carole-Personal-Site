@@ -17,6 +17,7 @@ Translations are managed with `react-i18next` and support French and English, wi
 - Animation: `motion`
 - UI primitives: Radix UI, Heroicons, selected shadcn-style UI wrappers in `src/app/components/ui`
 - i18n: `i18next`, `react-i18next`
+- CMS: Sanity Studio 4, `@sanity/client`, `@sanity/image-url`, Portable Text
 
 ## Build and Run Commands
 
@@ -26,18 +27,31 @@ Run from the repository root:
 npm install
 npm run dev
 npm run build
+npm run dev:site
+npm run cms:dev
+npm run cms:build
 ```
 
 Current `package.json` scripts:
 
-- `npm run dev`: starts the Vite dev server
-- `npm run build`: creates a production bundle in `dist/`
+- `npm run dev`: starts the Vite site and Sanity Studio together for local work
+- `npm run dev:site`: starts only the Vite site (port 5173)
+- `npm run build`: builds Vite site → `dist/`, then builds Studio → `dist-studio/`, then copies to `dist/admin/`
+- `npm run cms:dev`: starts Sanity Studio from `sanity.config.ts` on port 3333
+- `npm run cms:build`: creates a static Studio bundle in `dist-studio/`
+- `npm run cms:deploy`: deploys the Studio through Sanity hosting
 
 Notes:
 
+- The Sanity Studio is served at `/admin` (configurable via `basePath` in `sanity.config.ts`).
+- **Local dev**: run `npm run dev` → site at `http://127.0.0.1:5173/`, Studio at `http://127.0.0.1:3333/admin/`, and `/admin` on the site redirects to the Studio server.
+- **Production**: `npm run build` embeds the Studio in `dist/admin/`; Vercel serves it at `yourdomain.com/admin`
+- **Important**: Sanity Studio has its own Vite server in dev; use `npm run dev` to start both processes from one terminal instead of manually running two commands.
 - There is no dedicated `preview` script. If needed, use `npx vite preview` after a build.
-- The project already has `node_modules/` and builds successfully with `npm run build`.
-- In the restricted Codex sandbox, the Vite dev server may fail to bind `127.0.0.1:5173` with `EPERM`; rerun the dev command with elevated local permissions when needed.
+- CMS environment variables live in `.env.local`; copy `.env.example` and set `VITE_SANITY_PROJECT_ID`, `VITE_SANITY_DATASET`, `SANITY_STUDIO_PROJECT_ID`, and `SANITY_STUDIO_DATASET`.
+- Optional AI translation for Studio fields uses server-side `OPENAI_API_KEY` and `OPENAI_TRANSLATION_MODEL`; never expose the key with a `VITE_` prefix.
+- Preferred production translation path is Cloudflare Worker + Cloudflare AI Gateway. Vercel should set `CLOUDFLARE_TRANSLATE_WORKER_URL` and `TRANSLATE_WORKER_TOKEN`; OpenAI should stay in Cloudflare Worker secrets, not in Vercel, once this path is active.
+- Keep the Vite site build and the Studio build separated: public site output is `dist/`, Studio output is `dist-studio/`. The build command copies Studio assets into `dist/admin/`.
 
 ## Test and Quality Commands
 
@@ -71,6 +85,7 @@ If you add any of the following, update this file:
 3. `src/app/routes.tsx` defines the browser router.
 4. `src/app/Layout.tsx` initializes i18n, renders `Navbar`, `Outlet`, `Footer`, and `ScrollRestoration`.
 5. `src/app/pages/Home.tsx` composes the landing page sections in order.
+6. Optional CMS content is fetched through `src/cms/`; when Sanity is not configured or returns no content, public pages fall back to the existing local i18n content.
 
 ## Routing Model
 
@@ -97,9 +112,11 @@ Any new route should include `ErrorBoundary: RouteErrorBoundary`.
 
 - `src/styles/index.css` is the global CSS entrypoint
 - `src/styles/tailwind.css` imports Tailwind v4 and declares source scanning
-- `src/styles/theme.css` defines theme variables, color tokens, radius tokens, typography defaults, and dark-mode token overrides
+- `src/styles/tokens.css` defines primitive tokens, semantic tokens, dark-mode token overrides, and Tailwind `@theme` mappings
+- `src/styles/global.css` defines global/base styles and design utilities that consume semantic tokens
 - Components mainly use Tailwind utility classes inline
-- Typography relies on theme variables and font families defined in CSS rather than ad hoc per-component declarations
+- Components should prefer semantic token utilities such as `bg-surface-page`, `bg-surface-panel`, `text-text-primary`, `text-text-secondary`, `text-text-accent`, `border-border-subtle`, and `bg-action-strong` over raw hex values
+- Typography relies on tokenized font families and weights rather than ad hoc per-component declarations
 
 ## UI Composition
 
@@ -143,11 +160,27 @@ Internationalization:
 - `src/app/i18n/LanguageContext.tsx`
 - `src/app/i18n/locales/`
 
+CMS:
+
+- `sanity.config.ts`: Sanity Studio configuration
+- `sanity.cli.ts`: Sanity CLI project configuration for commands such as login and CORS
+- `CMS_SETUP.md`: checklist for creating the Sanity project, copying env variables, and configuring CORS
+- `studio/structure.ts`: editor-friendly Studio navigation, organized around the portfolio's editorial areas
+- `studio/components/LocalizedFieldInput.tsx`: bilingual FR/EN Studio inputs with copy and translation actions
+- `studio/components/LocalizedBlockInput.tsx`: editorial wrapper for bilingual rich content fields
+- `studio/schemas/`: Sanity document and object schemas
+- `src/cms/client.ts`: browser Sanity client and image URL builder
+- `src/cms/queries.ts`: GROQ queries used by the frontend
+- `src/cms/adapters.ts`: maps CMS documents into existing React view models
+- `src/cms/useSanityQuery.ts`: fallback-safe CMS fetching hook
+- `api/translate.js` and `scripts/translate-text.mjs`: server-side FR → EN translation endpoint used by the Studio when OpenAI credentials are configured
+- `cloudflare/translate-worker/`: protected translation Worker that validates a bearer token, calls OpenAI through Cloudflare AI Gateway, and keeps OpenAI secrets away from the public site runtime
+
 Styles and assets:
 
 - `src/styles/index.css`
 - `src/styles/tailwind.css`
-- `src/styles/theme.css`
+- `src/styles/global.css`
 - `src/styles/fonts.css`
 - `src/assets/`
 - `src/assets/carole-redesign-*.png`: current Figma-derived redesign image assets
@@ -178,7 +211,7 @@ Follow the existing codebase before introducing new patterns.
 ### Styling
 
 - Prefer Tailwind utility classes for component styling
-- Reuse theme tokens from `theme.css` instead of inventing one-off values when a token exists
+- Reuse semantic tokens from `tokens.css` instead of inventing one-off values when a token exists
 - Default to flex/grid layouts
 - Use `absolute` positioning only when it is genuinely layout-critical
 - Preserve responsive behavior; mobile interactions must have a non-hover fallback
@@ -193,6 +226,7 @@ Follow the existing codebase before introducing new patterns.
 
 - Any user-facing text should go through translation files
 - Maintain both `fr` and `en` locales together
+- CMS-managed copy should use localized Sanity fields with `fr` as the required primary language and `en` as the optional secondary language until translation is available.
 - French copy quality matters: correct spelling, accents, and punctuation
 - Avoid em dashes in French copy
 - Use French quotation marks (`« »`) when the surrounding copy is francophone
@@ -215,7 +249,8 @@ Follow the existing codebase before introducing new patterns.
 ### Files to Treat Carefully
 
 - `src/app/components/ui/`: shared primitives, likely reused across features
-- `src/styles/theme.css`: central theme and token definitions
+- `src/styles/tokens.css`: central primitive and semantic token definitions
+- `src/styles/global.css`: global styles and utilities that consume tokens
 - `src/app/i18n/locales/`: translation source of truth
 - `MEMORY.md`: living product/design memory that should stay short and current
 
