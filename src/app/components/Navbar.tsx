@@ -303,7 +303,7 @@ export default function Navbar() {
   const logoDropdownPhase = useDropdownTransition(isLogoMenuOpen);
 
   const navLinks = [
-    { id: "home", name: t("nav.home"), href: "#home" },
+    { id: "home", name: t("nav.home"), href: "/", isPageLink: true },
     { id: "about", name: t("nav.about"), href: "/about", isPageLink: true },
     { id: "services", name: t("nav.services"), href: "/services", hasMenu: true, isPageLink: true },
     { id: "carnet", name: t("nav.carnet"), href: "#carnet", hasCarnetMenu: true },
