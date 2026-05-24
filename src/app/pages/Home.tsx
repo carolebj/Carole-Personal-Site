@@ -3,6 +3,11 @@ import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
+import { toServiceViewModel, toTestimonialViewModel } from "../../cms/adapters";
+import { sanityImageUrl } from "../../cms/client";
+import { homePageQuery, servicesQuery, testimonialsQuery } from "../../cms/queries";
+import { localized, type CmsHomePage, type CmsService, type CmsTestimonial, type SanityImage } from "../../cms/types";
+import { useSanityQuery } from "../../cms/useSanityQuery";
 import portraitImage from "../../assets/carole-redesign-portrait.png";
 import workingImage from "../../assets/carole-redesign-working.png";
 import announcementMegaphoneIcon from "../../assets/icons/announcement-megaphone.svg?raw";
@@ -506,10 +511,33 @@ function VisualTuningPanel({
 }
 
 export default function Home() {
-  const { t } = useTranslation();
-  const services = t("services.items", { returnObjects: true }) as Service[];
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language;
+  const { data: cmsHome } = useSanityQuery(homePageQuery, null as CmsHomePage | null);
+  const { data: cmsServices } = useSanityQuery(servicesQuery, [] as CmsService[]);
+  const { data: cmsTestimonials } = useSanityQuery(testimonialsQuery, [] as CmsTestimonial[]);
+  const usingCms = Boolean(cmsHome);
+
+  const heroData = cmsHome?.hero;
+  const manifestoData = cmsHome?.manifesto;
+  const aboutData = cmsHome?.about;
+
+  const services = useMemo(() => {
+    if (cmsServices.length > 0) {
+      return cmsServices.map((s) => toServiceViewModel(s, locale));
+    }
+    return t("services.items", { returnObjects: true }) as Service[];
+  }, [cmsServices, locale, t]);
+
   const traits = t("about.traits", { returnObjects: true }) as Trait[];
-  const testimonials = t("testimonials.items", { returnObjects: true }) as Testimonial[];
+
+  const testimonials = useMemo(() => {
+    if (cmsTestimonials.length > 0) {
+      return cmsTestimonials.map((t) => toTestimonialViewModel(t, locale));
+    }
+    return t("testimonials.items", { returnObjects: true }) as Testimonial[];
+  }, [cmsTestimonials, locale, t]);
+
   const circularTestimonials = useMemo(
     () =>
       testimonials.map((testimonial, index) => ({
@@ -599,25 +627,37 @@ export default function Home() {
             className="max-w-[672px]"
           >
             <h1 className="max-w-[672px] font-serif text-[40px] leading-[44px] text-[#1c1b1b] dark:text-[#f8f1ec] sm:text-[48px] sm:leading-[52px] lg:text-[56px] lg:leading-[60px] 2xl:text-[64px] 2xl:leading-[68px]">
-              {t("hero.titleStart")}{" "}
-              <span className="italic text-[#854d63] dark:text-[#f0adc4]">{t("hero.titleAccent")}</span>{" "}
-              {t("hero.titleEnd")}
+              {usingCms && heroData?.title
+                ? localized(heroData.title, locale)
+                : t("hero.titleStart")}{" "}
+              <span className="italic text-[#854d63] dark:text-[#f0adc4]">
+                {usingCms && heroData?.accent
+                  ? localized(heroData.accent, locale)
+                  : t("hero.titleAccent")}
+              </span>{" "}
+              {!usingCms && t("hero.titleEnd")}
             </h1>
             <p className="mt-6 max-w-[528px] text-[16px] leading-7 text-[#5b4137] dark:text-[#dbc9c0] md:text-[18px] md:leading-8">
-              {t("hero.description")}
+              {usingCms && heroData?.description
+                ? localized(heroData.description, locale)
+                : t("hero.description")}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 to="/contact"
                 className="inline-flex h-10 min-w-[144px] items-center justify-center rounded-full bg-[#1c1b1b] px-6 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#fcf9f8] shadow-[0_14px_32px_rgba(28,27,27,0.13)] transition hover:bg-[#854d63] dark:bg-[#f8f1ec] dark:text-[#1c1415] dark:hover:bg-[#f0adc4] md:h-[52px] md:min-w-[176px] md:px-8 md:tracking-[1px]"
               >
-                {t("hero.primaryCta")}
+                {usingCms && heroData?.primaryCta
+                  ? localized(heroData.primaryCta, locale)
+                  : t("hero.primaryCta")}
               </Link>
               <Link
                 to="/services"
                 className="inline-flex h-10 min-w-[144px] items-center justify-center rounded-full border border-[#1c1b1b]/20 px-6 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#1c1b1b] transition hover:border-[#854d63] hover:bg-[#ffd9e4]/44 hover:text-[#854d63] dark:border-white/20 dark:text-[#f8f1ec] dark:hover:border-[#f0adc4] dark:hover:bg-[#854d63]/30 dark:hover:text-[#f0adc4] md:h-[52px] md:min-w-[172px] md:px-8 md:tracking-[1px]"
               >
-                {t("hero.secondaryCta")}
+                {usingCms && heroData?.secondaryCta
+                  ? localized(heroData.secondaryCta, locale)
+                  : t("hero.secondaryCta")}
               </Link>
             </div>
           </motion.div>
@@ -683,10 +723,14 @@ export default function Home() {
       >
         <div className="relative mx-auto max-w-[48rem] text-center">
           <h2 className="font-serif text-[clamp(2rem,4vw,3.45rem)] leading-[1.04] dark:text-[#f8f1ec]">
-            {t("manifesto.titleTop")}
+            {usingCms && manifestoData?.title
+              ? localized(manifestoData.title, locale)
+              : t("manifesto.titleTop")}
             <br />
             <span className="relative isolate inline-block font-liberation-serif italic text-[#854d63] dark:text-[#f0adc4]">
-              {t("manifesto.titleAccent")}
+              {usingCms && manifestoData?.accent
+                ? localized(manifestoData.accent, locale)
+                : t("manifesto.titleAccent")}
               <img
                 src={decorativeArc}
                 alt=""
@@ -728,9 +772,15 @@ export default function Home() {
           </div>
           <div>
             <h2 className="font-serif text-[clamp(2rem,3.7vw,3.2rem)] leading-[1.06] dark:text-[#f8f1ec]">
-              {t("about.titleTop")}
+              {usingCms && aboutData?.title
+                ? localized(aboutData.title, locale)
+                : t("about.titleTop")}
               <br />
-              <span className="italic text-[#854d63] dark:text-[#f0adc4]">{t("about.titleAccent")}</span>
+              <span className="italic text-[#854d63] dark:text-[#f0adc4]">
+                {usingCms && aboutData?.accent
+                  ? localized(aboutData.accent, locale)
+                  : t("about.titleAccent")}
+              </span>
             </h2>
             <div className="mt-5 max-w-[42rem] space-y-4 text-base leading-7 text-[#5b4137] dark:text-[#dbc9c0] sm:text-[16px] sm:leading-8">
               <p>{t("about.p1")}</p>

@@ -90,6 +90,8 @@ out
 # Nuxt.js build / generate output
 .nuxt
 dist
+dist-studio
+.sanity
 
 # Gatsby files
 .cache/
@@ -138,3 +140,4 @@ dist
 # macOS
 .DS_Store
 .vercel
+graphify-out/

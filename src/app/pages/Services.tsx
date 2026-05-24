@@ -5,8 +5,13 @@ import {
   SparklesIcon,
 } from "@heroicons/react/24/outline";
 import { motion } from "motion/react";
+import { useMemo } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
+import { toServiceViewModel } from "../../cms/adapters";
+import { servicesQuery } from "../../cms/queries";
+import type { CmsService } from "../../cms/types";
+import { useSanityQuery } from "../../cms/useSanityQuery";
 
 type Service = {
   slug: string;
@@ -51,8 +56,15 @@ const serviceAccentClasses = [
 ];
 
 export default function Services() {
-  const { t } = useTranslation();
-  const services = t("services.items", { returnObjects: true }) as Service[];
+  const { t, i18n } = useTranslation();
+  const { data: cmsServices } = useSanityQuery(servicesQuery, [] as CmsService[]);
+  const locale = i18n.language;
+  const services = useMemo(() => {
+    if (cmsServices.length > 0) {
+      return cmsServices.map((s) => toServiceViewModel(s, locale));
+    }
+    return t("services.items", { returnObjects: true }) as Service[];
+  }, [cmsServices, locale, t]);
 
   return (
     <main className="overflow-hidden bg-[#fcf9f8] px-5 pb-20 pt-28 text-[#1c1b1b] dark:bg-[#13100f] dark:text-[#f8f1ec] sm:px-8 md:pt-36">

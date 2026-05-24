@@ -4,7 +4,7 @@
 
 This file is the project-level memory for the Carole Portfolio repo. Keep it short, current, and useful for future agents working on the site.
 
-Last reviewed: 2026-05-05 WAT
+Last reviewed: 2026-05-24 WAT
 
 ## Current Branch Workflow
 
@@ -19,6 +19,17 @@ Last reviewed: 2026-05-05 WAT
 - Git author email is now `stevenkejjad@gmail.com`; this fixed Vercel's commit-author validation.
 - Current production alias points to the `main` deployment; current `dev` branch preview is `https://carole-portfolio-git-dev-stevens-projects-db687a83.vercel.app`.
 - Vercel Authentication is disabled for the project; both production and `dev` preview URLs are publicly reachable without login.
+
+## CMS Direction
+
+- The portfolio CMS stack is Sanity Studio 4 connected to the existing Vite/React site through `@sanity/client`.
+- Sanity Studio source lives in `sanity.config.ts` and `studio/`; the static Studio build goes to `dist-studio/` and is copied into `dist/admin/` during the full build.
+- **The Studio is served at `/admin`**. Locally via Vite proxy (`npm run cms:dev` + `npm run dev`), in production from the combined Vite build via `vercel.json` rewrites.
+- Frontend CMS helpers live in `src/cms/`; CMS fetching is fallback-safe so the site keeps rendering local i18n content when Sanity env vars are absent or content is not migrated yet.
+- All content types (blog, services, testimonials, resources, CV, homepage, site settings) are ready for progressive CMS migration.
+- **Categories** are a dedicated document type (`studio/schemas/documents/category.ts`). Blog posts reference a category document, and new categories can be created inline from the blog post editor.
+- Existing blog categories were migrated via `scripts/migrate-categories.mjs` (4 categories created).
+- Required environment variables are documented in `.env.example`; configure both `VITE_SANITY_*` for the public site and `SANITY_STUDIO_*` for Studio.
 
 ## Active Redesign Direction
 
@@ -68,6 +79,7 @@ Last reviewed: 2026-05-05 WAT
 - Theme selection is handled by `src/app/theme/ThemeContext.tsx`, follows `prefers-color-scheme` on first visit, and persists the explicit choice in `localStorage` under `portfolio-theme`.
 - Haptic feedback is handled by `src/app/interactions/HapticContext.tsx` and persists its on/off preference under `portfolio-haptics`.
 - Public pages are route-lazy-loaded in `src/app/routes.tsx` to keep the initial bundle light; keep heavy third-party widgets out of the root route chunk.
+- CMS content should be migrated progressively and keep local i18n fallback paths until Carole validates the Studio content.
 - The Cal.com booking widget is isolated in `src/app/components/CalMeetingEmbed.tsx` and lazy-loaded only when the `/contact` meeting mode is shown.
 - The redesigned home page lives in `src/app/pages/Home.tsx`.
 - The redesigned navigation and footer live in `src/app/components/Navbar.tsx` and `src/app/components/Footer.tsx`.
@@ -76,6 +88,14 @@ Last reviewed: 2026-05-05 WAT
 - Liberation Serif local font files live in `src/assets/fonts/` and are declared in `src/styles/fonts.css`.
 - Design tokens are split from global design styles: `src/styles/tokens.css` holds primitive tokens, semantic tokens, dark-mode overrides, and Tailwind `@theme` mappings; `src/styles/global.css` holds base styles and utilities that consume those semantics.
 - The organic image shapes are defined as utilities in `src/styles/global.css`.
+
+## Graphify (Code Navigation)
+
+- **Graphify** (`howell5/willhong-skills@graphify`) is installed as a structural AST index of the codebase.
+- CLI installed globally as `graphify` (alias `graphify-ts`).
+- Graph file: `graphify-out/graph.json` (gitignored) — 197 files, 10 862 symbols, 10 722 relationships indexed.
+- Commands: `graphify build .` (full rebuild), `graphify update <files>` (incremental), `graphify query <graph.json> <name>` (search symbols).
+- Trigger skill with `/graphify` or use `skill graphify` when exploring the codebase.
 
 ## Update Rule
 

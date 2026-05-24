@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 import {
   ArrowUpRightIcon,
@@ -25,6 +25,10 @@ import caroleLogoSymbol from "../../assets/logos/carole-CT-logo.svg";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { useHaptics } from "../interactions/HapticContext";
 import { useTheme, type ThemePreference } from "../theme/ThemeContext";
+import { toServiceViewModel } from "../../cms/adapters";
+import { servicesQuery } from "../../cms/queries";
+import type { CmsService } from "../../cms/types";
+import { useSanityQuery } from "../../cms/useSanityQuery";
 
 type ServicePreview = {
   slug: string;
@@ -287,7 +291,14 @@ export default function Navbar() {
   const { t, i18n } = useTranslation();
   const { enabled: hapticsEnabled, toggleEnabled: toggleHaptics } = useHaptics();
   const location = useLocation();
-  const services = t("services.items", { returnObjects: true }) as ServicePreview[];
+  const { data: cmsServices } = useSanityQuery(servicesQuery, [] as CmsService[]);
+  const locale = i18n.language;
+  const services = useMemo(() => {
+    if (cmsServices.length > 0) {
+      return cmsServices.map((s) => toServiceViewModel(s, locale));
+    }
+    return t("services.items", { returnObjects: true }) as ServicePreview[];
+  }, [cmsServices, locale, t]);
   const serviceIcons = [DocumentTextIcon, MegaphoneIcon, PencilSquareIcon, ChartBarIcon];
   const logoDropdownPhase = useDropdownTransition(isLogoMenuOpen);
 

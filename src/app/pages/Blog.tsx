@@ -4,6 +4,11 @@ import { motion } from "motion/react";
 import type React from "react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toBlogPostViewModel } from "../../cms/adapters";
+import { sanityImageUrl } from "../../cms/client";
+import { blogPostsQuery } from "../../cms/queries";
+import type { CmsBlogPost, SanityImage } from "../../cms/types";
+import { useSanityQuery } from "../../cms/useSanityQuery";
 import abstractAuditImage from "../../assets/blog/blog-abstract-audit.svg";
 import abstractContentImage from "../../assets/blog/blog-abstract-content.svg";
 import abstractEditorialImage from "../../assets/blog/blog-abstract-editorial.svg";
@@ -17,15 +22,28 @@ type BlogPostPreview = {
   date: string;
   readingTime: string;
   featured?: boolean;
+  coverImage?: SanityImage;
 };
 
 const blogImages = [abstractEditorialImage, abstractContentImage, abstractSocialImage, abstractAuditImage];
 
 export default function Blog() {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const posts = t("blog.posts", { returnObjects: true }) as BlogPostPreview[];
+  const legacyPosts = useMemo(
+    () => t("blog.posts", { returnObjects: true }) as BlogPostPreview[],
+    [t]
+  );
+  const emptyCmsPosts = useMemo<CmsBlogPost[]>(() => [], []);
+  const { data: cmsPosts } = useSanityQuery<CmsBlogPost[]>(blogPostsQuery, emptyCmsPosts);
+  const posts = useMemo(
+    () =>
+      cmsPosts.length > 0
+        ? cmsPosts.map((post) => toBlogPostViewModel(post, i18n.language))
+        : legacyPosts,
+    [cmsPosts, i18n.language, legacyPosts]
+  );
   const featuredPost = posts.find((post) => post.featured) ?? posts[0];
   const categories = useMemo(
     () => [t("blog.allCategories"), ...Array.from(new Set(posts.map((post) => post.category)))],
@@ -38,7 +56,14 @@ export default function Blog() {
     return matchesCategory && (!normalizedSearchQuery || searchableText.includes(normalizedSearchQuery));
   });
   const getPostImage = (slug: string) => {
-    const index = posts.findIndex((post) => post.slug === slug);
+    const post = posts.find((item) => item.slug === slug);
+    const cmsImage = sanityImageUrl(post?.coverImage)?.width(1200).height(900).fit("crop").url();
+
+    if (cmsImage) {
+      return cmsImage;
+    }
+
+    const index = posts.findIndex((item) => item.slug === slug);
     return blogImages[index % blogImages.length] ?? abstractEditorialImage;
   };
 

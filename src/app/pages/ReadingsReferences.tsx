@@ -1,6 +1,10 @@
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { localized } from "../../cms/types";
+import { resourcesQuery } from "../../cms/queries";
+import type { CmsResource } from "../../cms/types";
+import { useSanityQuery } from "../../cms/useSanityQuery";
 import { Book } from "@/app/components/Book";
 
 type ReadingItem = {
@@ -146,7 +150,53 @@ function ReferenceCard({
 
 export default function ReadingsReferences() {
   const { t, i18n } = useTranslation();
-  const content = t("carnetPage", { returnObjects: true }) as ReadingsContent;
+  const locale = i18n.language;
+  const { data: cmsResources } = useSanityQuery(resourcesQuery, [] as CmsResource[]);
+
+  const content = useMemo((): ReadingsContent => {
+    const fallback = t("carnetPage", { returnObjects: true }) as ReadingsContent;
+
+    if (cmsResources.length === 0) return fallback;
+
+    const readings = cmsResources
+      .filter((r) => r.kind === "reading")
+      .map((r) => ({
+        title: localized(r.title, locale),
+        author: "",
+        desc: localized(r.description, locale),
+        link: r.url,
+      }));
+
+    const references = cmsResources
+      .filter((r) => r.kind === "reference")
+      .map((r) => ({
+        title: localized(r.title, locale),
+        author: "",
+        desc: localized(r.description, locale),
+        link: r.url,
+      }));
+
+    const mergedSections = fallback.readingsSections.map((section, i) => {
+      const cmsItems = i === 0 ? readings : references;
+      const merged = section.items.map((item, j) => {
+        const cmsItem = cmsItems[j];
+        if (!cmsItem) return item;
+        return {
+          ...item,
+          title: cmsItem.title || item.title,
+          desc: cmsItem.desc || item.desc,
+          link: cmsItem.link || item.link,
+        };
+      });
+      if (cmsItems.length > section.items.length) {
+        merged.push(...cmsItems.slice(section.items.length).map((r) => ({ title: r.title, author: "", desc: r.desc, link: r.link })));
+      }
+      return { ...section, items: merged };
+    });
+
+    return { ...fallback, readingsSections: mergedSections };
+  }, [cmsResources, locale, t]);
+
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const booksSection = content.readingsSections[0];
   const referencesSection = content.readingsSections[1];

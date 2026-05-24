@@ -1,6 +1,11 @@
 import { Link, useParams } from "react-router";
 import { motion } from "motion/react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { toServiceViewModel } from "../../cms/adapters";
+import { servicesQuery } from "../../cms/queries";
+import type { CmsService } from "../../cms/types";
+import { useSanityQuery } from "../../cms/useSanityQuery";
 
 type ServiceDetail = {
   slug: string;
@@ -43,8 +48,15 @@ function AnimatedDigits({ value }: { value: string }) {
 
 export default function ServiceDetail() {
   const { slug } = useParams();
-  const { t } = useTranslation();
-  const services = t("services.items", { returnObjects: true }) as ServiceDetail[];
+  const { t, i18n } = useTranslation();
+  const { data: cmsServices } = useSanityQuery(servicesQuery, [] as CmsService[]);
+  const locale = i18n.language;
+  const services = useMemo(() => {
+    if (cmsServices.length > 0) {
+      return cmsServices.map((s) => toServiceViewModel(s, locale));
+    }
+    return t("services.items", { returnObjects: true }) as ServiceDetail[];
+  }, [cmsServices, locale, t]);
   const slugAliases: Record<string, string> = {
     "direction-social-media": "communication-digitale",
     "social-media-direction": "digital-communication",

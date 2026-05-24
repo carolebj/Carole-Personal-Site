@@ -17,6 +17,7 @@ Translations are managed with `react-i18next` and support French and English, wi
 - Animation: `motion`
 - UI primitives: Radix UI, Heroicons, selected shadcn-style UI wrappers in `src/app/components/ui`
 - i18n: `i18next`, `react-i18next`
+- CMS: Sanity Studio 4, `@sanity/client`, `@sanity/image-url`, Portable Text
 
 ## Build and Run Commands
 
@@ -26,18 +27,26 @@ Run from the repository root:
 npm install
 npm run dev
 npm run build
+npm run cms:dev
+npm run cms:build
 ```
 
 Current `package.json` scripts:
 
-- `npm run dev`: starts the Vite dev server
-- `npm run build`: creates a production bundle in `dist/`
+- `npm run dev`: starts the Vite dev server (proxies `/admin` → local Studio)
+- `npm run build`: builds Vite site → `dist/`, then builds Studio → `dist-studio/`, then copies to `dist/admin/`
+- `npm run cms:dev`: starts Sanity Studio from `sanity.config.ts` on port 3333
+- `npm run cms:build`: creates a static Studio bundle in `dist-studio/`
+- `npm run cms:deploy`: deploys the Studio through Sanity hosting
 
 Notes:
 
+- The Sanity Studio is served at `/admin` (configurable via `basePath` in `sanity.config.ts`).
+- **Local dev**: run `npm run cms:dev` + `npm run dev` → Studio at `localhost:5173/admin`
+- **Production**: `npm run build` embeds the Studio in `dist/admin/`; Vercel serves it at `yourdomain.com/admin`
 - There is no dedicated `preview` script. If needed, use `npx vite preview` after a build.
-- The project already has `node_modules/` and builds successfully with `npm run build`.
-- In the restricted Codex sandbox, the Vite dev server may fail to bind `127.0.0.1:5173` with `EPERM`; rerun the dev command with elevated local permissions when needed.
+- CMS environment variables live in `.env.local`; copy `.env.example` and set `VITE_SANITY_PROJECT_ID`, `VITE_SANITY_DATASET`, `SANITY_STUDIO_PROJECT_ID`, and `SANITY_STUDIO_DATASET`.
+- Keep the Vite site build and the Studio build separated: public site output is `dist/`, Studio output is `dist-studio/`. The build command copies Studio assets into `dist/admin/`.
 
 ## Test and Quality Commands
 
@@ -71,6 +80,7 @@ If you add any of the following, update this file:
 3. `src/app/routes.tsx` defines the browser router.
 4. `src/app/Layout.tsx` initializes i18n, renders `Navbar`, `Outlet`, `Footer`, and `ScrollRestoration`.
 5. `src/app/pages/Home.tsx` composes the landing page sections in order.
+6. Optional CMS content is fetched through `src/cms/`; when Sanity is not configured or returns no content, public pages fall back to the existing local i18n content.
 
 ## Routing Model
 
@@ -145,6 +155,18 @@ Internationalization:
 - `src/app/i18n/LanguageContext.tsx`
 - `src/app/i18n/locales/`
 
+CMS:
+
+- `sanity.config.ts`: Sanity Studio configuration
+- `sanity.cli.ts`: Sanity CLI project configuration for commands such as login and CORS
+- `CMS_SETUP.md`: checklist for creating the Sanity project, copying env variables, and configuring CORS
+- `studio/structure.ts`: editor-friendly Studio navigation
+- `studio/schemas/`: Sanity document and object schemas
+- `src/cms/client.ts`: browser Sanity client and image URL builder
+- `src/cms/queries.ts`: GROQ queries used by the frontend
+- `src/cms/adapters.ts`: maps CMS documents into existing React view models
+- `src/cms/useSanityQuery.ts`: fallback-safe CMS fetching hook
+
 Styles and assets:
 
 - `src/styles/index.css`
@@ -195,6 +217,7 @@ Follow the existing codebase before introducing new patterns.
 
 - Any user-facing text should go through translation files
 - Maintain both `fr` and `en` locales together
+- CMS-managed copy should use localized Sanity fields with `fr` as the required primary language and `en` as the optional secondary language until translation is available.
 - French copy quality matters: correct spelling, accents, and punctuation
 - Avoid em dashes in French copy
 - Use French quotation marks (`« »`) when the surrounding copy is francophone

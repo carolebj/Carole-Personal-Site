@@ -1,8 +1,15 @@
 import { ArrowLeftIcon, BookOpenIcon, ClockIcon } from "@heroicons/react/24/outline";
+import { PortableText } from "@portabletext/react";
 import { Link, useParams } from "react-router";
 import { motion } from "motion/react";
 import type React from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { toBlogPostViewModel } from "../../cms/adapters";
+import { sanityImageUrl } from "../../cms/client";
+import { blogPostsQuery } from "../../cms/queries";
+import type { CmsBlogPost, SanityImage } from "../../cms/types";
+import { useSanityQuery } from "../../cms/useSanityQuery";
 import abstractAuditImage from "../../assets/blog/blog-abstract-audit.svg";
 import abstractContentImage from "../../assets/blog/blog-abstract-content.svg";
 import abstractEditorialImage from "../../assets/blog/blog-abstract-editorial.svg";
@@ -20,17 +27,32 @@ type BlogPost = {
     title: string;
     body: string[];
   }>;
+  body?: Parameters<typeof PortableText>[0]["value"];
+  coverImage?: SanityImage;
 };
 
 const blogImages = [abstractEditorialImage, abstractContentImage, abstractSocialImage, abstractAuditImage];
 
 export default function BlogArticle() {
   const { slug } = useParams();
-  const { t } = useTranslation();
-  const posts = t("blog.posts", { returnObjects: true }) as BlogPost[];
+  const { i18n, t } = useTranslation();
+  const legacyPosts = useMemo(
+    () => t("blog.posts", { returnObjects: true }) as BlogPost[],
+    [t]
+  );
+  const emptyCmsPosts = useMemo<CmsBlogPost[]>(() => [], []);
+  const { data: cmsPosts } = useSanityQuery<CmsBlogPost[]>(blogPostsQuery, emptyCmsPosts);
+  const posts = useMemo(
+    () =>
+      cmsPosts.length > 0
+        ? cmsPosts.map((post) => toBlogPostViewModel(post, i18n.language))
+        : legacyPosts,
+    [cmsPosts, i18n.language, legacyPosts]
+  );
   const post = posts.find((item) => item.slug === slug) ?? posts[0];
   const postIndex = Math.max(0, posts.findIndex((item) => item.slug === post.slug));
-  const postImage = blogImages[postIndex % blogImages.length] ?? abstractEditorialImage;
+  const cmsImage = sanityImageUrl(post.coverImage)?.width(1200).height(900).fit("crop").url();
+  const postImage = cmsImage ?? blogImages[postIndex % blogImages.length] ?? abstractEditorialImage;
 
   return (
     <main className="bg-[#fcf9f8] px-5 pb-20 pt-32 text-[#1c1b1b] dark:bg-[#13100f] dark:text-[#f8f1ec] sm:px-8 md:pt-36 lg:px-8">
@@ -86,7 +108,12 @@ export default function BlogArticle() {
 
         <div className="mt-14 grid gap-10 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
           <div className="space-y-11">
-            {post.sections.map((section) => (
+            {post.body ? (
+              <div className="space-y-6 text-[17px] leading-8 text-[#5b4137] dark:text-[#dbc9c0]">
+                <PortableText value={post.body} />
+              </div>
+            ) : (
+              post.sections.map((section) => (
               <section key={section.title}>
                 <h2 className="font-serif text-[30px] leading-9 text-[#1c1b1b] dark:text-[#f8f1ec]">
                   {section.title}
@@ -97,7 +124,8 @@ export default function BlogArticle() {
                   ))}
                 </div>
               </section>
-            ))}
+              ))
+            )}
           </div>
 
           <aside className="rounded-lg border border-[#e4bfb2]/32 bg-white p-6 shadow-[0_12px_36px_rgba(28,27,27,0.05)] dark:border-white/10 dark:bg-[#171111] lg:sticky lg:top-28">

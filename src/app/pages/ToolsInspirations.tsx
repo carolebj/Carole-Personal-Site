@@ -2,6 +2,18 @@ import type React from "react";
 import { motion } from "motion/react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { localized } from "../../cms/types";
+import { resourcesQuery } from "../../cms/queries";
+import type { CmsResource } from "../../cms/types";
+import { useSanityQuery } from "../../cms/useSanityQuery";
+
+type ResourceItem = {
+  title: string;
+  category: string;
+  desc: string;
+  link: string;
+  badge: string;
+};
 
 type CarnetPageContent = {
   eyebrow: string;
@@ -10,13 +22,7 @@ type CarnetPageContent = {
   searchPlaceholder: string;
   emptyState: string;
   categories: string[];
-  items: Array<{
-    title: string;
-    category: string;
-    desc: string;
-    link: string;
-    badge: string;
-  }>;
+  items: ResourceItem[];
 };
 
 function ResourceCard({
@@ -95,7 +101,37 @@ function ResourceCard({
 
 export default function ToolsInspirations() {
   const { t, i18n } = useTranslation();
-  const content = t("carnetPage", { returnObjects: true }) as CarnetPageContent;
+  const locale = i18n.language;
+  const { data: cmsResources } = useSanityQuery(resourcesQuery, [] as CmsResource[]);
+
+  const content = useMemo((): CarnetPageContent => {
+    if (cmsResources.length > 0) {
+      const langPrefix = locale.startsWith("en") ? "en" : "fr";
+      const kindLabels: Record<string, string> = langPrefix === "en"
+        ? { platform: "Platform", tool: "Tool", campaign: "Campaign", community: "Community", reading: "Reading", reference: "Reference" }
+        : { platform: "Plateforme", tool: "Outil", campaign: "Campagne", community: "Communauté", reading: "Lecture", reference: "Référence" };
+      const items: ResourceItem[] = cmsResources.map((r) => ({
+        title: localized(r.title, locale),
+        category: r.kind ?? "",
+        desc: localized(r.description, locale),
+        link: r.url ?? "",
+        badge: r.kind ? (kindLabels[r.kind] ?? r.kind) : "",
+      }));
+      const categories = [langPrefix === "en" ? "All" : "Tout", ...Array.from(new Set(items.map((i) => i.category).filter(Boolean)))];
+      const fallback = t("carnetPage", { returnObjects: true }) as CarnetPageContent;
+      return {
+        eyebrow: fallback.eyebrow,
+        title: fallback.title,
+        subtitle: fallback.subtitle,
+        searchPlaceholder: fallback.searchPlaceholder,
+        emptyState: fallback.emptyState,
+        categories,
+        items,
+      };
+    }
+    return t("carnetPage", { returnObjects: true }) as CarnetPageContent;
+  }, [cmsResources, locale, t]);
+
   const [activeCategory, setActiveCategory] = useState(content.categories[0]);
   const [search, setSearch] = useState("");
   const filteredItems = useMemo(() => {
