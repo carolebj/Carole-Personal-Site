@@ -625,15 +625,18 @@ const en = {
       { title: "Pinterest Creative", category: "Creative inspiration", desc: "My creative mood board to spot layout trends, typography pairings, and color palettes.", link: "https://pinterest.com", badge: "Inspiration" },
       { title: "Buffer Resources", category: "Editorial line", desc: "Detailed guides to lay the foundations of sustainable content calendars and plan publishing cadences.", link: "https://buffer.com/library", badge: "Resource" }
     ],
+    discoverBook: "Discover",
     readingsTitle: "Readings & references",
+    readingsSection1Desc: "Reference reads that sharpen the eye, structure ideas, and feed the practice.",
+    readingsSection2Desc: "Newsletters and short-form pieces kept as useful watch notes to revisit.",
     readingsSubtitle: "The books, newsletters, and key contents that accompany my professional growth and nourish my industry knowledge.",
     readingsSections: [
       {
         title: "Recommended books",
         items: [
-          { title: "Everybody Writes", author: "Ann Handley", desc: "An indispensable guide for anyone creating online content. The art of telling simple stories and structuring writing with clarity." },
-          { title: "Storybrand", author: "Donald Miller", desc: "A clear framework to structure your brand's message by placing the customer at the center of the story." },
-          { title: "Le Bug Humain", author: "Sébastien Bohler", desc: "A fascinating read to understand how our brain works and how attention operates in the digital era." }
+          { title: "Everybody Writes", author: "Ann Handley", date: "2014", desc: "I find it essential for creating content with more clarity. It helps structure ideas and tell simple stories with confidence.", link: "https://books.google.com/books?id=QGtECQAAQBAJ" },
+          { title: "Storybrand", author: "Donald Miller", date: "2017", desc: "I like how simply it brings a brand message back to what matters: the customer, their problem, and a clear promise.", link: "https://books.google.com/books?id=b3xDDgAAQBAJ" },
+          { title: "Le Bug Humain", author: "Sébastien Bohler", date: "2019", desc: "I keep it as a reference for understanding attention reflexes, biases, and what digital environments can amplify.", link: "https://books.google.com/books?id=_yODDwAAQBAJ" }
         ]
       },
       {

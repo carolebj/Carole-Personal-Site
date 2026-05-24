@@ -625,15 +625,18 @@ const fr = {
       { title: "Pinterest Creative", category: "Inspirations créatives", desc: "Mon tableau de veille créative pour repérer les tendances de mise en page, de typographies et de couleurs.", link: "https://pinterest.com", badge: "Inspiration" },
       { title: "Buffer Resources", category: "Ligne éditoriale", desc: "Des guides détaillés pour poser les bases de calendriers éditoriaux durables et structurer sa fréquence de publication.", link: "https://buffer.com/library", badge: "Ressource" }
     ],
+    discoverBook: "Découvrir",
     readingsTitle: "Lectures & références",
+    readingsSection1Desc: "Mes lectures repères pour affiner le regard, structurer les idées et nourrir la pratique.",
+    readingsSection2Desc: "Newsletters et contenus courts, gardés comme des notes de veille utiles à consulter.",
     readingsSubtitle: "Les ouvrages, newsletters et contenus clés qui m'accompagnent dans mon évolution professionnelle et nourrissent ma culture métier.",
     readingsSections: [
       {
         title: "Ouvrages recommandés",
         items: [
-          { title: "Everybody Writes", author: "Ann Handley", desc: "Un guide indispensable pour tous ceux qui créent du contenu en ligne. L'art de raconter des histoires simples et de structurer ses écrits avec clarté." },
-          { title: "Storybrand", author: "Donald Miller", desc: "Une méthode limpide pour structurer le message de sa marque en plaçant le client au centre de l'histoire." },
-          { title: "Le Bug Humain", author: "Sébastien Bohler", desc: "Une lecture fascinante pour comprendre le fonctionnement de notre cerveau et les mécanismes de l'attention à l'ère digitale." }
+          { title: "Everybody Writes", author: "Ann Handley", date: "2014", desc: "Je le trouve indispensable pour créer du contenu avec plus de clarté. Il aide à mieux structurer ses idées et à raconter simplement.", link: "https://books.google.com/books?id=QGtECQAAQBAJ" },
+          { title: "Storybrand", author: "Donald Miller", date: "2017", desc: "J'aime sa manière très simple de ramener un message de marque à l'essentiel: le client, son problème et la promesse claire.", link: "https://books.google.com/books?id=b3xDDgAAQBAJ" },
+          { title: "Le Bug Humain", author: "Sébastien Bohler", date: "2019", desc: "Je le garde comme repère pour comprendre nos réflexes d'attention, nos biais, et ce que le digital vient parfois amplifier.", link: "https://books.google.com/books?id=_yODDwAAQBAJ" }
         ]
       },
       {
