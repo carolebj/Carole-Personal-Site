@@ -47,6 +47,13 @@ export const resourcesQuery = `*[_type == "resource"] | order(displayOrder asc, 
   image ${imageProjection}
 }`;
 
+export const siteSettingsQuery = `*[_type == "siteSettings"][0] {
+  title,
+  description,
+  contactEmail,
+  socialLinks
+}`;
+
 export const cvEntryQuery = `*[_type == "cvEntry"] | order(displayOrder asc, _createdAt asc) {
   title,
   category,

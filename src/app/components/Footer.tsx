@@ -1,8 +1,12 @@
 import { CheckIcon } from "@heroicons/react/24/outline";
 import { animate, motion, type AnimationPlaybackControls } from "motion/react";
+import { useMemo } from "react";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { langLabels, useLang, type Lang } from "../i18n/LanguageContext";
+import { siteSettingsQuery } from "../../cms/queries";
+import type { CmsSiteSettings } from "../../cms/types";
+import { useSanityQuery } from "../../cms/useSanityQuery";
 
 const languages: { code: Lang; flag: string }[] = [
   { code: "fr", flag: "FR" },
@@ -10,19 +14,30 @@ const languages: { code: Lang; flag: string }[] = [
 ];
 
 export default function Footer() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { lang, setLang } = useLang();
+  const { data: siteData } = useSanityQuery(siteSettingsQuery, null as CmsSiteSettings | null);
   const year = new Date().getFullYear();
   const footerRef = useRef<HTMLElement>(null);
   const returnTimeoutRef = useRef<number | undefined>(undefined);
   const returnAnimationRef = useRef<AnimationPlaybackControls | null>(null);
   const isReturningRef = useRef(false);
 
-  const links = [
-    { label: t("footer.behance"), href: "https://www.behance.net/caroletonoukouen", external: true },
-    { label: t("footer.linkedin"), href: "https://www.linkedin.com/in/caroletonoukouen/", external: true },
-    { label: t("footer.contact"), href: "/contact", external: false },
-  ];
+  const links = useMemo(() => {
+    const cmsLinks = siteData?.socialLinks?.filter((l) => l.label && l.url).map((l) => ({
+      label: l.label!,
+      href: l.url!,
+      external: true,
+    })) ?? [];
+    if (cmsLinks.length > 0) {
+      return cmsLinks.concat([{ label: t("footer.contact"), href: "/contact", external: false }]);
+    }
+    return [
+      { label: t("footer.behance"), href: "https://www.behance.net/caroletonoukouen", external: true },
+      { label: t("footer.linkedin"), href: "https://www.linkedin.com/in/caroletonoukouen/", external: true },
+      { label: t("footer.contact"), href: "/contact", external: false },
+    ];
+  }, [siteData, t]);
 
   useEffect(() => {
     const getFooterRestY = () => {

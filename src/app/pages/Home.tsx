@@ -1,4 +1,5 @@
 import { ChevronLeftIcon, ChevronRightIcon, EnvelopeIcon, PaperAirplaneIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import { PortableText } from "@portabletext/react";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router";
@@ -540,10 +541,17 @@ export default function Home() {
 
   const circularTestimonials = useMemo(
     () =>
-      testimonials.map((testimonial, index) => ({
-        ...testimonial,
-        src: testimonialImages[index] ?? testimonialImages[0],
-      })),
+      testimonials.map((testimonial, index) => {
+        let imgSrc = testimonialImages[index] ?? testimonialImages[0];
+        if (testimonial.portrait) {
+          const builder = sanityImageUrl(testimonial.portrait);
+          if (builder) {
+            const url = builder.width(400).height(500).url();
+            if (url) imgSrc = url;
+          }
+        }
+        return { ...testimonial, src: imgSrc };
+      }),
     [testimonials]
   );
   const [visualTuning, setVisualTuning] = useState(DEFAULT_VISUAL_TUNING);
@@ -740,8 +748,9 @@ export default function Home() {
             </span>
           </h2>
           <div className="mx-auto mt-8 max-w-[42rem] space-y-5 text-base leading-7 text-[#5b4137] dark:text-[#dbc9c0] sm:text-[18px] sm:leading-8">
-            <p>{t("manifesto.p1")}</p>
-            <p>{t("manifesto.p2")}</p>
+            {usingCms && manifestoData?.body
+              ? <PortableText value={manifestoData.body[locale.startsWith("en") ? "en" : "fr"] ?? []} />
+              : <><p>{t("manifesto.p1")}</p><p>{t("manifesto.p2")}</p></>}
           </div>
         </div>
       </motion.section>
@@ -783,8 +792,9 @@ export default function Home() {
               </span>
             </h2>
             <div className="mt-5 max-w-[42rem] space-y-4 text-base leading-7 text-[#5b4137] dark:text-[#dbc9c0] sm:text-[16px] sm:leading-8">
-              <p>{t("about.p1")}</p>
-              <p>{t("about.p2")}</p>
+              {usingCms && aboutData?.body
+                ? <PortableText value={aboutData.body[locale.startsWith("en") ? "en" : "fr"] ?? []} />
+                : <><p>{t("about.p1")}</p><p>{t("about.p2")}</p></>}
             </div>
             <div className="mt-7 grid grid-cols-3 gap-4 border-t border-[#e5e2e1]/80 pt-7 dark:border-white/10 sm:flex sm:flex-wrap sm:gap-7">
               {traits.map((trait, index) => {

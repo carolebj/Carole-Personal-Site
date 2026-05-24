@@ -74,6 +74,16 @@ export type CmsCvEntry = {
   highlights?: LocalizedValue[];
 };
 
+export type CmsSiteSettings = {
+  title?: LocalizedValue;
+  description?: LocalizedValue;
+  contactEmail?: string;
+  socialLinks?: Array<{
+    label?: string;
+    url?: string;
+  }>;
+};
+
 export type CmsHomePage = {
   hero?: {
     eyebrow?: LocalizedValue;
