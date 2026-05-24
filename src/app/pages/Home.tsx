@@ -523,6 +523,14 @@ export default function Home() {
   const manifestoData = cmsHome?.manifesto;
   const aboutData = cmsHome?.about;
 
+  const heroTitle = usingCms && heroData?.title ? localized(heroData.title, locale) : t("hero.titleStart");
+  const heroAccent = usingCms && heroData?.accent ? localized(heroData.accent, locale) : t("hero.titleAccent");
+  const heroTitleEnd = usingCms && heroData?.titleEnd ? localized(heroData.titleEnd, locale) : t("hero.titleEnd");
+  const heroAccentIndex =
+    usingCms && heroTitle && heroAccent
+      ? heroTitle.toLocaleLowerCase().indexOf(heroAccent.toLocaleLowerCase())
+      : -1;
+
   const services = useMemo(() => {
     if (cmsServices.length > 0) {
       return cmsServices.map((s) => toServiceViewModel(s, locale));
@@ -635,15 +643,27 @@ export default function Home() {
             className="max-w-[672px]"
           >
             <h1 className="max-w-[672px] font-serif text-[40px] leading-[44px] text-[#1c1b1b] dark:text-[#f8f1ec] sm:text-[48px] sm:leading-[52px] lg:text-[56px] lg:leading-[60px] 2xl:text-[64px] 2xl:leading-[68px]">
-              {usingCms && heroData?.title
-                ? localized(heroData.title, locale)
-                : t("hero.titleStart")}{" "}
-              <span className="italic text-[#854d63] dark:text-[#f0adc4]">
-                {usingCms && heroData?.accent
-                  ? localized(heroData.accent, locale)
-                  : t("hero.titleAccent")}
-              </span>{" "}
-              {!usingCms && t("hero.titleEnd")}
+              {usingCms && heroAccentIndex >= 0 ? (
+                <>
+                  {heroTitle.slice(0, heroAccentIndex)}
+                  <span className="italic text-[#854d63] dark:text-[#f0adc4]">
+                    {heroTitle.slice(heroAccentIndex, heroAccentIndex + heroAccent.length)}
+                  </span>
+                  {heroTitle.slice(heroAccentIndex + heroAccent.length)}
+                  {heroData?.titleEnd && <> {heroTitleEnd}</>}
+                </>
+              ) : (
+                <>
+                  {heroTitle}
+                  {usingCms && heroData?.accent && (
+                    <>{" "}<span className="italic text-[#854d63] dark:text-[#f0adc4]">{heroAccent}</span></>
+                  )}
+                  {usingCms && heroData?.titleEnd && <> {heroTitleEnd}</>}
+                  {!usingCms && (
+                    <>{" "}<span className="italic text-[#854d63] dark:text-[#f0adc4]">{heroAccent}</span>{" "}{heroTitleEnd}</>
+                  )}
+                </>
+              )}
             </h1>
             <p className="mt-6 max-w-[528px] text-[16px] leading-7 text-[#5b4137] dark:text-[#dbc9c0] md:text-[18px] md:leading-8">
               {usingCms && heroData?.description
@@ -738,7 +758,7 @@ export default function Home() {
             <span className="relative isolate inline-block font-liberation-serif italic text-[#854d63] dark:text-[#f0adc4]">
               {usingCms && manifestoData?.accent
                 ? localized(manifestoData.accent, locale)
-                : t("manifesto.titleAccent")}
+                : !usingCms ? t("manifesto.titleAccent") : null}
               <img
                 src={decorativeArc}
                 alt=""
@@ -784,12 +804,16 @@ export default function Home() {
               {usingCms && aboutData?.title
                 ? localized(aboutData.title, locale)
                 : t("about.titleTop")}
-              <br />
-              <span className="italic text-[#854d63] dark:text-[#f0adc4]">
-                {usingCms && aboutData?.accent
-                  ? localized(aboutData.accent, locale)
-                  : t("about.titleAccent")}
-              </span>
+              {usingCms && aboutData?.accent && (
+                <><br /><span className="italic text-[#854d63] dark:text-[#f0adc4]">
+                  {localized(aboutData.accent, locale)}
+                </span></>
+              )}
+              {!usingCms && (
+                <><br /><span className="italic text-[#854d63] dark:text-[#f0adc4]">
+                  {t("about.titleAccent")}
+                </span></>
+              )}
             </h2>
             <div className="mt-5 max-w-[42rem] space-y-4 text-base leading-7 text-[#5b4137] dark:text-[#dbc9c0] sm:text-[16px] sm:leading-8">
               {usingCms && aboutData?.body

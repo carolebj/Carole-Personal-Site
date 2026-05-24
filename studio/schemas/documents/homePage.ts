@@ -13,6 +13,7 @@ export const homePage = defineType({
         { name: "eyebrow", title: "Surtitre", type: "localizedString" },
         { name: "title", title: "Titre", type: "localizedString" },
         { name: "accent", title: "Partie mise en avant", type: "localizedString" },
+        { name: "titleEnd", title: "Fin du titre", type: "localizedString" },
         { name: "description", title: "Description", type: "localizedText" },
         { name: "primaryCta", title: "Bouton principal", type: "localizedString" },
         { name: "secondaryCta", title: "Bouton secondaire", type: "localizedString" },
