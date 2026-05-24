@@ -27,13 +27,15 @@ Run from the repository root:
 npm install
 npm run dev
 npm run build
+npm run dev:site
 npm run cms:dev
 npm run cms:build
 ```
 
 Current `package.json` scripts:
 
-- `npm run dev`: starts the Vite dev server (proxies `/admin` → local Studio)
+- `npm run dev`: starts the Vite site and Sanity Studio together for local work
+- `npm run dev:site`: starts only the Vite site (port 5173)
 - `npm run build`: builds Vite site → `dist/`, then builds Studio → `dist-studio/`, then copies to `dist/admin/`
 - `npm run cms:dev`: starts Sanity Studio from `sanity.config.ts` on port 3333
 - `npm run cms:build`: creates a static Studio bundle in `dist-studio/`
@@ -42,10 +44,13 @@ Current `package.json` scripts:
 Notes:
 
 - The Sanity Studio is served at `/admin` (configurable via `basePath` in `sanity.config.ts`).
-- **Local dev**: run `npm run cms:dev` + `npm run dev` → Studio at `localhost:5173/admin`
+- **Local dev**: run `npm run dev` → site at `http://127.0.0.1:5173/`, Studio at `http://127.0.0.1:3333/admin/`, and `/admin` on the site redirects to the Studio server.
 - **Production**: `npm run build` embeds the Studio in `dist/admin/`; Vercel serves it at `yourdomain.com/admin`
+- **Important**: Sanity Studio has its own Vite server in dev; use `npm run dev` to start both processes from one terminal instead of manually running two commands.
 - There is no dedicated `preview` script. If needed, use `npx vite preview` after a build.
 - CMS environment variables live in `.env.local`; copy `.env.example` and set `VITE_SANITY_PROJECT_ID`, `VITE_SANITY_DATASET`, `SANITY_STUDIO_PROJECT_ID`, and `SANITY_STUDIO_DATASET`.
+- Optional AI translation for Studio fields uses server-side `OPENAI_API_KEY` and `OPENAI_TRANSLATION_MODEL`; never expose the key with a `VITE_` prefix.
+- Preferred production translation path is Cloudflare Worker + Cloudflare AI Gateway. Vercel should set `CLOUDFLARE_TRANSLATE_WORKER_URL` and `TRANSLATE_WORKER_TOKEN`; OpenAI should stay in Cloudflare Worker secrets, not in Vercel, once this path is active.
 - Keep the Vite site build and the Studio build separated: public site output is `dist/`, Studio output is `dist-studio/`. The build command copies Studio assets into `dist/admin/`.
 
 ## Test and Quality Commands
@@ -160,12 +165,16 @@ CMS:
 - `sanity.config.ts`: Sanity Studio configuration
 - `sanity.cli.ts`: Sanity CLI project configuration for commands such as login and CORS
 - `CMS_SETUP.md`: checklist for creating the Sanity project, copying env variables, and configuring CORS
-- `studio/structure.ts`: editor-friendly Studio navigation
+- `studio/structure.ts`: editor-friendly Studio navigation, organized around the portfolio's editorial areas
+- `studio/components/LocalizedFieldInput.tsx`: bilingual FR/EN Studio inputs with copy and translation actions
+- `studio/components/LocalizedBlockInput.tsx`: editorial wrapper for bilingual rich content fields
 - `studio/schemas/`: Sanity document and object schemas
 - `src/cms/client.ts`: browser Sanity client and image URL builder
 - `src/cms/queries.ts`: GROQ queries used by the frontend
 - `src/cms/adapters.ts`: maps CMS documents into existing React view models
 - `src/cms/useSanityQuery.ts`: fallback-safe CMS fetching hook
+- `api/translate.js` and `scripts/translate-text.mjs`: server-side FR → EN translation endpoint used by the Studio when OpenAI credentials are configured
+- `cloudflare/translate-worker/`: protected translation Worker that validates a bearer token, calls OpenAI through Cloudflare AI Gateway, and keeps OpenAI secrets away from the public site runtime
 
 Styles and assets:
 

@@ -1,4 +1,4 @@
-import { defineConfig } from "sanity";
+import { buildLegacyTheme, defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { schemaTypes } from "./studio/schemas";
 import { structure } from "./studio/structure";
@@ -9,10 +9,19 @@ const srcAlias = decodeURI(new URL("./src", import.meta.url).pathname);
 
 export default defineConfig({
   name: "carole-portfolio",
-  title: "Carole Portfolio CMS",
+  title: "Carole Portfolio — Administration des contenus",
   projectId,
   dataset,
   basePath: "/admin",
+  theme: buildLegacyTheme({
+    "--black": "#24212f",
+    "--gray": "#6f6a7d",
+    "--focus-color": "#7b4be8",
+    "--brand-primary": "#7b4be8",
+  }),
+  releases: {
+    enabled: true,
+  },
   plugins: [
     structureTool({
       structure,

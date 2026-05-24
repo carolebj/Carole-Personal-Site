@@ -4,11 +4,14 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "vite build && npm run cms:build && cp -r dist-studio/ dist/admin",
+    "build": "vite build && npm run cms:build && node scripts/embed-studio.mjs",
     "cms:build": "sanity build dist-studio --config sanity.config.ts --yes",
     "cms:deploy": "sanity deploy --config sanity.config.ts",
     "cms:dev": "sanity dev --config sanity.config.ts",
-    "dev": "vite"
+    "dev": "node scripts/dev.mjs",
+    "dev:site": "vite",
+    "worker:deploy": "npx wrangler deploy --config cloudflare/translate-worker/wrangler.jsonc",
+    "worker:dev": "npx wrangler dev --config cloudflare/translate-worker/wrangler.jsonc"
   },
   "dependencies": {
     "@calcom/embed-react": "^1.5.3",

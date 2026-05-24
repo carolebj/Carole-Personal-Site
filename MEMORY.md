@@ -24,7 +24,14 @@ Last reviewed: 2026-05-24 WAT
 
 - The portfolio CMS stack is Sanity Studio 4 connected to the existing Vite/React site through `@sanity/client`.
 - Sanity Studio source lives in `sanity.config.ts` and `studio/`; the static Studio build goes to `dist-studio/` and is copied into `dist/admin/` during the full build.
-- **The Studio is served at `/admin`**. Locally via Vite proxy (`npm run cms:dev` + `npm run dev`), in production from the combined Vite build via `vercel.json` rewrites.
+- **The Studio is served at `/admin` in production** from the combined Vite build via `vercel.json` rewrites.
+- **Local CMS work now uses one command**: `npm run dev` starts the Vite site on `127.0.0.1:5173` and Sanity Studio on `127.0.0.1:3333/admin`; visiting `/admin` on the Vite site redirects to the Studio server while the command is running.
+- `npm run dev:site` and `npm run cms:dev` remain available for isolated debugging, but normal local work should not require two manually coordinated terminals.
+- Studio navigation should stay close to the UBIM-style editorial model: top-level access to Informations générales, Page d'accueil, Services, Articles du blog, Catégories, Témoignages, Ressources & communautés, and CV, with nested lists only when they make editing clearer.
+- Bilingual Studio fields use custom FR/EN side-by-side inputs with word counts, `Copier FR`, and `Traduire` actions. The translation action calls a server-side endpoint and requires `OPENAI_API_KEY`; without it, the UI should fail gracefully with an explanatory message.
+- The safer production translation architecture is Cloudflare Worker + Cloudflare AI Gateway: Studio -> Vercel `/api/translate` -> protected Worker bearer token -> AI Gateway -> OpenAI. In this mode, Vercel needs only `CLOUDFLARE_TRANSLATE_WORKER_URL` and `TRANSLATE_WORKER_TOKEN`; `OPENAI_API_KEY` should live only as a Cloudflare Worker secret.
+- If Cloudflare AI Gateway has Authenticated Gateway enabled, the Worker also needs `CLOUDFLARE_AI_GATEWAY_TOKEN` as a Cloudflare Worker secret; it is sent as `cf-aig-authorization`.
+- Keep CMS UX optimized for a non-technical editor: clear document icons, short top-level navigation, guided blog groups, image alt text, category creation from blog posts, and progressive bilingual editing.
 - Frontend CMS helpers live in `src/cms/`; CMS fetching is fallback-safe so the site keeps rendering local i18n content when Sanity env vars are absent or content is not migrated yet.
 - All content types (blog, services, testimonials, resources, CV, homepage, site settings) are ready for progressive CMS migration.
 - **Categories** are a dedicated document type (`studio/schemas/documents/category.ts`). Blog posts reference a category document, and new categories can be created inline from the blog post editor.

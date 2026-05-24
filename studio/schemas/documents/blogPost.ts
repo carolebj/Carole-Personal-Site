@@ -1,27 +1,32 @@
 import { defineField, defineType } from "sanity";
+import { DocumentTextIcon } from "@sanity/icons";
 
 export const blogPost = defineType({
   name: "blogPost",
   title: "Article du blog",
   type: "document",
+  icon: DocumentTextIcon,
   groups: [
-    { name: "content", title: "Contenu", default: true },
-    { name: "metadata", title: "Méta-données" },
-    { name: "media", title: "Média" },
+    { name: "writing", title: "Rédaction", default: true },
+    { name: "translation", title: "Traduction" },
+    { name: "publication", title: "Publication" },
+    { name: "media", title: "Médias" },
   ],
   fields: [
     defineField({
       name: "title",
       title: "Titre",
       type: "localizedString",
-      group: "content",
+      group: "writing",
+      description: "Le titre principal de l'article. Le français sert de source éditoriale.",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "slug",
       title: "Slug",
       type: "slug",
-      group: "metadata",
+      group: "publication",
+      description: "L'URL courte de l'article. Générez-la depuis le titre français.",
       options: { source: "title.fr", maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
@@ -29,13 +34,15 @@ export const blogPost = defineType({
       name: "excerpt",
       title: "Extrait",
       type: "localizedText",
-      group: "content",
+      group: "writing",
+      description: "Résumé affiché sur les cartes de blog et les aperçus.",
     }),
     defineField({
       name: "category",
       title: "Catégorie",
       type: "reference",
-      group: "metadata",
+      group: "publication",
+      description: "Choisissez une catégorie existante ou créez-en une nouvelle directement depuis ce champ.",
       to: [{ type: "category" }],
       options: {
         disableNew: false,
@@ -46,19 +53,20 @@ export const blogPost = defineType({
       name: "publishedAt",
       title: "Date de publication",
       type: "datetime",
-      group: "metadata",
+      group: "publication",
     }),
     defineField({
       name: "readingTime",
       title: "Temps de lecture",
       type: "localizedString",
-      group: "metadata",
+      group: "publication",
+      description: "Exemple: 6 min de lecture / 6 min read.",
     }),
     defineField({
       name: "featured",
       title: "Mettre en avant",
       type: "boolean",
-      group: "metadata",
+      group: "publication",
       initialValue: false,
     }),
     defineField({
@@ -73,14 +81,16 @@ export const blogPost = defineType({
       name: "takeaways",
       title: "À retenir",
       type: "array",
-      group: "content",
+      group: "writing",
+      description: "Points rapides qui aident le lecteur à scanner l'article.",
       of: [{ type: "localizedText" }],
     }),
     defineField({
       name: "body",
       title: "Contenu",
       type: "localizedBlockContent",
-      group: "content",
+      group: "translation",
+      description: "Article complet en français et en anglais, avec images intégrées si nécessaire.",
     }),
   ],
   preview: {
