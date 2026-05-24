@@ -56,14 +56,31 @@ export default function ServiceDetail() {
   const whatIsIncluded = service.whatIsIncluded ?? service.bullets;
   const targetAudience = service.targetAudience ?? [];
   const concreteApplications = service.concreteApplications ?? [service.projectDescription];
+  const caseStudyCards = [
+    {
+      label: t("serviceDetail.caseStudyProblem"),
+      title: service.projectTitle,
+      body: service.projectDescription,
+    },
+    {
+      label: t("serviceDetail.caseStudyMethod"),
+      title: whatIsIncluded[0] ?? service.bullets[0],
+      body: whatIsIncluded[1] ?? service.detailIntro,
+    },
+    {
+      label: t("serviceDetail.caseStudyOutput"),
+      title: concreteApplications[0] ?? service.metricLabel,
+      body: concreteApplications[1] ?? service.metricLabel,
+    },
+  ];
 
   return (
-    <main className="bg-surface-page px-5 pb-20 pt-32 text-text-primary sm:px-8 md:pt-40 lg:px-8">
+    <main className="bg-surface-page px-5 pb-24 pt-32 text-text-primary sm:px-8 md:pt-40 lg:px-8">
       <motion.section
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: "easeOut" }}
-        className="mx-auto max-w-[1120px]"
+        className="mx-auto max-w-[1160px]"
       >
         <Link
           to="/#services"
@@ -72,21 +89,21 @@ export default function ServiceDetail() {
           {t("serviceDetail.back")}
         </Link>
 
-        <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_0.72fr] lg:gap-14">
-          <div>
+        <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,0.92fr)_minmax(360px,0.64fr)] lg:gap-14">
+          <div className="rounded-lg border border-border-accent-muted bg-surface-panel p-7 shadow-[var(--shadow-panel)] md:p-10">
             <p className="text-[12px] font-semibold uppercase tracking-[3px] text-text-accent">
               {t("serviceDetail.eyebrow")}
             </p>
-            <h1 className="mt-5 max-w-[720px] font-serif text-[48px] leading-[52px] text-text-primary md:text-[64px] md:leading-[68px]">
+            <h1 className="mt-5 max-w-[720px] font-serif text-[48px] leading-[52px] text-text-primary md:text-[66px] md:leading-[68px]">
               {service.title}
               <br />
               <span className="italic text-text-accent">{service.accent}</span>
             </h1>
-            <p className="mt-6 max-w-[640px] text-[18px] leading-8 text-text-secondary">
+            <p className="mt-7 max-w-[640px] text-[19px] leading-8 text-text-secondary">
               {service.detailIntro}
             </p>
             {service.presentation ? (
-              <p className="mt-5 max-w-[700px] text-[16px] leading-8 text-text-secondary">
+              <p className="mt-6 max-w-[700px] text-[16px] leading-8 text-text-secondary">
                 {service.presentation}
               </p>
             ) : null}
@@ -94,16 +111,22 @@ export default function ServiceDetail() {
               {service.bullets.map((bullet) => (
                 <span
                   key={bullet}
-                  className="rounded-full border border-border-accent bg-surface-panel px-5 py-3 text-center text-[12px] font-semibold uppercase tracking-[1px] text-text-secondary"
+                  className="rounded-md border border-border-accent-muted bg-surface-page px-4 py-3 text-center text-[12px] font-semibold uppercase tracking-[1px] text-text-secondary"
                 >
                   {bullet}
                 </span>
               ))}
             </div>
+            <Link
+              to="/contact"
+              className="mt-10 inline-flex h-[50px] items-center rounded-md bg-action-strong px-7 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-text-on-strong transition hover:bg-action-strong-hover active:scale-[0.98]"
+            >
+              {t("serviceDetail.cta")}
+            </Link>
           </div>
 
-          <aside className="space-y-5">
-            <div className="rounded-lg border border-border-accent-muted bg-surface-panel p-7 shadow-[var(--shadow-panel)]">
+          <aside className="grid gap-5">
+            <div className="rounded-lg border border-border-accent-muted bg-surface-panel p-7">
               <p className="text-[12px] font-semibold uppercase tracking-[2px] text-text-accent">
                 {t("serviceDetail.metric")}
               </p>
@@ -115,45 +138,49 @@ export default function ServiceDetail() {
               </p>
             </div>
 
-            <div className="rounded-lg border border-border-accent-muted bg-surface-accent-muted p-7">
-              <p className="text-[12px] font-semibold uppercase tracking-[2px] text-text-accent">
-                {t("serviceDetail.project")}
-              </p>
-              <h2 className="mt-4 font-serif text-[28px] leading-8 text-text-primary">
-                {service.projectTitle}
-              </h2>
-              <p className="mt-4 text-[16px] leading-7 text-text-secondary">
-                {service.projectDescription}
-              </p>
-            </div>
+            {targetAudience.length > 0 ? (
+              <div className="rounded-lg border border-border-accent-muted bg-surface-panel p-7">
+                <p className="text-[12px] font-semibold uppercase tracking-[2px] text-text-accent">
+                  {t("serviceDetail.audience")}
+                </p>
+                <h2 className="mt-4 font-serif text-[28px] leading-8 text-text-primary">
+                  {t("serviceDetail.audienceTitle")}
+                </h2>
+                <ul className="mt-6 space-y-3">
+                  {targetAudience.map((item) => (
+                    <li
+                      key={item}
+                      className="border-t border-border-accent-muted pt-3 text-[14px] leading-6 text-text-secondary first:border-t-0 first:pt-0"
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </aside>
         </div>
-
-        <Link
-          to="/contact"
-          className="mt-12 inline-flex h-[52px] items-center rounded-full bg-action-strong px-8 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-text-on-strong transition hover:bg-action-strong-hover"
-        >
-          {t("serviceDetail.cta")}
-        </Link>
       </motion.section>
 
-      <section className="mx-auto mt-18 max-w-[1120px] border-t border-border-accent-muted pt-12">
-        <div className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-start">
-          <div>
+      <section className="mx-auto mt-14 max-w-[1160px]">
+        <div className="grid gap-5 lg:grid-cols-[0.72fr_1.28fr]">
+          <div className="rounded-lg border border-border-accent-muted bg-surface-panel p-7 md:p-8">
             <p className="text-[12px] font-semibold uppercase tracking-[3px] text-text-accent">
               {t("serviceDetail.includes")}
             </p>
             <h2 className="mt-4 max-w-[26rem] font-serif text-[34px] leading-10 text-text-primary">
-              {service.title}{" "}
-              <span className="italic text-text-accent">{service.accent}</span>
+              {t("serviceDetail.presentationBlockTitle")}
             </h2>
+            <p className="mt-5 text-[15px] leading-7 text-text-secondary">
+              {t("serviceDetail.presentationBlockText")}
+            </p>
           </div>
           <div className="grid gap-3 md:grid-cols-2">
             {whatIsIncluded.map((item, index) => (
               <article
                 key={item}
-                className={`rounded-lg border border-border-accent-muted bg-surface-panel p-5 shadow-[var(--shadow-panel)] ${
-                  index === 0 ? "md:row-span-2 md:min-h-[15rem]" : ""
+                className={`rounded-lg border border-border-accent-muted bg-surface-panel p-5 transition duration-300 hover:-translate-y-1 hover:border-border-accent ${
+                  index === 0 ? "md:row-span-2 md:min-h-[16rem]" : ""
                 }`}
               >
                 <span className="font-serif text-[28px] italic leading-none text-text-accent">
@@ -168,51 +195,76 @@ export default function ServiceDetail() {
         </div>
       </section>
 
-      {targetAudience.length > 0 ? (
-        <section className="mx-auto mt-16 max-w-[1120px]">
-          <div className="grid gap-5 md:grid-cols-[0.9fr_1.1fr]">
-            <div className="rounded-lg border border-border-accent-muted bg-surface-accent-muted p-7">
-              <p className="text-[12px] font-semibold uppercase tracking-[3px] text-text-accent">
-                {t("serviceDetail.audience")}
-              </p>
-              <h2 className="mt-4 font-serif text-[32px] leading-9 text-text-primary">
-                {t("serviceDetail.audienceTitle")}
-              </h2>
-            </div>
-            <div className="grid gap-3">
-              {targetAudience.map((item) => (
-                <p
-                  key={item}
-                  className="rounded-full border border-border-accent bg-surface-panel px-5 py-4 text-[14px] font-semibold uppercase tracking-[1px] text-text-secondary"
+      <section className="mx-auto mt-16 max-w-[1160px]">
+        <div className="mb-7 grid gap-4 border-t border-border-accent-muted pt-10 md:grid-cols-[0.72fr_1.28fr] md:items-end">
+          <div>
+            <p className="text-[12px] font-semibold uppercase tracking-[3px] text-text-accent">
+              {t("serviceDetail.caseStudy")}
+            </p>
+            <h2 className="mt-4 font-serif text-[36px] leading-10 text-text-primary">
+              {t("serviceDetail.caseStudyTitle")}
+            </h2>
+          </div>
+          <p className="max-w-[620px] text-[16px] leading-7 text-text-secondary md:justify-self-end">
+            {t("serviceDetail.caseStudyIntro")}
+          </p>
+        </div>
+
+        <div className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="relative min-h-[22rem] rounded-lg border border-border-accent-muted bg-surface-panel p-6 md:p-8">
+            <div className="relative mx-auto h-56 max-w-[32rem]">
+              {caseStudyCards.map((card, index) => (
+                <motion.article
+                  key={card.label}
+                  animate={{
+                    y: index * -10,
+                    scale: 1 - index * 0.045,
+                    zIndex: caseStudyCards.length - index,
+                  }}
+                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                  className="absolute inset-x-0 top-10 rounded-lg border border-border-accent-muted bg-surface-page p-5 shadow-[0_2px_14px_rgba(28,27,27,0.035)]"
                 >
-                  {item}
-                </p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[2px] text-text-accent">
+                    {card.label}
+                  </p>
+                  <h3 className="mt-3 font-serif text-[25px] leading-8 text-text-primary">
+                    {card.title}
+                  </h3>
+                  <p className="mt-3 line-clamp-3 text-[14px] leading-6 text-text-secondary">
+                    {card.body}
+                  </p>
+                </motion.article>
+              ))}
+            </div>
+            <p className="mt-10 text-[15px] leading-7 text-text-secondary">
+              {service.projectDescription}
+            </p>
+          </div>
+
+          <div className="grid gap-5">
+            <article className="rounded-lg border border-border-accent-muted bg-surface-accent-muted p-7">
+              <p className="text-[12px] font-semibold uppercase tracking-[2px] text-text-accent">
+                {t("serviceDetail.project")}
+              </p>
+              <h2 className="mt-4 font-serif text-[28px] leading-8 text-text-primary">
+                {service.projectTitle}
+              </h2>
+              <p className="mt-4 text-[16px] leading-7 text-text-secondary">
+                {service.projectDescription}
+              </p>
+            </article>
+
+            <div className="grid gap-3 md:grid-cols-3">
+              {concreteApplications.map((item) => (
+                <article
+                  key={item}
+                  className="rounded-lg border border-border-accent-muted bg-surface-panel p-5 transition duration-300 hover:-translate-y-1 hover:border-border-accent"
+                >
+                  <p className="text-[14px] leading-6 text-text-secondary">{item}</p>
+                </article>
               ))}
             </div>
           </div>
-        </section>
-      ) : null}
-
-      <section className="mx-auto mt-16 max-w-[1120px]">
-        <div className="mb-7 flex flex-col justify-between gap-4 border-t border-border-accent-muted pt-10 md:flex-row md:items-end">
-          <div>
-            <p className="text-[12px] font-semibold uppercase tracking-[3px] text-text-accent">
-              {t("serviceDetail.applications")}
-            </p>
-            <h2 className="mt-4 font-serif text-[34px] leading-10 text-text-primary">
-              {t("serviceDetail.applicationsTitle")}
-            </h2>
-          </div>
-        </div>
-        <div className="grid gap-4 md:grid-cols-3">
-          {concreteApplications.map((item) => (
-            <article
-              key={item}
-              className="rounded-lg border border-border-accent-muted bg-surface-panel p-6 transition duration-300 hover:-translate-y-1 hover:border-border-accent"
-            >
-              <p className="text-[15px] leading-7 text-text-secondary">{item}</p>
-            </article>
-          ))}
         </div>
       </section>
     </main>

@@ -1,6 +1,7 @@
 import { ArrowRightIcon, BookOpenIcon, ClockIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router";
 import { motion } from "motion/react";
+import type React from "react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import abstractAuditImage from "../../assets/blog/blog-abstract-audit.svg";
@@ -63,9 +64,13 @@ export default function Blog() {
 
         <Link
           to={`/blog/${featuredPost.slug}`}
+          viewTransition
           className="group relative mx-auto block w-full max-w-[560px] overflow-hidden rounded-lg border border-[#e4bfb2]/32 bg-white p-4 shadow-[0_24px_70px_rgba(28,27,27,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_90px_rgba(28,27,27,0.12)] dark:border-white/10 dark:bg-[#171111]"
         >
-          <div className="relative h-[25rem] overflow-hidden rounded-md bg-[#ffd9e4]">
+          <div
+            className="relative h-[25rem] overflow-hidden rounded-md bg-[#ffd9e4]"
+            style={{ viewTransitionName: `blog-image-${featuredPost.slug}` } as React.CSSProperties}
+          >
             <img
               src={getPostImage(featuredPost.slug)}
               alt=""
@@ -76,7 +81,10 @@ export default function Blog() {
               <p className="text-[12px] font-semibold uppercase tracking-[2px] text-white/78">
                 {t("blog.featured")}
               </p>
-              <h2 className="mt-3 max-w-[28rem] font-serif text-[32px] leading-9">
+              <h2
+                className="mt-3 max-w-[28rem] font-serif text-[32px] leading-9"
+                style={{ viewTransitionName: `blog-title-${featuredPost.slug}` } as React.CSSProperties}
+              >
                 {featuredPost.title}
               </h2>
             </div>
@@ -156,9 +164,13 @@ export default function Blog() {
             <Link
               key={post.slug}
               to={`/blog/${post.slug}`}
+              viewTransition
               className="group grid overflow-hidden rounded-lg border border-[#e4bfb2]/28 bg-white shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(28,27,27,0.08)] dark:border-white/10 dark:bg-[#171111] sm:grid-cols-[12rem_1fr]"
             >
-              <div className="h-56 overflow-hidden bg-[#ffd9e4] sm:h-full">
+              <div
+                className="h-56 overflow-hidden bg-[#ffd9e4] sm:h-full"
+                style={{ viewTransitionName: `blog-image-${post.slug}` } as React.CSSProperties}
+              >
                 <img
                   src={getPostImage(post.slug)}
                   alt=""
@@ -170,7 +182,10 @@ export default function Blog() {
                   <span>{post.category}</span>
                   <span>{post.date}</span>
                 </div>
-                <h3 className="mt-4 font-serif text-[26px] leading-8 text-[#1c1b1b] dark:text-[#f8f1ec]">
+                <h3
+                  className="mt-4 font-serif text-[26px] leading-8 text-[#1c1b1b] dark:text-[#f8f1ec]"
+                  style={{ viewTransitionName: `blog-title-${post.slug}` } as React.CSSProperties}
+                >
                   {post.title}
                 </h3>
                 <p className="mt-3 text-sm leading-6 text-[#5b4137] dark:text-[#dbc9c0]">

@@ -6,7 +6,7 @@ const en = {
     about: "About",
     carnet: "Notebook",
     blog: "Blog",
-    toolsAndInspirations: "Tools & inspirations",
+    toolsAndInspirations: "Resources & communities",
     readingsAndReferences: "Readings & references",
     contact: "Contact",
     language: "Choose language",
@@ -16,6 +16,9 @@ const en = {
     systemTheme: "Use system theme",
     darkTheme: "Switch to dark theme",
     lightTheme: "Switch to light theme",
+    systemThemeDescription: "Adapts the site automatically to your device preference.",
+    lightThemeDescription: "Keeps the interface bright and crisp, ideal for daytime reading.",
+    darkThemeDescription: "Lowers brightness while keeping the editorial accents soft.",
     menu: "Open menu",
     openHeader: "Show full menu",
     cv: "Curriculum Vitae - CV",
@@ -546,6 +549,16 @@ const en = {
     audienceTitle: "The profiles that will recognize themselves in this support",
     applications: "Concrete applications",
     applicationsTitle: "What this expertise can produce",
+    presentationBlockTitle: "The working frame",
+    presentationBlockText:
+      "This section gathers the deliverables and reference points that make the support scope clear.",
+    caseStudy: "Case study",
+    caseStudyTitle: "An example in practice",
+    caseStudyIntro:
+      "The project area shows how the service can become concrete actions, deliverables, and editorial decisions.",
+    caseStudyProblem: "Starting point",
+    caseStudyMethod: "Method",
+    caseStudyOutput: "Deliverable",
     back: "Back to services",
     cta: "Let's discuss this need",
   },
@@ -599,8 +612,8 @@ const en = {
 
   carnetPage: {
     eyebrow: "Notebook",
-    title: "Tools & inspirations",
-    subtitle: "A selection of resources, tools, and platforms to feed and structure your digital communication.",
+    title: "Useful resources & communities",
+    subtitle: "A selection of platforms, tools, inspiring campaigns, and support groups to feed and structure your digital communication.",
     searchPlaceholder: "Search for a tool, source, or category",
     emptyState: "No item matches this search.",
     categories: ["All", "Editorial line", "Microcopy & writing", "Social media watch", "Creative inspiration"],
@@ -624,7 +637,7 @@ const en = {
         ]
       },
       {
-        title: "Newsletters & Watch",
+        title: "Articles, newsletters & cited contents",
         items: [
           { title: "Marketing Brew", author: "Brew Team", desc: "A tri-weekly newsletter decoding brand news, creative campaigns, and changes in the advertising sector." },
           { title: "Growth Letter", author: "Yann Leonardi", desc: "Concrete breakdowns of marketing strategies, product positioning, and the psychology of attention." }

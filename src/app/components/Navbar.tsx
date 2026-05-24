@@ -22,6 +22,7 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import caroleLogoSymbol from "../../assets/logos/carole-CT-logo.svg";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { useHaptics } from "../interactions/HapticContext";
 import { useTheme, type ThemePreference } from "../theme/ThemeContext";
 
@@ -42,11 +43,27 @@ type MobileAccordion = "services" | "carnet" | null;
 const themeOptions: Array<{
   value: ThemePreference;
   labelKey: "systemTheme" | "lightTheme" | "darkTheme";
+  descriptionKey: "systemThemeDescription" | "lightThemeDescription" | "darkThemeDescription";
   Icon: typeof ComputerDesktopIcon;
 }> = [
-  { value: "system", labelKey: "systemTheme", Icon: ComputerDesktopIcon },
-  { value: "light", labelKey: "lightTheme", Icon: SunIcon },
-  { value: "dark", labelKey: "darkTheme", Icon: MoonIcon },
+  {
+    value: "system",
+    labelKey: "systemTheme",
+    descriptionKey: "systemThemeDescription",
+    Icon: ComputerDesktopIcon,
+  },
+  {
+    value: "light",
+    labelKey: "lightTheme",
+    descriptionKey: "lightThemeDescription",
+    Icon: SunIcon,
+  },
+  {
+    value: "dark",
+    labelKey: "darkTheme",
+    descriptionKey: "darkThemeDescription",
+    Icon: MoonIcon,
+  },
 ];
 
 const getDropdownCloseDuration = () => {
@@ -108,32 +125,45 @@ function ThemeSwitcher({
         role="radiogroup"
         aria-label={t("nav.theme")}
       >
-        {themeOptions.map(({ value, labelKey, Icon }) => {
+        {themeOptions.map(({ value, labelKey, descriptionKey, Icon }) => {
           const isActive = theme === value;
 
           return (
-            <button
-              key={value}
-              type="button"
-              role="radio"
-              aria-checked={isActive}
-              aria-label={t(`nav.${labelKey}`)}
-              onClick={() => chooseTheme(value)}
-              className={`relative flex size-9 items-center justify-center rounded-full transition ${
-                isActive
-                  ? "text-[#854d63] dark:text-[#f0adc4]"
-                  : "text-[#6d625d] hover:text-[#854d63] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
-              }`}
-            >
-              <Icon className="relative z-10 size-4" />
-              {isActive ? (
-                <motion.span
-                  layoutId="mobile-theme-option"
-                  className="absolute inset-0 rounded-full bg-[#ffd9e4]/70 dark:bg-[#854d63]/30"
-                  transition={{ type: "spring", stiffness: 420, damping: 30 }}
-                />
-              ) : null}
-            </button>
+            <Tooltip key={value}>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={isActive}
+                  aria-label={t(`nav.${labelKey}`)}
+                  onClick={() => chooseTheme(value)}
+                  className={`relative flex size-9 items-center justify-center rounded-full transition ${
+                    isActive
+                      ? "text-[#854d63] dark:text-[#f0adc4]"
+                      : "text-[#6d625d] hover:text-[#854d63] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
+                  }`}
+                >
+                  <Icon className="relative z-10 size-4" />
+                  {isActive ? (
+                    <motion.span
+                      layoutId="mobile-theme-option"
+                      className="absolute inset-0 rounded-full bg-[#ffd9e4]/70 dark:bg-[#854d63]/30"
+                      transition={{ type: "spring", stiffness: 420, damping: 30 }}
+                    />
+                  ) : null}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                sideOffset={8}
+                className="max-w-[210px] rounded-lg border border-[#e4bfb2]/70 bg-white px-3 py-2 text-left text-[#5b4137] shadow-[0_16px_44px_rgba(28,27,27,0.14)] dark:border-white/12 dark:bg-[#171312] dark:text-[#dbc9c0]"
+              >
+                <p className="text-[12px] font-semibold text-[#1c1b1b] dark:text-[#f8f1ec]">
+                  {t(`nav.${labelKey}`)}
+                </p>
+                <p className="mt-1 text-[11px] leading-4">{t(`nav.${descriptionKey}`)}</p>
+              </TooltipContent>
+            </Tooltip>
           );
         })}
       </div>
@@ -160,32 +190,45 @@ function ThemeSwitcher({
             transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
             className="absolute inset-y-0 left-2 right-2 flex items-center justify-between"
           >
-            {orderedThemeOptions.map(({ value, labelKey, Icon }) => {
+            {orderedThemeOptions.map(({ value, labelKey, descriptionKey, Icon }) => {
               const isActive = theme === value;
 
               return (
-                <button
-                  key={value}
-                  type="button"
-                  role="radio"
-                  aria-checked={isActive}
-                  aria-label={t(`nav.${labelKey}`)}
-                  onClick={() => chooseTheme(value)}
-                  className={`relative flex size-9 items-center justify-center rounded-full transition ${
-                    isActive
-                      ? "text-[#854d63] dark:text-[#f0adc4]"
-                      : "text-[#8d7b72] hover:text-[#854d63] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
-                  }`}
-                >
-                  <Icon className="relative z-10 size-[18px]" />
-                  {isActive ? (
-                    <motion.span
-                      layoutId="theme-option"
-                      className="absolute inset-0 rounded-full border border-[#e4bfb2]/80 bg-[#ffd9e4]/52 dark:border-[#f0adc4]/30 dark:bg-[#854d63]/24"
-                      transition={{ type: "spring", stiffness: 420, damping: 30 }}
-                    />
-                  ) : null}
-                </button>
+                <Tooltip key={value}>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={isActive}
+                      aria-label={t(`nav.${labelKey}`)}
+                      onClick={() => chooseTheme(value)}
+                      className={`relative flex size-9 items-center justify-center rounded-full transition ${
+                        isActive
+                          ? "text-[#854d63] dark:text-[#f0adc4]"
+                          : "text-[#8d7b72] hover:text-[#854d63] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
+                      }`}
+                    >
+                      <Icon className="relative z-10 size-[18px]" />
+                      {isActive ? (
+                        <motion.span
+                          layoutId="theme-option"
+                          className="absolute inset-0 rounded-full border border-[#e4bfb2]/80 bg-[#ffd9e4]/52 dark:border-[#f0adc4]/30 dark:bg-[#854d63]/24"
+                          transition={{ type: "spring", stiffness: 420, damping: 30 }}
+                        />
+                      ) : null}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    sideOffset={8}
+                    className="max-w-[220px] rounded-lg border border-[#e4bfb2]/70 bg-white px-3 py-2 text-left text-[#5b4137] shadow-[0_16px_44px_rgba(28,27,27,0.14)] dark:border-white/12 dark:bg-[#171312] dark:text-[#dbc9c0]"
+                  >
+                    <p className="text-[12px] font-semibold text-[#1c1b1b] dark:text-[#f8f1ec]">
+                      {t(`nav.${labelKey}`)}
+                    </p>
+                    <p className="mt-1 text-[11px] leading-4">{t(`nav.${descriptionKey}`)}</p>
+                  </TooltipContent>
+                </Tooltip>
               );
             })}
           </motion.div>
@@ -604,8 +647,13 @@ export default function Navbar() {
                 >
                   <a
                     href={link.href}
-                    onClick={(event) => event.preventDefault()}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      setHoveredNavId(link.id);
+                      setIsCarnetOpen((current) => !current);
+                    }}
                     className={linkClass}
+                    aria-expanded={isCarnetOpen}
                   >
                     {hoverBackground}
                     <span className="relative z-10">{link.name}</span>
@@ -641,7 +689,7 @@ export default function Navbar() {
                                     {t("nav.toolsAndInspirations")}
                                   </span>
                                   <span className="mt-1 block text-[11px] text-[#6d625d] transition-colors duration-300 group-hover:text-[#1c1b1b] dark:text-[#cdb9ae] dark:group-hover:text-[#f8f1ec]">
-                                    {i18n.language === "fr" ? "Outils & veille créative" : "Tools & creative research"}
+                                    {i18n.language === "fr" ? "Plateformes, groupes & veille créative" : "Platforms, groups & creative research"}
                                   </span>
                                 </span>
                               </Link>

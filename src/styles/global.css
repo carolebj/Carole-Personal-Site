@@ -258,6 +258,17 @@
     .t-page-slide .t-page { transition: none !important; }
   }
 
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 420ms;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  ::view-transition-group(*) {
+    animation-duration: 520ms;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .t-icon-swap .t-icon { transition: none !important; }
   }

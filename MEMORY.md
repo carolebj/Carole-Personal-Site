@@ -50,7 +50,14 @@ Last reviewed: 2026-05-05 WAT
   - the testimonials section should sit on a white background in light mode
   - desktop navigation order is Accueil, À propos, Services, Avis, Blog; Manifesto remains a section but is not a menu item
   - Services is both a scroll link and a hover mega menu with links to individual service pages
+  - the Carnet resources page is framed as useful resources and communities: platforms, tools, inspiring campaigns, and support groups for digital communication
+  - blog article links should use continuity/view transitions from list cards to article pages, especially image and title continuity
+  - service detail pages should clearly separate the service presentation, audience fit, and case-study/work-output areas
+  - Carnet detail pages can depart from the warmer portfolio card style and use a more minimal, document-like layout with simplified search and interactive resource cards
+  - the resources grid should stay dense on desktop, with three cards per row around 1200px wide screens
+  - the readings/reference page should use the same centered minimal Carnet language, with a clear switch between book covers and cited content/newsletters rendered as lighter paper objects
   - testimonials use a three-card carousel with the centered card as the active state
+  - the footer reveal should behave like a temporary pull-beyond-footer moment: after a short delay it returns to the footer, and the decorative shader should stay wave-like, colorful, and gently moving rather than highly animated
   - subtle audio haptics are enabled by default for interactive elements and can be toggled from the logo right-click menu
 
 ## Implementation Notes

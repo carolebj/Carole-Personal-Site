@@ -1,6 +1,7 @@
 import { ArrowLeftIcon, BookOpenIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { Link, useParams } from "react-router";
 import { motion } from "motion/react";
+import type React from "react";
 import { useTranslation } from "react-i18next";
 import abstractAuditImage from "../../assets/blog/blog-abstract-audit.svg";
 import abstractContentImage from "../../assets/blog/blog-abstract-content.svg";
@@ -60,7 +61,10 @@ export default function BlogArticle() {
               </span>
               <span>{post.date}</span>
             </div>
-            <h1 className="mt-5 font-serif text-[44px] leading-[48px] text-[#1c1b1b] dark:text-[#f8f1ec] md:text-[64px] md:leading-[68px]">
+            <h1
+              className="mt-5 font-serif text-[44px] leading-[48px] text-[#1c1b1b] dark:text-[#f8f1ec] md:text-[64px] md:leading-[68px]"
+              style={{ viewTransitionName: `blog-title-${post.slug}` } as React.CSSProperties}
+            >
               {post.title}
             </h1>
             <p className="mt-6 text-[19px] leading-8 text-[#5b4137] dark:text-[#dbc9c0]">
@@ -68,7 +72,10 @@ export default function BlogArticle() {
             </p>
           </div>
 
-          <div className="overflow-hidden rounded-lg border border-[#e4bfb2]/32 bg-[#ffd9e4] shadow-[0_24px_70px_rgba(28,27,27,0.08)] dark:border-white/10 dark:bg-[#2b1b20]">
+          <div
+            className="overflow-hidden rounded-lg border border-[#e4bfb2]/32 bg-[#ffd9e4] shadow-[0_24px_70px_rgba(28,27,27,0.08)] dark:border-white/10 dark:bg-[#2b1b20]"
+            style={{ viewTransitionName: `blog-image-${post.slug}` } as React.CSSProperties}
+          >
             <img
               src={postImage}
               alt=""

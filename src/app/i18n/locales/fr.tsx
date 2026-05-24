@@ -6,7 +6,7 @@ const fr = {
     about: "À propos",
     carnet: "Carnet",
     blog: "Blog",
-    toolsAndInspirations: "Outils & inspirations",
+    toolsAndInspirations: "Ressources & communautés",
     readingsAndReferences: "Lectures & références",
     contact: "Contact",
     language: "Choisir la langue",
@@ -16,6 +16,9 @@ const fr = {
     systemTheme: "Suivre le thème du système",
     darkTheme: "Passer au thème sombre",
     lightTheme: "Passer au thème clair",
+    systemThemeDescription: "Adapte automatiquement le site aux préférences de votre appareil.",
+    lightThemeDescription: "Garde une lecture claire et lumineuse, idéale en journée.",
+    darkThemeDescription: "Réduit la luminosité et met les accents éditoriaux en douceur.",
     menu: "Ouvrir le menu",
     openHeader: "Afficher le menu complet",
     cv: "Curriculum Vitæ - CV",
@@ -546,6 +549,16 @@ const fr = {
     audienceTitle: "Les profils qui se reconnaîtront dans cet accompagnement",
     applications: "Applications concrètes",
     applicationsTitle: "Ce que cette expertise peut produire",
+    presentationBlockTitle: "Le cadre de travail",
+    presentationBlockText:
+      "Cette partie rassemble les livrables et les points d'appui qui permettent de comprendre exactement ce que l'accompagnement couvre.",
+    caseStudy: "Étude de cas",
+    caseStudyTitle: "Un exemple de mise en application",
+    caseStudyIntro:
+      "La partie projet montre comment le service peut se traduire en actions concrètes, supports livrables et décisions éditoriales.",
+    caseStudyProblem: "Point de départ",
+    caseStudyMethod: "Méthode",
+    caseStudyOutput: "Livrable",
     back: "Retour aux services",
     cta: "Discutons de ce besoin",
   },
@@ -599,8 +612,8 @@ const fr = {
 
   carnetPage: {
     eyebrow: "Carnet",
-    title: "Outils & inspirations",
-    subtitle: "Une sélection de ressources, d'outils et de plateformes de veille pour nourrir et structurer votre communication digitale.",
+    title: "Ressources & communautés utiles",
+    subtitle: "Une sélection de plateformes, d'outils, de campagnes inspirantes et de groupes d'entraide pour nourrir et structurer votre communication digitale.",
     searchPlaceholder: "Rechercher un outil, une source ou une catégorie",
     emptyState: "Aucun élément ne correspond à cette recherche.",
     categories: ["Tous", "Ligne éditoriale", "Microcopie & écriture", "Veille social media", "Inspirations créatives"],
@@ -624,7 +637,7 @@ const fr = {
         ]
       },
       {
-        title: "Newsletters & Veille",
+        title: "Articles, newsletters & contenus cités",
         items: [
           { title: "Marketing Brew", author: "Brew Team", desc: "Une newsletter trihebdomadaire qui décrypte l'actualité des marques, les campagnes créatives et les mutations du secteur publicitaire." },
           { title: "Growth Letter", author: "Yann Leonardi", desc: "Des analyses concrètes des stratégies marketing, du positionnement produit et de la psychologie de l'attention." }
