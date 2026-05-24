@@ -89,6 +89,7 @@ export type CmsHomePage = {
     eyebrow?: LocalizedValue;
     title?: LocalizedValue;
     accent?: LocalizedValue;
+    titleEnd?: LocalizedValue;
     description?: LocalizedValue;
     primaryCta?: LocalizedValue;
     secondaryCta?: LocalizedValue;
