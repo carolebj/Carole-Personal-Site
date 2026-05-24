@@ -8,6 +8,7 @@ import {
   ChartBarIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  ComputerDesktopIcon,
   DocumentTextIcon,
   MegaphoneIcon,
   MoonIcon,
@@ -22,7 +23,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import caroleLogoSymbol from "../../assets/logos/carole-CT-logo.svg";
 import { useHaptics } from "../interactions/HapticContext";
-import { useTheme } from "../theme/ThemeContext";
+import { useTheme, type ThemePreference } from "../theme/ThemeContext";
 
 type ServicePreview = {
   slug: string;
@@ -36,6 +37,17 @@ type ServicePreview = {
 };
 
 type DropdownPhase = "closed" | "open" | "closing";
+type MobileAccordion = "services" | "carnet" | null;
+
+const themeOptions: Array<{
+  value: ThemePreference;
+  labelKey: "systemTheme" | "lightTheme" | "darkTheme";
+  Icon: typeof ComputerDesktopIcon;
+}> = [
+  { value: "system", labelKey: "systemTheme", Icon: ComputerDesktopIcon },
+  { value: "light", labelKey: "lightTheme", Icon: SunIcon },
+  { value: "dark", labelKey: "darkTheme", Icon: MoonIcon },
+];
 
 const getDropdownCloseDuration = () => {
   const closeDuration = getComputedStyle(document.documentElement)
@@ -67,8 +79,156 @@ function useDropdownTransition(isOpen: boolean) {
   return phase;
 }
 
+function ThemeSwitcher({
+  compact = false,
+  onSelect,
+}: {
+  compact?: boolean;
+  onSelect?: () => void;
+}) {
+  const { t } = useTranslation();
+  const { theme, setTheme } = useTheme();
+  const [isOpen, setIsOpen] = useState(false);
+  const ActiveIcon = themeOptions.find((option) => option.value === theme)?.Icon ?? ComputerDesktopIcon;
+  const orderedThemeOptions = [
+    ...themeOptions.filter((option) => option.value !== theme),
+    ...themeOptions.filter((option) => option.value === theme),
+  ];
+
+  const chooseTheme = (value: ThemePreference) => {
+    setTheme(value);
+    setIsOpen(false);
+    onSelect?.();
+  };
+
+  if (compact) {
+    return (
+      <div
+        className="inline-flex items-center justify-center rounded-full border border-[#e5e2e1] bg-white/72 p-1 dark:border-white/15 dark:bg-white/5"
+        role="radiogroup"
+        aria-label={t("nav.theme")}
+      >
+        {themeOptions.map(({ value, labelKey, Icon }) => {
+          const isActive = theme === value;
+
+          return (
+            <button
+              key={value}
+              type="button"
+              role="radio"
+              aria-checked={isActive}
+              aria-label={t(`nav.${labelKey}`)}
+              onClick={() => chooseTheme(value)}
+              className={`relative flex size-9 items-center justify-center rounded-full transition ${
+                isActive
+                  ? "text-[#854d63] dark:text-[#f0adc4]"
+                  : "text-[#6d625d] hover:text-[#854d63] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
+              }`}
+            >
+              <Icon className="relative z-10 size-4" />
+              {isActive ? (
+                <motion.span
+                  layoutId="mobile-theme-option"
+                  className="absolute inset-0 rounded-full bg-[#ffd9e4]/70 dark:bg-[#854d63]/30"
+                  transition={{ type: "spring", stiffness: 420, damping: 30 }}
+                />
+              ) : null}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
+
+  return (
+    <motion.div
+      initial={false}
+      animate={{ width: isOpen ? 156 : 52 }}
+      transition={{ type: "spring", stiffness: 430, damping: 32 }}
+      className="relative flex h-[52px] items-center justify-end overflow-hidden rounded-full border border-[#e5e2e1] bg-white/74 text-[#5b4137] shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur-xl dark:border-white/15 dark:bg-white/5 dark:text-[#f8f1ec]"
+      role="radiogroup"
+      aria-label={t("nav.theme")}
+      onMouseLeave={() => setIsOpen(false)}
+    >
+      <AnimatePresence initial={false}>
+        {isOpen ? (
+          <motion.div
+            key="theme-options"
+            initial={{ opacity: 0, x: 18 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 12 }}
+            transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-y-0 left-2 right-2 flex items-center justify-between"
+          >
+            {orderedThemeOptions.map(({ value, labelKey, Icon }) => {
+              const isActive = theme === value;
+
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  role="radio"
+                  aria-checked={isActive}
+                  aria-label={t(`nav.${labelKey}`)}
+                  onClick={() => chooseTheme(value)}
+                  className={`relative flex size-9 items-center justify-center rounded-full transition ${
+                    isActive
+                      ? "text-[#854d63] dark:text-[#f0adc4]"
+                      : "text-[#8d7b72] hover:text-[#854d63] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
+                  }`}
+                >
+                  <Icon className="relative z-10 size-[18px]" />
+                  {isActive ? (
+                    <motion.span
+                      layoutId="theme-option"
+                      className="absolute inset-0 rounded-full border border-[#e4bfb2]/80 bg-[#ffd9e4]/52 dark:border-[#f0adc4]/30 dark:bg-[#854d63]/24"
+                      transition={{ type: "spring", stiffness: 420, damping: 30 }}
+                    />
+                  ) : null}
+                </button>
+              );
+            })}
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
+      <AnimatePresence initial={false}>
+        {!isOpen ? (
+          <motion.button
+            key="theme-current"
+            type="button"
+            onClick={() => setIsOpen(true)}
+            initial={{ opacity: 0, scale: 0.82 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.86 }}
+            transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+            className="relative z-10 flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full transition hover:bg-[#ffd9e4]/44 hover:text-[#854d63] active:scale-[0.96] dark:hover:bg-[#854d63]/30 dark:hover:text-[#f0adc4]"
+            aria-label={t("nav.openTheme")}
+            aria-expanded={isOpen}
+          >
+            <motion.span
+              key={theme}
+              initial={{ opacity: 0, rotate: -18, scale: 0.82 }}
+              animate={{ opacity: 1, rotate: 0, scale: 1 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <ActiveIcon className="size-5" />
+            </motion.span>
+          </motion.button>
+        ) : (
+          <span
+            aria-hidden="true"
+            className="relative z-0 h-[52px] w-[52px] shrink-0"
+          />
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openMobileAccordion, setOpenMobileAccordion] = useState<MobileAccordion>(null);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isCarnetOpen, setIsCarnetOpen] = useState(false);
   const [isLogoMenuOpen, setIsLogoMenuOpen] = useState(false);
@@ -82,7 +242,6 @@ export default function Navbar() {
   const carnetMenuRef = useRef<HTMLLIElement>(null);
   const lastScrollYRef = useRef(0);
   const { t, i18n } = useTranslation();
-  const { theme, toggleTheme } = useTheme();
   const { enabled: hapticsEnabled, toggleEnabled: toggleHaptics } = useHaptics();
   const location = useLocation();
   const services = t("services.items", { returnObjects: true }) as ServicePreview[];
@@ -109,6 +268,7 @@ export default function Navbar() {
         setIsCompact(true);
         setIsForcedOpen(false);
         setIsMobileMenuOpen(false);
+        setOpenMobileAccordion(null);
       }
 
       lastScrollYRef.current = currentY;
@@ -554,15 +714,7 @@ export default function Navbar() {
         </ul>
 
         <div className="hidden items-center gap-3 md:flex">
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="flex h-[52px] w-[52px] items-center justify-center rounded-full border border-[#e5e2e1] text-[#5b4137] transition hover:border-[#854d63]/40 hover:bg-[#ffd9e4]/44 hover:text-[#854d63] dark:border-white/15 dark:text-[#f8f1ec] dark:hover:border-[#f0adc4]/50 dark:hover:bg-[#854d63]/30 dark:hover:text-[#f0adc4]"
-            aria-label={theme === "dark" ? t("nav.lightTheme") : t("nav.darkTheme")}
-            title={theme === "dark" ? t("nav.lightTheme") : t("nav.darkTheme")}
-          >
-            {theme === "dark" ? <SunIcon className="size-5" /> : <MoonIcon className="size-5" />}
-          </button>
+          <ThemeSwitcher />
           <Link
             to="/contact"
             className="inline-flex h-[52px] items-center rounded-full bg-[#854d63] px-6 text-[14px] font-semibold uppercase leading-4 tracking-[2px] text-white shadow-sm transition hover:bg-[#6a364b] dark:bg-[#d79caf] dark:text-[#1c1415] dark:hover:bg-[#f0adc4]"
@@ -573,7 +725,15 @@ export default function Navbar() {
 
         <button
           className="flex size-10 items-center justify-center rounded-full border border-[#e5e2e1] text-[#1c1b1b] dark:border-white/15 dark:text-[#f8f1ec] md:hidden"
-          onClick={() => setIsMobileMenuOpen((current) => !current)}
+          onClick={() => {
+            setIsMobileMenuOpen((current) => {
+              if (current) {
+                setOpenMobileAccordion(null);
+              }
+
+              return !current;
+            });
+          }}
           aria-label={t("nav.menu")}
         >
           <span
@@ -599,53 +759,110 @@ export default function Navbar() {
             <div className="flex flex-col gap-3">
               {navLinks.map((link) => {
                 if (link.hasMenu) {
+                  const isAccordionOpen = openMobileAccordion === "services";
+
                   return (
-                    <div key={link.id} className="flex flex-col gap-1.5 rounded-lg bg-[#fcf9f8] p-3 dark:bg-white/5">
-                      <Link
-                        to="/services"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="px-2 py-2 text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63] transition hover:text-[#6a364b] dark:text-[#f0adc4] dark:hover:text-[#f8f1ec]"
+                    <div key={link.id} className="overflow-hidden rounded-lg bg-[#fcf9f8] dark:bg-white/5">
+                      <button
+                        type="button"
+                        onClick={() => setOpenMobileAccordion((current) => (current === "services" ? null : "services"))}
+                        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63] transition hover:text-[#6a364b] dark:text-[#f0adc4] dark:hover:text-[#f8f1ec]"
+                        aria-expanded={isAccordionOpen}
                       >
-                        {link.name}
-                      </Link>
-                      <div className="grid gap-1 pl-2">
-                        {services.map((service) => (
-                          <Link
-                            key={service.slug}
-                            to={`/services/${service.slug}`}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="rounded-md py-2 text-[14px] font-medium text-[#5b4137] dark:text-[#dbc9c0]"
+                        <span>{link.name}</span>
+                        <ChevronDownIcon className={`size-4 transition-transform duration-300 ${isAccordionOpen ? "rotate-180" : ""}`} />
+                      </button>
+                      <AnimatePresence initial={false}>
+                        {isAccordionOpen ? (
+                          <motion.div
+                            key="mobile-services"
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+                            className="overflow-hidden"
                           >
-                            {service.title} <span className="italic text-[#854d63] dark:text-[#f0adc4]">{service.accent}</span>
-                          </Link>
-                        ))}
-                      </div>
+                            <div className="grid gap-1 px-5 pb-4">
+                              <Link
+                                to="/services"
+                                onClick={() => {
+                                  setIsMobileMenuOpen(false);
+                                  setOpenMobileAccordion(null);
+                                }}
+                                className="rounded-md py-2 text-[14px] font-semibold text-[#854d63] dark:text-[#f0adc4]"
+                              >
+                                {i18n.language === "fr" ? "Tous les services" : "All services"}
+                              </Link>
+                              {services.map((service) => (
+                                <Link
+                                  key={service.slug}
+                                  to={`/services/${service.slug}`}
+                                  onClick={() => {
+                                    setIsMobileMenuOpen(false);
+                                    setOpenMobileAccordion(null);
+                                  }}
+                                  className="rounded-md py-2 text-[14px] font-medium text-[#5b4137] dark:text-[#dbc9c0]"
+                                >
+                                  {service.title} <span className="italic text-[#854d63] dark:text-[#f0adc4]">{service.accent}</span>
+                                </Link>
+                              ))}
+                            </div>
+                          </motion.div>
+                        ) : null}
+                      </AnimatePresence>
                     </div>
                   );
                 }
 
                 if (link.hasCarnetMenu) {
+                  const isAccordionOpen = openMobileAccordion === "carnet";
+
                   return (
-                    <div key={link.id} className="flex flex-col gap-1.5 rounded-lg bg-[#fcf9f8] p-3 dark:bg-white/5">
-                      <span className="px-2 text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">
-                        {link.name}
-                      </span>
-                      <div className="grid gap-1 pl-2">
-                        <Link
-                          to="/carnet/outils-inspirations"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="rounded-md py-2 text-[14px] font-medium text-[#5b4137] dark:text-[#dbc9c0]"
-                        >
-                          {t("nav.toolsAndInspirations")}
-                        </Link>
-                        <Link
-                          to="/carnet/lectures-references"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="rounded-md py-2 text-[14px] font-medium text-[#5b4137] dark:text-[#dbc9c0]"
-                        >
-                          {t("nav.readingsAndReferences")}
-                        </Link>
-                      </div>
+                    <div key={link.id} className="overflow-hidden rounded-lg bg-[#fcf9f8] dark:bg-white/5">
+                      <button
+                        type="button"
+                        onClick={() => setOpenMobileAccordion((current) => (current === "carnet" ? null : "carnet"))}
+                        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63] transition hover:text-[#6a364b] dark:text-[#f0adc4] dark:hover:text-[#f8f1ec]"
+                        aria-expanded={isAccordionOpen}
+                      >
+                        <span>{link.name}</span>
+                        <ChevronDownIcon className={`size-4 transition-transform duration-300 ${isAccordionOpen ? "rotate-180" : ""}`} />
+                      </button>
+                      <AnimatePresence initial={false}>
+                        {isAccordionOpen ? (
+                          <motion.div
+                            key="mobile-carnet"
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+                            className="overflow-hidden"
+                          >
+                            <div className="grid gap-1 px-5 pb-4">
+                              <Link
+                                to="/carnet/outils-inspirations"
+                                onClick={() => {
+                                  setIsMobileMenuOpen(false);
+                                  setOpenMobileAccordion(null);
+                                }}
+                                className="rounded-md py-2 text-[14px] font-medium text-[#5b4137] dark:text-[#dbc9c0]"
+                              >
+                                {t("nav.toolsAndInspirations")}
+                              </Link>
+                              <Link
+                                to="/carnet/lectures-references"
+                                onClick={() => {
+                                  setIsMobileMenuOpen(false);
+                                  setOpenMobileAccordion(null);
+                                }}
+                                className="rounded-md py-2 text-[14px] font-medium text-[#5b4137] dark:text-[#dbc9c0]"
+                              >
+                                {t("nav.readingsAndReferences")}
+                              </Link>
+                            </div>
+                          </motion.div>
+                        ) : null}
+                      </AnimatePresence>
                     </div>
                   );
                 }
@@ -674,14 +891,7 @@ export default function Navbar() {
                   </a>
                 );
               })}
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-[#e5e2e1] text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#5b4137] dark:border-white/15 dark:text-[#f8f1ec]"
-              >
-                {theme === "dark" ? <SunIcon className="size-4" /> : <MoonIcon className="size-4" />}
-                {theme === "dark" ? t("nav.lightTheme") : t("nav.darkTheme")}
-              </button>
+              <ThemeSwitcher compact />
               <Link
                 to="/contact"
                 onClick={() => setIsMobileMenuOpen(false)}
