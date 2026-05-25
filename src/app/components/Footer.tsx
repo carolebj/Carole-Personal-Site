@@ -1,8 +1,12 @@
-import { CheckIcon } from "@heroicons/react/24/outline";
-import { animate, motion, type AnimationPlaybackControls } from "motion/react";
-import { useMemo } from "react";
-import { useEffect, useRef } from "react";
+import {
+  ArrowUpIcon,
+  CheckIcon,
+  EnvelopeIcon,
+} from "@heroicons/react/24/outline";
+import { animate, motion, useReducedMotion, type AnimationPlaybackControls } from "motion/react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
 import { langLabels, useLang, type Lang } from "../i18n/LanguageContext";
 import { siteSettingsQuery } from "../../cms/queries";
 import type { CmsSiteSettings } from "../../cms/types";
@@ -12,32 +16,403 @@ const languages: { code: Lang; flag: string }[] = [
   { code: "fr", flag: "FR" },
   { code: "en", flag: "EN" },
 ];
+const FOOTER_REVEAL_DELAY_MS = 1800;
+const FOOTER_REVEAL_FAST_DELAY_MS = 1200;
+const SHADER_LONG_PRESS_MS = 320;
+
+type ServiceItem = {
+  slug: string;
+  title: string;
+  accent: string;
+};
+
+function FooterColumn({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <div>
+      <h2 className="border-b border-[#e5e2e1]/90 pb-3 text-[11px] font-semibold uppercase tracking-[3px] text-[#1c1b1b] dark:border-white/12 dark:text-[#f8f1ec]">
+        {title}
+      </h2>
+      <div className="mt-5">{children}</div>
+    </div>
+  );
+}
+
+function FooterLink({
+  to,
+  href,
+  external,
+  children,
+}: {
+  to?: string;
+  href?: string;
+  external?: boolean;
+  children: ReactNode;
+}) {
+  const className =
+    "block text-[15px] leading-7 text-[#5b4137] transition hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:text-[#f0adc4]";
+
+  if (to) {
+    return (
+      <Link to={to} className={className}>
+        {children}
+      </Link>
+    );
+  }
+
+  return (
+    <a
+      href={href}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noreferrer" : undefined}
+      className={className}
+    >
+      {children}
+    </a>
+  );
+}
+
+function SocialRow({
+  href,
+  to,
+  external,
+  icon,
+  label,
+}: {
+  href?: string;
+  to?: string;
+  external?: boolean;
+  icon: ReactNode;
+  label: string;
+}) {
+  const className =
+    "group flex items-center gap-3 text-[15px] leading-7 text-[#5b4137] transition hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:text-[#f0adc4]";
+
+  const content = (
+    <>
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-[#854d63]/25 bg-[#ffd9e4]/35 text-[#854d63] transition group-hover:border-[#854d63]/45 group-hover:bg-[#ffd9e4]/55 dark:border-[#f0adc4]/30 dark:bg-[#854d63]/22 dark:text-[#f0adc4]">
+        {icon}
+      </span>
+      {label}
+    </>
+  );
+
+  if (to) {
+    return (
+      <Link to={to} className={className}>
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <a
+      href={href}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noreferrer" : undefined}
+      className={className}
+    >
+      {content}
+    </a>
+  );
+}
+
+function socialIconForLabel(label: string) {
+  const normalized = label.toLowerCase();
+  if (normalized.includes("behance")) {
+    return <BehanceMark />;
+  }
+  if (normalized.includes("linkedin")) {
+    return <LinkedInMark />;
+  }
+  return <EnvelopeIcon className="size-4" />;
+}
+
+function BehanceMark() {
+  return <span className="text-[11px] font-bold tracking-[0.08em]">Bē</span>;
+}
+
+function LinkedInMark() {
+  return <span className="text-[11px] font-bold tracking-[0.04em]">in</span>;
+}
+
+function compileShader(gl: WebGLRenderingContext, type: number, source: string) {
+  const shader = gl.createShader(type);
+  if (!shader) {
+    return null;
+  }
+
+  gl.shaderSource(shader, source);
+  gl.compileShader(shader);
+
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    gl.deleteShader(shader);
+    return null;
+  }
+
+  return shader;
+}
+
+function FooterShaderCanvas({
+  reducedMotion,
+  speedMultiplier,
+}: {
+  reducedMotion: boolean | null;
+  speedMultiplier: number;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const speedMultiplierRef = useRef(speedMultiplier);
+
+  useEffect(() => {
+    speedMultiplierRef.current = speedMultiplier;
+  }, [speedMultiplier]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const gl = canvas?.getContext("webgl", {
+      alpha: false,
+      antialias: true,
+      premultipliedAlpha: false,
+    });
+
+    if (!canvas || !gl) {
+      return;
+    }
+
+    const vertexShader = compileShader(
+      gl,
+      gl.VERTEX_SHADER,
+      `
+        attribute vec2 aPosition;
+        varying vec2 vUv;
+
+        void main() {
+          vUv = aPosition * 0.5 + 0.5;
+          gl_Position = vec4(aPosition, 0.0, 1.0);
+        }
+      `,
+    );
+
+    const fragmentShader = compileShader(
+      gl,
+      gl.FRAGMENT_SHADER,
+      `
+        precision highp float;
+
+        uniform vec2 iResolution;
+        uniform float iTime;
+        varying vec2 vUv;
+
+        float hash(vec2 p) {
+          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+        }
+
+        float noise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
+          vec2 u = f * f * (3.0 - 2.0 * f);
+
+          float a = hash(i);
+          float b = hash(i + vec2(1.0, 0.0));
+          float c = hash(i + vec2(0.0, 1.0));
+          float d = hash(i + vec2(1.0, 1.0));
+
+          return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
+        }
+
+        float fbm(vec2 p) {
+          float value = 0.0;
+          float amplitude = 0.5;
+          for (int i = 0; i < 5; i++) {
+            value += amplitude * noise(p);
+            p *= 2.02;
+            amplitude *= 0.5;
+          }
+          return value;
+        }
+
+        vec3 palette(float t) {
+          vec3 cream = vec3(1.0, 0.93, 0.92);
+          vec3 blush = vec3(1.0, 0.78, 0.84);
+          vec3 coral = vec3(1.0, 0.52, 0.55);
+          vec3 peach = vec3(1.0, 0.82, 0.68);
+          vec3 violet = vec3(0.58, 0.45, 0.92);
+          vec3 lavender = vec3(0.88, 0.80, 1.0);
+
+          vec3 color = mix(cream, blush, smoothstep(0.0, 0.32, t));
+          color = mix(color, peach, smoothstep(0.18, 0.52, t) * 0.34);
+          color = mix(color, coral, smoothstep(0.36, 0.62, t) * (1.0 - smoothstep(0.58, 0.78, vUv.x)) * 0.72);
+          color = mix(color, violet, smoothstep(0.58, 0.96, vUv.x) * smoothstep(0.24, 0.88, t) * 0.68);
+          color = mix(color, lavender, smoothstep(0.65, 1.0, vUv.y) * 0.18);
+          return color;
+        }
+
+        void main() {
+          vec2 uv = vUv;
+          float aspect = iResolution.x / max(iResolution.y, 1.0);
+          vec2 p = vec2((uv.x - 0.5) * aspect, uv.y);
+
+          float time = iTime * 0.11;
+          vec2 q = vec2(
+            fbm(p * 1.22 + vec2(time, -time * 0.28)),
+            fbm(p * 1.08 + vec2(-time * 0.34, time * 0.92))
+          );
+          vec2 r = vec2(
+            fbm(p * 1.55 + 2.0 * q + vec2(time * 0.62, 0.0)),
+            fbm(p * 1.35 + 1.7 * q + vec2(0.0, -time * 0.48))
+          );
+
+          float wave = sin((p.x + r.x * 0.42) * 4.8 + time * 2.4) * 0.11;
+          wave += sin((p.x - r.y * 0.32) * 8.2 - time * 1.7) * 0.045;
+          float arch = -pow(p.x * 0.42, 2.0) + 0.22;
+          float field = smoothstep(0.08, 1.02, uv.y + wave + arch + (r.x - 0.5) * 0.42);
+
+          vec3 color = palette(field);
+          float topLight = smoothstep(0.18, 0.92, uv.y);
+          color = mix(vec3(1.0, 0.94, 0.93), color, topLight * 0.86);
+
+          float glow = 0.14 * exp(-3.6 * abs(uv.y - (0.42 + wave * 0.9)));
+          color += vec3(1.0, 0.92, 0.88) * glow;
+
+          float grain = hash(uv * iResolution.xy + iTime * 14.0) - 0.5;
+          color += grain * 0.014;
+          color = mix(color, vec3(1.0, 0.91, 0.92), 0.14);
+
+          gl_FragColor = vec4(color, 1.0);
+        }
+      `,
+    );
+
+    if (!vertexShader || !fragmentShader) {
+      return;
+    }
+
+    const program = gl.createProgram();
+    if (!program) {
+      return;
+    }
+
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      return;
+    }
+
+    const buffer = gl.createBuffer();
+    const positionLocation = gl.getAttribLocation(program, "aPosition");
+    const resolutionLocation = gl.getUniformLocation(program, "iResolution");
+    const timeLocation = gl.getUniformLocation(program, "iTime");
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
+      gl.STATIC_DRAW,
+    );
+
+    let animationFrame = 0;
+    let lastFrameAt = performance.now();
+    let shaderTime = 0;
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.floor(rect.width * pixelRatio));
+      canvas.height = Math.max(1, Math.floor(rect.height * pixelRatio));
+      gl.viewport(0, 0, canvas.width, canvas.height);
+    };
+
+    const render = () => {
+      const now = performance.now();
+      const delta = Math.min(0.05, (now - lastFrameAt) / 1000);
+      lastFrameAt = now;
+      shaderTime += reducedMotion ? 0 : delta * speedMultiplierRef.current;
+
+      resize();
+      gl.useProgram(program);
+      gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+      gl.uniform1f(timeLocation, shaderTime);
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+      gl.enableVertexAttribArray(positionLocation);
+      gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+      if (!reducedMotion) {
+        animationFrame = window.requestAnimationFrame(render);
+      }
+    };
+
+    window.addEventListener("resize", resize);
+    render();
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      window.removeEventListener("resize", resize);
+      gl.deleteBuffer(buffer);
+      gl.deleteProgram(program);
+      gl.deleteShader(vertexShader);
+      gl.deleteShader(fragmentShader);
+    };
+  }, [reducedMotion]);
+
+  return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />;
+}
 
 export default function Footer() {
   const { t, i18n } = useTranslation();
   const { lang, setLang } = useLang();
+  const shouldReduceMotion = useReducedMotion();
   const { data: siteData } = useSanityQuery(siteSettingsQuery, null as CmsSiteSettings | null);
   const year = new Date().getFullYear();
   const footerRef = useRef<HTMLElement>(null);
+  const shaderSectionRef = useRef<HTMLElement>(null);
   const returnTimeoutRef = useRef<number | undefined>(undefined);
   const returnAnimationRef = useRef<AnimationPlaybackControls | null>(null);
+  const scheduleReturnRef = useRef<(delay?: number) => void>(() => undefined);
+  const longPressTimeoutRef = useRef<number | undefined>(undefined);
+  const isShaderPressingRef = useRef(false);
   const isReturningRef = useRef(false);
+  const [isShaderHovered, setIsShaderHovered] = useState(false);
+  const [isShaderAccelerated, setIsShaderAccelerated] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
-  const links = useMemo(() => {
-    const cmsLinks = siteData?.socialLinks?.filter((l) => l.label && l.url).map((l) => ({
-      label: l.label!,
-      href: l.url!,
-      external: true,
-    })) ?? [];
+  const socialLinks = useMemo(() => {
+    const cmsLinks =
+      siteData?.socialLinks
+        ?.filter((link) => link.label && link.url)
+        .map((link) => ({
+          label: link.label!,
+          href: link.url!,
+          external: true,
+        })) ?? [];
+
     if (cmsLinks.length > 0) {
-      return cmsLinks.concat([{ label: t("footer.contact"), href: "/contact", external: false }]);
+      return cmsLinks.concat([
+        { label: t("footer.contactEmail"), href: "/contact", external: false },
+      ]);
     }
+
     return [
       { label: t("footer.behance"), href: "https://www.behance.net/caroletonoukouen", external: true },
       { label: t("footer.linkedin"), href: "https://www.linkedin.com/in/caroletonoukouen/", external: true },
-      { label: t("footer.contact"), href: "/contact", external: false },
+      { label: t("footer.contactEmail"), href: "/contact", external: false },
     ];
   }, [siteData, t]);
+
+  const serviceLinks = useMemo(() => {
+    const items = t("services.items", { returnObjects: true }) as ServiceItem[];
+    return items.map((item) => ({
+      label: `${item.title} ${item.accent}`.trim(),
+      href: `/services/${item.slug}`,
+    }));
+  }, [t, i18n.language]);
 
   useEffect(() => {
     const getFooterRestY = () => {
@@ -58,14 +433,20 @@ export default function Footer() {
 
       returnAnimationRef.current?.stop();
       isReturningRef.current = true;
+      if (shouldReduceMotion) {
+        window.scrollTo(0, restY);
+        isReturningRef.current = false;
+        return;
+      }
+
       returnAnimationRef.current = animate(window.scrollY, restY, {
         type: "spring",
-        stiffness: 780,
-        damping: 23,
-        mass: 0.28,
-        velocity: -900,
-        restDelta: 0.35,
-        restSpeed: 14,
+        stiffness: 920,
+        damping: 20,
+        mass: 0.24,
+        velocity: -1250,
+        restDelta: 0.22,
+        restSpeed: 18,
         onUpdate: (latest) => window.scrollTo(0, latest),
         onComplete: () => {
           isReturningRef.current = false;
@@ -73,14 +454,15 @@ export default function Footer() {
       });
     };
 
-    const scheduleReturn = () => {
+    const scheduleReturn = (delay = FOOTER_REVEAL_DELAY_MS) => {
       window.clearTimeout(returnTimeoutRef.current);
-      if (isReturningRef.current) {
+      if (isReturningRef.current || isShaderPressingRef.current) {
         return;
       }
 
-      returnTimeoutRef.current = window.setTimeout(returnToFooter, 420);
+      returnTimeoutRef.current = window.setTimeout(returnToFooter, delay);
     };
+    scheduleReturnRef.current = scheduleReturn;
 
     const handleScroll = () => {
       if (isReturningRef.current) {
@@ -89,20 +471,26 @@ export default function Footer() {
 
       const restY = getFooterRestY();
       if (restY !== null && window.scrollY > restY + 2) {
-        scheduleReturn();
+        const revealDepth = window.scrollY - restY;
+        scheduleReturn(revealDepth > window.innerHeight * 0.18 ? FOOTER_REVEAL_FAST_DELAY_MS : FOOTER_REVEAL_DELAY_MS);
       }
     };
 
     const handleWheelIntent = (event: WheelEvent) => {
       const restY = getFooterRestY();
       if (restY !== null && window.scrollY > restY + 2) {
+        if (isShaderPressingRef.current) {
+          window.clearTimeout(returnTimeoutRef.current);
+          return;
+        }
+
         if (event.deltaY < 0) {
           window.clearTimeout(returnTimeoutRef.current);
           returnToFooter();
           return;
         }
 
-        scheduleReturn();
+        scheduleReturn(event.deltaY > 28 ? FOOTER_REVEAL_FAST_DELAY_MS : FOOTER_REVEAL_DELAY_MS);
         return;
       }
     };
@@ -115,102 +503,285 @@ export default function Footer() {
       }
     };
 
+    const handleTouchEnd = () => scheduleReturn(FOOTER_REVEAL_DELAY_MS);
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("wheel", handleWheelIntent, { passive: true });
     window.addEventListener("touchmove", cancelReturn, { passive: true });
-    window.addEventListener("touchend", scheduleReturn, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
 
     return () => {
       window.clearTimeout(returnTimeoutRef.current);
       returnAnimationRef.current?.stop();
+      scheduleReturnRef.current = () => undefined;
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("wheel", handleWheelIntent);
       window.removeEventListener("touchmove", cancelReturn);
-      window.removeEventListener("touchend", scheduleReturn);
+      window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, []);
+  }, [shouldReduceMotion]);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const resetShaderReturnTimer = () => {
+    if (isShaderPressingRef.current) {
+      window.clearTimeout(returnTimeoutRef.current);
+      return;
+    }
+
+    scheduleReturnRef.current(FOOTER_REVEAL_DELAY_MS);
+  };
+
+  const handleShaderPointerMove = (event: PointerEvent<HTMLElement>) => {
+    const section = shaderSectionRef.current;
+    if (!section) {
+      return;
+    }
+
+    const rect = section.getBoundingClientRect();
+    setTooltipPosition({
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    });
+    setIsShaderHovered(true);
+    resetShaderReturnTimer();
+  };
+
+  const handleShaderPointerDown = () => {
+    isShaderPressingRef.current = true;
+    window.clearTimeout(returnTimeoutRef.current);
+    window.clearTimeout(longPressTimeoutRef.current);
+    longPressTimeoutRef.current = window.setTimeout(() => {
+      setIsShaderAccelerated(true);
+    }, SHADER_LONG_PRESS_MS);
+  };
+
+  const endShaderLongPress = () => {
+    isShaderPressingRef.current = false;
+    window.clearTimeout(longPressTimeoutRef.current);
+    setIsShaderAccelerated(false);
+    resetShaderReturnTimer();
+  };
+
+  const handleShaderPointerLeave = () => {
+    isShaderPressingRef.current = false;
+    window.clearTimeout(longPressTimeoutRef.current);
+    setIsShaderHovered(false);
+    setIsShaderAccelerated(false);
+    scheduleReturnRef.current(FOOTER_REVEAL_FAST_DELAY_MS);
+  };
 
   return (
-    <>
+    <div>
       <footer
         ref={footerRef}
-        className="relative border-t border-[#e5e2e1]/70 bg-white dark:border-white/10 dark:bg-[#13100f]"
+        className="relative border-t border-[#e5e2e1]/80 bg-[#fcf9f8] dark:border-white/10 dark:bg-[#13100f]"
       >
-        <div className="mx-auto grid max-w-[1200px] gap-8 px-5 py-10 sm:px-8 lg:grid-cols-[1fr_auto_1fr] lg:items-center lg:px-8 lg:py-12">
-          <div className="text-center lg:text-left">
-            <p className="font-serif text-xl italic text-[#1c1b1b] dark:text-[#f8f1ec]">Carole T.</p>
-            <p className="mt-2 text-[12px] font-semibold uppercase tracking-[2px] text-[#5b4137] dark:text-[#cdb9ae]">
-              © {year} {t("footer.signature")}
+        <div className="mx-auto max-w-[1680px] px-6 pb-12 pt-16 sm:px-10 lg:px-16 lg:pb-12 lg:pt-20">
+          <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[minmax(20rem,1.6fr)_repeat(4,minmax(10rem,1fr))] lg:gap-x-20 lg:gap-y-12">
+            <div className="sm:col-span-2 lg:col-span-1">
+              <p className="font-serif text-[clamp(2.35rem,3.2vw,3.35rem)] italic leading-none tracking-[-0.01em] text-[#1c1b1b] dark:text-[#f8f1ec]">
+                Carole T.
+              </p>
+              <p className="mt-4 text-[11px] font-semibold uppercase tracking-[3px] text-[#854d63] dark:text-[#f0adc4]">
+                {t("footer.role")}
+              </p>
+              <p className="mt-5 max-w-[22rem] text-[15px] leading-7 text-[#5b4137] dark:text-[#dbc9c0]">
+                {t("footer.tagline")}
+              </p>
+              <span className="mt-8 block h-px w-14 bg-[#f0adc4] dark:bg-[#f0adc4]/60" />
+              <div className="mt-7 flex flex-nowrap gap-3">
+                {languages.map((language) => (
+                  <button
+                    key={language.code}
+                    type="button"
+                    onClick={() => setLang(language.code)}
+                    className={`inline-flex h-10 min-w-[8.25rem] items-center justify-center gap-2 rounded-full border px-4 text-[11px] font-semibold uppercase tracking-[1.5px] transition ${
+                      lang === language.code
+                        ? "border-[#854d63]/45 bg-[#ffd9e4]/70 text-[#854d63] dark:border-[#f0adc4]/50 dark:bg-[#854d63]/30 dark:text-[#f0adc4]"
+                        : "border-[#e5e2e1] bg-transparent text-[#5b4137] hover:border-[#854d63]/35 hover:text-[#854d63] dark:border-white/14 dark:text-[#cdb9ae] dark:hover:border-[#f0adc4]/40 dark:hover:text-[#f0adc4]"
+                    }`}
+                    aria-label={`${t("footer.language")} ${langLabels[language.code]}`}
+                    aria-pressed={lang === language.code}
+                  >
+                    {language.flag}
+                    <span>{langLabels[language.code].toUpperCase()}</span>
+                    <span
+                      className="t-icon-swap size-4"
+                      data-state={lang === language.code ? "b" : "a"}
+                      aria-hidden="true"
+                    >
+                      <span className="t-icon size-4" data-icon="a" />
+                      <CheckIcon className="t-icon size-4" data-icon="b" />
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <FooterColumn title={t("footer.navTitle")}>
+              <ul className="space-y-2">
+                <li>
+                  <FooterLink to="/">{t("nav.home")}</FooterLink>
+                </li>
+                <li>
+                  <FooterLink to="/about">{t("nav.about")}</FooterLink>
+                </li>
+                <li>
+                  <FooterLink to="/services">{t("nav.services")}</FooterLink>
+                </li>
+                <li>
+                  <FooterLink to="/carnet/outils-inspirations">{t("nav.carnet")}</FooterLink>
+                </li>
+                <li>
+                  <FooterLink to="/contact">{t("nav.contact")}</FooterLink>
+                </li>
+              </ul>
+            </FooterColumn>
+
+            <FooterColumn title={t("footer.servicesTitle")}>
+              <ul className="space-y-2">
+                {serviceLinks.map((link) => (
+                  <li key={link.href}>
+                    <FooterLink to={link.href}>{link.label}</FooterLink>
+                  </li>
+                ))}
+              </ul>
+            </FooterColumn>
+
+            <FooterColumn title={t("footer.carnetTitle")}>
+              <ul className="space-y-2">
+                <li>
+                  <FooterLink to="/carnet/outils-inspirations">
+                    {t("nav.toolsAndInspirations")}
+                  </FooterLink>
+                </li>
+                <li>
+                  <FooterLink to="/carnet/lectures-references">
+                    {t("nav.readingsAndReferences")}
+                  </FooterLink>
+                </li>
+              </ul>
+            </FooterColumn>
+
+            <FooterColumn title={t("footer.socialTitle")}>
+              <ul className="space-y-4">
+                {socialLinks.map((link) => (
+                  <li key={`${link.label}-${link.href}`}>
+                    <SocialRow
+                      href={link.external ? link.href : undefined}
+                      to={link.external ? undefined : link.href}
+                      external={link.external}
+                      icon={socialIconForLabel(link.label)}
+                      label={link.label}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </FooterColumn>
+          </div>
+
+          <div className="mt-14 flex flex-col gap-4 border-t border-[#e5e2e1]/90 pt-7 sm:flex-row sm:items-center sm:justify-between dark:border-white/12">
+            <p className="text-[11px] font-semibold uppercase tracking-[2.5px] text-[#5b4137] dark:text-[#cdb9ae]">
+              © {year} {t("footer.copyright")}
             </p>
-          </div>
-
-          <div className="flex justify-center gap-2">
-            {languages.map((language) => (
-              <button
-                key={language.code}
-                type="button"
-                onClick={() => setLang(language.code)}
-                className={`inline-flex h-10 items-center gap-2 rounded-full border px-4 text-[12px] font-semibold uppercase tracking-[1px] transition ${
-                  lang === language.code
-                    ? "border-[#854d63] bg-[#ffd9e4]/70 text-[#854d63] dark:border-[#f0adc4]/60 dark:bg-[#854d63]/30 dark:text-[#f8d7e3]"
-                    : "border-[#e5e2e1] text-[#5b4137] hover:border-[#854d63]/40 hover:text-[#854d63] dark:border-white/15 dark:text-[#cdb9ae] dark:hover:border-[#f0adc4]/50 dark:hover:text-[#f0adc4]"
-                }`}
-                aria-label={`${t("footer.language")} ${langLabels[language.code]}`}
-              >
-                {language.flag}
-                <span className="hidden sm:inline">{langLabels[language.code]}</span>
-                <span
-                  className="t-icon-swap size-4"
-                  data-state={lang === language.code ? "b" : "a"}
-                  aria-hidden="true"
-                >
-                  <span className="t-icon size-4" data-icon="a" />
-                  <CheckIcon className="t-icon size-4" data-icon="b" />
-                </span>
-              </button>
-            ))}
-          </div>
-
-          <div className="flex flex-nowrap justify-center gap-6 whitespace-nowrap lg:justify-end">
-            {links.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                target={link.external ? "_blank" : undefined}
-                rel={link.external ? "noreferrer" : undefined}
-                className="text-[12px] font-semibold uppercase tracking-[2px] text-[#5b4137] transition hover:text-[#854d63] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
-              >
-                {link.label}
-              </a>
-            ))}
+            <button
+              type="button"
+              onClick={scrollToTop}
+              className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[2.5px] text-[#5b4137] transition hover:text-[#854d63] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
+            >
+              {t("footer.backToTop")}
+              <ArrowUpIcon className="size-4" />
+            </button>
           </div>
         </div>
       </footer>
 
       <section
+        ref={shaderSectionRef}
         aria-hidden="true"
-        className="relative h-[clamp(18rem,42vh,31rem)] overflow-hidden bg-white dark:bg-[#13100f]"
+        className="relative h-[clamp(16rem,32vh,22rem)] overflow-hidden border-t border-[#f3cfda]/85"
+        onPointerEnter={(event) => {
+          setIsShaderHovered(true);
+          handleShaderPointerMove(event);
+        }}
+        onPointerMove={handleShaderPointerMove}
+        onPointerDown={handleShaderPointerDown}
+        onPointerUp={endShaderLongPress}
+        onPointerCancel={endShaderLongPress}
+        onPointerLeave={handleShaderPointerLeave}
       >
-        <div className="absolute inset-x-0 top-0 z-10 h-28 bg-[linear-gradient(180deg,#ffffff_0%,rgba(255,255,255,0.84)_34%,rgba(255,255,255,0)_100%)] dark:bg-[linear-gradient(180deg,#13100f_0%,rgba(19,16,15,0.86)_34%,rgba(19,16,15,0)_100%)]" />
-        <motion.div
-          animate={{ x: ["-2.5%", "2.5%", "-2.5%"] }}
-          transition={{ duration: 8.8, repeat: Infinity, ease: "easeInOut" }}
-          style={{
-            clipPath:
-              "polygon(0 38%, 8% 34%, 17% 31%, 27% 27%, 38% 24%, 50% 22%, 62% 24%, 73% 28%, 84% 31%, 93% 35%, 100% 39%, 100% 100%, 0 100%)",
-          }}
-          className="absolute inset-x-[-8%] bottom-[-22%] h-[116%] bg-[linear-gradient(104deg,rgba(255,217,228,0)_0%,rgba(255,217,228,0.72)_19%,rgba(255,220,189,0.78)_37%,rgba(240,173,196,0.82)_55%,rgba(133,77,99,0.78)_73%,rgba(205,185,174,0.64)_100%)] blur-[8px] dark:bg-[linear-gradient(104deg,rgba(19,16,15,0)_0%,rgba(240,173,196,0.3)_22%,rgba(255,220,189,0.36)_42%,rgba(133,77,99,0.62)_67%,rgba(91,65,55,0.7)_100%)]"
+        <FooterShaderCanvas
+          reducedMotion={shouldReduceMotion}
+          speedMultiplier={isShaderAccelerated ? 3.25 : 0.72}
         />
+
+        <svg
+          className="pointer-events-none absolute inset-x-0 top-[32%] z-[2] h-[8rem] w-full opacity-70"
+          viewBox="0 0 1200 72"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M0 60 C190 76, 300 58, 430 28 C530 -2, 620 88, 735 40 C850 -8, 940 8, 1040 46 C1108 72, 1154 54, 1200 38"
+            fill="none"
+            stroke="rgba(255,255,255,0.78)"
+            strokeWidth="1.15"
+          />
+        </svg>
+
+        <svg
+          className="pointer-events-none absolute inset-x-0 top-[26%] z-[2] h-[7rem] w-full opacity-35"
+          viewBox="0 0 1200 72"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M0 30 C165 82, 310 52, 468 20 C620 -10, 704 78, 860 44 C1000 14, 1084 38, 1200 20"
+            fill="none"
+            stroke="rgba(255,255,255,0.58)"
+            strokeWidth="0.9"
+          />
+        </svg>
+
+        <div className="relative z-[3] flex h-full items-center px-6 sm:px-10 lg:px-16">
+          <div className="relative mx-auto w-full max-w-[1680px]">
+            <svg
+              className="absolute -top-7 left-[min(100%,20rem)] size-5 text-[#854d63]/35"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path d="M12 0l2.2 7.8L22 10l-7.8 2.2L12 20l-2.2-7.8L2 10l7.8-2.2L12 0z" />
+            </svg>
+            <p className="font-serif text-[clamp(1.45rem,2.5vw,2.25rem)] italic leading-[1.2] tracking-[-0.01em] text-[#1c1b1b] drop-shadow-[0_2px_18px_rgba(255,255,255,0.45)] dark:text-[#f8f1ec]">
+              {t("footer.overscrollLine1")}
+              <br />
+              {t("footer.overscrollLine2")}
+            </p>
+          </div>
+        </div>
+
         <motion.div
-          animate={{ x: ["3.5%", "-3.5%", "3.5%"] }}
-          transition={{ duration: 6.8, repeat: Infinity, ease: "easeInOut" }}
-          style={{
-            clipPath:
-              "polygon(0 49%, 9% 46%, 19% 42%, 31% 39%, 43% 36%, 55% 36%, 66% 39%, 78% 43%, 89% 46%, 100% 48%, 100% 100%, 0 100%)",
+          className="pointer-events-none absolute left-0 top-0 z-[4] hidden rounded-md border border-white/70 bg-white/88 px-4 py-2 text-[13px] font-semibold tracking-[-0.01em] text-[#1c1b1b] shadow-[0_16px_36px_rgba(28,27,27,0.16)] backdrop-blur-md md:block"
+          animate={{
+            opacity: isShaderHovered ? 1 : 0,
+            scale: isShaderAccelerated ? 1.04 : 1,
+            x: tooltipPosition.x + 28,
+            y: tooltipPosition.y > 112 ? tooltipPosition.y - 62 : tooltipPosition.y + 24,
           }}
-          className="absolute inset-x-[-10%] bottom-[-28%] h-[116%] bg-[repeating-linear-gradient(115deg,rgba(255,255,255,0.16)_0_18px,rgba(255,255,255,0)_18px_50px),linear-gradient(96deg,rgba(255,217,228,0)_0%,rgba(255,220,189,0.48)_21%,rgba(240,173,196,0.5)_43%,rgba(133,77,99,0.48)_66%,rgba(236,214,151,0.36)_84%,rgba(255,255,255,0.2)_100%)] blur-[4px] dark:bg-[repeating-linear-gradient(115deg,rgba(248,241,236,0.09)_0_18px,rgba(248,241,236,0)_18px_50px),linear-gradient(96deg,rgba(19,16,15,0)_0%,rgba(255,220,189,0.24)_25%,rgba(240,173,196,0.28)_48%,rgba(133,77,99,0.5)_72%,rgba(236,214,151,0.18)_100%)]"
-        />
+          transition={{
+            opacity: { duration: 0.16 },
+            scale: { type: "spring", stiffness: 420, damping: 30 },
+            x: { type: "spring", stiffness: 520, damping: 38, mass: 0.35 },
+            y: { type: "spring", stiffness: 520, damping: 38, mass: 0.35 },
+          }}
+        >
+          {t("footer.holdToAccelerate")}
+        </motion.div>
       </section>
-    </>
+    </div>
   );
 }

@@ -251,7 +251,19 @@ const en = {
   },
 
   footer: {
-    signature: "Digital communication.",
+    role: "Digital communications officer",
+    tagline:
+      "I help brands clarify their message and structure content that truly matters.",
+    navTitle: "Navigation",
+    servicesTitle: "Services",
+    carnetTitle: "Notebook",
+    socialTitle: "Follow / Contact",
+    contactEmail: "Contact / Email",
+    copyright: "Digital communication.",
+    backToTop: "Back to top",
+    overscrollLine1: "Clear ideas.",
+    overscrollLine2: "Messages that resonate.",
+    holdToAccelerate: "Hold to accelerate",
     behance: "Behance",
     linkedin: "LinkedIn",
     contact: "Contact",
@@ -585,29 +597,58 @@ const en = {
   },
 
   aboutPage: {
-    eyebrow: "ABOUT",
-    titleStart: "Communication is not a matter of",
-    titleAccent: "noise",
-    titleEnd: ", it is about intent.",
-    bioParagraphs: [
-      "After several concrete experiences in editorial coordination and social media platform management, I chose to specialize in supporting brands and project owners who wish to clarify their messaging.",
-      "I deeply believe that a successful digital presence is not built on the volume of posts, but on relevance and structure. This is why I help my clients transition from reactive day-to-day posting to a planned and meaningful editorial cadence.",
-      "My role is to manage the behind-the-scenes work — structuring calendars, writing with care, and coordinating visual asset creation — so that every brand conversation builds trust with your audience."
-    ],
-    positioningTitle: "My positioning",
-    positioningIntro: "A rigorous approach centered on three key principles:",
-    positioningPillars: [
-      { title: "Strategy first", desc: "No creation without direction. Every format, every channel must serve a specific objective and target a defined audience." },
-      { title: "Operational rigor", desc: "Consistency builds trust. I organize healthy editorial systems that are easy to maintain over the long term." },
-      { title: "Clarity of the message", desc: "Simplifying the complex. Making your expertise accessible, engaging, and memorable." }
-    ],
-    methodologyTitle: "How I work",
-    methodologySteps: [
-      { step: "01", title: "Diagnostic & immersion", desc: "Understanding your brand, your objectives, and auditing your current presence to detect message gaps." },
-      { step: "02", title: "Strategic framing", desc: "Defining your editorial line, your content pillars, and your ideal publishing cadence." },
-      { step: "03", title: "Creative deployment", desc: "Writing posts, preparing visual storyboards, writing video scripts, and preparing ready-to-publish calendars." },
-      { step: "04", title: "Review & optimization", desc: "Analyzing engagement, adjusting copy angles, and continuously monitoring topics that spark the most conversations." }
-    ]
+    hero: {
+      title: "About",
+      subtitle:
+        "Who I am, what I do in practice, and how I support brands and projects.",
+    },
+    imageAlt: "Portrait of Carole Tonoukouen",
+    identity: {
+      label: "Who I am",
+      greeting: "Lovely to meet you. I'm Carole Tonoukouen.",
+      role: "Digital communications officer, editorial coordination, and writing",
+      paragraphs: [
+        "I'm based in Cotonou and I support businesses, organizations, and project owners who want to clarify their message, structure their content, and strengthen their online visibility, without drowning in the pace of social media.",
+        "After several hands-on experiences in editorial coordination and platform management, I chose to specialize in supporting brands that want to move from reactive day-to-day communication to a planned, meaningful editorial cadence.",
+        "I believe a strong digital presence relies on relevance, structure, and consistency rather than posting volume. My role is therefore to handle the groundwork, including calendars, writing, and visual coordination, so that every public message builds trust with your audience.",
+      ],
+    },
+    work: {
+      label: "What I do",
+      paragraphs: [
+        "In practice, I work across editorial strategy, digital communication, and content creation. I help you define a clear line, content pillars, and readable positioning across your channels, then hold that direction over time.",
+        "I write, steer calendars, and coordinate visual assets. I also align each publication with your goals. Whether it's LinkedIn, a blog, one-off campaigns, or an institutional presence, the aim remains the same: less scatter and more coherence.",
+        "Depending on the project, I can also handle community management, FR/EN translation, reporting, and performance follow-up, always with organization and clarity in mind rather than volume for volume's sake.",
+      ],
+    },
+    value: {
+      label: "What you gain",
+      paragraphs: [
+        "Working with me means gaining readability first. Your message becomes sharper and more accessible, without losing your personality or voice.",
+        "You also benefit from operational rigor: editorial systems that are easier to maintain, a realistic cadence, and formats that echo each other. Strategy comes before creation, so every channel and every format serves a clear objective and a defined audience.",
+        "In the end, you delegate a significant share of the mental load tied to communication while keeping control over the directions that matter to you.",
+      ],
+    },
+    approach: {
+      label: "My approach",
+      paragraphs: [
+        "I always start by reading your context, which means understanding your brand, your goals, and your audiences, then auditing what already exists in order to spot message gaps.",
+        "Next, we frame things together: editorial line, content pillars, and publishing cadence. Only after that foundation do I move into deployment, including writing, visuals, short scripts, and ready-to-publish calendars.",
+        "Follow-up is finally part of the process. I analyze feedback, adjust angles, and identify topics that spark the most conversation. The support therefore stays simple, readable, and sustainable over time.",
+      ],
+    },
+    closing: {
+      paragraphs: [
+        "If you're looking for someone to structure your communication, hold the editorial thread, and save you time without weighing down the setup, I would be glad to discuss it with you.",
+      ],
+    },
+    ctaBand: {
+      title: "Let's talk about your communication",
+      subtitle:
+        "Tell me about your context, channels, and priorities. Together, we will identify the most suitable support format for your situation.",
+      ctaPrimary: "Contact me",
+      ctaSecondary: "View my services",
+    },
   },
 
   carnetPage: {
