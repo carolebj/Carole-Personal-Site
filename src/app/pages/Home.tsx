@@ -603,6 +603,14 @@ export default function Home() {
     const form = event.currentTarget;
 
     if (form.checkValidity()) {
+      event.preventDefault();
+      const formData = new FormData(form);
+      const name = String(formData.get("name") ?? "");
+      const email = String(formData.get("email") ?? "");
+      const subject = String(formData.get("subject") || t("contactSection.subject"));
+      const message = String(formData.get("message") ?? "");
+      const body = [name, email, message].filter(Boolean).join("\n\n");
+      window.location.href = `mailto:caroletonoukouen@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       return;
     }
 
@@ -633,7 +641,7 @@ export default function Home() {
 
   return (
     <div className="overflow-hidden bg-[#fcf9f8] text-[#1c1b1b] dark:bg-[#13100f] dark:text-[#f8f1ec]">
-      <section id="home" className="relative flex min-h-[calc(100dvh-4rem)] items-center bg-[linear-gradient(160deg,#fffafa_0%,#fcf9f8_42%,#fbf8f7_100%)] px-5 pb-12 pt-24 dark:bg-[linear-gradient(160deg,#1b1515_0%,#13100f_54%,#21171a_100%)] sm:px-8 sm:pt-28 md:min-h-[755px] lg:px-8 lg:pb-16 lg:pt-28">
+      <section id="home" className="relative flex min-h-[calc(100dvh-4rem)] items-start bg-[linear-gradient(160deg,#fffafa_0%,#fcf9f8_42%,#fbf8f7_100%)] px-5 pb-12 pt-24 dark:bg-[linear-gradient(160deg,#1b1515_0%,#13100f_54%,#21171a_100%)] sm:px-8 sm:pt-28 md:min-h-[755px] lg:items-center lg:px-8 lg:pb-16 lg:pt-28">
         <div className="pointer-events-none absolute right-[-14rem] top-[-13rem] size-[38rem] rounded-full bg-[#ffd9e4]/35 blur-[90px] dark:bg-[#854d63]/18" />
         <div className="mx-auto grid w-full max-w-[1200px] items-center gap-8 lg:grid-cols-[1.02fr_0.98fr] lg:gap-10">
           <motion.div
@@ -936,9 +944,6 @@ export default function Home() {
           </div>
 
           <form
-            action="mailto:caroletonoukouen@gmail.com"
-            method="post"
-            encType="text/plain"
             noValidate
             onSubmit={handleContactSubmit}
             className={`t-input-wrap rounded-lg border border-[#e4bfb2]/30 bg-white p-5 shadow-[0_18px_48px_rgba(28,27,27,0.06)] dark:border-white/10 dark:bg-[#13100f] dark:shadow-[0_18px_48px_rgba(0,0,0,0.22)] sm:p-7 ${contactFormError ? "is-error" : ""}`}
