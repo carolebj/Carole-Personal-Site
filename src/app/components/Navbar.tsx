@@ -513,7 +513,7 @@ export default function Navbar() {
           </div>
         ) : null}
 
-        <ul className="relative hidden items-center gap-0 md:flex">
+        <ul className="relative hidden items-center gap-0 lg:flex">
           {navLinks.map((link) => {
             const sectionId = link.href.replace("#", "");
             const isActive =
@@ -521,7 +521,7 @@ export default function Navbar() {
                 ? activeSection === sectionId
                 : activeSection === link.id || location.pathname === link.href;
             const isHighlighted = hoveredNavId === link.id || isActive || (link.hasMenu && isServicesOpen) || (link.hasCarnetMenu && isCarnetOpen);
-            const linkClass = `portfolio-nav-link group relative z-10 inline-flex h-10 cursor-pointer items-center justify-center gap-1.5 rounded-full px-4 text-[13px] font-semibold capitalize leading-4 tracking-[1.8px] transition-colors duration-300 ${
+            const linkClass = `portfolio-nav-link group relative z-10 inline-flex h-10 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-[13px] font-semibold capitalize leading-4 tracking-[1.4px] transition-colors duration-300 xl:px-4 xl:tracking-[1.8px] ${
               isHighlighted
                 ? "text-[#854d63] dark:text-[#f0adc4]"
                 : "text-[#5b4137] dark:text-[#dbc9c0]"
@@ -597,8 +597,8 @@ export default function Navbar() {
                                         <span className="flex size-9 shrink-0 items-center justify-center rounded-md border border-[#854d63]/20 bg-[#2f2f32] text-white transition-colors duration-300 group-hover:border-[#854d63] group-hover:bg-[#854d63] dark:border-[#f0adc4]/30 dark:bg-[#24201f] dark:group-hover:bg-[#f0adc4] dark:group-hover:text-[#171312]">
                                    <ServiceIcon className="size-[18px]" />
                                 </span>
-                                        <span className="w-max min-w-0 leading-5">
-                                          <span className="block text-[14px] font-semibold text-[#1c1b1b] dark:text-[#f8f1ec]">
+                                        <span className="min-w-0 flex-1 leading-5">
+                                          <span className="block text-wrap text-[14px] font-semibold text-[#1c1b1b] dark:text-[#f8f1ec]">
                                     {service.title} <span className="italic text-[#854d63] dark:text-[#f0adc4]">{service.accent}</span>
                                   </span>
                                           <span className="mt-1 block max-w-[190px] text-[12px] text-[#6d625d] transition-colors duration-300 group-hover:text-[#1c1b1b] dark:text-[#cdb9ae] dark:group-hover:text-[#f8f1ec]">
@@ -772,18 +772,18 @@ export default function Navbar() {
           })}
         </ul>
 
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="hidden items-center gap-3 lg:flex">
           <ThemeSwitcher />
           <Link
             to="/contact"
-            className="inline-flex h-[52px] items-center rounded-full bg-[#854d63] px-6 text-[14px] font-semibold uppercase leading-4 tracking-[2px] text-white shadow-sm transition hover:bg-[#6a364b] dark:bg-[#d79caf] dark:text-[#1c1415] dark:hover:bg-[#f0adc4]"
+            className="inline-flex h-[52px] items-center whitespace-nowrap rounded-full bg-[#854d63] px-5 text-[13px] font-semibold uppercase leading-4 tracking-[1.6px] text-white shadow-sm transition hover:bg-[#6a364b] dark:bg-[#d79caf] dark:text-[#1c1415] dark:hover:bg-[#f0adc4] xl:px-6 xl:text-[14px] xl:tracking-[2px]"
           >
             {t("nav.contact")}
           </Link>
         </div>
 
         <button
-          className="flex size-10 items-center justify-center rounded-full border border-[#e5e2e1] text-[#1c1b1b] dark:border-white/15 dark:text-[#f8f1ec] md:hidden"
+          className="flex size-10 items-center justify-center rounded-full border border-[#e5e2e1] text-[#1c1b1b] dark:border-white/15 dark:text-[#f8f1ec] lg:hidden"
           onClick={() => {
             setIsMobileMenuOpen((current) => {
               if (current) {
@@ -813,7 +813,7 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.18 }}
-            className="max-h-[80vh] overflow-y-auto border-t border-[#e5e2e1]/70 bg-white px-6 py-6 shadow-xl dark:border-white/10 dark:bg-[#171312] md:hidden"
+            className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-[#e5e2e1]/70 bg-white px-5 py-6 shadow-xl dark:border-white/10 dark:bg-[#171312] sm:px-6 lg:hidden"
           >
             <div className="flex flex-col gap-3">
               {navLinks.map((link) => {
@@ -825,7 +825,7 @@ export default function Navbar() {
                       <button
                         type="button"
                         onClick={() => setOpenMobileAccordion((current) => (current === "services" ? null : "services"))}
-                        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63] transition hover:text-[#6a364b] dark:text-[#f0adc4] dark:hover:text-[#f8f1ec]"
+                        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-[12px] font-semibold uppercase tracking-[1.6px] text-[#854d63] transition hover:text-[#6a364b] dark:text-[#f0adc4] dark:hover:text-[#f8f1ec]"
                         aria-expanded={isAccordionOpen}
                       >
                         <span>{link.name}</span>
@@ -848,7 +848,7 @@ export default function Navbar() {
                                   setIsMobileMenuOpen(false);
                                   setOpenMobileAccordion(null);
                                 }}
-                                className="rounded-md py-2 text-[14px] font-semibold text-[#854d63] dark:text-[#f0adc4]"
+                                  className="rounded-md py-2 text-[14px] font-semibold leading-5 text-[#854d63] dark:text-[#f0adc4]"
                               >
                                 {i18n.language === "fr" ? "Tous les services" : "All services"}
                               </Link>
@@ -860,7 +860,7 @@ export default function Navbar() {
                                     setIsMobileMenuOpen(false);
                                     setOpenMobileAccordion(null);
                                   }}
-                                  className="rounded-md py-2 text-[14px] font-medium text-[#5b4137] dark:text-[#dbc9c0]"
+                                  className="rounded-md py-2 text-[14px] font-medium leading-5 text-[#5b4137] dark:text-[#dbc9c0]"
                                 >
                                   {service.title} <span className="italic text-[#854d63] dark:text-[#f0adc4]">{service.accent}</span>
                                 </Link>
@@ -881,7 +881,7 @@ export default function Navbar() {
                       <button
                         type="button"
                         onClick={() => setOpenMobileAccordion((current) => (current === "carnet" ? null : "carnet"))}
-                        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63] transition hover:text-[#6a364b] dark:text-[#f0adc4] dark:hover:text-[#f8f1ec]"
+                        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-[12px] font-semibold uppercase tracking-[1.6px] text-[#854d63] transition hover:text-[#6a364b] dark:text-[#f0adc4] dark:hover:text-[#f8f1ec]"
                         aria-expanded={isAccordionOpen}
                       >
                         <span>{link.name}</span>
@@ -904,7 +904,7 @@ export default function Navbar() {
                                   setIsMobileMenuOpen(false);
                                   setOpenMobileAccordion(null);
                                 }}
-                                className="rounded-md py-2 text-[14px] font-medium text-[#5b4137] dark:text-[#dbc9c0]"
+                                className="rounded-md py-2 text-[14px] font-medium leading-5 text-[#5b4137] dark:text-[#dbc9c0]"
                               >
                                 {t("nav.toolsAndInspirations")}
                               </Link>
@@ -914,7 +914,7 @@ export default function Navbar() {
                                   setIsMobileMenuOpen(false);
                                   setOpenMobileAccordion(null);
                                 }}
-                                className="rounded-md py-2 text-[14px] font-medium text-[#5b4137] dark:text-[#dbc9c0]"
+                                className="rounded-md py-2 text-[14px] font-medium leading-5 text-[#5b4137] dark:text-[#dbc9c0]"
                               >
                                 {t("nav.readingsAndReferences")}
                               </Link>
@@ -932,7 +932,7 @@ export default function Navbar() {
                       key={link.id}
                       to={link.href}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="rounded-lg bg-[#fcf9f8] px-4 py-4 text-[16px] font-medium capitalize leading-5 tracking-[1px] text-[#5b4137] dark:bg-white/5 dark:text-[#dbc9c0]"
+                      className="rounded-lg bg-[#fcf9f8] px-4 py-4 text-[16px] font-medium capitalize leading-5 tracking-[0.6px] text-[#5b4137] dark:bg-white/5 dark:text-[#dbc9c0]"
                     >
                       {link.name}
                     </Link>
@@ -944,7 +944,7 @@ export default function Navbar() {
                     key={link.href}
                     href={link.href}
                     onClick={(event) => scrollToSection(event, link.href)}
-                    className="rounded-lg bg-[#fcf9f8] px-4 py-4 text-[16px] font-medium capitalize leading-5 tracking-[1px] text-[#5b4137] dark:bg-white/5 dark:text-[#dbc9c0]"
+                    className="rounded-lg bg-[#fcf9f8] px-4 py-4 text-[16px] font-medium capitalize leading-5 tracking-[0.6px] text-[#5b4137] dark:bg-white/5 dark:text-[#dbc9c0]"
                   >
                     {link.name}
                   </a>
@@ -954,7 +954,7 @@ export default function Navbar() {
               <Link
                 to="/contact"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="mt-2 inline-flex h-10 items-center justify-center rounded-full bg-[#854d63] text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-white dark:bg-[#d79caf] dark:text-[#1c1415]"
+                className="mt-2 inline-flex h-10 items-center justify-center whitespace-nowrap rounded-full bg-[#854d63] px-5 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-white dark:bg-[#d79caf] dark:text-[#1c1415]"
               >
                 {t("nav.contact")}
               </Link>

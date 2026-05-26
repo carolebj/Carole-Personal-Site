@@ -6,10 +6,19 @@
   html {
     scroll-behavior: smooth;
     font-size: var(--font-size);
+    overflow-x: clip;
   }
 
   body {
     @apply bg-background text-foreground;
+    overflow-x: clip;
+  }
+
+  img,
+  svg,
+  video,
+  canvas {
+    max-width: 100%;
   }
 
   h1 {
@@ -175,6 +184,13 @@
     transform: translateX(0);
     filter: blur(0);
     transition-delay: var(--page-stagger);
+  }
+
+  .cal-meeting-embed {
+    width: 100%;
+  }
+  .cal-meeting-embed > div {
+    width: 100%;
   }
 
   .t-icon-swap {

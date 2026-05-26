@@ -203,14 +203,14 @@ export default function About() {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               to="/contact"
-              className="inline-flex h-11 items-center gap-2 rounded-md bg-action-strong px-6 text-[12px] font-semibold uppercase tracking-[1px] text-text-on-strong transition hover:bg-action-strong-hover active:scale-[0.98]"
+              className="inline-flex h-11 items-center gap-2 whitespace-nowrap rounded-md bg-action-strong px-6 text-[12px] font-semibold uppercase tracking-[1px] text-text-on-strong transition hover:bg-action-strong-hover active:scale-[0.98]"
             >
               {content.ctaBand.ctaPrimary}
               <ArrowRightIcon className="size-4" />
             </Link>
             <Link
               to="/services"
-              className="inline-flex h-11 items-center rounded-md border border-border-accent-muted px-6 text-[12px] font-semibold uppercase tracking-[1px] text-text-accent transition hover:border-border-accent hover:text-text-primary"
+              className="inline-flex h-11 items-center whitespace-nowrap rounded-md border border-border-accent-muted px-6 text-[12px] font-semibold uppercase tracking-[1px] text-text-accent transition hover:border-border-accent hover:text-text-primary"
             >
               {content.ctaBand.ctaSecondary}
             </Link>

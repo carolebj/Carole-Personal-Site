@@ -46,7 +46,7 @@ function BookCard({ item, index }: { item: ReadingItem; index: number }) {
         transition: { duration: 0.22, ease: [0.16, 1, 0.3, 1] },
       }}
       transition={{ duration: 0.42, delay: index * 0.07, ease: [0.16, 1, 0.3, 1] }}
-      className="group/book-card flex gap-5 rounded-lg border border-[#EAEAEA] bg-white p-4 text-left transition-colors duration-300 hover:border-[#d9d0c8] dark:border-white/10 dark:bg-[#171312] dark:hover:border-white/20 sm:gap-6 sm:p-5"
+      className="group/book-card flex flex-col gap-5 rounded-lg border border-[#EAEAEA] bg-white p-4 text-left transition-colors duration-300 hover:border-[#d9d0c8] dark:border-white/10 dark:bg-[#171312] dark:hover:border-white/20 min-[560px]:flex-row sm:gap-6 sm:p-5"
     >
       <div className="shrink-0 self-start">
         <Book
@@ -74,7 +74,7 @@ function BookCard({ item, index }: { item: ReadingItem; index: number }) {
           href={item.link}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-md bg-[#22201f] px-3.5 py-1.5 text-[12px] font-semibold uppercase tracking-[1px] text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#8f4f68] hover:shadow-[0_8px_18px_rgba(143,79,104,0.18)] active:translate-y-0 active:scale-[0.97] dark:bg-[#f8f1ec] dark:text-[#171312] dark:hover:bg-[#8f4f68] dark:hover:text-white"
+          className="mt-3 inline-flex w-fit items-center gap-1.5 whitespace-nowrap rounded-md bg-[#22201f] px-3.5 py-1.5 text-[12px] font-semibold uppercase tracking-[1px] text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#8f4f68] hover:shadow-[0_8px_18px_rgba(143,79,104,0.18)] active:translate-y-0 active:scale-[0.97] dark:bg-[#f8f1ec] dark:text-[#171312] dark:hover:bg-[#8f4f68] dark:hover:text-white"
         >
           {t("carnetPage.discoverBook")}
           <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

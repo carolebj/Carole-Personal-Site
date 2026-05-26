@@ -131,7 +131,7 @@ export default function ServiceDetail() {
             </div>
             <Link
               to="/contact"
-              className="mt-10 inline-flex h-[50px] items-center rounded-md bg-action-strong px-7 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-text-on-strong transition hover:bg-action-strong-hover active:scale-[0.98]"
+              className="mt-10 inline-flex h-[50px] items-center whitespace-nowrap rounded-md bg-action-strong px-7 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-text-on-strong transition hover:bg-action-strong-hover active:scale-[0.98]"
             >
               {t("serviceDetail.cta")}
             </Link>
