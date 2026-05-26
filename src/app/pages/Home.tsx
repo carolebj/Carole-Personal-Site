@@ -9,8 +9,8 @@ import { sanityImageUrl } from "../../cms/client";
 import { homePageQuery, servicesQuery, testimonialsQuery } from "../../cms/queries";
 import { localized, type CmsHomePage, type CmsService, type CmsTestimonial, type SanityImage } from "../../cms/types";
 import { useSanityQuery } from "../../cms/useSanityQuery";
-import portraitImage from "../../assets/carole-redesign-portrait.png";
-import workingImage from "../../assets/carole-redesign-working.png";
+import portraitImage from "../../assets/carole-redesign-portrait.webp";
+import workingImage from "../../assets/carole-redesign-working.webp";
 import announcementMegaphoneIcon from "../../assets/icons/announcement-megaphone.svg?raw";
 import brandFlagIcon from "../../assets/icons/brand-flag.svg?raw";
 import coffeeCupIcon from "../../assets/icons/coffee-cup.svg?raw";
@@ -948,6 +948,7 @@ export default function Home() {
                 {t("contactSection.name")}
                 <input
                   name="name"
+                  autoComplete="name"
                   required
                   onInput={() => clearContactError("name")}
                   className={`t-input mt-2 h-12 w-full rounded-md border bg-[#fcf9f8] px-4 text-base font-normal text-[#1c1b1b] outline-none transition focus:border-[#854d63] dark:bg-white/5 dark:text-[#f8f1ec] dark:focus:border-[#f0adc4] ${invalidFields.includes("name") ? "is-error border-[#d4183d] dark:border-[#ff8aa1]" : "border-[#e5e2e1] dark:border-white/10"}`}
@@ -958,6 +959,7 @@ export default function Home() {
                 <input
                   type="email"
                   name="email"
+                  autoComplete="email"
                   required
                   onInput={() => clearContactError("email")}
                   className={`t-input mt-2 h-12 w-full rounded-md border bg-[#fcf9f8] px-4 text-base font-normal text-[#1c1b1b] outline-none transition focus:border-[#854d63] dark:bg-white/5 dark:text-[#f8f1ec] dark:focus:border-[#f0adc4] ${invalidFields.includes("email") ? "is-error border-[#d4183d] dark:border-[#ff8aa1]" : "border-[#e5e2e1] dark:border-white/10"}`}
@@ -968,6 +970,7 @@ export default function Home() {
               {t("contactSection.subject")}
               <input
                 name="subject"
+                autoComplete="off"
                 onInput={() => clearContactError("subject")}
                 className={`t-input mt-2 h-12 w-full rounded-md border bg-[#fcf9f8] px-4 text-base font-normal text-[#1c1b1b] outline-none transition focus:border-[#854d63] dark:bg-white/5 dark:text-[#f8f1ec] dark:focus:border-[#f0adc4] ${invalidFields.includes("subject") ? "is-error border-[#d4183d] dark:border-[#ff8aa1]" : "border-[#e5e2e1] dark:border-white/10"}`}
               />
@@ -976,6 +979,7 @@ export default function Home() {
               {t("contactSection.message")}
               <textarea
                 name="message"
+                autoComplete="off"
                 required
                 rows={5}
                 onInput={() => clearContactError("message")}

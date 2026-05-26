@@ -54,7 +54,7 @@ export default function Cv() {
             <p className="text-[12px] font-semibold uppercase tracking-[3px] text-[#854d63] dark:text-[#f0adc4]">
               {t("cv.eyebrow")}
             </p>
-            <h1 className="mt-4 text-[clamp(3rem,7vw,6.25rem)] font-semibold uppercase leading-[0.9] tracking-[0.03em] text-[#1c1b1b] dark:text-[#f8f1ec]">
+            <h1 className="mt-4 text-[2.5rem] font-semibold uppercase leading-[0.9] tracking-[0.01em] text-[#1c1b1b] dark:text-[#f8f1ec] sm:text-[clamp(3rem,7vw,6.25rem)] sm:tracking-[0.03em]">
               <span className="block font-light normal-case tracking-[0.08em]">Carole</span>
               Tonoukouen
             </h1>

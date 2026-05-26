@@ -3,7 +3,7 @@ import { motion, useMotionTemplate, useReducedMotion, useScroll, useTransform } 
 import { useRef } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import portraitImage from "../../assets/carole-redesign-portrait.png";
+import portraitImage from "../../assets/carole-redesign-portrait.webp";
 
 type ProseSection = {
   label: string;
