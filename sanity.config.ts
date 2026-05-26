@@ -3,7 +3,7 @@ import { structureTool } from "sanity/structure";
 import { schemaTypes } from "./studio/schemas";
 import { structure } from "./studio/structure";
 
-const projectId = process.env.SANITY_STUDIO_PROJECT_ID ?? "replace-with-project-id";
+const projectId = process.env.SANITY_STUDIO_PROJECT_ID ?? "vo8cimnh";
 const dataset = process.env.SANITY_STUDIO_DATASET ?? "production";
 const srcAlias = decodeURI(new URL("./src", import.meta.url).pathname);
 
