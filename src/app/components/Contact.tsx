@@ -113,6 +113,7 @@ export default function Contact() {
                     <input
                       type="text"
                       id="name"
+                      autoComplete="name"
                       className="w-full bg-emerald-900/30 border border-emerald-800 rounded-lg px-4 py-3 text-stone-100 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all placeholder-stone-500"
                       placeholder={t("contact.namePlaceholder")}
                     />
@@ -127,6 +128,7 @@ export default function Contact() {
                     <input
                       type="email"
                       id="email"
+                      autoComplete="email"
                       className="w-full bg-emerald-900/30 border border-emerald-800 rounded-lg px-4 py-3 text-stone-100 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all placeholder-stone-500"
                       placeholder={t("contact.emailPlaceholder")}
                     />
@@ -143,6 +145,7 @@ export default function Contact() {
                   <input
                     type="text"
                     id="subject"
+                    autoComplete="off"
                     className="w-full bg-emerald-900/30 border border-emerald-800 rounded-lg px-4 py-3 text-stone-100 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all placeholder-stone-500"
                     placeholder={t("contact.subjectPlaceholder")}
                   />
@@ -157,6 +160,7 @@ export default function Contact() {
                   </label>
                   <textarea
                     id="message"
+                    autoComplete="off"
                     rows={4}
                     className="w-full bg-emerald-900/30 border border-emerald-800 rounded-lg px-4 py-3 text-stone-100 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all placeholder-stone-500"
                     placeholder={t("contact.messagePlaceholder")}

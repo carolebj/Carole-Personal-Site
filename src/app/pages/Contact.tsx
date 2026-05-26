@@ -182,6 +182,7 @@ export default function Contact() {
                     {t("contactSection.name")}
                     <input
                       name="name"
+                      autoComplete="name"
                       required
                       onInput={() => clearError("name")}
                       className={`t-input h-12 rounded-xl border bg-[#fcf9f8] px-4 text-[#1c1b1b] outline-none transition focus:border-[#854d63] dark:bg-white/5 dark:text-[#f8f1ec] ${invalidFields.includes("name") ? "is-error border-[#d4183d] dark:border-[#ff8aa1]" : "border-[#e5e2e1] dark:border-white/10"}`}
@@ -192,6 +193,7 @@ export default function Contact() {
                     <input
                       type="email"
                       name="email"
+                      autoComplete="email"
                       required
                       onInput={() => clearError("email")}
                       className={`t-input h-12 rounded-xl border bg-[#fcf9f8] px-4 text-[#1c1b1b] outline-none transition focus:border-[#854d63] dark:bg-white/5 dark:text-[#f8f1ec] ${invalidFields.includes("email") ? "is-error border-[#d4183d] dark:border-[#ff8aa1]" : "border-[#e5e2e1] dark:border-white/10"}`}
@@ -202,6 +204,7 @@ export default function Contact() {
                   {t("contactSection.subject")}
                   <input
                     name="subject"
+                    autoComplete="off"
                     onInput={() => clearError("subject")}
                     className={`t-input h-12 rounded-xl border bg-[#fcf9f8] px-4 text-[#1c1b1b] outline-none transition focus:border-[#854d63] dark:bg-white/5 dark:text-[#f8f1ec] ${invalidFields.includes("subject") ? "is-error border-[#d4183d] dark:border-[#ff8aa1]" : "border-[#e5e2e1] dark:border-white/10"}`}
                   />
@@ -210,6 +213,7 @@ export default function Contact() {
                   {t("contactSection.message")}
                   <textarea
                     name="message"
+                    autoComplete="off"
                     required
                     onInput={() => clearError("message")}
                     className={`t-input min-h-44 resize-y rounded-xl border bg-[#fcf9f8] px-4 py-3 text-[#1c1b1b] outline-none transition focus:border-[#854d63] dark:bg-white/5 dark:text-[#f8f1ec] ${invalidFields.includes("message") ? "is-error border-[#d4183d] dark:border-[#ff8aa1]" : "border-[#e5e2e1] dark:border-white/10"}`}

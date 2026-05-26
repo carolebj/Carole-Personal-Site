@@ -3,10 +3,20 @@ import Layout from "./Layout";
 import ErrorPage from "./components/ErrorPage";
 import RouteErrorBoundary from "./components/RouteErrorBoundary";
 
+function RouteHydrateFallback() {
+  return (
+    <div
+      className="min-h-[70vh] bg-[#fcf9f8] dark:bg-[#13100f]"
+      aria-hidden="true"
+    />
+  );
+}
+
 export const router = createBrowserRouter([
   {
     path: "/",
     Component: Layout,
+    HydrateFallback: RouteHydrateFallback,
     ErrorBoundary: ErrorPage,
     children: [
       {

@@ -603,7 +603,7 @@ export default function Footer() {
                         ? "border-[#854d63]/45 bg-[#ffd9e4]/70 text-[#854d63] dark:border-[#f0adc4]/50 dark:bg-[#854d63]/30 dark:text-[#f0adc4]"
                         : "border-[#e5e2e1] bg-transparent text-[#5b4137] hover:border-[#854d63]/35 hover:text-[#854d63] dark:border-white/14 dark:text-[#cdb9ae] dark:hover:border-[#f0adc4]/40 dark:hover:text-[#f0adc4]"
                     }`}
-                    aria-label={`${t("footer.language")} ${langLabels[language.code]}`}
+                    aria-label={`${language.flag} ${langLabels[language.code]}`}
                     aria-pressed={lang === language.code}
                   >
                     {language.flag}

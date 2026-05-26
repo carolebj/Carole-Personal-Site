@@ -1,0 +1,17 @@
+# Carole Tonoukouen Portfolio
+
+Portfolio de Carole Tonoukouen, communicante narrative, plume editoriale et consultante en strategie de contenu.
+
+## Pages principales
+
+- [Accueil](https://carole-portfolio.vercel.app/)
+- [A propos](https://carole-portfolio.vercel.app/about)
+- [Services](https://carole-portfolio.vercel.app/services)
+- [Carnet](https://carole-portfolio.vercel.app/blog)
+- [Contact](https://carole-portfolio.vercel.app/contact)
+
+## Domaines
+
+- Strategie editoriale et positionnement narratif
+- Ghostwriting, contenus longs et prises de parole
+- Accompagnement de marques personnelles, entrepreneures et equipes
