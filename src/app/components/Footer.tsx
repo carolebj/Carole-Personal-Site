@@ -8,6 +8,7 @@ import { useEffect, useMemo, useRef, useState, type PointerEvent, type ReactNode
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { langLabels, useLang, type Lang } from "../i18n/LanguageContext";
+import { useTheme } from "../theme/ThemeContext";
 import { siteSettingsQuery } from "../../cms/queries";
 import type { CmsSiteSettings } from "../../cms/types";
 import { useSanityQuery } from "../../cms/useSanityQuery";
@@ -161,16 +162,23 @@ function compileShader(gl: WebGLRenderingContext, type: number, source: string) 
 function FooterShaderCanvas({
   reducedMotion,
   speedMultiplier,
+  darkMode,
 }: {
   reducedMotion: boolean | null;
   speedMultiplier: number;
+  darkMode: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const speedMultiplierRef = useRef(speedMultiplier);
+  const darkModeRef = useRef(darkMode);
 
   useEffect(() => {
     speedMultiplierRef.current = speedMultiplier;
   }, [speedMultiplier]);
+
+  useEffect(() => {
+    darkModeRef.current = darkMode;
+  }, [darkMode]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -206,6 +214,7 @@ function FooterShaderCanvas({
 
         uniform vec2 iResolution;
         uniform float iTime;
+        uniform float uDarkMode;
         varying vec2 vUv;
 
         float hash(vec2 p) {
@@ -244,12 +253,26 @@ function FooterShaderCanvas({
           vec3 violet = vec3(0.58, 0.45, 0.92);
           vec3 lavender = vec3(0.88, 0.80, 1.0);
 
-          vec3 color = mix(cream, blush, smoothstep(0.0, 0.32, t));
-          color = mix(color, peach, smoothstep(0.18, 0.52, t) * 0.34);
-          color = mix(color, coral, smoothstep(0.36, 0.62, t) * (1.0 - smoothstep(0.58, 0.78, vUv.x)) * 0.72);
-          color = mix(color, violet, smoothstep(0.58, 0.96, vUv.x) * smoothstep(0.24, 0.88, t) * 0.68);
-          color = mix(color, lavender, smoothstep(0.65, 1.0, vUv.y) * 0.18);
-          return color;
+          vec3 lightColor = mix(cream, blush, smoothstep(0.0, 0.32, t));
+          lightColor = mix(lightColor, peach, smoothstep(0.18, 0.52, t) * 0.34);
+          lightColor = mix(lightColor, coral, smoothstep(0.36, 0.62, t) * (1.0 - smoothstep(0.58, 0.78, vUv.x)) * 0.72);
+          lightColor = mix(lightColor, violet, smoothstep(0.58, 0.96, vUv.x) * smoothstep(0.24, 0.88, t) * 0.68);
+          lightColor = mix(lightColor, lavender, smoothstep(0.65, 1.0, vUv.y) * 0.18);
+
+          vec3 darkBg = vec3(0.08, 0.06, 0.05);
+          vec3 deepPlum = vec3(0.22, 0.08, 0.15);
+          vec3 burgundy = vec3(0.30, 0.08, 0.12);
+          vec3 darkWarm = vec3(0.18, 0.10, 0.08);
+          vec3 deepViolet = vec3(0.20, 0.12, 0.35);
+          vec3 mutedLavender = vec3(0.30, 0.25, 0.40);
+
+          vec3 darkColor = mix(darkBg, deepPlum, smoothstep(0.0, 0.32, t));
+          darkColor = mix(darkColor, darkWarm, smoothstep(0.18, 0.52, t) * 0.34);
+          darkColor = mix(darkColor, burgundy, smoothstep(0.36, 0.62, t) * (1.0 - smoothstep(0.58, 0.78, vUv.x)) * 0.72);
+          darkColor = mix(darkColor, deepViolet, smoothstep(0.58, 0.96, vUv.x) * smoothstep(0.24, 0.88, t) * 0.68);
+          darkColor = mix(darkColor, mutedLavender, smoothstep(0.65, 1.0, vUv.y) * 0.18);
+
+          return mix(lightColor, darkColor, uDarkMode);
         }
 
         void main() {
@@ -274,14 +297,20 @@ function FooterShaderCanvas({
 
           vec3 color = palette(field);
           float topLight = smoothstep(0.18, 0.92, uv.y);
-          color = mix(vec3(1.0, 0.94, 0.93), color, topLight * 0.86);
+          vec3 topTint = mix(vec3(1.0, 0.94, 0.93), vec3(0.06, 0.04, 0.03), uDarkMode);
+          color = mix(topTint, color, topLight * 0.86);
 
+          vec3 glowColor = mix(vec3(1.0, 0.92, 0.88), vec3(0.15, 0.08, 0.12), uDarkMode);
           float glow = 0.14 * exp(-3.6 * abs(uv.y - (0.42 + wave * 0.9)));
-          color += vec3(1.0, 0.92, 0.88) * glow;
+          color += glowColor * glow;
 
           float grain = hash(uv * iResolution.xy + iTime * 14.0) - 0.5;
-          color += grain * 0.014;
-          color = mix(color, vec3(1.0, 0.91, 0.92), 0.14);
+          float grainStrength = mix(0.014, 0.006, uDarkMode);
+          color += grain * grainStrength;
+
+          vec3 finalTint = mix(vec3(1.0, 0.91, 0.92), vec3(0.10, 0.06, 0.08), uDarkMode);
+          float tintStrength = mix(0.14, 0.08, uDarkMode);
+          color = mix(color, finalTint, tintStrength);
 
           gl_FragColor = vec4(color, 1.0);
         }
@@ -309,6 +338,7 @@ function FooterShaderCanvas({
     const positionLocation = gl.getAttribLocation(program, "aPosition");
     const resolutionLocation = gl.getUniformLocation(program, "iResolution");
     const timeLocation = gl.getUniformLocation(program, "iTime");
+    const darkModeLocation = gl.getUniformLocation(program, "uDarkMode");
 
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.bufferData(
@@ -339,6 +369,7 @@ function FooterShaderCanvas({
       gl.useProgram(program);
       gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
       gl.uniform1f(timeLocation, shaderTime);
+      gl.uniform1f(darkModeLocation, darkModeRef.current ? 1.0 : 0.0);
       gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
       gl.enableVertexAttribArray(positionLocation);
       gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
@@ -368,6 +399,7 @@ function FooterShaderCanvas({
 export default function Footer() {
   const { t, i18n } = useTranslation();
   const { lang, setLang } = useLang();
+  const { resolvedTheme } = useTheme();
   const shouldReduceMotion = useReducedMotion();
   const { data: siteData } = useSanityQuery(siteSettingsQuery, null as CmsSiteSettings | null);
   const year = new Date().getFullYear();
@@ -715,6 +747,7 @@ export default function Footer() {
         <FooterShaderCanvas
           reducedMotion={shouldReduceMotion}
           speedMultiplier={isShaderAccelerated ? 3.25 : 0.72}
+          darkMode={resolvedTheme === "dark"}
         />
 
         <svg
