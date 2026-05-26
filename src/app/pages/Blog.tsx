@@ -171,7 +171,7 @@ export default function Blog() {
                     key={category}
                     onClick={() => setActiveCategory(categoryValue)}
                     whileTap={{ scale: 0.98 }}
-                    className={`relative h-10 shrink-0 rounded-full border px-4 text-[11px] font-semibold uppercase tracking-[1.2px] transition ${
+                    className={`relative h-10 shrink-0 whitespace-nowrap rounded-full border px-4 text-[11px] font-semibold uppercase tracking-[1.2px] transition ${
                       isActive
                         ? "border-[#854d63] bg-[#854d63] text-white shadow-[0_12px_28px_rgba(133,77,99,0.16)]"
                         : "border-[#e4bfb2]/70 bg-white text-[#5b4137] hover:border-[#854d63] hover:text-[#854d63] dark:border-white/10 dark:bg-[#171111] dark:text-[#dbc9c0] dark:hover:border-[#f0adc4] dark:hover:text-[#f0adc4]"

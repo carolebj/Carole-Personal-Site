@@ -319,7 +319,7 @@ function CircularTestimonials({
         ))}
       </div>
 
-      <div className="grid h-[27rem] grid-rows-[1fr_auto] overflow-hidden rounded-lg border border-[#e4bfb2]/28 bg-[#fcf9f8] p-6 pb-7 shadow-[0_18px_48px_rgba(91,65,55,0.06)] dark:border-white/10 dark:bg-[#171111] sm:h-[25rem] sm:p-8 sm:pb-7 lg:h-[26rem]">
+      <div className="grid min-h-[27rem] grid-rows-[1fr_auto] overflow-hidden rounded-lg border border-[#e4bfb2]/28 bg-[#fcf9f8] p-6 pb-7 shadow-[0_18px_48px_rgba(91,65,55,0.06)] dark:border-white/10 dark:bg-[#171111] sm:min-h-[25rem] sm:p-8 sm:pb-7 lg:min-h-[26rem]">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeIndex}
@@ -633,7 +633,7 @@ export default function Home() {
 
   return (
     <div className="overflow-hidden bg-[#fcf9f8] text-[#1c1b1b] dark:bg-[#13100f] dark:text-[#f8f1ec]">
-      <section id="home" className="relative flex min-h-[calc(100svh-4rem)] items-center bg-[linear-gradient(160deg,#fffafa_0%,#fcf9f8_42%,#fbf8f7_100%)] px-5 pb-12 pt-24 dark:bg-[linear-gradient(160deg,#1b1515_0%,#13100f_54%,#21171a_100%)] sm:px-8 sm:pt-28 md:min-h-[755px] lg:px-8 lg:pb-16 lg:pt-28">
+      <section id="home" className="relative flex min-h-[calc(100dvh-4rem)] items-center bg-[linear-gradient(160deg,#fffafa_0%,#fcf9f8_42%,#fbf8f7_100%)] px-5 pb-12 pt-24 dark:bg-[linear-gradient(160deg,#1b1515_0%,#13100f_54%,#21171a_100%)] sm:px-8 sm:pt-28 md:min-h-[755px] lg:px-8 lg:pb-16 lg:pt-28">
         <div className="pointer-events-none absolute right-[-14rem] top-[-13rem] size-[38rem] rounded-full bg-[#ffd9e4]/35 blur-[90px] dark:bg-[#854d63]/18" />
         <div className="mx-auto grid w-full max-w-[1200px] items-center gap-8 lg:grid-cols-[1.02fr_0.98fr] lg:gap-10">
           <motion.div
@@ -670,10 +670,10 @@ export default function Home() {
                 ? localized(heroData.description, locale)
                 : t("hero.description")}
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-8 grid w-full max-w-[25rem] grid-cols-1 gap-3 min-[460px]:flex min-[460px]:max-w-none min-[460px]:flex-wrap">
               <Link
                 to="/contact"
-                className="inline-flex h-10 min-w-[144px] items-center justify-center rounded-full bg-[#1c1b1b] px-6 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#fcf9f8] shadow-[0_14px_32px_rgba(28,27,27,0.13)] transition hover:bg-[#854d63] dark:bg-[#f8f1ec] dark:text-[#1c1415] dark:hover:bg-[#f0adc4] md:h-[52px] md:min-w-[176px] md:px-8 md:tracking-[1px]"
+                className="inline-flex h-10 min-w-0 items-center justify-center whitespace-nowrap rounded-full bg-[#1c1b1b] px-6 text-center text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#fcf9f8] shadow-[0_14px_32px_rgba(28,27,27,0.13)] transition hover:bg-[#854d63] dark:bg-[#f8f1ec] dark:text-[#1c1415] dark:hover:bg-[#f0adc4] min-[460px]:min-w-[144px] md:h-[52px] md:min-w-[176px] md:px-8 md:tracking-[1px]"
               >
                 {usingCms && heroData?.primaryCta
                   ? localized(heroData.primaryCta, locale)
@@ -681,7 +681,7 @@ export default function Home() {
               </Link>
               <Link
                 to="/services"
-                className="inline-flex h-10 min-w-[144px] items-center justify-center rounded-full border border-[#1c1b1b]/20 px-6 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#1c1b1b] transition hover:border-[#854d63] hover:bg-[#ffd9e4]/44 hover:text-[#854d63] dark:border-white/20 dark:text-[#f8f1ec] dark:hover:border-[#f0adc4] dark:hover:bg-[#854d63]/30 dark:hover:text-[#f0adc4] md:h-[52px] md:min-w-[172px] md:px-8 md:tracking-[1px]"
+                className="inline-flex h-10 min-w-0 items-center justify-center whitespace-nowrap rounded-full border border-[#1c1b1b]/20 px-6 text-center text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#1c1b1b] transition hover:border-[#854d63] hover:bg-[#ffd9e4]/44 hover:text-[#854d63] dark:border-white/20 dark:text-[#f8f1ec] dark:hover:border-[#f0adc4] dark:hover:bg-[#854d63]/30 dark:hover:text-[#f0adc4] min-[460px]:min-w-[144px] md:h-[52px] md:min-w-[172px] md:px-8 md:tracking-[1px]"
               >
                 {usingCms && heroData?.secondaryCta
                   ? localized(heroData.secondaryCta, locale)
@@ -820,7 +820,7 @@ export default function Home() {
                 ? <PortableText value={aboutData.body[locale.startsWith("en") ? "en" : "fr"] ?? []} />
                 : <><p>{t("about.p1")}</p><p>{t("about.p2")}</p></>}
             </div>
-            <div className="mt-7 grid grid-cols-3 gap-4 border-t border-[#e5e2e1]/80 pt-7 dark:border-white/10 sm:flex sm:flex-wrap sm:gap-7">
+            <div className="mt-7 grid grid-cols-1 gap-4 border-t border-[#e5e2e1]/80 pt-7 dark:border-white/10 min-[420px]:grid-cols-3 sm:flex sm:flex-wrap sm:gap-7">
               {traits.map((trait, index) => {
                 const icon = traitIcons[index] ?? documentEditIcon;
                 const accent = traitAccents[index] ?? traitAccents[0];
@@ -829,7 +829,7 @@ export default function Home() {
                     <span className={`flex size-10 items-center justify-center rounded-full ${accent.icon}`}>
                       <InlineIcon src={icon} className={`size-5 ${accent.glyph}`} />
                     </span>
-                    <span className="text-[12px] font-semibold uppercase tracking-[1px] text-[#5b4137] dark:text-[#cdb9ae] sm:tracking-[2px]">
+                    <span className="max-w-[10rem] text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#5b4137] dark:text-[#cdb9ae] sm:tracking-[2px]">
                       {trait.label}
                     </span>
                   </div>
@@ -856,7 +856,7 @@ export default function Home() {
             </h2>
             <p className="mt-4 text-base leading-7 text-[#5b4137] dark:text-[#ded7d2] sm:text-[18px]">{t("services.subtitle")}</p>
           </div>
-          <div className="grid gap-5 md:grid-cols-3 lg:gap-6">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
             {services.map((service, index) => {
               const icon = serviceIcons[index] ?? brandFlagIcon;
               const accent = serviceAccents[index] ?? serviceAccents[0];
@@ -866,7 +866,7 @@ export default function Home() {
                   to={`/services/${service.slug}`}
                   key={`${service.title}-${service.accent}`}
                   className={`t-resize group relative overflow-hidden rounded-lg border border-[#e4bfb2]/25 bg-white p-6 text-left no-underline shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(28,27,27,0.08)] dark:border-[#d8a4c7]/16 dark:bg-[#171111] dark:hover:border-[#d8a4c7]/28 dark:hover:shadow-[0_18px_42px_rgba(0,0,0,0.24)] sm:p-7 ${
-                    isWide ? "md:col-span-2" : ""
+                    isWide ? "sm:col-span-2" : ""
                   }`}
                 >
                   <div className={`absolute right-0 top-0 size-28 -translate-y-24 translate-x-24 rounded-bl-full ${accent.corner} opacity-0 transition duration-500 ease-out group-hover:-translate-y-9 group-hover:translate-x-9 group-hover:opacity-100`} />

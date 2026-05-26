@@ -251,7 +251,19 @@ const fr = {
   },
 
   footer: {
-    signature: "Communication digitale.",
+    role: "Chargée de communication digitale",
+    tagline:
+      "J'aide les marques à clarifier leur message et à structurer des contenus qui comptent.",
+    navTitle: "Navigation",
+    servicesTitle: "Services",
+    carnetTitle: "Carnet",
+    socialTitle: "Suivre / Contact",
+    contactEmail: "Contact / Email",
+    copyright: "Communication digitale.",
+    backToTop: "Retour en haut",
+    overscrollLine1: "Des idées claires.",
+    overscrollLine2: "Des messages qui résonnent.",
+    holdToAccelerate: "Maintenir pour accélérer",
     behance: "Behance",
     linkedin: "LinkedIn",
     contact: "Contact",
@@ -585,29 +597,58 @@ const fr = {
   },
 
   aboutPage: {
-    eyebrow: "À PROPOS",
-    titleStart: "La communication n'est pas une question de",
-    titleAccent: "bruit",
-    titleEnd: ", mais d'intention.",
-    bioParagraphs: [
-      "Après plusieurs expériences concrètes en coordination éditoriale et gestion de plateformes, j'ai choisi de me spécialiser dans l'accompagnement des marques et des porteurs de projets qui souhaitent clarifier leur message.",
-      "Je crois profondément qu'une présence digitale réussie ne repose pas sur la quantité de publications, mais sur la pertinence et la structure. C'est pourquoi j'aide mes clients à passer d'une communication réactive au jour le jour à un rythme éditorial planifié et porteur de sens.",
-      "Mon rôle est de prendre en charge le travail de l'ombre — structurer les calendriers, rédiger avec soin, coordonner la création visuelle — pour que chaque prise de parole renforce la confiance avec votre public."
-    ],
-    positioningTitle: "Mon positionnement",
-    positioningIntro: "Une approche rigoureuse axée sur trois principes clés :",
-    positioningPillars: [
-      { title: "Stratégie d'abord", desc: "Pas de création sans direction. Chaque format, chaque canal doit répondre à un objectif précis et s'adresser à une audience identifiée." },
-      { title: "Rigueur opérationnelle", desc: "La régularité est la clé de la confiance. J'organise des systèmes éditoriaux sains et faciles à tenir sur le long terme." },
-      { title: "Clarté du message", desc: "Simplifier le complexe. Rendre votre expertise accessible, engageante et mémorable." }
-    ],
-    methodologyTitle: "Ma manière de travailler",
-    methodologySteps: [
-      { step: "01", title: "Diagnostic & immersion", desc: "Comprendre votre marque, vos objectifs, et auditer votre présence actuelle pour déceler les écarts de message." },
-      { step: "02", title: "Cadrage stratégique", desc: "Définition de votre ligne éditoriale, de vos piliers de contenus et de vos cadences de publication idéales." },
-      { step: "03", title: "Déploiement créatif", desc: "Rédaction des posts, préparation des structures visuelles, des scripts courts et des calendriers prêts à publier." },
-      { step: "04", title: "Suivi & optimisation", desc: "Analyse des retours, ajustements éditoriaux et suivi régulier des thèmes les plus générateurs d'échanges." }
-    ]
+    hero: {
+      title: "À propos",
+      subtitle:
+        "Qui je suis, ce que je fais concrètement et la manière dont j'accompagne les marques et les projets.",
+    },
+    imageAlt: "Portrait de Carole Tonoukouen",
+    identity: {
+      label: "Qui je suis",
+      greeting: "Enchantée, moi c'est Carole Tonoukouen.",
+      role: "Chargée de communication digitale, coordination éditoriale et rédaction",
+      paragraphs: [
+        "Je suis basée à Cotonou et j'accompagne des entreprises, des organisations et des porteurs de projets qui souhaitent clarifier leur message, structurer leurs contenus et renforcer leur visibilité en ligne, sans se noyer dans la cadence des réseaux.",
+        "Après plusieurs expériences concrètes en coordination éditoriale et en gestion de plateformes, j'ai choisi de me spécialiser dans l'accompagnement de marques qui veulent passer d'une communication réactive au jour le jour à un rythme éditorial planifié et porteur de sens.",
+        "Je crois qu'une présence digitale réussie ne repose pas sur la quantité de publications, mais sur la pertinence, la structure et la régularité. Mon rôle consiste donc à prendre en charge le travail en amont, notamment les calendriers, la rédaction et la coordination visuelle, afin que chaque prise de parole renforce la confiance avec votre public.",
+      ],
+    },
+    work: {
+      label: "Ce que je fais",
+      paragraphs: [
+        "Concrètement, j'interviens sur la stratégie éditoriale, la communication digitale et la création de contenus. Je vous aide à définir une ligne claire, des piliers de sujets et un positionnement lisible sur vos canaux, puis à tenir ce cap dans le temps.",
+        "Je rédige, je pilote les calendriers et je coordonne les supports visuels. J'aligne par ailleurs chaque publication sur vos objectifs. Que ce soit pour LinkedIn, un blog, des campagnes ponctuelles ou une présence institutionnelle, l'objectif reste le même : moins de dispersion et plus de cohérence.",
+        "Selon les projets, je peux aussi assurer le community management, la traduction FR/EN, le reporting et le suivi des performances, toujours dans une logique d'organisation et de clarté plutôt que de volume pour le volume.",
+      ],
+    },
+    value: {
+      label: "Ce que vous y gagnez",
+      paragraphs: [
+        "Travailler avec moi, c'est d'abord gagner en lisibilité. Votre message devient plus net et plus accessible, sans perdre pour autant votre personnalité ni votre voix.",
+        "Vous bénéficiez également d'une rigueur opérationnelle : des systèmes éditoriaux plus simples à tenir, une cadence réaliste et des formats qui se répondent. La stratégie précède par ailleurs la création, de sorte que chaque canal et chaque format répondent à un objectif et à une audience identifiés.",
+        "En fin de parcours, vous déléguez une part importante de la charge mentale liée à la communication, tout en conservant la main sur les orientations qui comptent vraiment pour vous.",
+      ],
+    },
+    approach: {
+      label: "Mon approche",
+      paragraphs: [
+        "Je commence toujours par lire votre contexte, c'est-à-dire comprendre votre marque, vos objectifs et vos publics, puis auditer ce qui existe déjà afin de repérer les écarts de message.",
+        "Ensuite, nous cadrons ensemble la ligne éditoriale, les piliers de contenu et la cadence de publication. Ce n'est qu'après ce socle que j'entame le déploiement : rédaction, visuels, scripts courts et calendriers prêts à publier.",
+        "Le suivi fait enfin partie du processus. J'analyse les retours, j'ajuste les angles et j'identifie les thèmes qui génèrent le plus d'échanges. L'accompagnement reste ainsi simple, lisible et tenable sur la durée.",
+      ],
+    },
+    closing: {
+      paragraphs: [
+        "Si vous cherchez quelqu'un pour structurer votre communication, tenir le fil éditorial et vous faire gagner du temps sans alourdir le dispositif, je serais ravie d'en discuter avec vous.",
+      ],
+    },
+    ctaBand: {
+      title: "Parlons de votre communication",
+      subtitle:
+        "Expliquez-moi votre contexte, vos canaux et vos priorités. Nous identifierons ensemble la forme d'accompagnement la plus adaptée à votre situation.",
+      ctaPrimary: "Me contacter",
+      ctaSecondary: "Voir mes services",
+    },
   },
 
   carnetPage: {

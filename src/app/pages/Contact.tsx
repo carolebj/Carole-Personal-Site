@@ -2,7 +2,7 @@ import {
   CalendarDaysIcon,
   PaperAirplaneIcon,
 } from "@heroicons/react/24/outline";
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 
@@ -24,10 +24,46 @@ export default function Contact() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [invalidFields, setInvalidFields] = useState<string[]>([]);
   const [formError, setFormError] = useState("");
+  const contentPanelRef = useRef<HTMLDivElement>(null);
+  const scrollAfterModeChangeRef = useRef(false);
   const mode: ContactMode = searchParams.get("mode") === "form" ? "form" : "meeting";
-  const setMode = (nextMode: ContactMode) => {
-    setSearchParams(nextMode === "form" ? { mode: "form" } : {});
+
+  const scrollToContentPanel = () => {
+    const panel = contentPanelRef.current;
+    if (!panel) {
+      return;
+    }
+
+    const navOffset = 112;
+    const top = window.scrollY + panel.getBoundingClientRect().top - navOffset;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    window.scrollTo({
+      top: Math.max(0, top),
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+    });
   };
+
+  const selectMode = (nextMode: ContactMode) => {
+    scrollAfterModeChangeRef.current = true;
+    setSearchParams(nextMode === "form" ? { mode: "form" } : {}, { preventScrollReset: true });
+  };
+
+  useEffect(() => {
+    if (!scrollAfterModeChangeRef.current) {
+      return;
+    }
+
+    scrollAfterModeChangeRef.current = false;
+    const runScroll = () => scrollToContentPanel();
+    const frame = window.requestAnimationFrame(runScroll);
+    const timer = window.setTimeout(runScroll, 120);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
+    };
+  }, [mode]);
 
   const clearError = (name: string) => {
     setInvalidFields((current) => current.filter((field) => field !== name));
@@ -88,7 +124,7 @@ export default function Contact() {
         <div className="mt-9 grid max-w-[790px] gap-5 sm:grid-cols-2">
           <button
             type="button"
-            onClick={() => setMode("form")}
+            onClick={() => selectMode("form")}
             aria-pressed={mode === "form"}
             className={`min-h-[124px] rounded-[16px] border p-5 text-left transition ${
               mode === "form"
@@ -106,7 +142,7 @@ export default function Contact() {
           </button>
           <button
             type="button"
-            onClick={() => setMode("meeting")}
+            onClick={() => selectMode("meeting")}
             aria-pressed={mode === "meeting"}
             className={`min-h-[124px] rounded-[16px] border p-5 text-left transition ${
               mode === "meeting"
@@ -124,9 +160,13 @@ export default function Contact() {
           </button>
         </div>
 
-        <div className="mt-16 rounded-[28px] border border-[#e5e2e1]/90 bg-white p-5 shadow-[0_34px_96px_rgba(28,27,27,0.09)] dark:border-white/10 dark:bg-[#171312] sm:p-8">
+        <div
+          ref={contentPanelRef}
+          id="contact-panel"
+          className="mt-16 scroll-mt-28 rounded-[28px] border border-[#e5e2e1]/90 bg-white p-5 shadow-[0_34px_96px_rgba(28,27,27,0.09)] dark:border-white/10 dark:bg-[#171312] sm:scroll-mt-36 sm:p-8"
+        >
           <div
-            className="t-page-slide min-h-[760px] rounded-[20px] border border-[#e5e2e1]/85 bg-white p-4 dark:border-white/10 dark:bg-[#171312] sm:p-6"
+            className="t-page-slide min-h-[800px] rounded-[20px] border border-[#e5e2e1]/85 bg-white p-4 dark:border-white/10 dark:bg-[#171312] sm:p-6"
             data-page={mode === "form" ? "1" : "2"}
           >
               <form
@@ -180,24 +220,26 @@ export default function Contact() {
                 </p>
                 <button
                   type="submit"
-                  className="inline-flex h-12 w-fit items-center gap-3 rounded-full bg-[#1c1b1b] px-7 text-[12px] font-semibold uppercase tracking-[1px] text-white transition hover:bg-[#854d63] dark:bg-[#f8f1ec] dark:text-[#1c1415] dark:hover:bg-[#f0adc4]"
+                  className="inline-flex h-12 w-fit items-center gap-3 whitespace-nowrap rounded-full bg-[#1c1b1b] px-7 text-[12px] font-semibold uppercase tracking-[1px] text-white transition hover:bg-[#854d63] dark:bg-[#f8f1ec] dark:text-[#1c1415] dark:hover:bg-[#f0adc4]"
                 >
                   <PaperAirplaneIcon className="size-4" />
                   {t("contactSection.submit")}
                 </button>
               </form>
             <div
-              className="t-page t-panel-slide"
+              className="t-page t-panel-slide w-full overflow-y-auto"
               data-page-id="2"
               data-open={mode === "meeting" ? "true" : "false"}
             >
-              <Suspense
-                fallback={
-                  <div className="min-h-[680px] rounded-2xl border border-[#e5e2e1]/80 bg-white dark:border-white/10 dark:bg-[#171312]" />
-                }
-              >
-                <CalMeetingEmbed />
-              </Suspense>
+              <div className="mx-auto w-full max-w-[780px] py-1 sm:py-2">
+                <Suspense
+                  fallback={
+                    <div className="mx-auto min-h-[680px] w-full max-w-[760px] rounded-2xl border border-[#e5e2e1]/80 bg-white dark:border-white/10 dark:bg-[#171312]" />
+                  }
+                >
+                  <CalMeetingEmbed />
+                </Suspense>
+              </div>
             </div>
           </div>
         </div>

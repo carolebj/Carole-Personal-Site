@@ -83,6 +83,8 @@ Last reviewed: 2026-05-24 WAT
 
 - Keep routing in `src/app/routes.tsx` -> `Layout`, with `Home`, `Blog`, and `ServiceDetail`.
 - Keep all user-facing copy in `src/app/i18n/locales/fr.tsx` and `src/app/i18n/locales/en.tsx`.
+- Responsive breakpoints are mobile `<768px`, tablet `768px-1023px`, and desktop `>=1024px`. The main navigation should stay in the mobile/tablet drawer until `lg` so logo, links, theme control, and contact CTA do not collide.
+- SEO metadata is handled by `src/app/components/Seo.tsx`; keep route titles, descriptions, canonical URLs, Open Graph/Twitter tags, `html.lang`, and JSON-LD there rather than scattering direct `document.head` updates across pages.
 - Language selection is detected from browser language, then persisted in `localStorage` under `portfolio-lang`.
 - Theme selection is handled by `src/app/theme/ThemeContext.tsx`, follows `prefers-color-scheme` on first visit, and persists the explicit choice in `localStorage` under `portfolio-theme`.
 - Haptic feedback is handled by `src/app/interactions/HapticContext.tsx` and persists its on/off preference under `portfolio-haptics`.

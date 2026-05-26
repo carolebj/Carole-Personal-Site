@@ -87,7 +87,7 @@ function ResourceCard({
               target="_blank"
               rel="noreferrer"
               onClick={(event) => event.stopPropagation()}
-              className="mt-auto inline-flex w-fit items-center rounded-md border border-[#EAEAEA] bg-white px-4 py-2 text-[12px] font-semibold uppercase tracking-[1.2px] text-[#22201f] transition hover:border-[#22201f] active:scale-[0.98] dark:border-white/10 dark:bg-[#171312] dark:text-[#f8f1ec] dark:hover:border-white/40"
+              className="mt-auto inline-flex w-fit items-center whitespace-nowrap rounded-md border border-[#EAEAEA] bg-white px-4 py-2 text-[12px] font-semibold uppercase tracking-[1.2px] text-[#22201f] transition hover:border-[#22201f] active:scale-[0.98] dark:border-white/10 dark:bg-[#171312] dark:text-[#f8f1ec] dark:hover:border-white/40"
             >
               {linkLabel}
               <span className="ml-2" aria-hidden="true">↗</span>
@@ -179,10 +179,10 @@ export default function ToolsInspirations() {
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              className="h-12 w-full bg-transparent pl-8 pr-24 text-[16px] text-[#22201f] outline-none placeholder:text-[#787774] dark:text-[#f8f1ec] dark:placeholder:text-[#cdb9ae]/68"
+              className="h-12 w-full bg-transparent pl-8 pr-0 text-[16px] text-[#22201f] outline-none placeholder:text-[#787774] dark:text-[#f8f1ec] dark:placeholder:text-[#cdb9ae]/68 sm:pr-24"
               placeholder={content.searchPlaceholder}
             />
-            <span className="absolute right-0 top-1/2 -translate-y-1/2 font-mono text-[12px] uppercase tracking-[1px] text-[#787774]">
+            <span className="mt-2 block font-mono text-[12px] uppercase tracking-[1px] text-[#787774] sm:absolute sm:right-0 sm:top-1/2 sm:mt-0 sm:-translate-y-1/2">
               {resultLabel}
             </span>
           </label>
@@ -195,7 +195,7 @@ export default function ToolsInspirations() {
                   type="button"
                   key={category}
                   onClick={() => setActiveCategory(category)}
-                  className={`h-9 min-w-[3.35rem] shrink-0 rounded-full px-3.5 text-[11px] font-semibold uppercase tracking-[1.1px] transition active:scale-[0.98] ${
+                  className={`h-9 min-w-[3.35rem] shrink-0 whitespace-nowrap rounded-full px-3.5 text-[11px] font-semibold uppercase tracking-[1.1px] transition active:scale-[0.98] ${
                     isActive
                       ? "bg-[#22201f] text-white dark:bg-[#f8f1ec] dark:text-[#171312]"
                       : "border border-[#EAEAEA] bg-transparent text-[#5d5a56] hover:border-[#22201f] hover:text-[#22201f] dark:border-white/10 dark:text-[#dbc9c0] dark:hover:border-white/40 dark:hover:text-[#f8f1ec]"

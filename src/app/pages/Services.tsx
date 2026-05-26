@@ -201,7 +201,7 @@ export default function Services() {
         </div>
         <Link
           to="/contact"
-          className="inline-flex h-12 items-center justify-center rounded-full bg-[#854d63] px-7 text-[12px] font-semibold uppercase tracking-[1.4px] text-white shadow-[0_16px_34px_rgba(133,77,99,0.18)] transition hover:-translate-y-0.5 hover:bg-[#6a364b] active:translate-y-0 dark:bg-[#d79caf] dark:text-[#1c1415] dark:hover:bg-[#f0adc4]"
+          className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-full bg-[#854d63] px-7 text-[12px] font-semibold uppercase tracking-[1.4px] text-white shadow-[0_16px_34px_rgba(133,77,99,0.18)] transition hover:-translate-y-0.5 hover:bg-[#6a364b] active:translate-y-0 dark:bg-[#d79caf] dark:text-[#1c1415] dark:hover:bg-[#f0adc4]"
         >
           {t("services.pageCta")}
         </Link>
