@@ -3,7 +3,7 @@ import { motion, useMotionTemplate, useReducedMotion, useScroll, useTransform } 
 import { useRef } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import portraitImage from "../../assets/carole-redesign-portrait.webp";
+import workingImage from "../../assets/carole-redesign-working.webp";
 
 type ProseSection = {
   label: string;
@@ -138,9 +138,9 @@ export default function About() {
             <figure className="mx-auto w-full max-w-[220px] md:col-start-2 md:row-span-2 md:row-start-1 md:mx-0 md:max-w-none">
               <div className="overflow-hidden rounded-lg border border-border-subtle bg-surface-page">
                 <img
-                  src={portraitImage}
+                  src={workingImage}
                   alt={content.imageAlt}
-                  className="aspect-[4/5] w-full object-cover object-[50%_18%]"
+                  className="aspect-[4/5] w-full object-cover object-[50%_28%]"
                 />
               </div>
             </figure>

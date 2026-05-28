@@ -56,7 +56,7 @@ const fr = {
     titleAccent: "moi c'est Carole",
     p1: "J'aide les entreprises, organisations et projets à clarifier leur message, organiser leurs contenus et renforcer leur visibilité digitale.",
     p2: "Je prends en charge la coordination éditoriale, la rédaction, le suivi des supports visuels et les actions de communication. Vous et moi collaborerons pour transformer vos idées, vos temps forts et vos priorités en prises de parole claires.",
-    imageAlt: "Carole travaillant sur une communication digitale",
+    imageAlt: "Portrait de Carole Tonoukouen",
     traits: [
       { label: "Rédactrice" },
       { label: "Stratège" },
@@ -602,7 +602,7 @@ const fr = {
       subtitle:
         "Qui je suis, ce que je fais concrètement et la manière dont j'accompagne les marques et les projets.",
     },
-    imageAlt: "Portrait de Carole Tonoukouen",
+    imageAlt: "Carole travaillant sur une communication digitale",
     identity: {
       label: "Qui je suis",
       greeting: "Enchantée, moi c'est Carole Tonoukouen.",

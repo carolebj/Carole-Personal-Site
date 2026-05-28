@@ -10,7 +10,9 @@ import { homePageQuery, servicesQuery, testimonialsQuery } from "../../cms/queri
 import { localized, type CmsHomePage, type CmsService, type CmsTestimonial, type SanityImage } from "../../cms/types";
 import { useSanityQuery } from "../../cms/useSanityQuery";
 import portraitImage from "../../assets/carole-redesign-portrait.webp";
-import workingImage from "../../assets/carole-redesign-working.webp";
+import aboutSectionImage from "../../assets/carole-shape-static.png";
+import aboutShapeVideoMp4 from "../../assets/caole-shape-motion-g.mp4";
+import aboutShapeVideoMov from "../../assets/caole-shape-motion.mov";
 import announcementMegaphoneIcon from "../../assets/icons/announcement-megaphone.svg?raw";
 import brandFlagIcon from "../../assets/icons/brand-flag.svg?raw";
 import coffeeCupIcon from "../../assets/icons/coffee-cup.svg?raw";
@@ -52,10 +54,6 @@ type VisualTuning = {
   heroScale: number;
   heroY: number;
   heroObjectY: number;
-  aboutScale: number;
-  aboutY: number;
-  aboutObjectY: number;
-  aboutBrightness: number;
 };
 
 type VisualTuningKey = keyof VisualTuning;
@@ -66,10 +64,6 @@ const DEFAULT_VISUAL_TUNING: VisualTuning = {
   heroScale: 1.24,
   heroY: -10,
   heroObjectY: 100,
-  aboutScale: 1.3,
-  aboutY: 12,
-  aboutObjectY: 28,
-  aboutBrightness: 0.94,
 };
 
 const visualTuningControls: Array<{
@@ -82,10 +76,6 @@ const visualTuningControls: Array<{
   { key: "heroScale", label: "Hero zoom", min: 0.95, max: 1.25, step: 0.01 },
   { key: "heroY", label: "Hero Y", min: -12, max: 12, step: 1 },
   { key: "heroObjectY", label: "Hero crop Y", min: 0, max: 100, step: 1 },
-  { key: "aboutScale", label: "About zoom", min: 1, max: 1.35, step: 0.01 },
-  { key: "aboutY", label: "About Y", min: -12, max: 12, step: 1 },
-  { key: "aboutObjectY", label: "About crop Y", min: 0, max: 100, step: 1 },
-  { key: "aboutBrightness", label: "About exposure", min: 0.75, max: 1.05, step: 0.01 },
 ];
 
 const serviceIcons = [
@@ -563,9 +553,12 @@ export default function Home() {
     [testimonials]
   );
   const [visualTuning, setVisualTuning] = useState(DEFAULT_VISUAL_TUNING);
+  const [aboutVideoCanPlayThrough, setAboutVideoCanPlayThrough] = useState(false);
+  const [aboutVideoPlaying, setAboutVideoPlaying] = useState(false);
   const [invalidFields, setInvalidFields] = useState<string[]>([]);
   const [contactFormError, setContactFormError] = useState("");
   const isDev = import.meta.env.DEV;
+  const showAboutVideo = aboutVideoCanPlayThrough && aboutVideoPlaying;
 
   useEffect(() => {
     setVisualTuning(readStoredVisualTuning());
@@ -789,26 +782,62 @@ export default function Home() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.25 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="bg-white px-5 py-16 dark:bg-[#181312] sm:px-8 lg:py-24"
+        className="bg-white px-5 py-16 dark:bg-[#181312] sm:px-8 lg:px-[min(8vw,112px)] lg:py-24"
       >
-        <div className="mx-auto grid max-w-[1120px] items-center gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:gap-16">
-          <div className="relative mx-auto w-full max-w-[350px] sm:max-w-[380px]">
-            <div className="organic-shape absolute -inset-4 rotate-12 bg-[#ffdcbd]/55" />
-            <div className="organic-shape-third relative aspect-[4/5] overflow-hidden bg-[#ffafcd] shadow-[0_18px_52px_rgba(28,27,27,0.15)]">
-              <img
-                src={workingImage}
-                alt={t("about.imageAlt")}
-                className="h-full w-full object-cover"
-                style={{
-                  objectPosition: `50% ${visualTuning.aboutObjectY}%`,
-                  transform: `translateY(${visualTuning.aboutY}%) scale(${visualTuning.aboutScale})`,
-                  filter: `brightness(${visualTuning.aboutBrightness}) contrast(1.06) saturate(0.95)`,
-                }}
-              />
+        <div className="mx-auto grid max-w-[1152px] items-center gap-12 lg:grid-cols-[minmax(0,350px)_minmax(0,1fr)] lg:gap-28 xl:grid-cols-[minmax(0,368px)_minmax(0,1fr)]">
+          <div className="relative mx-auto aspect-[418.08/522.59] w-full max-w-[292px] sm:max-w-[330px] lg:mx-0 lg:w-[350px] lg:max-w-none xl:w-[368px]">
+            <div
+              className="absolute rotate-12 bg-[rgba(255,220,189,0.50)]"
+              style={{
+                inset: "-11.7% -13.8%",
+                borderRadius: "36% 64% 62% 48% / 34% 52% 60% 54%",
+              }}
+            />
+            <div
+              className="absolute inset-0 overflow-hidden shadow-[0_20px_30px_rgba(28,27,27,0.16)]"
+              style={{ borderRadius: "47% 38% 48% 43% / 42% 34% 48% 46%" }}
+            >
+              <div
+                className="absolute transition-opacity duration-700 ease-out"
+                style={{ width: "178%", height: "178%", left: "-38.5%", top: "-38%" }}
+              >
+                <img
+                  src={aboutSectionImage}
+                  alt={t("about.imageAlt")}
+                  className="h-full w-full object-cover [clip-path:inset(0.75%)]"
+                  style={{ opacity: showAboutVideo ? 0 : 1 }}
+                  aria-hidden={showAboutVideo}
+                />
+              </div>
+              <div
+                className="absolute transition-opacity duration-700 ease-out"
+                style={{ width: "178%", height: "178%", left: "-38.5%", top: "-38%", opacity: showAboutVideo ? 1 : 0 }}
+                aria-hidden={!showAboutVideo}
+              >
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  poster={aboutSectionImage}
+                  className="h-full w-full object-cover [clip-path:inset(0.75%)]"
+                  onCanPlayThrough={() => setAboutVideoCanPlayThrough(true)}
+                  onPlaying={() => setAboutVideoPlaying(true)}
+                  onWaiting={() => setAboutVideoPlaying(false)}
+                  onError={() => {
+                    setAboutVideoCanPlayThrough(false);
+                    setAboutVideoPlaying(false);
+                  }}
+                >
+                  <source src={aboutShapeVideoMp4} type="video/mp4" />
+                  <source src={aboutShapeVideoMov} type="video/quicktime" />
+                </video>
+              </div>
             </div>
           </div>
-          <div>
-            <h2 className="font-serif text-[clamp(2rem,3.7vw,3.2rem)] leading-[1.06] dark:text-[#f8f1ec]">
+          <div className="lg:self-center">
+            <h2 className="font-serif text-[clamp(2rem,3.7vw,3.55rem)] leading-[1.06] dark:text-[#f8f1ec]">
               {usingCms && aboutData?.title
                 ? localized(aboutData.title, locale)
                 : t("about.titleTop")}
@@ -828,13 +857,13 @@ export default function Home() {
                 ? <PortableText value={aboutData.body[locale.startsWith("en") ? "en" : "fr"] ?? []} />
                 : <><p>{t("about.p1")}</p><p>{t("about.p2")}</p></>}
             </div>
-            <div className="mt-7 grid grid-cols-1 gap-4 border-t border-[#e5e2e1]/80 pt-7 dark:border-white/10 min-[420px]:grid-cols-3 sm:flex sm:flex-wrap sm:gap-7">
+            <div className="mt-6 grid grid-cols-1 gap-4 border-t border-[#e5e2e1]/80 pt-8 dark:border-white/10 min-[420px]:grid-cols-3 sm:flex sm:flex-wrap sm:gap-7">
               {traits.map((trait, index) => {
                 const icon = traitIcons[index] ?? documentEditIcon;
                 const accent = traitAccents[index] ?? traitAccents[0];
                 return (
                   <div key={trait.label} className="flex min-w-0 flex-col items-center gap-3 text-center sm:min-w-24">
-                    <span className={`flex size-10 items-center justify-center rounded-full ${accent.icon}`}>
+                    <span className={`flex size-11 items-center justify-center rounded-full ${accent.icon}`}>
                       <InlineIcon src={icon} className={`size-5 ${accent.glyph}`} />
                     </span>
                     <span className="max-w-[10rem] text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#5b4137] dark:text-[#cdb9ae] sm:tracking-[2px]">

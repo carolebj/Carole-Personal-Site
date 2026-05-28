@@ -60,6 +60,7 @@ Last reviewed: 2026-05-24 WAT
   - use the Figma-derived hero/about portraits and exported decorative arc
   - use local Liberation Serif Italic for manifesto accent text
   - keep hero and manifesto backgrounds visually continuous, with the about section on white
+  - keep the about section left visual adapted from Figma node `4:473`, not copied literally: use a smaller editorial visual column, generous desktop spacing from the text, updated organic shapes, and a static first-frame image fallback until the shape video is loaded and playing
   - show service card color corners on hover only
   - keep motion subtle: light section entry fades, service hover lifts, and hero visual levitation only
   - hide the visual tuning panel for now; the code remains in `Home.tsx` behind `SHOW_VISUAL_TUNING_PANEL`

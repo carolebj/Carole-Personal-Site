@@ -56,7 +56,7 @@ const en = {
     titleAccent: "I'm Carole",
     p1: "I help businesses, organizations, and projects clarify their message, organize their content, and strengthen their digital visibility.",
     p2: "I support editorial coordination, writing, visual production follow-up, and communication actions. Together, we turn your ideas, key moments, and priorities into clear public-facing messages.",
-    imageAlt: "Carole working on digital communication",
+    imageAlt: "Portrait of Carole Tonoukouen",
     traits: [
       { label: "Writer" },
       { label: "Strategist" },
@@ -602,7 +602,7 @@ const en = {
       subtitle:
         "Who I am, what I do in practice, and how I support brands and projects.",
     },
-    imageAlt: "Portrait of Carole Tonoukouen",
+    imageAlt: "Carole working on digital communication",
     identity: {
       label: "Who I am",
       greeting: "Lovely to meet you. I'm Carole Tonoukouen.",
