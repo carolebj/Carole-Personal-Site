@@ -280,7 +280,6 @@ export default function Navbar() {
   const [isCarnetOpen, setIsCarnetOpen] = useState(false);
   const [isLogoMenuOpen, setIsLogoMenuOpen] = useState(false);
   const [hoveredNavId, setHoveredNavId] = useState<string | null>(null);
-  const [activeSection, setActiveSection] = useState("home");
   const [isCompact, setIsCompact] = useState(false);
   const [isForcedOpen, setIsForcedOpen] = useState(false);
   const logoRef = useRef<HTMLAnchorElement>(null);
@@ -358,46 +357,6 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    if (location.pathname !== "/") {
-      setActiveSection(
-        location.pathname.startsWith("/blog")
-          ? "blog"
-          : location.pathname === "/about"
-            ? "about"
-            : location.pathname.startsWith("/services")
-              ? "services"
-              : location.pathname.startsWith("/carnet")
-                ? "carnet"
-                : ""
-      );
-      return;
-    }
-
-    const sections = ["home", "about", "services", "testimonials"];
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-        if (visible?.target.id) {
-          setActiveSection(visible.target.id);
-        }
-      },
-      {
-        rootMargin: "-32% 0px -48% 0px",
-        threshold: [0.18, 0.32, 0.52],
-      }
-    );
-
-    sections.forEach((id) => {
-      const section = id === "home" ? document.querySelector("main section") : document.getElementById(id);
-      if (section) observer.observe(section);
-    });
-
-    return () => observer.disconnect();
-  }, [location.pathname]);
 
   const scrollToSection = (
     event: React.MouseEvent<HTMLAnchorElement>,
@@ -515,11 +474,11 @@ export default function Navbar() {
 
         <ul className="relative hidden items-center gap-0 lg:flex">
           {navLinks.map((link) => {
-            const sectionId = link.href.replace("#", "");
-            const isActive =
-              link.href.startsWith("#")
-                ? activeSection === sectionId
-                : activeSection === link.id || location.pathname === link.href;
+            const isActive = link.href.startsWith("#")
+              ? location.pathname.startsWith("/" + link.href.slice(1))
+              : link.href === "/"
+                ? location.pathname === "/"
+                : location.pathname.startsWith(link.href);
             const isHighlighted = hoveredNavId === link.id || isActive || (link.hasMenu && isServicesOpen) || (link.hasCarnetMenu && isCarnetOpen);
             const linkClass = `portfolio-nav-link group relative z-10 inline-flex h-10 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-[13px] font-semibold capitalize leading-4 tracking-[1.4px] transition-colors duration-300 xl:px-4 xl:tracking-[1.8px] ${
               isHighlighted
