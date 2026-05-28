@@ -30,12 +30,14 @@ type ServiceItem = {
 function FooterColumn({
   title,
   children,
+  className = "",
 }: {
   title: string;
   children: ReactNode;
+  className?: string;
 }) {
   return (
-    <div>
+    <div className={`min-w-0 ${className}`.trim()}>
       <h2 className="border-b border-[#e5e2e1]/90 pb-3 text-[11px] font-semibold uppercase tracking-[3px] text-[#1c1b1b] dark:border-white/12 dark:text-[#f8f1ec]">
         {title}
       </h2>
@@ -56,7 +58,7 @@ function FooterLink({
   children: ReactNode;
 }) {
   const className =
-    "block text-[15px] leading-7 text-[#5b4137] transition hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:text-[#f0adc4]";
+    "block break-words text-[15px] leading-7 text-[#5b4137] transition hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:text-[#f0adc4]";
 
   if (to) {
     return (
@@ -92,14 +94,14 @@ function SocialRow({
   label: string;
 }) {
   const className =
-    "group flex items-center gap-3 text-[15px] leading-7 text-[#5b4137] transition hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:text-[#f0adc4]";
+    "group flex min-w-0 items-center gap-3 text-[15px] leading-7 text-[#5b4137] transition hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:text-[#f0adc4]";
 
   const content = (
     <>
       <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-[#854d63]/25 bg-[#ffd9e4]/35 text-[#854d63] transition group-hover:border-[#854d63]/45 group-hover:bg-[#ffd9e4]/55 dark:border-[#f0adc4]/30 dark:bg-[#854d63]/22 dark:text-[#f0adc4]">
         {icon}
       </span>
-      {label}
+      <span className="min-w-0 break-words">{label}</span>
     </>
   );
 
@@ -611,9 +613,9 @@ export default function Footer() {
         ref={footerRef}
         className="relative border-t border-[#e5e2e1]/80 bg-[#fcf9f8] dark:border-white/10 dark:bg-[#13100f]"
       >
-        <div className="mx-auto max-w-[1680px] px-6 pb-12 pt-16 sm:px-10 lg:px-16 lg:pb-12 lg:pt-20">
-          <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[minmax(20rem,1.6fr)_repeat(4,minmax(10rem,1fr))] lg:gap-x-20 lg:gap-y-12">
-            <div className="sm:col-span-2 lg:col-span-1">
+        <div className="mx-auto max-w-[1680px] px-6 pb-12 pt-16 sm:px-8 lg:px-12 lg:pb-12 lg:pt-20 xl:px-16">
+          <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-12 xl:gap-x-12">
+            <div className="min-w-0 md:col-span-2 lg:col-span-12 xl:col-span-4">
               <p className="font-serif text-[clamp(2.35rem,3.2vw,3.35rem)] italic leading-none tracking-[-0.01em] text-[#1c1b1b] dark:text-[#f8f1ec]">
                 Carole T.
               </p>
@@ -624,13 +626,13 @@ export default function Footer() {
                 {t("footer.tagline")}
               </p>
               <span className="mt-8 block h-px w-14 bg-[#f0adc4] dark:bg-[#f0adc4]/60" />
-              <div className="mt-7 flex flex-nowrap gap-3">
+              <div className="mt-7 flex flex-wrap gap-3">
                 {languages.map((language) => (
                   <button
                     key={language.code}
                     type="button"
                     onClick={() => setLang(language.code)}
-                    className={`inline-flex h-10 min-w-[8.25rem] items-center justify-center gap-2 rounded-full border px-4 text-[11px] font-semibold uppercase tracking-[1.5px] transition ${
+                    className={`inline-flex h-10 min-w-0 items-center justify-center gap-2 rounded-full border px-4 text-[11px] font-semibold uppercase tracking-[1.5px] transition sm:min-w-[8.25rem] ${
                       lang === language.code
                         ? "border-[#854d63]/45 bg-[#ffd9e4]/70 text-[#854d63] dark:border-[#f0adc4]/50 dark:bg-[#854d63]/30 dark:text-[#f0adc4]"
                         : "border-[#e5e2e1] bg-transparent text-[#5b4137] hover:border-[#854d63]/35 hover:text-[#854d63] dark:border-white/14 dark:text-[#cdb9ae] dark:hover:border-[#f0adc4]/40 dark:hover:text-[#f0adc4]"
@@ -652,7 +654,10 @@ export default function Footer() {
               </div>
             </div>
 
-            <FooterColumn title={t("footer.navTitle")}>
+            <FooterColumn
+              title={t("footer.navTitle")}
+              className="md:col-span-1 lg:col-span-6 xl:col-span-2"
+            >
               <ul className="space-y-2">
                 <li>
                   <FooterLink to="/">{t("nav.home")}</FooterLink>
@@ -672,7 +677,10 @@ export default function Footer() {
               </ul>
             </FooterColumn>
 
-            <FooterColumn title={t("footer.servicesTitle")}>
+            <FooterColumn
+              title={t("footer.servicesTitle")}
+              className="md:col-span-1 lg:col-span-6 xl:col-span-2"
+            >
               <ul className="space-y-2">
                 {serviceLinks.map((link) => (
                   <li key={link.href}>
@@ -682,7 +690,10 @@ export default function Footer() {
               </ul>
             </FooterColumn>
 
-            <FooterColumn title={t("footer.carnetTitle")}>
+            <FooterColumn
+              title={t("footer.carnetTitle")}
+              className="md:col-span-1 lg:col-span-6 xl:col-span-2"
+            >
               <ul className="space-y-2">
                 <li>
                   <FooterLink to="/carnet/outils-inspirations">
@@ -697,7 +708,10 @@ export default function Footer() {
               </ul>
             </FooterColumn>
 
-            <FooterColumn title={t("footer.socialTitle")}>
+            <FooterColumn
+              title={t("footer.socialTitle")}
+              className="md:col-span-2 lg:col-span-6 xl:col-span-2"
+            >
               <ul className="space-y-4">
                 {socialLinks.map((link) => (
                   <li key={`${link.label}-${link.href}`}>
