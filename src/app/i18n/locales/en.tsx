@@ -654,17 +654,19 @@ const en = {
   carnetPage: {
     eyebrow: "Notebook",
     title: "Useful resources & communities",
-    subtitle: "A selection of platforms, tools, inspiring campaigns, and support groups to feed and structure your digital communication.",
-    searchPlaceholder: "Search for a tool, source, or category",
+    subtitle: "A selection of African libraries, editorial tools, and communities to support research, content strategy, and professional growth.",
+    searchPlaceholder: "Search for a resource, community, or topic",
     emptyState: "No item matches this search.",
-    categories: ["All", "Editorial line", "Microcopy & writing", "Social media watch", "Creative inspiration"],
+    typeFilterLabel: "Content type",
+    typeFilters: ["All", "Resource", "Community"],
+    categories: ["All", "Monitoring & inspiration", "Social media", "Women & digital"],
     items: [
-      { title: "Good Copy", category: "Microcopy & writing", desc: "A precious resource to analyze and draw inspiration from the best email and user journey microcopy.", link: "https://www.goodcopy.co", badge: "Writing" },
-      { title: "Social Media Today", category: "Social media watch", desc: "My daily reference source to follow platform updates, algorithms, and social media trends.", link: "https://www.socialmediatoday.com", badge: "Watch" },
-      { title: "Land Book", category: "Creative inspiration", desc: "A superb landing page gallery to analyze design, copy hierarchy, and brand integration.", link: "https://land-book.com", badge: "Inspiration" },
-      { title: "Hemingway Editor", category: "Microcopy & writing", desc: "A wonderful tool to prune your writing style, eliminate complex sentences, and clarify your copy.", link: "https://hemingwayapp.com", badge: "Tool" },
-      { title: "Pinterest Creative", category: "Creative inspiration", desc: "My creative mood board to spot layout trends, typography pairings, and color palettes.", link: "https://pinterest.com", badge: "Inspiration" },
-      { title: "Buffer Resources", category: "Editorial line", desc: "Detailed guides to lay the foundations of sustainable content calendars and plan publishing cadences.", link: "https://buffer.com/library", badge: "Resource" }
+      { title: "LE DÉPÔT", type: "Resource", categories: ["Monitoring & inspiration", "Social media"], desc: "A living library for African communication, built to discover, submit, and reference campaigns from French-speaking Africa.", link: "https://ledepot.co/" },
+      { title: "Social Media Room", type: "Community", categories: ["Social media"], desc: "A pan-African community and support structure for growing social media skills, joining training programs, and exchanging with professionals.", link: "https://socialmediaroom.africa/" },
+      { title: "LAVEIYE", type: "Resource", categories: ["Monitoring & inspiration", "Social media"], desc: "A monitoring platform gathering African marketing campaigns to analyze, benchmark, and build stronger creative concepts.", link: "https://laveiye.com/" },
+      { title: "WOMEN IN TECH BENIN", type: "Community", categories: ["Women & digital"], desc: "A platform connecting, training, and inspiring girls and women in Benin's digital sector through role models, mentors, career sheets, and events.", link: "https://womenintech.bj/" },
+      { title: "Calendrier du CM 229", type: "Resource", categories: ["Monitoring & inspiration", "Social media"], desc: "A local editorial tool updated every year with key dates, campaign inspiration, and practical advice from digital professionals in Benin.", link: "https://calendrierducm.bj/" },
+      { title: "Women Techmakers Abomey-Calavi", type: "Community", categories: ["Women & digital"], desc: "A community for women passionate about programming technologies, with capacity-building sessions, networking, and inspiration around emerging tech.", link: "https://www.linkedin.com/company/women-techmakers-abomey-calavi/" }
     ],
     discoverBook: "Discover",
     readingsTitle: "Readings & references",
