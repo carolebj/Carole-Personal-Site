@@ -1,18 +1,26 @@
-import type React from "react";
+import { ArrowUpRightIcon, CheckIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { motion } from "motion/react";
-import { useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { localized } from "../../cms/types";
+import { sanityImageUrl } from "../../cms/client";
 import { resourcesQuery } from "../../cms/queries";
 import type { CmsResource } from "../../cms/types";
+import { localized } from "../../cms/types";
 import { useSanityQuery } from "../../cms/useSanityQuery";
+import calendrierCm229Image from "../../assets/resources/calendrier-cm229.webp";
+import laveiyeImage from "../../assets/resources/laveiye.webp";
+import leDepotImage from "../../assets/resources/le-depot.webp";
+import socialMediaRoomImage from "../../assets/resources/social-media-room.webp";
+import womenInTechBeninImage from "../../assets/resources/women-in-tech-benin.webp";
+import womenTechmakersImage from "../../assets/resources/women-techmakers-abomey-calavi.webp";
 
 type ResourceItem = {
   title: string;
-  category: string;
+  type: string;
+  categories: string[];
   desc: string;
   link: string;
-  badge: string;
+  imageUrl?: string;
 };
 
 type CarnetPageContent = {
@@ -21,78 +29,198 @@ type CarnetPageContent = {
   subtitle: string;
   searchPlaceholder: string;
   emptyState: string;
+  typeFilterLabel: string;
+  typeFilters: string[];
   categories: string[];
   items: ResourceItem[];
 };
+
+function TypeScopeSelect({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: string[];
+  value: string;
+  onChange: (next: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const listboxId = useId();
+  const labelId = useId();
+
+  useEffect(() => {
+    if (!open) return;
+    const handlePointerDown = (event: MouseEvent) => {
+      if (rootRef.current && !rootRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open]);
+
+  return (
+    <div ref={rootRef} className="relative shrink-0 text-left">
+      <p
+        id={labelId}
+        className="mb-2 text-[11px] font-semibold uppercase tracking-[1.4px] text-[#787774] dark:text-[#cdb9ae]"
+      >
+        {label}
+      </p>
+      <button
+        type="button"
+        aria-labelledby={labelId}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls={listboxId}
+        onClick={() => setOpen((current) => !current)}
+        className={`flex h-11 min-w-[12.5rem] items-center justify-between gap-3 rounded-lg border bg-white px-3.5 text-left transition dark:bg-[#1c1917] ${
+          open
+            ? "border-[#22201f] ring-2 ring-[#22201f]/8 dark:border-[#f8f1ec]/40 dark:ring-white/10"
+            : "border-[#E4E1DE] hover:border-[#22201f] dark:border-white/15 dark:hover:border-white/35"
+        }`}
+      >
+        <span className="truncate text-[14px] font-medium leading-none text-[#22201f] dark:text-[#f8f1ec]">
+          {value}
+        </span>
+        <span
+          className={`flex size-7 shrink-0 items-center justify-center rounded-md bg-[#f5f3f1] transition dark:bg-white/8 ${open ? "bg-[#ebe8e5] dark:bg-white/12" : ""}`}
+          aria-hidden="true"
+        >
+          <ChevronDownIcon
+            className={`size-4 text-[#5d5a56] transition-transform duration-200 dark:text-[#dbc9c0] ${open ? "rotate-180" : ""}`}
+          />
+        </span>
+      </button>
+
+      {open ? (
+        <ul
+          id={listboxId}
+          role="listbox"
+          aria-labelledby={labelId}
+          className="absolute left-0 top-full z-30 mt-2 min-w-[12.5rem] overflow-hidden rounded-lg border border-[#EAEAEA] bg-white py-1.5 shadow-[0_12px_40px_rgba(28,27,27,0.12)] dark:border-white/10 dark:bg-[#1c1917] dark:shadow-[0_12px_40px_rgba(0,0,0,0.45)]"
+        >
+          {options.map((option) => {
+            const isSelected = value === option;
+            return (
+              <li key={option} role="presentation">
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={isSelected}
+                  onClick={() => {
+                    onChange(option);
+                    setOpen(false);
+                  }}
+                  className={`mx-1.5 flex w-[calc(100%-0.75rem)] items-center justify-between gap-3 rounded-md px-2.5 py-2.5 text-left text-[14px] transition ${
+                    isSelected
+                      ? "bg-[#22201f] font-medium text-white dark:bg-[#f8f1ec] dark:text-[#171312]"
+                      : "text-[#5d5a56] hover:bg-[#f5f3f1] hover:text-[#22201f] dark:text-[#dbc9c0] dark:hover:bg-white/6 dark:hover:text-[#f8f1ec]"
+                  }`}
+                >
+                  <span>{option}</span>
+                  {isSelected ? <CheckIcon className="size-4 shrink-0 opacity-90" /> : null}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
+const resourceImages: Record<string, string> = {
+  "LE DÉPÔT": leDepotImage,
+  LAVEIYE: laveiyeImage,
+  "Calendrier du CM 229": calendrierCm229Image,
+  "Social Media Room": socialMediaRoomImage,
+  "WOMEN IN TECH BENIN": womenInTechBeninImage,
+  "Women Techmakers Abomey-Calavi": womenTechmakersImage,
+};
+
+const motionProps = (index: number) => ({
+  initial: { opacity: 0, y: 12 } as const,
+  animate: { opacity: 1, y: 0 } as const,
+  transition: { duration: 0.42, delay: index * 0.055, ease: [0.16, 1, 0.3, 1] as const },
+});
 
 function ResourceCard({
   item,
   index,
   linkLabel,
+  overviewLabel,
 }: {
-  item: CarnetPageContent["items"][number];
+  item: ResourceItem;
   index: number;
   linkLabel: string;
+  overviewLabel: string;
 }) {
-  const [isFlipped, setIsFlipped] = useState(false);
+  const imageUrl = item.imageUrl || resourceImages[item.title] || leDepotImage;
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.42, delay: index * 0.055, ease: [0.16, 1, 0.3, 1] }}
-      className="[perspective:1000px]"
-      tabIndex={0}
-      onMouseEnter={() => setIsFlipped(true)}
-      onMouseLeave={() => setIsFlipped(false)}
-      onClick={() => setIsFlipped((current) => !current)}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          setIsFlipped((current) => !current);
-        }
-      }}
+      {...motionProps(index)}
+      className="group relative h-full min-h-[24rem] w-full overflow-hidden rounded-xl border border-[#EAEAEA] bg-[#1c1b1b] shadow-lg transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-2xl dark:border-white/10"
     >
-      <div
-        className={`relative min-h-[15.5rem] rounded-lg border border-[#EAEAEA] bg-white transition duration-700 [transform-style:preserve-3d] dark:border-white/10 dark:bg-[#171312] ${
-          isFlipped ? "[transform:rotateY(180deg)]" : ""
-        }`}
-      >
-        <div className="absolute inset-0 rounded-lg bg-white p-5 text-[#22201f] [backface-visibility:hidden] [transform:rotateY(0deg)] dark:bg-[#171312] dark:text-[#f8f1ec]">
-          <div className="flex h-full flex-col">
-            <div className="flex items-start justify-between gap-5">
-              <span className="rounded-full bg-[#FDEBEC] px-3 py-1 text-[11px] font-semibold uppercase tracking-[1.4px] text-[#9F2F2D] dark:bg-[#3a2225] dark:text-[#f0adc4]">
-                {item.badge}
-              </span>
-              <span className="font-mono text-[12px] text-[#787774]">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-            </div>
-            <h2 className="mt-9 font-serif text-[28px] leading-[32px] tracking-[-0.02em]">
+      {/* Background Image with Zoom Effect on Hover */}
+      <img
+        src={imageUrl}
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 ease-in-out group-hover:scale-110"
+      />
+
+      {/* Gradient Overlay for Text Readability */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+
+      {/* Content Container */}
+      <div className="relative flex h-full min-h-[24rem] flex-col justify-between p-6">
+        {/* Top Section: Badge */}
+        <div className="flex h-20 items-start">
+          <span className="flex h-10 w-fit items-center justify-center rounded-full border border-white/50 bg-black/20 px-3 text-[10px] font-semibold uppercase tracking-[1.2px] text-white/95 backdrop-blur-sm">
+            {item.type}
+          </span>
+        </div>
+
+        {/* Middle Section: Details (slides up on hover) */}
+        <div className="space-y-3 transition-transform duration-500 ease-in-out group-hover:-translate-y-14">
+          <div>
+            <h3 className="line-clamp-2 font-serif text-[1.5rem] font-bold leading-tight tracking-[-0.02em] text-white md:text-[1.7rem]">
               {item.title}
-            </h2>
-            <p className="mt-auto border-t border-[#EAEAEA] pt-5 text-[12px] font-semibold uppercase tracking-[1.4px] text-[#787774] dark:border-white/10 dark:text-[#cdb9ae]">
-              {item.category}
+            </h3>
+            <p className="mt-1 line-clamp-1 text-sm text-white/80">{item.categories[0]}</p>
+          </div>
+          <div>
+            <h4 className="text-[11px] font-semibold uppercase tracking-[1.3px] text-white/90">
+              {overviewLabel}
+            </h4>
+            <p className="mt-1 line-clamp-3 text-[13px] leading-relaxed text-white/70">
+              {item.desc}
             </p>
           </div>
         </div>
 
-        <div className="absolute inset-0 rounded-lg bg-[#F9F9F8] p-5 text-[#22201f] [backface-visibility:hidden] [transform:rotateY(180deg)] dark:bg-[#1d1817] dark:text-[#f8f1ec]">
-          <div className="flex h-full flex-col">
-            <p className="text-[14px] leading-6 text-[#5d5a56] dark:text-[#dbc9c0]">
-              {item.desc}
-            </p>
-            <a
-              href={item.link}
-              target="_blank"
-              rel="noreferrer"
-              onClick={(event) => event.stopPropagation()}
-              className="mt-auto inline-flex w-fit items-center whitespace-nowrap rounded-md border border-[#EAEAEA] bg-white px-4 py-2 text-[12px] font-semibold uppercase tracking-[1.2px] text-[#22201f] transition hover:border-[#22201f] active:scale-[0.98] dark:border-white/10 dark:bg-[#171312] dark:text-[#f8f1ec] dark:hover:border-white/40"
-            >
-              {linkLabel}
-              <span className="ml-2" aria-hidden="true">↗</span>
-            </a>
-          </div>
+        {/* Bottom Section: Button (revealed on hover) */}
+        <div className="absolute -bottom-20 left-0 w-full p-6 opacity-0 transition-all duration-500 ease-in-out group-hover:bottom-0 group-hover:opacity-100">
+          <a
+            href={item.link}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-md bg-white px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[1px] text-[#1c1b1b] transition hover:bg-white/90"
+          >
+            {linkLabel}
+            <ArrowUpRightIcon className="ml-1 size-4" />
+          </a>
         </div>
       </div>
     </motion.article>
@@ -107,17 +235,25 @@ export default function ToolsInspirations() {
   const content = useMemo((): CarnetPageContent => {
     if (cmsResources.length > 0) {
       const langPrefix = locale.startsWith("en") ? "en" : "fr";
-      const kindLabels: Record<string, string> = langPrefix === "en"
-        ? { platform: "Platform", tool: "Tool", campaign: "Campaign", community: "Community", reading: "Reading", reference: "Reference" }
-        : { platform: "Plateforme", tool: "Outil", campaign: "Campagne", community: "Communauté", reading: "Lecture", reference: "Référence" };
-      const items: ResourceItem[] = cmsResources.map((r) => ({
-        title: localized(r.title, locale),
-        category: r.kind ?? "",
-        desc: localized(r.description, locale),
-        link: r.url ?? "",
-        badge: r.kind ? (kindLabels[r.kind] ?? r.kind) : "",
-      }));
-      const categories = [langPrefix === "en" ? "All" : "Tout", ...Array.from(new Set(items.map((i) => i.category).filter(Boolean)))];
+      const communityKinds = new Set(["community"]);
+      const items: ResourceItem[] = cmsResources.map((r) => {
+        const imageBuilder = sanityImageUrl(r.image);
+        const imageUrl = imageBuilder?.width(800).height(600).fit("crop").url();
+        const type = communityKinds.has(r.kind ?? "")
+          ? langPrefix === "en" ? "Community" : "Communauté"
+          : langPrefix === "en" ? "Resource" : "Ressource";
+
+        return {
+          title: localized(r.title, locale),
+          type,
+          categories: r.kind ? [r.kind] : [],
+          desc: localized(r.description, locale),
+          link: r.url ?? "",
+          imageUrl: imageUrl || resourceImages[localized(r.title, locale)] || undefined,
+        };
+      });
+      const categories = [langPrefix === "en" ? "All" : "Tout", ...Array.from(new Set(items.flatMap((i) => i.categories).filter(Boolean)))];
+      const typeFilters = [langPrefix === "en" ? "All" : "Tous", ...Array.from(new Set(items.map((i) => i.type).filter(Boolean)))];
       const fallback = t("carnetPage", { returnObjects: true }) as CarnetPageContent;
       return {
         eyebrow: fallback.eyebrow,
@@ -125,6 +261,8 @@ export default function ToolsInspirations() {
         subtitle: fallback.subtitle,
         searchPlaceholder: fallback.searchPlaceholder,
         emptyState: fallback.emptyState,
+        typeFilterLabel: fallback.typeFilterLabel,
+        typeFilters,
         categories,
         items,
       };
@@ -132,21 +270,75 @@ export default function ToolsInspirations() {
     return t("carnetPage", { returnObjects: true }) as CarnetPageContent;
   }, [cmsResources, locale, t]);
 
-  const [activeCategory, setActiveCategory] = useState(content.categories[0]);
+  const typeFilters = content.typeFilters;
+  const categoryFilters = content.categories;
+  const allTypesLabel = typeFilters[0];
+  const allCategoriesLabel = categoryFilters[0];
+
+  const [activeTypeFilter, setActiveTypeFilter] = useState(allTypesLabel);
+  const [activeCategoryFilter, setActiveCategoryFilter] = useState(allCategoriesLabel);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    if (!typeFilters.includes(activeTypeFilter)) {
+      setActiveTypeFilter(allTypesLabel);
+    }
+  }, [activeTypeFilter, allTypesLabel, typeFilters]);
+
+  const itemsInTypeScope = useMemo(() => {
+    return content.items.filter(
+      (item) => activeTypeFilter === allTypesLabel || item.type === activeTypeFilter,
+    );
+  }, [activeTypeFilter, allTypesLabel, content.items]);
+
+  const availableCategoryFilters = useMemo(() => {
+    const categoriesWithItems = new Set<string>();
+    for (const item of itemsInTypeScope) {
+      for (const category of item.categories) {
+        categoriesWithItems.add(category);
+      }
+    }
+    return [
+      allCategoriesLabel,
+      ...categoryFilters.slice(1).filter((category) => categoriesWithItems.has(category)),
+    ];
+  }, [allCategoriesLabel, categoryFilters, itemsInTypeScope]);
+
+  useEffect(() => {
+    if (!availableCategoryFilters.includes(activeCategoryFilter)) {
+      setActiveCategoryFilter(allCategoriesLabel);
+    }
+  }, [activeCategoryFilter, allCategoriesLabel, availableCategoryFilters]);
+
   const filteredItems = useMemo(() => {
     const query = search.trim().toLowerCase();
     return content.items.filter((item) => {
-      const matchesCategory = activeCategory === content.categories[0] || item.category === activeCategory;
-      const matchesSearch = !query || `${item.title} ${item.category} ${item.desc}`.toLowerCase().includes(query);
-      return matchesCategory && matchesSearch;
+      const matchesType =
+        activeTypeFilter === allTypesLabel || item.type === activeTypeFilter;
+      const matchesCategory =
+        activeCategoryFilter === allCategoriesLabel ||
+        item.categories.includes(activeCategoryFilter);
+      const matchesSearch =
+        !query ||
+        `${item.title} ${item.type} ${item.categories.join(" ")} ${item.desc}`
+          .toLowerCase()
+          .includes(query);
+      return matchesType && matchesCategory && matchesSearch;
     });
-  }, [activeCategory, content.categories, content.items, search]);
+  }, [
+    activeCategoryFilter,
+    activeTypeFilter,
+    allCategoriesLabel,
+    allTypesLabel,
+    content.items,
+    search,
+  ]);
   const resultLabel =
     i18n.language === "fr"
       ? `${filteredItems.length} ressource${filteredItems.length > 1 ? "s" : ""}`
       : `${filteredItems.length} resource${filteredItems.length > 1 ? "s" : ""}`;
   const linkLabel = i18n.language === "fr" ? "Ouvrir la ressource" : "Open resource";
+  const overviewLabel = i18n.language === "fr" ? "À propos" : "About";
 
   return (
     <main className="min-h-[70vh] bg-[#FBFBFA] px-5 pb-28 pt-32 text-[#22201f] dark:bg-[#13100f] dark:text-[#f8f1ec] sm:px-8 md:pt-36 lg:px-8">
@@ -167,10 +359,7 @@ export default function ToolsInspirations() {
           </p>
         </motion.div>
 
-        <motion.div
-          layout
-          className="mx-auto mt-12 max-w-[900px]"
-        >
+        <motion.div layout className="mx-auto mt-12 max-w-[900px]">
           <label className="relative block border-b border-[#EAEAEA] pb-3 text-left dark:border-white/10">
             <span className="sr-only">Recherche</span>
             <span className="absolute left-0 top-1/2 -translate-y-1/2 font-serif text-[24px] text-[#787774]" aria-hidden="true">
@@ -187,31 +376,51 @@ export default function ToolsInspirations() {
             </span>
           </label>
 
-          <div className="mt-5 flex justify-start gap-2 overflow-x-auto px-2 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {content.categories.map((category) => {
-              const isActive = activeCategory === category;
-              return (
-                <button
-                  type="button"
-                  key={category}
-                  onClick={() => setActiveCategory(category)}
-                  className={`h-9 min-w-[3.35rem] shrink-0 whitespace-nowrap rounded-full px-3.5 text-[11px] font-semibold uppercase tracking-[1.1px] transition active:scale-[0.98] ${
-                    isActive
-                      ? "bg-[#22201f] text-white dark:bg-[#f8f1ec] dark:text-[#171312]"
-                      : "border border-[#EAEAEA] bg-transparent text-[#5d5a56] hover:border-[#22201f] hover:text-[#22201f] dark:border-white/10 dark:text-[#dbc9c0] dark:hover:border-white/40 dark:hover:text-[#f8f1ec]"
-                  }`}
-                >
-                  {category}
-                </button>
-              );
-            })}
+          <div className="mt-5 flex flex-wrap items-end gap-3 px-2 pb-1 sm:gap-4">
+            <TypeScopeSelect
+              label={content.typeFilterLabel}
+              options={typeFilters}
+              value={activeTypeFilter}
+              onChange={setActiveTypeFilter}
+            />
+
+            <span
+              className="mb-[0.35rem] hidden h-9 w-px shrink-0 bg-[#EAEAEA] sm:block dark:bg-white/15"
+              aria-hidden="true"
+            />
+
+            <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {availableCategoryFilters.map((filter) => {
+                const isActive = activeCategoryFilter === filter;
+                return (
+                  <button
+                    type="button"
+                    key={filter}
+                    onClick={() => setActiveCategoryFilter(filter)}
+                    className={`h-9 min-w-[3.35rem] shrink-0 whitespace-nowrap rounded-full px-3.5 text-[11px] font-semibold uppercase tracking-[1.1px] transition active:scale-[0.98] ${
+                      isActive
+                        ? "bg-[#22201f] text-white dark:bg-[#f8f1ec] dark:text-[#171312]"
+                        : "border border-[#EAEAEA] bg-transparent text-[#5d5a56] hover:border-[#22201f] hover:text-[#22201f] dark:border-white/10 dark:text-[#dbc9c0] dark:hover:border-white/40 dark:hover:text-[#f8f1ec]"
+                    }`}
+                  >
+                    {filter}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </motion.div>
       </section>
 
-      <section className="mx-auto mt-14 grid max-w-[1180px] gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <section className="mx-auto mt-14 grid max-w-[1180px] gap-5 md:grid-cols-2 lg:grid-cols-3">
         {filteredItems.map((item, index) => (
-          <ResourceCard key={item.title} item={item} index={index} linkLabel={linkLabel} />
+          <ResourceCard
+            key={`${item.title}-${item.link}`}
+            item={item}
+            index={index}
+            linkLabel={linkLabel}
+            overviewLabel={overviewLabel}
+          />
         ))}
       </section>
 
