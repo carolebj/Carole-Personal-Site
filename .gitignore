@@ -141,3 +141,9 @@ dist-studio
 .DS_Store
 .vercel
 graphify-out/
+
+# Cursor IDE / local agent settings
+.cursor/
+
+# Local screenshots and Playwright output
+output/
