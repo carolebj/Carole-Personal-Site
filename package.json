@@ -9,6 +9,7 @@
     "dev:site": "vite",
     "cms:seed": "node --env-file=.env.local scripts/seed-supabase.mjs",
     "cms:verify": "node --env-file=.env.local scripts/verify-dashboard.mjs",
+    "playwright:install": "playwright install chromium",
     "cms:preview": "node --env-file=.env.local scripts/open-preview.mjs",
     "worker:deploy": "npx wrangler deploy --config cloudflare/translate-worker/wrangler.jsonc",
     "worker:dev": "npx wrangler dev --config cloudflare/translate-worker/wrangler.jsonc",

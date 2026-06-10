@@ -12,7 +12,7 @@ const execAsync = promisify(exec);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PREVIEW_URL_FILE = join(ROOT, ".cursor/preview.url");
 
-export const DEFAULT_BASE_URL = "http://127.0.0.1:5173";
+export const DEFAULT_BASE_URL = "http://localhost:5173";
 
 export function resolveBaseUrl() {
   return (process.env.DASHBOARD_URL ?? DEFAULT_BASE_URL).replace(/\/$/, "");
@@ -99,29 +99,40 @@ export function sleep(ms) {
 }
 
 export async function isServerUp(baseUrl) {
-  try {
-    const res = await fetch(baseUrl, { signal: AbortSignal.timeout(2000) });
-    return res.ok;
-  } catch {
-    return false;
+  const candidates = [baseUrl];
+  if (baseUrl.includes("127.0.0.1")) {
+    candidates.push(baseUrl.replace("127.0.0.1", "localhost"));
+  } else if (baseUrl.includes("localhost")) {
+    candidates.push(baseUrl.replace("localhost", "127.0.0.1"));
   }
+
+  for (const url of candidates) {
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(2000) });
+      if (res.ok) return true;
+    } catch {
+      // try next host
+    }
+  }
+  return false;
 }
 
 /**
- * Coupe l'ancien Vite sur le port, relance avec --force (cache deps invalidé).
+ * Démarre Vite si besoin. Avec force=true : tue le port et relance avec --force (cache deps invalidé).
+ * Sans force : réutilise le serveur déjà actif, ou démarre sans tuer.
  */
-export async function ensureFreshDevServer(baseUrl, { root, force = true } = {}) {
+export async function ensureFreshDevServer(baseUrl, { root, force = false } = {}) {
   const port = new URL(baseUrl).port || "5173";
 
   if (force) {
     console.log(`\n♻️   Redémarrage serveur Vite (port ${port})…`);
     await killPort(port);
   } else if (await isServerUp(baseUrl)) {
-    console.log(`\n✓  Serveur déjà actif (${baseUrl})`);
+    console.log(`\n✓  Serveur déjà actif (${baseUrl}) — réutilisation`);
     return;
   }
 
-  console.log(`🚀  Démarrage Vite sur ${baseUrl}…`);
+  console.log(`\n🚀  Démarrage Vite sur ${baseUrl}…`);
   const args = ["run", "dev:site", "--", "--port", port, "--strictPort"];
   if (force) args.push("--force");
 

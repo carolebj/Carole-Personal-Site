@@ -4,9 +4,9 @@
  * Usage :
  *   npm run cms:verify
  *   node --env-file=.env.local scripts/verify-dashboard.mjs --skip-seed
- *   node --env-file=.env.local scripts/verify-dashboard.mjs --no-fresh --no-open
+ *   node --env-file=.env.local scripts/verify-dashboard.mjs --fresh --no-open
  *
- * Par défaut : redémarre Vite (--fresh), ouvre le navigateur (--open), affiche les URLs.
+ * Par défaut : réutilise Vite s'il tourne déjà ; --fresh pour tuer le port et invalider le cache deps.
  */
 
 import { spawn } from "child_process";
@@ -27,7 +27,7 @@ const BASE_URL = resolveBaseUrl();
 const email = process.env.CMS_SEED_EMAIL;
 const password = process.env.CMS_SEED_PASSWORD;
 const skipSeed = process.argv.includes("--skip-seed");
-const fresh = !process.argv.includes("--no-fresh");
+const fresh = process.argv.includes("--fresh");
 const shouldOpen = !process.argv.includes("--no-open");
 const openAll = process.argv.includes("--open-all");
 const openPath = resolveOpenPath();
@@ -223,6 +223,15 @@ try {
   } else {
     console.log("⏭️   Seed ignoré (--skip-seed)");
   }
+
+  await new Promise((resolve, reject) => {
+    const child = spawn("node", ["scripts/ensure-playwright.mjs"], {
+      cwd: ROOT,
+      stdio: "inherit",
+      env: process.env,
+    });
+    child.on("exit", (code) => (code === 0 ? resolve() : reject(new Error(`playwright setup exit ${code}`))));
+  });
 
   await ensureFreshDevServer(BASE_URL, { root: ROOT, force: fresh });
   await verifyDashboard();
