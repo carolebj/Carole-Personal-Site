@@ -63,6 +63,12 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
 - **Bug fixed**: `body` is plain localized text, not PortableText. It was being passed to `<PortableText>` on the public blog page **and** the home `manifesto`/`about` sections (broken render). Types are now honest (`body?: LocalizedValue`); `Home.tsx` renders paragraphs via `bodyToParagraphs`.
 - **Verification**: `scripts/verify-dashboard.mjs` now exercises the full create → preview → publish flow with cleanup. Run `npm run cms:verify`.
 
+### Dashboard polish — delete flow & CMS parity (2026-06-10)
+- **Delete safety**: confirm dialog, optimistic UI with rollback + error toast (mirrors `saveDoc`). `removeDoc` / `persistDoc` call `clearCmsCache(type)` so the public site refetches after writes.
+- **Empty collections**: `useCmsCollection` sets `usingCms: true` when Supabase fetch succeeds even if `[]` — prevents i18n resurrection after deleting all items.
+- **Content parity fixes**: Footer reads `siteSettings` flat social fields + CMS services; Home uses CMS hero portrait and about image; Readings uses CMS book cover URLs. `CmsSiteSettings` typed with `instagram` / `linkedin`.
+- **Admin UI**: collection rows `items-start`, editor toolbar wraps, localized list delete button alignment.
+
 ### Public Site Data Layer
 - Hook file: `src/cms/cmsContent.ts` — exports `useCmsCollection(type, fallback)`, `useCmsSingleton(type, fallback)`, and `cmsImageUrl(image)`.
 - These hooks fetch from Supabase (public RLS read) and fall back to i18n local data when Supabase returns nothing.

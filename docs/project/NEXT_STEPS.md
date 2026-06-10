@@ -40,10 +40,23 @@
   `scripts/verify-dashboard.mjs` (crée un brouillon, prévisualise, publie, puis
   nettoie). `npm run cms:verify` → `🎉 Vérification dashboard OK`.
 
-### Priorité 2 — Polissage dashboard
-- [ ] Repasser sur les **soucis d'alignement** signalés dans les listes/formulaires.
-- [ ] Confirmer que **tout ce qui est sur le site est éditable** depuis le dashboard (parité contenu site ↔ dashboard, plus de dépendance i18n hors fallback).
-- [ ] Suppression depuis le dashboard → vérifier la répercussion propre côté site public.
+### Priorité 2 — Polissage dashboard ✅ (faite 2026-06-10)
+- [x] **Alignements** : lignes de liste `items-start`, toolbar éditeur en `flex-wrap`,
+  aide des champs empilée sur mobile, bouton supprimer des listes localisées recentré.
+- [x] **Parité contenu** (principaux écarts corrigés) :
+  - Footer lit `siteSettings.instagram` / `linkedin` / `contactEmail` et les services
+    depuis Supabase (plus seulement i18n).
+  - Home utilise `hero.portrait` et `about.image` du CMS (fallback assets locaux).
+  - Lectures & références utilise `book.image` du CMS pour les couvertures.
+  - Collections Supabase vides ne retombent plus sur i18n (`usingCms` même si `[]`).
+- [x] **Suppression** : confirmation, rollback + toast en cas d'erreur, invalidation
+  du cache public (`clearCmsCache`) après save/delete.
+
+### Priorité 2 — Reste optionnel 🔜
+- [ ] Titres de section Home (services, témoignages, contact) éditables via CMS.
+- [ ] Page `/about` et en-tête CV encore 100 % i18n.
+- [ ] Collection `category` orpheline (Blog n'en dépend pas).
+- [ ] SEO depuis `siteSettings`.
 
 ### Priorité 3 — Hygiène / finition
 - [ ] Décider du sort de `NEXT_STEPS.md` (reporter dans `MEMORY.md` puis supprimer).
