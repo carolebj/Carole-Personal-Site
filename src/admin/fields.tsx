@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import {
   PlusIcon,
   TrashIcon,
-  LanguageIcon,
   DocumentDuplicateIcon,
   PhotoIcon,
   XMarkIcon,
@@ -60,9 +59,6 @@ function LocalizedInput({
   const en = value?.en ?? "";
 
   const copyFr = () => onChange({ fr, en: fr });
-  // Demo translation: mirrors FR into EN. In production this calls the
-  // existing Cloudflare translation worker (/api/translate).
-  const translate = () => onChange({ fr, en: fr });
 
   const Field = multiline ? "textarea" : "input";
 
@@ -93,14 +89,6 @@ function LocalizedInput({
               title="Copier le texte FR"
             >
               <DocumentDuplicateIcon className="size-3.5" /> Copier FR
-            </button>
-            <button
-              type="button"
-              onClick={translate}
-              className="inline-flex items-center gap-1 rounded px-1.5 py-1 text-[11px] text-text-accent hover:bg-surface-accent-muted"
-              title="Traduire automatiquement (démo)"
-            >
-              <LanguageIcon className="size-3.5" /> Traduire
             </button>
           </div>
         </div>

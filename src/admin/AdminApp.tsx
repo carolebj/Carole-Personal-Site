@@ -433,6 +433,7 @@ export default function AdminApp() {
               )
             }
             onSave={(doc) => saveDoc(currentType.name, doc)}
+            notify={pushToast}
           />
         )}
       </main>

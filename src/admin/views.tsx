@@ -13,6 +13,7 @@ import type { AnyDoc } from "./store";
 import { contentTypes, type ContentType } from "./schema";
 import { TypeIcon } from "./iconMap";
 import { FieldRenderer } from "./fields";
+import { TranslateMenu } from "./TranslateMenu";
 import BlogPreview from "./BlogPreview";
 
 function getByPath(obj: unknown, path: string): unknown {
@@ -143,7 +144,14 @@ export function CollectionList({
             {docs.map((doc) => (
               <li key={doc.id} className="flex items-center gap-3 px-5 py-3.5">
                 <button onClick={() => onEdit(doc)} className="flex flex-1 flex-col items-start text-left">
-                  <span className="text-sm font-medium text-text-primary">{docTitle(type, doc)}</span>
+                  <span className="flex items-center gap-2 text-sm font-medium text-text-primary">
+                    {docTitle(type, doc)}
+                    {doc.status === "draft" ? (
+                      <span className="inline-flex items-center rounded-full border border-border-subtle bg-surface-page-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-text-muted">
+                        Brouillon
+                      </span>
+                    ) : null}
+                  </span>
                   {docSubtitle(type, doc) ? (
                     <span className="text-xs text-text-muted">{docSubtitle(type, doc)}</span>
                   ) : null}
@@ -178,16 +186,20 @@ export function DocumentEditor({
   doc,
   onBack,
   onSave,
+  notify,
 }: {
   type: ContentType;
   doc: AnyDoc;
   onBack: () => void;
   onSave: (doc: AnyDoc) => Promise<void>;
+  notify: (kind: "success" | "error", message: string) => void;
 }) {
   const [draft, setDraft] = useState<AnyDoc>(doc);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [mode, setMode] = useState<"edit" | "preview">("edit");
   const canPreview = type.name === "blogPost";
+  const isBlog = type.name === "blogPost";
+  const isPublished = draft.status !== "draft";
   const isDirty = useMemo(() => !docsEqual(draft, doc), [draft, doc]);
   const canSave = isDirty && saveState !== "saving";
 
@@ -233,6 +245,25 @@ export function DocumentEditor({
     }
   };
 
+  // Publishing also persists any pending edits, so the live post is never out
+  // of sync with what the editor sees.
+  const setPublishStatus = async (nextStatus: "draft" | "published") => {
+    if (saveState === "saving") return;
+    const nextDoc: AnyDoc = { ...draft, status: nextStatus };
+    if (nextStatus === "published" && !nextDoc.publishedAt) {
+      nextDoc.publishedAt = new Date().toISOString().slice(0, 10);
+    }
+    setDraft(nextDoc);
+    setSaveState("saving");
+    try {
+      await onSave(nextDoc);
+      setSaveState("saved");
+      window.setTimeout(() => setSaveState("idle"), 2000);
+    } catch {
+      setSaveState("idle");
+    }
+  };
+
   return (
     <div className={cn("mx-auto w-full px-6 py-8", mode === "preview" ? "max-w-5xl" : "max-w-3xl")}>
       <div className="sticky top-0 z-10 -mx-6 mb-6 flex items-center justify-between gap-4 border-b border-border-subtle bg-surface-page/90 px-6 py-3 backdrop-blur">
@@ -243,6 +274,35 @@ export function DocumentEditor({
           <ArrowLeftIcon className="size-4" /> {type.kind === "collection" ? type.label : "Accueil"}
         </button>
         <div className="flex items-center gap-3">
+          {isBlog ? (
+            <div className="flex items-center gap-2">
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium",
+                  isPublished
+                    ? "bg-surface-accent-muted text-text-accent"
+                    : "border border-border-subtle bg-surface-page-muted text-text-muted",
+                )}
+                title={isPublished ? "Visible sur le site" : "Non visible sur le site"}
+              >
+                <span className="size-1.5 rounded-full bg-current" />
+                {isPublished ? "Publié" : "Brouillon"}
+              </span>
+              <button
+                type="button"
+                onClick={() => setPublishStatus(isPublished ? "draft" : "published")}
+                disabled={saveState === "saving"}
+                className={cn(
+                  "inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-60",
+                  isPublished
+                    ? "border border-border-subtle text-text-muted hover:bg-surface-page-muted hover:text-text-primary"
+                    : "bg-action-strong text-text-on-strong hover:bg-action-strong-hover",
+                )}
+              >
+                {isPublished ? "Repasser en brouillon" : "Publier"}
+              </button>
+            </div>
+          ) : null}
           {isDirty ? (
             <span className="hidden text-xs text-text-accent sm:inline" role="status" aria-live="polite">
               Modifications non enregistrées
@@ -273,6 +333,17 @@ export function DocumentEditor({
                 <EyeIcon className="size-4" /> Aperçu
               </button>
             </div>
+          ) : null}
+          {mode === "edit" ? (
+            <TranslateMenu
+              draft={draft}
+              fields={type.fields}
+              onApply={(next) => {
+                setDraft(next);
+                setSaveState("idle");
+              }}
+              notify={notify}
+            />
           ) : null}
           <button
             onClick={save}
