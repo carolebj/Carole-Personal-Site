@@ -15,13 +15,30 @@
 - **Aperçu blog** dans le dashboard : `src/admin/BlogPreview.tsx`.
 - **Workflow agent autonome** : `npm run cms:seed`, `cms:verify`, `cms:preview` (navigateur interne par défaut).
 - 4 commits poussés sur `dev` + vérif end-to-end OK.
+- **Base sécurité** : `../SECURITY.md`, scan de secrets (`npm run security:scan` + hook pre-commit), `.gitignore` durci, audit Git propre.
+- **`/api/translate` authentifié** (session Supabase requise) + **bouton « Traduire » câblé** (`src/admin/translate.ts`).
+- **Docs de guidage réorganisés** sous `docs/` (`AGENTS.md` à la racine sert de routeur).
 
 ## À faire (prochaine session) 🔜
 
-### Priorité 1 — Blog
-- [ ] **Versionnage des articles** (non implémenté). Décider : historique simple (snapshots) vs brouillon/publié vs autosave. → impacte `supabase/schema.sql` (table `*_revisions` ou champ `status`/`published_at`) et l'éditeur.
-- [ ] Finaliser l'**aperçu article** : garantir un rendu strictement identique à la page de lecture publique (`BlogArticle.tsx`) depuis `BlogPreview.tsx`.
-- [ ] Vérifier le flux complet création → aperçu → publication d'un article.
+### Priorité 1 — Blog ✅ (faite 2026-06-10)
+- [x] **Versionnage = brouillon/publié** (décision retenue). Pas de migration SQL :
+  le `status` (`"draft" | "published"`) vit dans le JSONB `data` de
+  `cms_documents`. Nouveaux articles créés en **brouillon** ; bouton
+  **Publier / Repasser en brouillon** + badge de statut dans l'éditeur, badge
+  « Brouillon » dans la liste. Les pages publiques (`Blog`, `BlogArticle`)
+  filtrent via `isPublishedPost` (un doc sans `status` reste public — rétrocompat).
+  Limite connue : la RLS publique laisse lire toutes les lignes ; les brouillons
+  sont filtrés **côté client** (acceptable pour ce portfolio, pas de fuite UI).
+- [x] **Aperçu = page publique** : rendu unifié via le composant partagé
+  `src/app/pages/BlogArticleContent.tsx`, utilisé par `BlogArticle.tsx` (public)
+  et `BlogPreview.tsx` (dashboard). Au passage, **bug corrigé** : le `body` est
+  du texte simple (paragraphes séparés par lignes vides), il était rendu via
+  `PortableText` (attendait des blocs) → cassé sur le site public **et** sur la
+  home (`manifesto`/`about`). Types `body` rendus honnêtes (`LocalizedValue`).
+- [x] **Flux création → aperçu → publication** vérifié et **automatisé** dans
+  `scripts/verify-dashboard.mjs` (crée un brouillon, prévisualise, publie, puis
+  nettoie). `npm run cms:verify` → `🎉 Vérification dashboard OK`.
 
 ### Priorité 2 — Polissage dashboard
 - [ ] Repasser sur les **soucis d'alignement** signalés dans les listes/formulaires.
@@ -50,4 +67,4 @@ Identifiants seed/verify : `.env.local` (`CMS_SEED_EMAIL` / `CMS_SEED_PASSWORD`)
 - Types contenu : `src/cms/types.ts` (`CmsImage`, `CmsBlogPost`, etc.).
 - Seed/outillage : `scripts/seed-supabase.mjs`, `scripts/verify-dashboard.mjs`, `scripts/dev-utils.mjs`.
 - Schéma DB : `supabase/schema.sql`.
-- Guides : `GUIDELINE.md`, `MEMORY.md`, `AGENT_DEV.md`.
+- Guides : `../GUIDELINE.md`, `MEMORY.md`, `../workflows/AGENT_DEV.md`, `../SECURITY.md`.

@@ -38,7 +38,7 @@ Sanity Studio has been **replaced** by a fully custom admin dashboard backed by 
 - Media assets in a `media` Storage bucket (public read, authenticated write).
 - Database schema and RLS policies: `supabase/schema.sql`.
 - Seed: `npm run cms:seed` (reads `CMS_SEED_EMAIL` / `CMS_SEED_PASSWORD` from `.env.local`).
-- Agent verification: `npm run cms:verify` — seed, fresh Vite restart, Playwright checks; then agent opens **one** URL in the **current agent tool's built-in browser** by default (Cursor → MCP `browser_navigate`; Codex/Claude Code → their own preview). System browser (Chrome/Safari) is a secondary option, used only when there's a specific benefit. Default preview path `/dashboard`; URL also written to `.cursor/preview.url`. See `AGENT_DEV.md`.
+- Agent verification: `npm run cms:verify` — seed, fresh Vite restart, Playwright checks; then agent opens **one** URL in the **current agent tool's built-in browser** by default (Cursor → MCP `browser_navigate`; Codex/Claude Code → their own preview). System browser (Chrome/Safari) is a secondary option, used only when there's a specific benefit. Default preview path `/dashboard`; URL also written to `.cursor/preview.url`. See `../workflows/AGENT_DEV.md`.
 - Use `VITE_SUPABASE_PUBLISHABLE_KEY` (new Supabase recommended key); `VITE_SUPABASE_ANON_KEY` is accepted as fallback for older setups.
 
 ### Content Types
@@ -54,6 +54,14 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
 - Save affordances follow Nielsen-style visibility: **Enregistrer** disabled when nothing changed, active when dirty, spinner while saving, toast on success/error, `Modifications non enregistrées` label, confirm before leaving with unsaved edits.
 - Initial content load uses skeleton placeholders instead of a blank wait state.
 - Carnet visuals are seeded from existing site assets (`public/cms/resources/` + Supabase Storage upload in `scripts/seed-supabase.mjs`). Book covers use Google Books image URLs.
+
+### Blog — Draft/Published + Shared Reader (2026-06-10)
+- **Editorial status** lives in the JSONB `data` (no SQL migration): `status: "draft" | "published"`. A doc **without** `status` is treated as published (backward compatible with pre-draft seed content). New blog posts are created as drafts (`emptyDoc` in `src/admin/store.ts`).
+- **Editor** (`src/admin/views.tsx` `DocumentEditor`): blogPost shows a status pill + **Publier / Repasser en brouillon** button (publishing also persists pending edits and stamps `publishedAt` if empty). `CollectionList` shows a **Brouillon** badge.
+- **Public filtering**: `isPublishedPost` in `src/cms/types.ts`; `Blog.tsx` and `BlogArticle.tsx` filter drafts before mapping to view models. Known limit: public RLS reads all rows, so drafts are filtered client-side (no UI leak; acceptable for this portfolio).
+- **Shared reader**: `src/app/pages/BlogArticleContent.tsx` renders the article identically for the public page (`BlogArticle`, `interactive`) and the dashboard preview (`BlogPreview`). It accepts a plain-text `body` (paragraphs split on blank lines via `bodyToParagraphs`), PortableText blocks (legacy), or `sections` (i18n fallback).
+- **Bug fixed**: `body` is plain localized text, not PortableText. It was being passed to `<PortableText>` on the public blog page **and** the home `manifesto`/`about` sections (broken render). Types are now honest (`body?: LocalizedValue`); `Home.tsx` renders paragraphs via `bodyToParagraphs`.
+- **Verification**: `scripts/verify-dashboard.mjs` now exercises the full create → preview → publish flow with cleanup. Run `npm run cms:verify`.
 
 ### Public Site Data Layer
 - Hook file: `src/cms/cmsContent.ts` — exports `useCmsCollection(type, fallback)`, `useCmsSingleton(type, fallback)`, and `cmsImageUrl(image)`.
@@ -111,6 +119,38 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
 - Public pages are route-lazy-loaded in `src/app/routes.tsx`.
 - The Cal.com booking widget is isolated in `src/app/components/CalMeetingEmbed.tsx` and lazy-loaded.
 - Design tokens: `src/styles/tokens.css` (primitives, semantics, dark-mode); `src/styles/global.css` (base styles).
+
+## Repo Organization & Security (2026-06-10)
+
+- **Guidance docs moved under `docs/`.** Entry point stays `AGENTS.md` at repo
+  root (auto-discovered by Cursor/Codex/opencode/Claude Code) and acts as a
+  router. Layout:
+  - `docs/GUIDELINE.md`, `docs/SECURITY.md`
+  - `docs/workflows/AGENT_DEV.md`
+  - `docs/project/MEMORY.md`, `docs/project/NEXT_STEPS.md`
+  - `README.md` and `ATTRIBUTIONS.md` stay at root.
+- **Security model documented in `docs/SECURITY.md`** (secret locations, no
+  secret behind a `VITE_` prefix, rotation, incident runbook). Git history is
+  clean; `.env.local` is gitignored.
+- **Secret-scan guardrail**: `npm run security:scan` + a versioned pre-commit
+  hook (`scripts/git-hooks/`, scanner `scripts/check-secrets.mjs`). Install once
+  per clone with `npm run security:install-hooks`. Blocks commits containing
+  secrets or `.env*` files (except `.env.example`).
+- **`/api/translate` is now authenticated**: it requires a valid Supabase
+  session (`Authorization: Bearer <access_token>`) before calling the
+  translation service; CORS allows the `Authorization` header
+  (`TRANSLATE_ALLOWED_ORIGIN` optional). The OpenAI key never reaches the
+  browser (flow: client → endpoint → Cloudflare Worker/AI Gateway → OpenAI).
+- **Document-level translation control** (`src/admin/TranslateMenu.tsx` +
+  `src/admin/translateDoc.ts`): split button in the editor toolbar. Main click =
+  translate **all filled** FR localized fields; caret = **targeted** dropdown to
+  translate one field. A **confirmation modal** (mentions ChatGPT cost + field
+  count) gates every run — token economy guard against accidental clicks. Calls
+  the authenticated `/api/translate` (so only works deployed; disabled in demo
+  mode / when Supabase isn't configured). The per-field "Traduire" button was
+  removed; per-field "Copier FR" stays. Results surfaced via the toast system.
+- **Still required (manual, dashboards)**: OpenAI monthly budget/hard limit and
+  Cloudflare AI Gateway rate limit (see `docs/SECURITY.md` §5).
 
 ## Update Rule
 
