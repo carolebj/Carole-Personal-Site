@@ -68,7 +68,9 @@ export default function Blog() {
     }
 
     const index = posts.findIndex((item) => item.slug === slug);
-    return blogImages[index % blogImages.length] ?? abstractEditorialImage;
+    return usingCms
+      ? undefined
+      : blogImages[index % blogImages.length] ?? abstractEditorialImage;
   };
 
   return (
@@ -96,12 +98,14 @@ export default function Blog() {
             className="relative h-[25rem] overflow-hidden rounded-md bg-[#ffd9e4]"
             style={{ viewTransitionName: `blog-image-${featuredPost.slug}` } as React.CSSProperties}
           >
-            <img
-              src={getPostImage(featuredPost.slug)}
-              alt=""
-              aria-hidden
-              className="public-media-outline h-full w-full object-cover transition duration-700 group-hover:scale-[1.035]"
-            />
+            {getPostImage(featuredPost.slug) ? (
+              <img
+                src={getPostImage(featuredPost.slug)}
+                alt=""
+                aria-hidden
+                className="public-media-outline h-full w-full object-cover transition duration-700 group-hover:scale-[1.035]"
+              />
+            ) : null}
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(28,27,27,0)_28%,rgba(28,27,27,0.72)_100%)]" />
             <div className="absolute bottom-5 left-5 right-5 text-white">
               <p className="text-[12px] font-semibold uppercase tracking-[2px] text-white/78">
@@ -194,14 +198,16 @@ export default function Blog() {
                 className="h-56 overflow-hidden bg-[#ffd9e4] sm:h-full"
                 style={{ viewTransitionName: `blog-image-${post.slug}` } as React.CSSProperties}
               >
-                <img
-                  src={getPostImage(post.slug)}
-                  alt=""
-                  aria-hidden
-                  loading="lazy"
-                  decoding="async"
-                  className="public-media-outline h-full w-full object-cover transition duration-700 group-hover:scale-[1.04]"
-                />
+                {getPostImage(post.slug) ? (
+                  <img
+                    src={getPostImage(post.slug)}
+                    alt=""
+                    aria-hidden
+                    loading="lazy"
+                    decoding="async"
+                    className="public-media-outline h-full w-full object-cover transition duration-700 group-hover:scale-[1.04]"
+                  />
+                ) : null}
               </div>
               <div className="p-6">
                 <div className="flex flex-wrap gap-3 text-[11px] font-semibold uppercase tracking-[1.6px] text-text-accent dark:text-text-accent">

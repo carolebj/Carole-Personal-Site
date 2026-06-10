@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toBlogPostViewModel } from "../../cms/adapters";
 import { cmsImageUrl, useCmsCollection } from "../../cms/cmsContent";
-import { isPublishedPost, type CmsBlogPost, type CmsImage } from "../../cms/types";
+import { isPublishedPost, localized, type CmsBlogPost, type CmsImage } from "../../cms/types";
 import type { PortableTextBlock } from "@portabletext/types";
 import abstractAuditImage from "../../assets/blog/blog-abstract-audit.svg";
 import abstractContentImage from "../../assets/blog/blog-abstract-content.svg";
@@ -52,7 +52,9 @@ export default function BlogArticle() {
   const post = posts.find((item) => item.slug === slug) ?? posts[0];
   const postIndex = Math.max(0, posts.findIndex((item) => item.slug === post.slug));
   const cmsImage = cmsImageUrl(post.coverImage);
-  const postImage = cmsImage ?? blogImages[postIndex % blogImages.length] ?? abstractEditorialImage;
+  const postImage = usingCms
+    ? cmsImage
+    : blogImages[postIndex % blogImages.length] ?? abstractEditorialImage;
   const seoOverride = useMemo(
     () =>
       post
@@ -88,6 +90,7 @@ export default function BlogArticle() {
             body: post.body,
             sections: post.sections,
             imageSrc: postImage,
+            imageAlt: post.coverImage ? localized(post.coverImage.alt, i18n.language) : "",
           }}
           labels={{
             backToBlog: t("blog.backToBlog"),

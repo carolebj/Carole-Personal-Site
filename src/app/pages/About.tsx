@@ -106,7 +106,7 @@ export default function About() {
     () => toAboutPageViewModel(cmsAbout, locale, usingCms, i18nContent),
     [cmsAbout, locale, usingCms, i18nContent],
   );
-  const portraitSrc = cmsImageUrl(cmsAbout?.image) ?? workingImage;
+  const portraitSrc = usingCms ? cmsImageUrl(cmsAbout?.image) : workingImage;
 
   return (
     <main className="bg-surface-page text-text-primary">

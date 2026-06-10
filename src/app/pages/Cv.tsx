@@ -8,7 +8,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toCvHeaderViewModel, toCvViewModel } from "../../cms/adapters";
 import { useCmsCollection, useCmsSingleton } from "../../cms/cmsContent";
-import type { CmsCvEntry, CmsCvPage } from "../../cms/types";
+import { localized, type CmsCvEntry, type CmsCvPage } from "../../cms/types";
 import { SectionEyebrow } from "../components/SectionEyebrow";
 import { PAGE_MAIN } from "../components/layout/publicPage";
 
@@ -37,7 +37,32 @@ export default function Cv() {
   const locale = i18n.language;
   const { data: cmsEntries, usingCms } = useCmsCollection<CmsCvEntry>("cvEntry", []);
   const { data: cmsCvPage, usingCms: usingCmsHeader } = useCmsSingleton<CmsCvPage | null>("cvPage", null);
-  const contacts = t("cv.contacts", { returnObjects: true }) as CvContact[];
+  const fallbackContacts = t("cv.contacts", { returnObjects: true }) as CvContact[];
+  const contacts = useMemo<CvContact[]>(() => {
+    if (!usingCmsHeader || !cmsCvPage?.contacts) return fallbackContacts;
+    const cmsContacts = cmsCvPage?.contacts;
+    return [
+      {
+        label: fallbackContacts[0]?.label ?? "Email",
+        value: cmsContacts?.email ?? "",
+        href: cmsContacts?.email ? `mailto:${cmsContacts.email}` : undefined,
+      },
+      {
+        label: fallbackContacts[1]?.label ?? "Téléphone",
+        value: cmsContacts?.phone ?? "",
+        href: cmsContacts?.phone ? `tel:${cmsContacts.phone.replace(/[^\d+]/g, "")}` : undefined,
+      },
+      {
+        label: fallbackContacts[2]?.label ?? "Localisation",
+        value: localized(cmsContacts?.location, locale),
+      },
+      {
+        label: fallbackContacts[3]?.label ?? "Portfolio",
+        value: localized(cmsContacts?.portfolioLabel, locale),
+        href: cmsContacts?.portfolioUrl,
+      },
+    ].filter((contact) => contact.value);
+  }, [cmsCvPage?.contacts, fallbackContacts, locale, usingCmsHeader]);
   const cvHeader = useMemo(
     () =>
       toCvHeaderViewModel(cmsCvPage, locale, usingCmsHeader, {

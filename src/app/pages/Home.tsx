@@ -464,60 +464,66 @@ export default function Home() {
   const servicesSectionData = cmsHome?.servicesSection;
   const testimonialsSectionData = cmsHome?.testimonialsSection;
   const contactSectionData = cmsHome?.contactSection;
-  const heroPortraitSrc = cmsImageUrl(heroData?.portrait) ?? portraitImage;
-  const aboutImageSrc = cmsImageUrl(aboutData?.image) ?? aboutSectionImage;
+  const heroPortraitSrc = usingCms ? cmsImageUrl(heroData?.portrait) : portraitImage;
+  const heroPortraitAlt = usingCms
+    ? localized(heroData?.portrait?.alt, locale)
+    : t("hero.imageAlt");
+  const aboutImageSrc = usingCms ? cmsImageUrl(aboutData?.image) : aboutSectionImage;
+  const aboutImageAlt = usingCms
+    ? localized(aboutData?.image?.alt, locale)
+    : t("about.imageAlt");
 
-  const heroTitle = usingCms && heroData?.title ? localized(heroData.title, locale) : t("hero.titleStart");
-  const heroAccent = usingCms && heroData?.accent ? localized(heroData.accent, locale) : t("hero.titleAccent");
-  const heroTitleEnd = usingCms && heroData?.titleEnd ? localized(heroData.titleEnd, locale) : t("hero.titleEnd");
+  const heroTitle = usingCms ? localized(heroData?.title, locale) : t("hero.titleStart");
+  const heroAccent = usingCms ? localized(heroData?.accent, locale) : t("hero.titleAccent");
+  const heroTitleEnd = usingCms ? localized(heroData?.titleEnd, locale) : t("hero.titleEnd");
   const heroAccentIndex =
     usingCms && heroTitle && heroAccent
       ? heroTitle.toLocaleLowerCase().indexOf(heroAccent.toLocaleLowerCase())
       : -1;
 
   const servicesTitleAccent =
-    usingCms && servicesSectionData?.titleAccent
-      ? localized(servicesSectionData.titleAccent, locale)
+    usingCms
+      ? localized(servicesSectionData?.titleAccent, locale)
       : t("services.titleAccent");
   const servicesTitleRest =
-    usingCms && servicesSectionData?.titleRest
-      ? localized(servicesSectionData.titleRest, locale)
+    usingCms
+      ? localized(servicesSectionData?.titleRest, locale)
       : t("services.titleRest");
   const servicesSubtitle =
-    usingCms && servicesSectionData?.subtitle
-      ? localized(servicesSectionData.subtitle, locale)
+    usingCms
+      ? localized(servicesSectionData?.subtitle, locale)
       : t("services.subtitle");
   const testimonialsEyebrow =
-    usingCms && testimonialsSectionData?.eyebrow
-      ? localized(testimonialsSectionData.eyebrow, locale)
+    usingCms
+      ? localized(testimonialsSectionData?.eyebrow, locale)
       : t("testimonials.eyebrow");
   const testimonialsTitleStart =
-    usingCms && testimonialsSectionData?.titleStart
-      ? localized(testimonialsSectionData.titleStart, locale)
+    usingCms
+      ? localized(testimonialsSectionData?.titleStart, locale)
       : t("testimonials.titleStart");
   const testimonialsTitleAccent =
-    usingCms && testimonialsSectionData?.titleAccent
-      ? localized(testimonialsSectionData.titleAccent, locale)
+    usingCms
+      ? localized(testimonialsSectionData?.titleAccent, locale)
       : t("testimonials.titleAccent");
   const contactEyebrow =
-    usingCms && contactSectionData?.eyebrow
-      ? localized(contactSectionData.eyebrow, locale)
+    usingCms
+      ? localized(contactSectionData?.eyebrow, locale)
       : t("contactSection.eyebrow");
   const contactTitleStart =
-    usingCms && contactSectionData?.titleStart
-      ? localized(contactSectionData.titleStart, locale)
+    usingCms
+      ? localized(contactSectionData?.titleStart, locale)
       : t("contactSection.titleStart");
   const contactTitleAccent =
-    usingCms && contactSectionData?.titleAccent
-      ? localized(contactSectionData.titleAccent, locale)
+    usingCms
+      ? localized(contactSectionData?.titleAccent, locale)
       : t("contactSection.titleAccent");
   const contactDescription =
-    usingCms && contactSectionData?.description
-      ? localized(contactSectionData.description, locale)
+    usingCms
+      ? localized(contactSectionData?.description, locale)
       : t("contactSection.description");
   const contactMeetingLink =
-    usingCms && contactSectionData?.meetingLink
-      ? localized(contactSectionData.meetingLink, locale)
+    usingCms
+      ? localized(contactSectionData?.meetingLink, locale)
       : t("contactSection.meetingLink");
 
   const services = useMemo(() => {
@@ -539,12 +545,12 @@ export default function Home() {
   const circularTestimonials = useMemo(
     () =>
       testimonials.map((testimonial, index) => {
-        let imgSrc = testimonialImages[index] ?? testimonialImages[0];
-        const portraitUrl = cmsImageUrl(testimonial.portrait);
-        if (portraitUrl) imgSrc = portraitUrl;
-        return { ...testimonial, src: imgSrc };
+        const imgSrc = usingCmsTestimonials
+          ? cmsImageUrl(testimonial.portrait)
+          : testimonialImages[index] ?? testimonialImages[0];
+        return { ...testimonial, src: imgSrc ?? "" };
       }),
-    [testimonials]
+    [testimonials, usingCmsTestimonials]
   );
   const [visualTuning, setVisualTuning] = useState(DEFAULT_VISUAL_TUNING);
   const [aboutVideoCanPlayThrough, setAboutVideoCanPlayThrough] = useState(false);
@@ -613,26 +619,20 @@ export default function Home() {
               )}
             </h1>
             <p className="mt-6 max-w-[528px] text-[16px] leading-7 text-text-secondary dark:text-text-secondary md:text-[18px] md:leading-8">
-              {usingCms && heroData?.description
-                ? localized(heroData.description, locale)
-                : t("hero.description")}
+              {usingCms ? localized(heroData?.description, locale) : t("hero.description")}
             </p>
             <div className="mt-8 grid w-full max-w-[25rem] grid-cols-1 gap-3 min-[460px]:flex min-[460px]:max-w-none min-[460px]:flex-wrap">
               <Link
                 to="/contact"
                 className="inline-flex h-10 min-w-0 items-center justify-center whitespace-nowrap rounded-full bg-[#1c1b1b] px-6 text-center text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#fcf9f8] shadow-[0_14px_32px_rgba(28,27,27,0.13)] transition hover:bg-[#854d63] dark:bg-[#f8f1ec] dark:text-[#1c1415] dark:hover:bg-[#f0adc4] min-[460px]:min-w-[144px] md:h-[52px] md:min-w-[176px] md:px-8 md:tracking-[1px]"
               >
-                {usingCms && heroData?.primaryCta
-                  ? localized(heroData.primaryCta, locale)
-                  : t("hero.primaryCta")}
+                {usingCms ? localized(heroData?.primaryCta, locale) : t("hero.primaryCta")}
               </Link>
               <Link
                 to="/services"
                 className="inline-flex h-10 min-w-0 items-center justify-center whitespace-nowrap rounded-full border border-[#1c1b1b]/20 px-6 text-center text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-text-primary transition hover:border-[#854d63] hover:bg-[#ffd9e4]/44 hover:text-text-accent dark:border-white/20 dark:text-text-primary dark:hover:border-[#f0adc4] dark:hover:bg-[#854d63]/30 dark:hover:text-[#f0adc4] min-[460px]:min-w-[144px] md:h-[52px] md:min-w-[172px] md:px-8 md:tracking-[1px]"
               >
-                {usingCms && heroData?.secondaryCta
-                  ? localized(heroData.secondaryCta, locale)
-                  : t("hero.secondaryCta")}
+                {usingCms ? localized(heroData?.secondaryCta, locale) : t("hero.secondaryCta")}
               </Link>
             </div>
           </motion.div>
@@ -677,7 +677,7 @@ export default function Home() {
             <div className="organic-shape relative z-10 aspect-[4/5] w-[74%] max-w-[330px] overflow-hidden bg-[#fbaa51] shadow-[0_24px_60px_rgba(28,27,27,0.18)] sm:max-w-[350px] lg:max-w-[360px]">
               <img
                 src={heroPortraitSrc}
-                alt={t("hero.imageAlt")}
+                alt={heroPortraitAlt}
                 className="h-full w-full object-contain object-bottom"
                 style={{
                   objectPosition: `50% ${visualTuning.heroObjectY}%`,
@@ -715,14 +715,10 @@ export default function Home() {
       >
         <div className="relative mx-auto max-w-[48rem] text-center">
           <h2 className="font-serif text-[clamp(2rem,4vw,3.45rem)] leading-[1.04] dark:text-text-primary">
-            {usingCms && manifestoData?.title
-              ? localized(manifestoData.title, locale)
-              : t("manifesto.titleTop")}
+            {usingCms ? localized(manifestoData?.title, locale) : t("manifesto.titleTop")}
             <br />
             <span className="relative isolate inline-block font-liberation-serif italic text-text-accent dark:text-text-accent">
-              {usingCms && manifestoData?.accent
-                ? localized(manifestoData.accent, locale)
-                : !usingCms ? t("manifesto.titleAccent") : null}
+              {usingCms ? localized(manifestoData?.accent, locale) : t("manifesto.titleAccent")}
               <img
                 src={decorativeArc}
                 alt=""
@@ -736,7 +732,7 @@ export default function Home() {
               const paragraphs = usingCms
                 ? bodyToParagraphs(localized(manifestoData?.body, locale))
                 : [];
-              return paragraphs.length > 0
+              return usingCms
                 ? paragraphs.map((paragraph, i) => <p key={i}>{paragraph}</p>)
                 : <><p>{t("manifesto.p1")}</p><p>{t("manifesto.p2")}</p></>;
             })()}
@@ -771,7 +767,7 @@ export default function Home() {
               >
                 <img
                   src={aboutImageSrc}
-                  alt={t("about.imageAlt")}
+                  alt={aboutImageAlt}
                   loading="lazy"
                   decoding="async"
                   className="public-media-outline h-full w-full object-cover [clip-path:inset(0.75%)]"
@@ -810,9 +806,7 @@ export default function Home() {
           </div>
           <div className="lg:self-center">
             <h2 className="text-balance font-serif text-[clamp(2rem,3.7vw,3.55rem)] leading-[1.06] dark:text-text-primary">
-              {usingCms && aboutData?.title
-                ? localized(aboutData.title, locale)
-                : t("about.titleTop")}
+              {usingCms ? localized(aboutData?.title, locale) : t("about.titleTop")}
               {usingCms && aboutData?.accent && (
                 <><br /><span className="italic text-text-accent dark:text-text-accent">
                   {localized(aboutData.accent, locale)}
@@ -829,7 +823,7 @@ export default function Home() {
                 const paragraphs = usingCms
                   ? bodyToParagraphs(localized(aboutData?.body, locale))
                   : [];
-                return paragraphs.length > 0
+                return usingCms
                   ? paragraphs.map((paragraph, i) => <p key={i}>{paragraph}</p>)
                   : <><p>{t("about.p1")}</p><p>{t("about.p2")}</p></>;
               })()}
