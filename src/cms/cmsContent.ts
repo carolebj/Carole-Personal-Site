@@ -86,11 +86,9 @@ export function useCmsCollection<T>(type: string, fallback: T[]): CollectionStat
     fetchType(type)
       .then((rows) => {
         if (cancelled) return;
-        if (rows.length > 0) {
-          setState({ data: rows as T[], loading: false, usingCms: true });
-        } else {
-          setState({ data: fallbackRef.current, loading: false, usingCms: false });
-        }
+        // Supabase is configured and the fetch succeeded: treat CMS as source of
+        // truth even when the collection is empty (e.g. after deleting all items).
+        setState({ data: rows as T[], loading: false, usingCms: true });
       })
       .catch(() => {
         if (!cancelled) {

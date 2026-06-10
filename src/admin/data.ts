@@ -10,6 +10,7 @@
 // (type, doc_id, data), so adding a field never requires a migration.
 
 import { getSupabase } from "../lib/supabase";
+import { clearCmsCache } from "../cms/cmsContent";
 import { contentTypes } from "./schema";
 import {
   loadContent as loadDemoContent,
@@ -124,6 +125,7 @@ export async function persistDoc(type: string, doc: AnyDoc): Promise<void> {
       store[type] = exists ? list.map((d) => (d.id === doc.id ? doc : d)) : [...list, doc];
     }
     saveDemoContent(store);
+    clearCmsCache(type);
     return;
   }
 
@@ -140,6 +142,7 @@ export async function persistDoc(type: string, doc: AnyDoc): Promise<void> {
   if (error) {
     throw new Error(error.message);
   }
+  clearCmsCache(type);
 }
 
 export async function removeDoc(type: string, docId: string): Promise<void> {
@@ -150,12 +153,14 @@ export async function removeDoc(type: string, docId: string): Promise<void> {
       store[type] = (store[type] as AnyDoc[]).filter((d) => d.id !== docId);
       saveDemoContent(store);
     }
+    clearCmsCache(type);
     return;
   }
   const { error } = await sb.from(TABLE).delete().eq("type", type).eq("doc_id", docId);
   if (error) {
     throw new Error(error.message);
   }
+  clearCmsCache(type);
 }
 
 export async function resetDemo(): Promise<ContentStore> {
