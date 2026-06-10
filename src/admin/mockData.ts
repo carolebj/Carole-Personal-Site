@@ -33,6 +33,87 @@ export const seedContent: ContentStore = {
       body: L("Carole Tonoukouen, chargée de communication digitale et social media.", ""),
       image: null,
     },
+    servicesSection: {
+      titleAccent: L("Mes", "My"),
+      titleRest: L("Services", "Services"),
+      subtitle: L(
+        "Des solutions sur mesure pour structurer vos contenus et vos actions de communication.",
+        "Tailored support to structure your content and communication actions.",
+      ),
+    },
+    testimonialsSection: {
+      eyebrow: L("Témoignages", "Testimonials"),
+      titleStart: L("Mots doux de", "Kind words from"),
+      titleAccent: L("mes clients", "my clients"),
+    },
+    contactSection: {
+      eyebrow: L("Entrer en contact", "Get in touch"),
+      titleStart: L("Parlez-moi de", "Tell me what"),
+      titleAccent: L("votre besoin", "you need"),
+      description: L(
+        "Partagez quelques informations sur votre marque, vos canaux ou l'accompagnement recherché. Je vous répondrai avec une prochaine étape claire.",
+        "Share a few details about your brand, your channels, or the support you are looking for. I will get back to you with a clear next step.",
+      ),
+      meetingLink: L("Ou opter pour un rendez-vous", "Or choose to book a call"),
+    },
+  },
+  aboutPage: {
+    id: "aboutPage",
+    hero: {
+      title: L("À propos", "About"),
+      subtitle: L(
+        "Qui je suis, ce que je fais concrètement et la manière dont j'accompagne les marques et les projets.",
+        "Who I am, what I do in practice, and how I support brands and projects.",
+      ),
+    },
+    image: null,
+    imageAlt: L("Carole travaillant sur une communication digitale", "Carole working on digital communication"),
+    identity: {
+      label: L("Qui je suis", "Who I am"),
+      greeting: L("Enchantée, moi c'est Carole Tonoukouen.", "Lovely to meet you. I'm Carole Tonoukouen."),
+      role: L(
+        "Chargée de communication digitale, coordination éditoriale et rédaction",
+        "Digital communications officer, editorial coordination, and writing",
+      ),
+      paragraphs: [
+        L(
+          "Je suis basée à Cotonou et j'accompagne des entreprises, des organisations et des porteurs de projets.",
+          "I'm based in Cotonou and I support businesses, organizations, and project owners.",
+        ),
+      ],
+    },
+    work: {
+      label: L("Ce que je fais", "What I do"),
+      paragraphs: [L("Stratégie éditoriale, communication digitale et création de contenus.", "")],
+    },
+    value: {
+      label: L("Ce que vous y gagnez", "What you gain"),
+      paragraphs: [L("Plus de lisibilité et une rigueur opérationnelle.", "")],
+    },
+    approach: {
+      label: L("Mon approche", "My approach"),
+      paragraphs: [L("Contexte, cadrage, déploiement puis suivi.", "")],
+    },
+    closing: {
+      paragraphs: [L("Je serais ravie d'en discuter avec vous.", "")],
+    },
+    ctaBand: {
+      title: L("Parlons de votre communication", "Let's talk about your communication"),
+      subtitle: L("Expliquez-moi votre contexte, vos canaux et vos priorités.", ""),
+      ctaPrimary: L("Me contacter", "Contact me"),
+      ctaSecondary: L("Voir mes services", "View my services"),
+    },
+  },
+  cvPage: {
+    id: "cvPage",
+    eyebrow: L("Curriculum vitæ", "Curriculum vitae"),
+    firstName: "Carole",
+    lastName: "Tonoukouen",
+    role: L("Chargée de communication", "Communications officer"),
+    summary: L(
+      "Jeune professionnelle en communication avec une expérience concrète en gestion de contenus et coordination d'activités.",
+      "Young communications professional with hands-on experience in content management and activity coordination.",
+    ),
   },
   service: [
     {
@@ -268,14 +349,49 @@ export const seedContent: ContentStore = {
       highlights: [],
     },
   ],
-  category: [
-    { id: "cat-strategy", title: L("Stratégie", "Strategy"), slug: "strategie" },
-    { id: "cat-org", title: L("Organisation", "Organization"), slug: "organisation" },
-  ],
   siteSettings: {
     id: "siteSettings",
     title: L("Carole Tonoukouen", "Carole Tonoukouen"),
-    description: L("Portfolio de communication digitale.", ""),
+    description: L(
+      "Portfolio de Carole Tonoukouen, chargée de communication digitale.",
+      "Portfolio of Carole Tonoukouen, digital communications officer.",
+    ),
+    siteUrl: "https://carole-portfolio.vercel.app",
+    ogImage: null,
+    seoPages: {
+      home: {
+        title: L("Carole Tonoukouen | Communication digitale", "Carole Tonoukouen | Digital communication"),
+        description: L("Portfolio de communication digitale.", "Digital communications portfolio."),
+      },
+      about: {
+        title: L("À propos | Carole Tonoukouen", "About | Carole Tonoukouen"),
+        description: L("Parcours et approche éditoriale.", "Background and editorial approach."),
+      },
+      services: {
+        title: L("Services | Carole Tonoukouen", "Services | Carole Tonoukouen"),
+        description: L("Accompagnements en communication digitale.", "Digital communication services."),
+      },
+      blog: {
+        title: L("Blog | Carole Tonoukouen", "Blog | Carole Tonoukouen"),
+        description: L("Articles sur la communication digitale.", "Digital communication articles."),
+      },
+      contact: {
+        title: L("Contact | Carole Tonoukouen", "Contact | Carole Tonoukouen"),
+        description: L("Échangez sur votre projet.", "Discuss your project."),
+      },
+      cv: {
+        title: L("CV | Carole Tonoukouen", "Resume | Carole Tonoukouen"),
+        description: L("Parcours professionnel.", "Professional background."),
+      },
+      carnetResources: {
+        title: L("Ressources & communautés", "Resources & communities"),
+        description: L("Outils et communautés utiles.", "Useful tools and communities."),
+      },
+      carnetReadings: {
+        title: L("Lectures & références", "Readings & references"),
+        description: L("Ouvrages et newsletters repères.", "Reference books and newsletters."),
+      },
+    },
     contactEmail: "hello@carole.com",
     instagram: "https://instagram.com/",
     linkedin: "https://linkedin.com/",

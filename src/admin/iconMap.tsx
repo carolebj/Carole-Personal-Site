@@ -7,14 +7,15 @@ import {
   SparklesIcon,
   UserGroupIcon,
   AcademicCapIcon,
-  TagIcon,
   Cog6ToothIcon,
   DocumentTextIcon,
+  UserIcon,
 } from "@heroicons/react/24/outline";
 import type { IconKey } from "./schema";
 
 const icons: Record<IconKey, typeof HomeIcon> = {
   home: HomeIcon,
+  about: UserIcon,
   services: Squares2X2Icon,
   blog: NewspaperIcon,
   testimonial: ChatBubbleLeftRightIcon,
@@ -23,7 +24,6 @@ const icons: Record<IconKey, typeof HomeIcon> = {
   book: BookOpenIcon,
   reference: DocumentTextIcon,
   cv: AcademicCapIcon,
-  category: TagIcon,
   settings: Cog6ToothIcon,
 };
 

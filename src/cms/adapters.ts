@@ -1,5 +1,107 @@
-import type { CmsBlogPost, CmsCvEntry, CmsService, CmsTestimonial } from "./types";
+import type {
+  CmsAboutPage,
+  CmsBlogPost,
+  CmsCvEntry,
+  CmsCvPage,
+  CmsProseBlock,
+  CmsService,
+  CmsTestimonial,
+  LocalizedValue,
+} from "./types";
 import { localized } from "./types";
+
+export function localizedListItems(items: LocalizedValue[] | undefined, locale: string) {
+  return items?.map((item) => localized(item, locale)).filter(Boolean) ?? [];
+}
+
+function cmsProseBlock(
+  section: CmsProseBlock | undefined,
+  locale: string,
+  usingCms: boolean,
+  fallback: { label: string; paragraphs: string[] },
+) {
+  return {
+    label: usingCms && section?.label ? localized(section.label, locale) : fallback.label,
+    paragraphs:
+      usingCms && section?.paragraphs?.length
+        ? localizedListItems(section.paragraphs, locale)
+        : fallback.paragraphs,
+  };
+}
+
+export function toAboutPageViewModel(
+  cms: CmsAboutPage | null | undefined,
+  locale: string,
+  usingCms: boolean,
+  fallback: {
+    hero: { title: string; subtitle: string };
+    imageAlt: string;
+    identity: { label: string; greeting: string; role: string; paragraphs: string[] };
+    work: { label: string; paragraphs: string[] };
+    value: { label: string; paragraphs: string[] };
+    approach: { label: string; paragraphs: string[] };
+    closing: { paragraphs: string[] };
+    ctaBand: { title: string; subtitle: string; ctaPrimary: string; ctaSecondary: string };
+  },
+) {
+  return {
+    hero: {
+      title: usingCms && cms?.hero?.title ? localized(cms.hero.title, locale) : fallback.hero.title,
+      subtitle:
+        usingCms && cms?.hero?.subtitle ? localized(cms.hero.subtitle, locale) : fallback.hero.subtitle,
+    },
+    imageAlt: usingCms && cms?.imageAlt ? localized(cms.imageAlt, locale) : fallback.imageAlt,
+    identity: {
+      label: usingCms && cms?.identity?.label ? localized(cms.identity.label, locale) : fallback.identity.label,
+      greeting:
+        usingCms && cms?.identity?.greeting
+          ? localized(cms.identity.greeting, locale)
+          : fallback.identity.greeting,
+      role: usingCms && cms?.identity?.role ? localized(cms.identity.role, locale) : fallback.identity.role,
+      paragraphs:
+        usingCms && cms?.identity?.paragraphs?.length
+          ? localizedListItems(cms.identity.paragraphs, locale)
+          : fallback.identity.paragraphs,
+    },
+    work: cmsProseBlock(cms?.work, locale, usingCms, fallback.work),
+    value: cmsProseBlock(cms?.value, locale, usingCms, fallback.value),
+    approach: cmsProseBlock(cms?.approach, locale, usingCms, fallback.approach),
+    closing: {
+      paragraphs:
+        usingCms && cms?.closing?.paragraphs?.length
+          ? localizedListItems(cms.closing.paragraphs, locale)
+          : fallback.closing.paragraphs,
+    },
+    ctaBand: {
+      title: usingCms && cms?.ctaBand?.title ? localized(cms.ctaBand.title, locale) : fallback.ctaBand.title,
+      subtitle:
+        usingCms && cms?.ctaBand?.subtitle ? localized(cms.ctaBand.subtitle, locale) : fallback.ctaBand.subtitle,
+      ctaPrimary:
+        usingCms && cms?.ctaBand?.ctaPrimary
+          ? localized(cms.ctaBand.ctaPrimary, locale)
+          : fallback.ctaBand.ctaPrimary,
+      ctaSecondary:
+        usingCms && cms?.ctaBand?.ctaSecondary
+          ? localized(cms.ctaBand.ctaSecondary, locale)
+          : fallback.ctaBand.ctaSecondary,
+    },
+  };
+}
+
+export function toCvHeaderViewModel(
+  cms: CmsCvPage | null | undefined,
+  locale: string,
+  usingCms: boolean,
+  fallback: { eyebrow: string; firstName: string; lastName: string; role: string; summary: string },
+) {
+  return {
+    eyebrow: usingCms && cms?.eyebrow ? localized(cms.eyebrow, locale) : fallback.eyebrow,
+    firstName: usingCms && cms?.firstName ? cms.firstName : fallback.firstName,
+    lastName: usingCms && cms?.lastName ? cms.lastName : fallback.lastName,
+    role: usingCms && cms?.role ? localized(cms.role, locale) : fallback.role,
+    summary: usingCms && cms?.summary ? localized(cms.summary, locale) : fallback.summary,
+  };
+}
 
 export function toServiceViewModel(service: CmsService, locale: string) {
   const bullets = service.bullets?.map((item) => localized(item, locale)).filter(Boolean) ?? [];

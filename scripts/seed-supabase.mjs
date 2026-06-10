@@ -165,12 +165,219 @@ const seed = {
       ),
       image: null,
     },
+    servicesSection: {
+      titleAccent: L("Mes", "My"),
+      titleRest: L("Services", "Services"),
+      subtitle: L(
+        "Des solutions sur mesure pour structurer vos contenus et vos actions de communication.",
+        "Tailored support to structure your content and communication actions.",
+      ),
+    },
+    testimonialsSection: {
+      eyebrow: L("Témoignages", "Testimonials"),
+      titleStart: L("Mots doux de", "Kind words from"),
+      titleAccent: L("mes clients", "my clients"),
+    },
+    contactSection: {
+      eyebrow: L("Entrer en contact", "Get in touch"),
+      titleStart: L("Parlez-moi de", "Tell me what"),
+      titleAccent: L("votre besoin", "you need"),
+      description: L(
+        "Partagez quelques informations sur votre marque, vos canaux ou l'accompagnement recherché. Je vous répondrai avec une prochaine étape claire.",
+        "Share a few details about your brand, your channels, or the support you are looking for. I will get back to you with a clear next step.",
+      ),
+      meetingLink: L("Ou opter pour un rendez-vous", "Or choose to book a call"),
+    },
+  },
+
+  aboutPage: {
+    id: "aboutPage",
+    hero: {
+      title: L("À propos", "About"),
+      subtitle: L(
+        "Qui je suis, ce que je fais concrètement et la manière dont j'accompagne les marques et les projets.",
+        "Who I am, what I do in practice, and how I support brands and projects.",
+      ),
+    },
+    image: null,
+    imageAlt: L(
+      "Carole travaillant sur une communication digitale",
+      "Carole working on digital communication",
+    ),
+    identity: {
+      label: L("Qui je suis", "Who I am"),
+      greeting: L("Enchantée, moi c'est Carole Tonoukouen.", "Lovely to meet you. I'm Carole Tonoukouen."),
+      role: L(
+        "Chargée de communication digitale, coordination éditoriale et rédaction",
+        "Digital communications officer, editorial coordination, and writing",
+      ),
+      paragraphs: [
+        L(
+          "Je suis basée à Cotonou et j'accompagne des entreprises, des organisations et des porteurs de projets qui souhaitent clarifier leur message, structurer leurs contenus et renforcer leur visibilité en ligne, sans se noyer dans la cadence des réseaux.",
+          "I'm based in Cotonou and I support businesses, organizations, and project owners who want to clarify their message, structure their content, and strengthen their online visibility, without drowning in the pace of social media.",
+        ),
+        L(
+          "Après plusieurs expériences concrètes en coordination éditoriale et en gestion de plateformes, j'ai choisi de me spécialiser dans l'accompagnement de marques qui veulent passer d'une communication réactive au jour le jour à un rythme éditorial planifié et porteur de sens.",
+          "After several hands-on experiences in editorial coordination and platform management, I chose to specialize in supporting brands that want to move from reactive day-to-day communication to a planned, meaningful editorial cadence.",
+        ),
+        L(
+          "Je crois qu'une présence digitale réussie ne repose pas sur la quantité de publications, mais sur la pertinence, la structure et la régularité. Mon rôle consiste donc à prendre en charge le travail en amont, notamment les calendriers, la rédaction et la coordination visuelle, afin que chaque prise de parole renforce la confiance avec votre public.",
+          "I believe a strong digital presence relies on relevance, structure, and consistency rather than posting volume. My role is therefore to handle the groundwork, including calendars, writing, and visual coordination, so that every public message builds trust with your audience.",
+        ),
+      ],
+    },
+    work: {
+      label: L("Ce que je fais", "What I do"),
+      paragraphs: [
+        L(
+          "Concrètement, j'interviens sur la stratégie éditoriale, la communication digitale et la création de contenus. Je vous aide à définir une ligne claire, des piliers de sujets et un positionnement lisible sur vos canaux, puis à tenir ce cap dans le temps.",
+          "In practice, I work across editorial strategy, digital communication, and content creation. I help you define a clear line, content pillars, and readable positioning across your channels, then hold that direction over time.",
+        ),
+        L(
+          "Je rédige, je pilote les calendriers et je coordonne les supports visuels. J'aligne par ailleurs chaque publication sur vos objectifs. Que ce soit pour LinkedIn, un blog, des campagnes ponctuelles ou une présence institutionnelle, l'objectif reste le même : moins de dispersion et plus de cohérence.",
+          "I write, steer calendars, and coordinate visual assets. I also align each publication with your goals. Whether it's LinkedIn, a blog, one-off campaigns, or an institutional presence, the aim remains the same: less scatter and more coherence.",
+        ),
+        L(
+          "Selon les projets, je peux aussi assurer le community management, la traduction FR/EN, le reporting et le suivi des performances, toujours dans une logique d'organisation et de clarté plutôt que de volume pour le volume.",
+          "Depending on the project, I can also handle community management, FR/EN translation, reporting, and performance follow-up, always with organization and clarity in mind rather than volume for volume's sake.",
+        ),
+      ],
+    },
+    value: {
+      label: L("Ce que vous y gagnez", "What you gain"),
+      paragraphs: [
+        L(
+          "Travailler avec moi, c'est d'abord gagner en lisibilité. Votre message devient plus net et plus accessible, sans perdre pour autant votre personnalité ni votre voix.",
+          "Working with me means gaining readability first. Your message becomes sharper and more accessible, without losing your personality or voice.",
+        ),
+        L(
+          "Vous bénéficiez également d'une rigueur opérationnelle : des systèmes éditoriaux plus simples à tenir, une cadence réaliste et des formats qui se répondent. La stratégie précède par ailleurs la création, de sorte que chaque canal et chaque format répondent à un objectif et à une audience identifiés.",
+          "You also benefit from operational rigor: editorial systems that are easier to maintain, a realistic cadence, and formats that echo each other. Strategy comes before creation, so every channel and every format serves a clear objective and a defined audience.",
+        ),
+        L(
+          "En fin de parcours, vous déléguez une part importante de la charge mentale liée à la communication, tout en conservant la main sur les orientations qui comptent vraiment pour vous.",
+          "In the end, you delegate a significant share of the mental load tied to communication while keeping control over the directions that matter to you.",
+        ),
+      ],
+    },
+    approach: {
+      label: L("Mon approche", "My approach"),
+      paragraphs: [
+        L(
+          "Je commence toujours par lire votre contexte, c'est-à-dire comprendre votre marque, vos objectifs et vos publics, puis auditer ce qui existe déjà afin de repérer les écarts de message.",
+          "I always start by reading your context, which means understanding your brand, your goals, and your audiences, then auditing what already exists in order to spot message gaps.",
+        ),
+        L(
+          "Ensuite, nous cadrons ensemble la ligne éditoriale, les piliers de contenu et la cadence de publication. Ce n'est qu'après ce socle que j'entame le déploiement : rédaction, visuels, scripts courts et calendriers prêts à publier.",
+          "Next, we frame things together: editorial line, content pillars, and publishing cadence. Only after that foundation do I move into deployment, including writing, visuals, short scripts, and ready-to-publish calendars.",
+        ),
+        L(
+          "Le suivi fait enfin partie du processus. J'analyse les retours, j'ajuste les angles et j'identifie les thèmes qui génèrent le plus d'échanges. L'accompagnement reste ainsi simple, lisible et tenable sur la durée.",
+          "Follow-up is finally part of the process. I analyze feedback, adjust angles, and identify topics that spark the most conversation. The support therefore stays simple, readable, and sustainable over time.",
+        ),
+      ],
+    },
+    closing: {
+      paragraphs: [
+        L(
+          "Si vous cherchez quelqu'un pour structurer votre communication, tenir le fil éditorial et vous faire gagner du temps sans alourdir le dispositif, je serais ravie d'en discuter avec vous.",
+          "If you're looking for someone to structure your communication, hold the editorial thread, and save you time without weighing down the setup, I would be glad to discuss it with you.",
+        ),
+      ],
+    },
+    ctaBand: {
+      title: L("Parlons de votre communication", "Let's talk about your communication"),
+      subtitle: L(
+        "Expliquez-moi votre contexte, vos canaux et vos priorités. Nous identifierons ensemble la forme d'accompagnement la plus adaptée à votre situation.",
+        "Tell me about your context, channels, and priorities. Together, we will identify the most suitable support format for your situation.",
+      ),
+      ctaPrimary: L("Me contacter", "Contact me"),
+      ctaSecondary: L("Voir mes services", "View my services"),
+    },
+  },
+
+  cvPage: {
+    id: "cvPage",
+    eyebrow: L("Curriculum vitæ", "Curriculum vitae"),
+    firstName: "Carole",
+    lastName: "Tonoukouen",
+    role: L("Chargée de communication", "Communications officer"),
+    summary: L(
+      "Jeune professionnelle en communication, j'ai acquis une expérience concrète en gestion de contenus, coordination d'activités et appui à la mise en œuvre de stratégies de communication. Organisée et proactive, je souhaite évoluer au sein d'une structure où je pourrai renforcer mes compétences tout en contribuant activement aux projets.",
+      "As a young communications professional, I have gained hands-on experience in content management, activity coordination, and support for communication strategy deployment. Organized and proactive, I am looking to grow within a structure where I can strengthen my skills while actively contributing to projects.",
+    ),
   },
 
   siteSettings: {
     id: "siteSettings",
     title: L("Carole Tonoukouen", "Carole Tonoukouen"),
-    description: L("Portfolio de communication digitale.", ""),
+    description: L(
+      "Portfolio de Carole Tonoukouen, chargée de communication digitale : stratégie éditoriale, contenus, campagnes et visibilité de marque.",
+      "Portfolio of Carole Tonoukouen, digital communications officer: editorial strategy, content, campaigns, and brand visibility.",
+    ),
+    siteUrl: "https://carole-portfolio.vercel.app",
+    ogImage: null,
+    seoPages: {
+      home: {
+        title: L("Carole Tonoukouen | Communication digitale", "Carole Tonoukouen | Digital communication"),
+        description: L(
+          "Portfolio de Carole Tonoukouen, chargée de communication digitale : stratégie éditoriale, contenus, campagnes et visibilité de marque.",
+          "Portfolio of Carole Tonoukouen, digital communications officer: editorial strategy, content, campaigns, and brand visibility.",
+        ),
+      },
+      about: {
+        title: L("À propos | Carole Tonoukouen", "About | Carole Tonoukouen"),
+        description: L(
+          "Découvrez le parcours de Carole Tonoukouen et son approche de la communication digitale claire, structurée et cohérente.",
+          "Discover Carole Tonoukouen's background and approach to clear, structured, consistent digital communication.",
+        ),
+      },
+      services: {
+        title: L(
+          "Services de communication digitale | Carole Tonoukouen",
+          "Digital communication services | Carole Tonoukouen",
+        ),
+        description: L(
+          "Stratégie éditoriale, campagnes digitales, création de contenus et audit de présence en ligne pour clarifier votre communication.",
+          "Editorial strategy, digital campaigns, content creation, and online presence audits to clarify your communication.",
+        ),
+      },
+      blog: {
+        title: L("Blog communication digitale | Carole Tonoukouen", "Digital communication blog | Carole Tonoukouen"),
+        description: L(
+          "Articles et notes pratiques sur la ligne éditoriale, le calendrier de contenu, les réseaux sociaux et l'audit digital.",
+          "Practical articles and notes on editorial direction, content calendars, social media, and digital audits.",
+        ),
+      },
+      contact: {
+        title: L("Contact | Carole Tonoukouen", "Contact | Carole Tonoukouen"),
+        description: L(
+          "Contactez Carole Tonoukouen pour échanger sur vos besoins en communication digitale, contenu et visibilité.",
+          "Contact Carole Tonoukouen to discuss your digital communication, content, and visibility needs.",
+        ),
+      },
+      cv: {
+        title: L("CV | Carole Tonoukouen", "Resume | Carole Tonoukouen"),
+        description: L(
+          "CV de Carole Tonoukouen : expérience, compétences, formations et réalisations en communication digitale.",
+          "Carole Tonoukouen resume: experience, skills, education, and digital communication achievements.",
+        ),
+      },
+      carnetResources: {
+        title: L("Ressources & communautés | Carole Tonoukouen", "Resources & communities | Carole Tonoukouen"),
+        description: L(
+          "Ressources, outils et communautés pour nourrir une pratique de communication digitale plus solide.",
+          "Resources, tools, and communities for a stronger digital communication practice.",
+        ),
+      },
+      carnetReadings: {
+        title: L("Lectures & références | Carole Tonoukouen", "Readings & references | Carole Tonoukouen"),
+        description: L(
+          "Ouvrages, newsletters et références pour affiner le regard et nourrir la pratique éditoriale.",
+          "Books, newsletters, and references to sharpen your editorial practice.",
+        ),
+      },
+    },
     contactEmail: "hello@carole.com",
     instagram: "https://instagram.com/",
     linkedin: "https://linkedin.com/",
@@ -415,6 +622,8 @@ const seed = {
       slug: "marketing-brew",
       title: L("Marketing Brew", "Marketing Brew"),
       author: "Brew Team",
+      typeLabel: L("Newsletter", "Newsletter"),
+      cardStyle: "standard",
       description: L(
         "Une newsletter trihebdomadaire qui décrypte l'actualité des marques, les campagnes créatives et les mutations du secteur publicitaire.",
         "A tri-weekly newsletter decoding brand news, creative campaigns, and changes in the advertising sector.",
@@ -426,6 +635,8 @@ const seed = {
       slug: "growth-letter",
       title: L("Growth Letter", "Growth Letter"),
       author: "Yann Leonardi",
+      typeLabel: L("Contenu cité", "Cited content"),
+      cardStyle: "pinned",
       description: L(
         "Des analyses concrètes des stratégies marketing, du positionnement produit et de la psychologie de l'attention.",
         "Concrete breakdowns of marketing strategies, product positioning, and the psychology of attention.",
@@ -465,21 +676,15 @@ const seed = {
     },
   ],
 
-  category: [
-    { title: L("Stratégie", "Strategy"), slug: "strategie" },
-    { title: L("Organisation", "Organization"), slug: "organisation" },
-    { title: L("Inspiration", "Inspiration"), slug: "inspiration" },
-    { title: L("Outils", "Tools"), slug: "outils" },
-  ],
 };
 
 // --- insertion ---------------------------------------------------------------
-const singletons = ["homePage", "siteSettings"];
+const singletons = ["homePage", "aboutPage", "cvPage", "siteSettings"];
 
 // Le dashboard devient la source de vérité : on repart d'un état propre.
 // On efface les types courants ET les anciens noms de types (toolResource, reading)
 // qui peuvent encore traîner dans Supabase suite à des seeds précédents.
-const legacyTypes = ["toolResource", "reading"];
+const legacyTypes = ["toolResource", "reading", "category"];
 const typesToWipe = [...new Set([...Object.keys(seed), ...legacyTypes])];
 
 console.log("🧹  Nettoyage du contenu existant (par type)…\n");

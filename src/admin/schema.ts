@@ -38,6 +38,7 @@ export type FieldDef = {
 
 export type IconKey =
   | "home"
+  | "about"
   | "services"
   | "blog"
   | "testimonial"
@@ -46,7 +47,6 @@ export type IconKey =
   | "book"
   | "reference"
   | "cv"
-  | "category"
   | "settings";
 
 export type ContentType = {
@@ -71,13 +71,33 @@ const localizedString = (name: string, label: string, extra: Partial<FieldDef> =
   ...extra,
 });
 
+const seoPage = (name: string, label: string): FieldDef => ({
+  name,
+  label,
+  type: "group",
+  fields: [
+    localizedString("title", "Titre"),
+    { name: "description", label: "Description", type: "localizedText" },
+  ],
+});
+
+const proseBlock = (name: string, label: string): FieldDef => ({
+  name,
+  label,
+  type: "group",
+  fields: [
+    localizedString("label", "Sur-titre"),
+    { name: "paragraphs", label: "Paragraphes", type: "localizedList" },
+  ],
+});
+
 export const contentTypes: ContentType[] = [
   {
     name: "homePage",
     kind: "singleton",
     label: "Page d'accueil",
     labelSingular: "Page d'accueil",
-    description: "Le hero, le manifeste et la section à propos.",
+    description: "Hero, manifeste, à propos et titres des sections services, témoignages et contact.",
     icon: "home",
     group: "content",
     titleField: "hero.title",
@@ -116,6 +136,92 @@ export const contentTypes: ContentType[] = [
           localizedString("accent", "Mot accentué"),
           { name: "body", label: "Texte", type: "localizedRichText" },
           { name: "image", label: "Image", type: "image" },
+        ],
+      },
+      {
+        name: "servicesSection",
+        label: "Section services (accueil)",
+        type: "group",
+        fields: [
+          localizedString("titleAccent", "Titre — mot accentué"),
+          localizedString("titleRest", "Titre — suite"),
+          { name: "subtitle", label: "Sous-titre", type: "localizedText" },
+        ],
+      },
+      {
+        name: "testimonialsSection",
+        label: "Section témoignages (accueil)",
+        type: "group",
+        fields: [
+          localizedString("eyebrow", "Sur-titre"),
+          localizedString("titleStart", "Titre — début"),
+          localizedString("titleAccent", "Titre — mot accentué"),
+        ],
+      },
+      {
+        name: "contactSection",
+        label: "Section contact (accueil)",
+        type: "group",
+        fields: [
+          localizedString("eyebrow", "Sur-titre"),
+          localizedString("titleStart", "Titre — début"),
+          localizedString("titleAccent", "Titre — mot accentué"),
+          { name: "description", label: "Description", type: "localizedText" },
+          localizedString("meetingLink", "Lien rendez-vous"),
+        ],
+      },
+    ],
+  },
+  {
+    name: "aboutPage",
+    kind: "singleton",
+    label: "Page À propos",
+    labelSingular: "Page À propos",
+    description: "Contenu éditorial de la page /about.",
+    icon: "about",
+    group: "content",
+    titleField: "hero.title",
+    fields: [
+      {
+        name: "hero",
+        label: "En-tête",
+        type: "group",
+        fields: [
+          localizedString("title", "Titre"),
+          { name: "subtitle", label: "Sous-titre", type: "localizedText" },
+        ],
+      },
+      { name: "image", label: "Photo", type: "image" },
+      localizedString("imageAlt", "Texte alternatif de la photo"),
+      {
+        name: "identity",
+        label: "Qui je suis",
+        type: "group",
+        fields: [
+          localizedString("label", "Sur-titre"),
+          localizedString("greeting", "Accroche"),
+          localizedString("role", "Rôle"),
+          { name: "paragraphs", label: "Paragraphes", type: "localizedList" },
+        ],
+      },
+      proseBlock("work", "Ce que je fais"),
+      proseBlock("value", "Ce que vous y gagnez"),
+      proseBlock("approach", "Mon approche"),
+      {
+        name: "closing",
+        label: "Conclusion",
+        type: "group",
+        fields: [{ name: "paragraphs", label: "Paragraphes", type: "localizedList" }],
+      },
+      {
+        name: "ctaBand",
+        label: "Bandeau d'appel à l'action",
+        type: "group",
+        fields: [
+          localizedString("title", "Titre"),
+          { name: "subtitle", label: "Sous-titre", type: "localizedText" },
+          localizedString("ctaPrimary", "Bouton principal"),
+          localizedString("ctaSecondary", "Bouton secondaire"),
         ],
       },
     ],
@@ -168,7 +274,9 @@ export const contentTypes: ContentType[] = [
       { name: "slug", label: "Identifiant URL", type: "slug" },
       localizedString("title", "Titre"),
       { name: "excerpt", label: "Extrait", type: "localizedText" },
-      localizedString("category", "Catégorie"),
+      localizedString("category", "Catégorie", {
+        help: "Libellé affiché sur l'article et dans les filtres du blog (ex. Stratégie, Organisation).",
+      }),
       { name: "publishedAt", label: "Date de publication", type: "date" },
       localizedString("readingTime", "Temps de lecture", { placeholder: "5 min" }),
       { name: "featured", label: "Mettre en avant", type: "boolean" },
@@ -287,8 +395,35 @@ export const contentTypes: ContentType[] = [
     fields: [
       localizedString("title", "Titre"),
       { name: "author", label: "Auteur / source", type: "text" },
+      localizedString("typeLabel", "Type affiché", { placeholder: "Newsletter" }),
+      {
+        name: "cardStyle",
+        label: "Style de carte",
+        type: "select",
+        options: [
+          { value: "standard", label: "Carte standard" },
+          { value: "pinned", label: "Note épinglée" },
+        ],
+      },
       { name: "description", label: "Description", type: "localizedText" },
       { name: "url", label: "Lien", type: "url" },
+    ],
+  },
+  {
+    name: "cvPage",
+    kind: "singleton",
+    label: "En-tête CV",
+    labelSingular: "En-tête CV",
+    description: "Sur-titre, nom, rôle et introduction du curriculum vitæ.",
+    icon: "cv",
+    group: "content",
+    titleField: "lastName",
+    fields: [
+      localizedString("eyebrow", "Sur-titre"),
+      { name: "firstName", label: "Prénom", type: "text", placeholder: "Carole" },
+      { name: "lastName", label: "Nom", type: "text", placeholder: "Tonoukouen" },
+      localizedString("role", "Titre / rôle"),
+      { name: "summary", label: "Introduction", type: "localizedText" },
     ],
   },
   {
@@ -322,32 +457,40 @@ export const contentTypes: ContentType[] = [
     ],
   },
   {
-    name: "category",
-    kind: "collection",
-    label: "Catégories",
-    labelSingular: "Catégorie",
-    description: "Catégories d'articles du blog.",
-    icon: "category",
-    group: "content",
-    titleField: "title",
-    subtitleField: "slug",
-    fields: [
-      localizedString("title", "Nom"),
-      { name: "slug", label: "Identifiant URL", type: "slug" },
-    ],
-  },
-  {
     name: "siteSettings",
     kind: "singleton",
     label: "Réglages du site",
     labelSingular: "Réglages du site",
-    description: "Nom, description SEO, email, réseaux sociaux.",
+    description: "Nom, SEO global, métadonnées par page, email et réseaux sociaux.",
     icon: "settings",
     group: "settings",
     titleField: "title",
     fields: [
       localizedString("title", "Nom du site"),
-      { name: "description", label: "Description (SEO)", type: "localizedText" },
+      { name: "description", label: "Description par défaut (SEO)", type: "localizedText" },
+      {
+        name: "siteUrl",
+        label: "URL du site",
+        type: "url",
+        help: "Base pour le canonical et le partage social (ex. https://carole-portfolio.vercel.app).",
+        placeholder: "https://carole-portfolio.vercel.app",
+      },
+      { name: "ogImage", label: "Image de partage (Open Graph)", type: "image" },
+      {
+        name: "seoPages",
+        label: "SEO par page",
+        type: "group",
+        fields: [
+          seoPage("home", "Accueil"),
+          seoPage("about", "À propos"),
+          seoPage("services", "Services"),
+          seoPage("blog", "Blog"),
+          seoPage("contact", "Contact"),
+          seoPage("cv", "CV"),
+          seoPage("carnetResources", "Carnet · Ressources & communautés"),
+          seoPage("carnetReadings", "Carnet · Lectures & références"),
+        ],
+      },
       { name: "contactEmail", label: "Email de contact", type: "email" },
       { name: "instagram", label: "Instagram (URL)", type: "url" },
       { name: "linkedin", label: "LinkedIn (URL)", type: "url" },

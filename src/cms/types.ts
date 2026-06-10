@@ -65,6 +65,8 @@ export type CmsResource = {
   image?: CmsImage;
 };
 
+export type ReferenceCardStyle = "standard" | "pinned";
+
 export type CmsReading = {
   title: LocalizedValue;
   format?: string;
@@ -73,6 +75,10 @@ export type CmsReading = {
   description?: LocalizedValue;
   url?: string;
   image?: CmsImage;
+  /** References only — eyebrow label (e.g. Newsletter). */
+  typeLabel?: LocalizedValue;
+  /** References only — card layout variant on Lectures & références. */
+  cardStyle?: ReferenceCardStyle;
 };
 
 export type CmsCvEntry = {
@@ -84,9 +90,26 @@ export type CmsCvEntry = {
   highlights?: LocalizedValue[];
 };
 
+export type CmsSeoPageMeta = {
+  title?: LocalizedValue;
+  description?: LocalizedValue;
+};
+
 export type CmsSiteSettings = {
   title?: LocalizedValue;
   description?: LocalizedValue;
+  siteUrl?: string;
+  ogImage?: CmsImage;
+  seoPages?: {
+    home?: CmsSeoPageMeta;
+    about?: CmsSeoPageMeta;
+    services?: CmsSeoPageMeta;
+    blog?: CmsSeoPageMeta;
+    contact?: CmsSeoPageMeta;
+    cv?: CmsSeoPageMeta;
+    carnetResources?: CmsSeoPageMeta;
+    carnetReadings?: CmsSeoPageMeta;
+  };
   contactEmail?: string;
   instagram?: string;
   linkedin?: string;
@@ -118,6 +141,61 @@ export type CmsHomePage = {
     body?: LocalizedValue;
     image?: CmsImage;
   };
+  servicesSection?: {
+    titleAccent?: LocalizedValue;
+    titleRest?: LocalizedValue;
+    subtitle?: LocalizedValue;
+  };
+  testimonialsSection?: {
+    eyebrow?: LocalizedValue;
+    titleStart?: LocalizedValue;
+    titleAccent?: LocalizedValue;
+  };
+  contactSection?: {
+    eyebrow?: LocalizedValue;
+    titleStart?: LocalizedValue;
+    titleAccent?: LocalizedValue;
+    description?: LocalizedValue;
+    meetingLink?: LocalizedValue;
+  };
+};
+
+export type CmsProseBlock = {
+  label?: LocalizedValue;
+  paragraphs?: LocalizedValue[];
+};
+
+export type CmsAboutPage = {
+  hero?: {
+    title?: LocalizedValue;
+    subtitle?: LocalizedValue;
+  };
+  image?: CmsImage;
+  imageAlt?: LocalizedValue;
+  identity?: CmsProseBlock & {
+    greeting?: LocalizedValue;
+    role?: LocalizedValue;
+  };
+  work?: CmsProseBlock;
+  value?: CmsProseBlock;
+  approach?: CmsProseBlock;
+  closing?: {
+    paragraphs?: LocalizedValue[];
+  };
+  ctaBand?: {
+    title?: LocalizedValue;
+    subtitle?: LocalizedValue;
+    ctaPrimary?: LocalizedValue;
+    ctaSecondary?: LocalizedValue;
+  };
+};
+
+export type CmsCvPage = {
+  eyebrow?: LocalizedValue;
+  firstName?: string;
+  lastName?: string;
+  role?: LocalizedValue;
+  summary?: LocalizedValue;
 };
 
 // A post is public unless explicitly marked as a draft. Content seeded before
