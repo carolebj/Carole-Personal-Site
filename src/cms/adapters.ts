@@ -45,7 +45,7 @@ export function toBlogPostViewModel(post: CmsBlogPost, locale: string) {
     featured: post.featured,
     takeaways: post.takeaways?.map((item) => localized(item, locale)).filter(Boolean) ?? [],
     sections: [],
-    body: locale.startsWith("en") ? post.body?.en : post.body?.fr,
+    body: localized(post.body, locale),
     coverImage: post.coverImage,
   };
 }

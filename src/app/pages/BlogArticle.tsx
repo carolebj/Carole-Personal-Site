@@ -1,17 +1,16 @@
-import { ArrowLeftIcon, BookOpenIcon, ClockIcon } from "@heroicons/react/24/outline";
-import { PortableText } from "@portabletext/react";
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
 import { motion } from "motion/react";
-import type React from "react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toBlogPostViewModel } from "../../cms/adapters";
 import { cmsImageUrl, useCmsCollection } from "../../cms/cmsContent";
-import type { CmsBlogPost, CmsImage } from "../../cms/types";
+import { isPublishedPost, type CmsBlogPost, type CmsImage } from "../../cms/types";
+import type { PortableTextBlock } from "@portabletext/types";
 import abstractAuditImage from "../../assets/blog/blog-abstract-audit.svg";
 import abstractContentImage from "../../assets/blog/blog-abstract-content.svg";
 import abstractEditorialImage from "../../assets/blog/blog-abstract-editorial.svg";
 import abstractSocialImage from "../../assets/blog/blog-abstract-social.svg";
+import { BlogArticleContent } from "./BlogArticleContent";
 
 type BlogPost = {
   slug: string;
@@ -25,7 +24,7 @@ type BlogPost = {
     title: string;
     body: string[];
   }>;
-  body?: Parameters<typeof PortableText>[0]["value"];
+  body?: string | PortableTextBlock[];
   coverImage?: CmsImage;
 };
 
@@ -40,12 +39,13 @@ export default function BlogArticle() {
   );
   const emptyCmsPosts = useMemo<CmsBlogPost[]>(() => [], []);
   const { data: cmsPosts } = useCmsCollection<CmsBlogPost>("blogPost", emptyCmsPosts);
+  const publishedCmsPosts = useMemo(() => cmsPosts.filter(isPublishedPost), [cmsPosts]);
   const posts = useMemo(
     () =>
-      cmsPosts.length > 0
-        ? cmsPosts.map((post) => toBlogPostViewModel(post, i18n.language))
+      publishedCmsPosts.length > 0
+        ? publishedCmsPosts.map((post) => toBlogPostViewModel(post, i18n.language))
         : legacyPosts,
-    [cmsPosts, i18n.language, legacyPosts]
+    [publishedCmsPosts, i18n.language, legacyPosts]
   );
   const post = posts.find((item) => item.slug === slug) ?? posts[0];
   const postIndex = Math.max(0, posts.findIndex((item) => item.slug === post.slug));
@@ -60,85 +60,25 @@ export default function BlogArticle() {
         transition={{ duration: 0.45, ease: "easeOut" }}
         className="mx-auto max-w-[1040px]"
       >
-        <Link
-          to="/blog"
-          className="inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[1.5px] text-[#854d63] transition hover:text-[#6a364b] dark:text-[#f0adc4] dark:hover:text-[#f8d7e3]"
-        >
-          <ArrowLeftIcon className="size-4" />
-          {t("blog.backToBlog")}
-        </Link>
-
-        <header className="mt-8 grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
-          <div>
-            <div className="flex flex-wrap gap-4 text-[12px] font-semibold uppercase tracking-[1.6px] text-[#854d63] dark:text-[#f0adc4]">
-              <span className="inline-flex items-center gap-2">
-                <BookOpenIcon className="size-4" />
-                {post.category}
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <ClockIcon className="size-4" />
-                {post.readingTime}
-              </span>
-              <span>{post.date}</span>
-            </div>
-            <h1
-              className="mt-5 font-serif text-[44px] leading-[48px] text-[#1c1b1b] dark:text-[#f8f1ec] md:text-[64px] md:leading-[68px]"
-              style={{ viewTransitionName: `blog-title-${post.slug}` } as React.CSSProperties}
-            >
-              {post.title}
-            </h1>
-            <p className="mt-6 text-[19px] leading-8 text-[#5b4137] dark:text-[#dbc9c0]">
-              {post.excerpt}
-            </p>
-          </div>
-
-          <div
-            className="overflow-hidden rounded-lg border border-[#e4bfb2]/32 bg-[#ffd9e4] shadow-[0_24px_70px_rgba(28,27,27,0.08)] dark:border-white/10 dark:bg-[#2b1b20]"
-            style={{ viewTransitionName: `blog-image-${post.slug}` } as React.CSSProperties}
-          >
-            <img
-              src={postImage}
-              alt=""
-              className="h-[22rem] w-full object-cover md:h-[30rem]"
-            />
-          </div>
-        </header>
-
-        <div className="mt-14 grid gap-10 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
-          <div className="space-y-11">
-            {post.body ? (
-              <div className="space-y-6 text-[17px] leading-8 text-[#5b4137] dark:text-[#dbc9c0]">
-                <PortableText value={post.body} />
-              </div>
-            ) : (
-              post.sections.map((section) => (
-              <section key={section.title}>
-                <h2 className="font-serif text-[30px] leading-9 text-[#1c1b1b] dark:text-[#f8f1ec]">
-                  {section.title}
-                </h2>
-                <div className="mt-4 space-y-4 text-[17px] leading-8 text-[#5b4137] dark:text-[#dbc9c0]">
-                  {section.body.map((paragraph) => (
-                    <p key={paragraph}>{paragraph}</p>
-                  ))}
-                </div>
-              </section>
-              ))
-            )}
-          </div>
-
-          <aside className="rounded-lg border border-[#e4bfb2]/32 bg-white p-6 shadow-[0_12px_36px_rgba(28,27,27,0.05)] dark:border-white/10 dark:bg-[#171111] lg:sticky lg:top-28">
-            <p className="text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">
-              {t("blog.takeawaysTitle")}
-            </p>
-            <ul className="mt-5 space-y-4">
-              {post.takeaways.map((takeaway) => (
-                <li key={takeaway} className="border-t border-[#e5e2e1]/75 pt-4 text-sm leading-6 text-[#5b4137] first:border-t-0 first:pt-0 dark:border-white/10 dark:text-[#dbc9c0]">
-                  {takeaway}
-                </li>
-              ))}
-            </ul>
-          </aside>
-        </div>
+        <BlogArticleContent
+          interactive
+          post={{
+            slug: post.slug,
+            title: post.title,
+            excerpt: post.excerpt,
+            category: post.category,
+            readingTime: post.readingTime,
+            date: post.date,
+            takeaways: post.takeaways,
+            body: post.body,
+            sections: post.sections,
+            imageSrc: postImage,
+          }}
+          labels={{
+            backToBlog: t("blog.backToBlog"),
+            takeawaysTitle: t("blog.takeawaysTitle"),
+          }}
+        />
       </motion.article>
     </main>
   );

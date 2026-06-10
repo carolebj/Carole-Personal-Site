@@ -1,5 +1,3 @@
-import type { PortableTextBlock } from "@portabletext/types";
-
 export type LocaleCode = "fr" | "en";
 
 export type LocalizedValue = {
@@ -32,20 +30,23 @@ export type CmsService = {
   };
 };
 
+export type PublishStatus = "draft" | "published";
+
 export type CmsBlogPost = {
   slug: string;
   title: LocalizedValue;
   excerpt?: LocalizedValue;
   category?: LocalizedValue;
   publishedAt?: string;
+  // Editorial state. Missing/undefined is treated as published for backward
+  // compatibility with content seeded before drafts existed.
+  status?: PublishStatus;
   readingTime?: LocalizedValue;
   featured?: boolean;
   coverImage?: CmsImage;
   takeaways?: LocalizedValue[];
-  body?: {
-    fr?: PortableTextBlock[];
-    en?: PortableTextBlock[];
-  };
+  // Plain-text body (paragraphs separated by blank lines), localized.
+  body?: LocalizedValue;
 };
 
 export type CmsTestimonial = {
@@ -107,21 +108,21 @@ export type CmsHomePage = {
   manifesto?: {
     title?: LocalizedValue;
     accent?: LocalizedValue;
-    body?: {
-      fr?: PortableTextBlock[];
-      en?: PortableTextBlock[];
-    };
+    body?: LocalizedValue;
   };
   about?: {
     title?: LocalizedValue;
     accent?: LocalizedValue;
-    body?: {
-      fr?: PortableTextBlock[];
-      en?: PortableTextBlock[];
-    };
+    body?: LocalizedValue;
     image?: CmsImage;
   };
 };
+
+// A post is public unless explicitly marked as a draft. Content seeded before
+// drafts existed has no `status` and must stay visible.
+export function isPublishedPost(post: { status?: string } | null | undefined): boolean {
+  return post?.status !== "draft";
+}
 
 export function localized(value: LocalizedValue | undefined, locale: string, fallback = "") {
   if (!value) {

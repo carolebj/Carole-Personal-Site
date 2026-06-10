@@ -1,5 +1,4 @@
 import { ChevronLeftIcon, ChevronRightIcon, EnvelopeIcon, PaperAirplaneIcon, SparklesIcon } from "@heroicons/react/24/outline";
-import { PortableText } from "@portabletext/react";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router";
@@ -7,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { toServiceViewModel, toTestimonialViewModel } from "../../cms/adapters";
 import { cmsImageUrl, useCmsCollection, useCmsSingleton } from "../../cms/cmsContent";
 import { localized, type CmsHomePage, type CmsService, type CmsTestimonial } from "../../cms/types";
+import { bodyToParagraphs } from "./BlogArticleContent";
 import portraitImage from "../../assets/carole-redesign-portrait.webp";
 import aboutSectionImage from "../../assets/carole-shape-static.png";
 import aboutShapeVideoMp4 from "../../assets/caole-shape-motion-g.mp4";
@@ -762,9 +762,14 @@ export default function Home() {
             </span>
           </h2>
           <div className="mx-auto mt-8 max-w-[42rem] space-y-5 text-base leading-7 text-[#5b4137] dark:text-[#dbc9c0] sm:text-[18px] sm:leading-8">
-            {usingCms && manifestoData?.body
-              ? <PortableText value={manifestoData.body[locale.startsWith("en") ? "en" : "fr"] ?? []} />
-              : <><p>{t("manifesto.p1")}</p><p>{t("manifesto.p2")}</p></>}
+            {(() => {
+              const paragraphs = usingCms
+                ? bodyToParagraphs(localized(manifestoData?.body, locale))
+                : [];
+              return paragraphs.length > 0
+                ? paragraphs.map((paragraph, i) => <p key={i}>{paragraph}</p>)
+                : <><p>{t("manifesto.p1")}</p><p>{t("manifesto.p2")}</p></>;
+            })()}
           </div>
         </div>
       </motion.section>
@@ -846,9 +851,14 @@ export default function Home() {
               )}
             </h2>
             <div className="mt-5 max-w-[42rem] space-y-4 text-base leading-7 text-[#5b4137] dark:text-[#dbc9c0] sm:text-[16px] sm:leading-8">
-              {usingCms && aboutData?.body
-                ? <PortableText value={aboutData.body[locale.startsWith("en") ? "en" : "fr"] ?? []} />
-                : <><p>{t("about.p1")}</p><p>{t("about.p2")}</p></>}
+              {(() => {
+                const paragraphs = usingCms
+                  ? bodyToParagraphs(localized(aboutData?.body, locale))
+                  : [];
+                return paragraphs.length > 0
+                  ? paragraphs.map((paragraph, i) => <p key={i}>{paragraph}</p>)
+                  : <><p>{t("about.p1")}</p><p>{t("about.p2")}</p></>;
+              })()}
             </div>
             <div className="mt-6 grid grid-cols-1 gap-4 border-t border-[#e5e2e1]/80 pt-8 dark:border-white/10 min-[420px]:grid-cols-3 sm:flex sm:flex-wrap sm:gap-7">
               {traits.map((trait, index) => {
