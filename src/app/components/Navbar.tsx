@@ -26,9 +26,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { useHaptics } from "../interactions/HapticContext";
 import { useTheme, type ThemePreference } from "../theme/ThemeContext";
 import { toServiceViewModel } from "../../cms/adapters";
-import { servicesQuery } from "../../cms/queries";
+import { useCmsCollection } from "../../cms/cmsContent";
 import type { CmsService } from "../../cms/types";
-import { useSanityQuery } from "../../cms/useSanityQuery";
 
 type ServicePreview = {
   slug: string;
@@ -290,7 +289,7 @@ export default function Navbar() {
   const { t, i18n } = useTranslation();
   const { enabled: hapticsEnabled, toggleEnabled: toggleHaptics } = useHaptics();
   const location = useLocation();
-  const { data: cmsServices } = useSanityQuery(servicesQuery, [] as CmsService[]);
+  const { data: cmsServices } = useCmsCollection<CmsService>("service", []);
   const locale = i18n.language;
   const services = useMemo(() => {
     if (cmsServices.length > 0) {

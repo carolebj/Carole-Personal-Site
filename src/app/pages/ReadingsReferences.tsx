@@ -2,10 +2,12 @@ import { motion } from "motion/react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { localized } from "../../cms/types";
-import { resourcesQuery } from "../../cms/queries";
-import type { CmsResource } from "../../cms/types";
-import { useSanityQuery } from "../../cms/useSanityQuery";
-import { Book } from "@/app/components/Book";
+import type { CmsReading } from "../../cms/types";
+import { useCmsCollection } from "../../cms/cmsContent";
+
+// Dashboard stores books and references as two distinct types.
+// `book` maps to the "Ouvrages recommandés" section; `reference` to "Articles, newsletters & contenus cités".
+import { Book } from "../components/Book";
 
 type ReadingItem = {
   title: string;
@@ -151,51 +153,32 @@ function ReferenceCard({
 export default function ReadingsReferences() {
   const { t, i18n } = useTranslation();
   const locale = i18n.language;
-  const { data: cmsResources } = useSanityQuery(resourcesQuery, [] as CmsResource[]);
+  const { data: cmsBooks } = useCmsCollection("book", [] as CmsReading[]);
+  const { data: cmsReferences } = useCmsCollection("reference", [] as CmsReading[]);
 
   const content = useMemo((): ReadingsContent => {
     const fallback = t("carnetPage", { returnObjects: true }) as ReadingsContent;
+    const hasCmsData = cmsBooks.length > 0 || cmsReferences.length > 0;
+    if (!hasCmsData) return fallback;
 
-    if (cmsResources.length === 0) return fallback;
-
-    const readings = cmsResources
-      .filter((r) => r.kind === "reading")
-      .map((r) => ({
-        title: localized(r.title, locale),
-        author: "",
-        desc: localized(r.description, locale),
-        link: r.url,
-      }));
-
-    const references = cmsResources
-      .filter((r) => r.kind === "reference")
-      .map((r) => ({
-        title: localized(r.title, locale),
-        author: "",
-        desc: localized(r.description, locale),
-        link: r.url,
-      }));
-
-    const mergedSections = fallback.readingsSections.map((section, i) => {
-      const cmsItems = i === 0 ? readings : references;
-      const merged = section.items.map((item, j) => {
-        const cmsItem = cmsItems[j];
-        if (!cmsItem) return item;
-        return {
-          ...item,
-          title: cmsItem.title || item.title,
-          desc: cmsItem.desc || item.desc,
-          link: cmsItem.link || item.link,
-        };
-      });
-      if (cmsItems.length > section.items.length) {
-        merged.push(...cmsItems.slice(section.items.length).map((r) => ({ title: r.title, author: "", desc: r.desc, link: r.link })));
-      }
-      return { ...section, items: merged };
+    const toItem = (r: CmsReading): ReadingItem => ({
+      title: localized(r.title, locale),
+      author: r.author ?? "",
+      date: r.date || undefined,
+      desc: localized(r.description, locale),
+      link: r.url || undefined,
     });
 
-    return { ...fallback, readingsSections: mergedSections };
-  }, [cmsResources, locale, t]);
+    const bookItems = cmsBooks.map(toItem);
+    const referenceItems = cmsReferences.map(toItem);
+
+    const readingsSections = fallback.readingsSections.map((section, i) => {
+      const items = i === 0 ? bookItems : referenceItems;
+      return { ...section, items: items.length > 0 ? items : section.items };
+    });
+
+    return { ...fallback, readingsSections };
+  }, [cmsBooks, cmsReferences, locale, t]);
 
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const booksSection = content.readingsSections[0];

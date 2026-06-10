@@ -66,4 +66,9 @@ export const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: "/dashboard/*",
+    lazy: async () => ({ Component: (await import("../admin/AdminApp")).default }),
+    ErrorBoundary: RouteErrorBoundary,
+  },
 ]);

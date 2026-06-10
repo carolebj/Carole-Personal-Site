@@ -9,9 +9,8 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { langLabels, useLang, type Lang } from "../i18n/LanguageContext";
 import { useTheme } from "../theme/ThemeContext";
-import { siteSettingsQuery } from "../../cms/queries";
+import { useCmsSingleton } from "../../cms/cmsContent";
 import type { CmsSiteSettings } from "../../cms/types";
-import { useSanityQuery } from "../../cms/useSanityQuery";
 
 const languages: { code: Lang; flag: string }[] = [
   { code: "fr", flag: "FR" },
@@ -403,7 +402,7 @@ export default function Footer() {
   const { lang, setLang } = useLang();
   const { resolvedTheme } = useTheme();
   const shouldReduceMotion = useReducedMotion();
-  const { data: siteData } = useSanityQuery(siteSettingsQuery, null as CmsSiteSettings | null);
+  const { data: siteData } = useCmsSingleton<CmsSiteSettings | null>("siteSettings", null);
   const year = new Date().getFullYear();
   const footerRef = useRef<HTMLElement>(null);
   const shaderSectionRef = useRef<HTMLElement>(null);

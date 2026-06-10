@@ -3,9 +3,8 @@ import { motion } from "motion/react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toServiceViewModel } from "../../cms/adapters";
-import { servicesQuery } from "../../cms/queries";
+import { useCmsCollection } from "../../cms/cmsContent";
 import type { CmsService } from "../../cms/types";
-import { useSanityQuery } from "../../cms/useSanityQuery";
 
 type ServiceDetail = {
   slug: string;
@@ -49,7 +48,7 @@ function AnimatedDigits({ value }: { value: string }) {
 export default function ServiceDetail() {
   const { slug } = useParams();
   const { t, i18n } = useTranslation();
-  const { data: cmsServices } = useSanityQuery(servicesQuery, [] as CmsService[]);
+  const { data: cmsServices } = useCmsCollection<CmsService>("service", []);
   const locale = i18n.language;
   const services = useMemo(() => {
     if (cmsServices.length > 0) {

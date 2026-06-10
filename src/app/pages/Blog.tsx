@@ -5,10 +5,8 @@ import type React from "react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toBlogPostViewModel } from "../../cms/adapters";
-import { sanityImageUrl } from "../../cms/client";
-import { blogPostsQuery } from "../../cms/queries";
-import type { CmsBlogPost, SanityImage } from "../../cms/types";
-import { useSanityQuery } from "../../cms/useSanityQuery";
+import { cmsImageUrl, useCmsCollection } from "../../cms/cmsContent";
+import type { CmsBlogPost, CmsImage } from "../../cms/types";
 import abstractAuditImage from "../../assets/blog/blog-abstract-audit.svg";
 import abstractContentImage from "../../assets/blog/blog-abstract-content.svg";
 import abstractEditorialImage from "../../assets/blog/blog-abstract-editorial.svg";
@@ -22,7 +20,7 @@ type BlogPostPreview = {
   date: string;
   readingTime: string;
   featured?: boolean;
-  coverImage?: SanityImage;
+  coverImage?: CmsImage;
 };
 
 const blogImages = [abstractEditorialImage, abstractContentImage, abstractSocialImage, abstractAuditImage];
@@ -36,7 +34,7 @@ export default function Blog() {
     [t]
   );
   const emptyCmsPosts = useMemo<CmsBlogPost[]>(() => [], []);
-  const { data: cmsPosts } = useSanityQuery<CmsBlogPost[]>(blogPostsQuery, emptyCmsPosts);
+  const { data: cmsPosts } = useCmsCollection<CmsBlogPost>("blogPost", emptyCmsPosts);
   const posts = useMemo(
     () =>
       cmsPosts.length > 0
@@ -57,7 +55,7 @@ export default function Blog() {
   });
   const getPostImage = (slug: string) => {
     const post = posts.find((item) => item.slug === slug);
-    const cmsImage = sanityImageUrl(post?.coverImage)?.width(1200).height(900).fit("crop").url();
+    const cmsImage = cmsImageUrl(post?.coverImage);
 
     if (cmsImage) {
       return cmsImage;

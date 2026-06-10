@@ -7,11 +7,9 @@ export type LocalizedValue = {
   en?: string;
 };
 
-export type SanityImage = {
-  asset?: {
-    _ref?: string;
-    url?: string;
-  };
+// Dashboard-managed image: a flat public URL (Supabase Storage) + alt text.
+export type CmsImage = {
+  url?: string;
   alt?: LocalizedValue;
 };
 
@@ -42,7 +40,7 @@ export type CmsBlogPost = {
   publishedAt?: string;
   readingTime?: LocalizedValue;
   featured?: boolean;
-  coverImage?: SanityImage;
+  coverImage?: CmsImage;
   takeaways?: LocalizedValue[];
   body?: {
     fr?: PortableTextBlock[];
@@ -54,15 +52,26 @@ export type CmsTestimonial = {
   quote: LocalizedValue;
   name: string;
   role?: LocalizedValue;
-  portrait?: SanityImage;
+  portrait?: CmsImage;
 };
 
 export type CmsResource = {
   title: LocalizedValue;
   kind?: string;
+  categories?: string[];
   description?: LocalizedValue;
   url?: string;
-  image?: SanityImage;
+  image?: CmsImage;
+};
+
+export type CmsReading = {
+  title: LocalizedValue;
+  format?: string;
+  author?: string;
+  date?: string;
+  description?: LocalizedValue;
+  url?: string;
+  image?: CmsImage;
 };
 
 export type CmsCvEntry = {
@@ -93,7 +102,7 @@ export type CmsHomePage = {
     description?: LocalizedValue;
     primaryCta?: LocalizedValue;
     secondaryCta?: LocalizedValue;
-    portrait?: SanityImage;
+    portrait?: CmsImage;
   };
   manifesto?: {
     title?: LocalizedValue;
@@ -110,7 +119,7 @@ export type CmsHomePage = {
       fr?: PortableTextBlock[];
       en?: PortableTextBlock[];
     };
-    image?: SanityImage;
+    image?: CmsImage;
   };
 };
 

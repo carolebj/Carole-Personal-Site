@@ -7,9 +7,8 @@ import {
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toCvViewModel } from "../../cms/adapters";
-import { cvEntryQuery } from "../../cms/queries";
+import { useCmsCollection } from "../../cms/cmsContent";
 import type { CmsCvEntry } from "../../cms/types";
-import { useSanityQuery } from "../../cms/useSanityQuery";
 
 type CvContact = {
   label: string;
@@ -34,7 +33,7 @@ const contactIcons = [EnvelopeIcon, PhoneIcon, MapPinIcon, LinkIcon];
 export default function Cv() {
   const { t, i18n } = useTranslation();
   const locale = i18n.language;
-  const { data: cmsEntries } = useSanityQuery(cvEntryQuery, [] as CmsCvEntry[]);
+  const { data: cmsEntries } = useCmsCollection<CmsCvEntry>("cvEntry", []);
   const usingCms = cmsEntries.length > 0;
   const contacts = t("cv.contacts", { returnObjects: true }) as CvContact[];
   const cvData = useMemo(() => {

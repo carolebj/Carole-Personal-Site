@@ -2,11 +2,9 @@ import { ArrowUpRightIcon, CheckIcon, ChevronDownIcon } from "@heroicons/react/2
 import { motion } from "motion/react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { sanityImageUrl } from "../../cms/client";
-import { resourcesQuery } from "../../cms/queries";
 import type { CmsResource } from "../../cms/types";
 import { localized } from "../../cms/types";
-import { useSanityQuery } from "../../cms/useSanityQuery";
+import { useCmsCollection } from "../../cms/cmsContent";
 import calendrierCm229Image from "../../assets/resources/calendrier-cm229.webp";
 import laveiyeImage from "../../assets/resources/laveiye.webp";
 import leDepotImage from "../../assets/resources/le-depot.webp";
@@ -230,28 +228,36 @@ function ResourceCard({
 export default function ToolsInspirations() {
   const { t, i18n } = useTranslation();
   const locale = i18n.language;
-  const { data: cmsResources } = useSanityQuery(resourcesQuery, [] as CmsResource[]);
+  // Resources and communities are stored as two distinct types in the dashboard.
+  // The type label (Ressource / Communauté) is inferred from the collection name.
+  const { data: cmsResourceItems } = useCmsCollection("resource", [] as CmsResource[]);
+  const { data: cmsCommunityItems } = useCmsCollection("community", [] as CmsResource[]);
 
   const content = useMemo((): CarnetPageContent => {
-    if (cmsResources.length > 0) {
+    const hasCmsData = cmsResourceItems.length > 0 || cmsCommunityItems.length > 0;
+    if (hasCmsData) {
       const langPrefix = locale.startsWith("en") ? "en" : "fr";
-      const communityKinds = new Set(["community"]);
-      const items: ResourceItem[] = cmsResources.map((r) => {
-        const imageBuilder = sanityImageUrl(r.image);
-        const imageUrl = imageBuilder?.width(800).height(600).fit("crop").url();
-        const type = communityKinds.has(r.kind ?? "")
+      const typeLabel = (isCommunity: boolean) =>
+        isCommunity
           ? langPrefix === "en" ? "Community" : "Communauté"
           : langPrefix === "en" ? "Resource" : "Ressource";
 
+      const toItem = (r: CmsResource, isCommunity: boolean): ResourceItem => {
+        const title = localized(r.title, locale);
         return {
-          title: localized(r.title, locale),
-          type,
-          categories: r.kind ? [r.kind] : [],
+          title,
+          type: typeLabel(isCommunity),
+          categories: Array.isArray(r.categories) ? r.categories : [],
           desc: localized(r.description, locale),
           link: r.url ?? "",
-          imageUrl: imageUrl || resourceImages[localized(r.title, locale)] || undefined,
+          imageUrl: r.image?.url || resourceImages[title] || undefined,
         };
-      });
+      };
+
+      const items: ResourceItem[] = [
+        ...cmsResourceItems.map((r) => toItem(r, false)),
+        ...cmsCommunityItems.map((r) => toItem(r, true)),
+      ];
       const categories = [langPrefix === "en" ? "All" : "Tout", ...Array.from(new Set(items.flatMap((i) => i.categories).filter(Boolean)))];
       const typeFilters = [langPrefix === "en" ? "All" : "Tous", ...Array.from(new Set(items.map((i) => i.type).filter(Boolean)))];
       const fallback = t("carnetPage", { returnObjects: true }) as CarnetPageContent;
@@ -268,7 +274,7 @@ export default function ToolsInspirations() {
       };
     }
     return t("carnetPage", { returnObjects: true }) as CarnetPageContent;
-  }, [cmsResources, locale, t]);
+  }, [cmsResourceItems, cmsCommunityItems, locale, t]);
 
   const typeFilters = content.typeFilters;
   const categoryFilters = content.categories;

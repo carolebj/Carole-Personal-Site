@@ -9,9 +9,8 @@ import { useMemo } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { toServiceViewModel } from "../../cms/adapters";
-import { servicesQuery } from "../../cms/queries";
+import { useCmsCollection } from "../../cms/cmsContent";
 import type { CmsService } from "../../cms/types";
-import { useSanityQuery } from "../../cms/useSanityQuery";
 
 type Service = {
   slug: string;
@@ -57,7 +56,7 @@ const serviceAccentClasses = [
 
 export default function Services() {
   const { t, i18n } = useTranslation();
-  const { data: cmsServices } = useSanityQuery(servicesQuery, [] as CmsService[]);
+  const { data: cmsServices } = useCmsCollection<CmsService>("service", []);
   const locale = i18n.language;
   const services = useMemo(() => {
     if (cmsServices.length > 0) {

@@ -5,10 +5,8 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties }
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { toServiceViewModel, toTestimonialViewModel } from "../../cms/adapters";
-import { sanityImageUrl } from "../../cms/client";
-import { homePageQuery, servicesQuery, testimonialsQuery } from "../../cms/queries";
-import { localized, type CmsHomePage, type CmsService, type CmsTestimonial, type SanityImage } from "../../cms/types";
-import { useSanityQuery } from "../../cms/useSanityQuery";
+import { cmsImageUrl, useCmsCollection, useCmsSingleton } from "../../cms/cmsContent";
+import { localized, type CmsHomePage, type CmsService, type CmsTestimonial } from "../../cms/types";
 import portraitImage from "../../assets/carole-redesign-portrait.webp";
 import aboutSectionImage from "../../assets/carole-shape-static.png";
 import aboutShapeVideoMp4 from "../../assets/caole-shape-motion-g.mp4";
@@ -504,9 +502,9 @@ function VisualTuningPanel({
 export default function Home() {
   const { t, i18n } = useTranslation();
   const locale = i18n.language;
-  const { data: cmsHome } = useSanityQuery(homePageQuery, null as CmsHomePage | null);
-  const { data: cmsServices } = useSanityQuery(servicesQuery, [] as CmsService[]);
-  const { data: cmsTestimonials } = useSanityQuery(testimonialsQuery, [] as CmsTestimonial[]);
+  const { data: cmsHome } = useCmsSingleton<CmsHomePage | null>("homePage", null);
+  const { data: cmsServices } = useCmsCollection<CmsService>("service", []);
+  const { data: cmsTestimonials } = useCmsCollection<CmsTestimonial>("testimonial", []);
   const usingCms = Boolean(cmsHome);
 
   const heroData = cmsHome?.hero;
@@ -541,13 +539,8 @@ export default function Home() {
     () =>
       testimonials.map((testimonial, index) => {
         let imgSrc = testimonialImages[index] ?? testimonialImages[0];
-        if (testimonial.portrait) {
-          const builder = sanityImageUrl(testimonial.portrait);
-          if (builder) {
-            const url = builder.width(400).height(500).url();
-            if (url) imgSrc = url;
-          }
-        }
+        const portraitUrl = cmsImageUrl(testimonial.portrait);
+        if (portraitUrl) imgSrc = portraitUrl;
         return { ...testimonial, src: imgSrc };
       }),
     [testimonials]
