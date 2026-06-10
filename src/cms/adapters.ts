@@ -20,12 +20,11 @@ function cmsProseBlock(
   usingCms: boolean,
   fallback: { label: string; paragraphs: string[] },
 ) {
+  if (!usingCms) return fallback;
+
   return {
-    label: usingCms && section?.label ? localized(section.label, locale) : fallback.label,
-    paragraphs:
-      usingCms && section?.paragraphs?.length
-        ? localizedListItems(section.paragraphs, locale)
-        : fallback.paragraphs,
+    label: localized(section?.label, locale),
+    paragraphs: localizedListItems(section?.paragraphs, locale),
   };
 }
 
@@ -44,46 +43,31 @@ export function toAboutPageViewModel(
     ctaBand: { title: string; subtitle: string; ctaPrimary: string; ctaSecondary: string };
   },
 ) {
+  if (!usingCms) return fallback;
+
   return {
     hero: {
-      title: usingCms && cms?.hero?.title ? localized(cms.hero.title, locale) : fallback.hero.title,
-      subtitle:
-        usingCms && cms?.hero?.subtitle ? localized(cms.hero.subtitle, locale) : fallback.hero.subtitle,
+      title: localized(cms?.hero?.title, locale),
+      subtitle: localized(cms?.hero?.subtitle, locale),
     },
-    imageAlt: usingCms && cms?.imageAlt ? localized(cms.imageAlt, locale) : fallback.imageAlt,
+    imageAlt: localized(cms?.imageAlt, locale),
     identity: {
-      label: usingCms && cms?.identity?.label ? localized(cms.identity.label, locale) : fallback.identity.label,
-      greeting:
-        usingCms && cms?.identity?.greeting
-          ? localized(cms.identity.greeting, locale)
-          : fallback.identity.greeting,
-      role: usingCms && cms?.identity?.role ? localized(cms.identity.role, locale) : fallback.identity.role,
-      paragraphs:
-        usingCms && cms?.identity?.paragraphs?.length
-          ? localizedListItems(cms.identity.paragraphs, locale)
-          : fallback.identity.paragraphs,
+      label: localized(cms?.identity?.label, locale),
+      greeting: localized(cms?.identity?.greeting, locale),
+      role: localized(cms?.identity?.role, locale),
+      paragraphs: localizedListItems(cms?.identity?.paragraphs, locale),
     },
     work: cmsProseBlock(cms?.work, locale, usingCms, fallback.work),
     value: cmsProseBlock(cms?.value, locale, usingCms, fallback.value),
     approach: cmsProseBlock(cms?.approach, locale, usingCms, fallback.approach),
     closing: {
-      paragraphs:
-        usingCms && cms?.closing?.paragraphs?.length
-          ? localizedListItems(cms.closing.paragraphs, locale)
-          : fallback.closing.paragraphs,
+      paragraphs: localizedListItems(cms?.closing?.paragraphs, locale),
     },
     ctaBand: {
-      title: usingCms && cms?.ctaBand?.title ? localized(cms.ctaBand.title, locale) : fallback.ctaBand.title,
-      subtitle:
-        usingCms && cms?.ctaBand?.subtitle ? localized(cms.ctaBand.subtitle, locale) : fallback.ctaBand.subtitle,
-      ctaPrimary:
-        usingCms && cms?.ctaBand?.ctaPrimary
-          ? localized(cms.ctaBand.ctaPrimary, locale)
-          : fallback.ctaBand.ctaPrimary,
-      ctaSecondary:
-        usingCms && cms?.ctaBand?.ctaSecondary
-          ? localized(cms.ctaBand.ctaSecondary, locale)
-          : fallback.ctaBand.ctaSecondary,
+      title: localized(cms?.ctaBand?.title, locale),
+      subtitle: localized(cms?.ctaBand?.subtitle, locale),
+      ctaPrimary: localized(cms?.ctaBand?.ctaPrimary, locale),
+      ctaSecondary: localized(cms?.ctaBand?.ctaSecondary, locale),
     },
   };
 }
@@ -94,12 +78,14 @@ export function toCvHeaderViewModel(
   usingCms: boolean,
   fallback: { eyebrow: string; firstName: string; lastName: string; role: string; summary: string },
 ) {
+  if (!usingCms) return fallback;
+
   return {
-    eyebrow: usingCms && cms?.eyebrow ? localized(cms.eyebrow, locale) : fallback.eyebrow,
-    firstName: usingCms && cms?.firstName ? cms.firstName : fallback.firstName,
-    lastName: usingCms && cms?.lastName ? cms.lastName : fallback.lastName,
-    role: usingCms && cms?.role ? localized(cms.role, locale) : fallback.role,
-    summary: usingCms && cms?.summary ? localized(cms.summary, locale) : fallback.summary,
+    eyebrow: localized(cms?.eyebrow, locale),
+    firstName: cms?.firstName ?? "",
+    lastName: cms?.lastName ?? "",
+    role: localized(cms?.role, locale),
+    summary: localized(cms?.summary, locale),
   };
 }
 
@@ -153,6 +139,15 @@ export function toBlogPostViewModel(post: CmsBlogPost, locale: string) {
 }
 
 export function toCvViewModel(entries: CmsCvEntry[], locale: string) {
+  const categoryItems = (category: string) =>
+    entries
+      .filter((entry) => entry.category === category)
+      .flatMap((entry) => [
+        localized(entry.title, locale),
+        ...(entry.highlights?.map((item) => localized(item, locale)).filter(Boolean) ?? []),
+      ])
+      .filter(Boolean);
+
   const experiences = entries
     .filter((e) => e.category === "experience")
     .map((e) => ({
@@ -164,28 +159,20 @@ export function toCvViewModel(entries: CmsCvEntry[], locale: string) {
 
   const sidebar = [
     {
-      title: "Compétences",
-      items: entries
-        .filter((e) => e.category === "skill")
-        .map((e) => localized(e.title, locale)),
+      title: locale.startsWith("en") ? "Education" : "Formation",
+      items: categoryItems("education"),
     },
     {
-      title: "Langues",
-      items: entries
-        .filter((e) => e.category === "language")
-        .map((e) => localized(e.title, locale)),
+      title: locale.startsWith("en") ? "Skills" : "Compétences",
+      items: categoryItems("skill"),
     },
     {
-      title: "Réalisations",
-      items: entries
-        .filter((e) => e.category === "achievement")
-        .map((e) => localized(e.title, locale)),
+      title: locale.startsWith("en") ? "Selected achievements" : "Réalisations marquantes",
+      items: categoryItems("achievement"),
     },
     {
-      title: "Formation",
-      items: entries
-        .filter((e) => e.category === "education")
-        .map((e) => localized(e.title, locale)),
+      title: locale.startsWith("en") ? "Languages" : "Langues parlées",
+      items: categoryItems("language"),
     },
   ].filter((s) => s.items.length > 0);
 

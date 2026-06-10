@@ -1,17 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { getSupabase, isSupabaseConfigured } from "../lib/supabase";
+import { cmsFallback, cmsSuccess, type CmsState } from "./cmsState";
 
 // Public-site reader for the dashboard-managed content (Supabase).
 //
-// The dashboard stores every document in a single `cms_documents` table as a
-// JSONB `data` payload whose field names mirror `src/cms/types.ts`. This module
-// fetches those rows (public read via RLS) and exposes drop-in hooks so the
-// public pages can treat Supabase as the source of truth, with the existing
-// i18n content acting only as a fallback.
+// Public pages read only the last published snapshot. Drafts and revisions live
+// in authenticated tables and are never exposed through this reader.
 
-const TABLE = "cms_documents";
+const TABLE = "cms_public_documents";
 
-type Row = { doc_id: string; data: Record<string, unknown> };
+type Row = {
+  doc_id: string;
+  data: Record<string, unknown>;
+  position: number;
+  slug?: string | null;
+  published_at?: string;
+};
 
 const cache = new Map<string, unknown[]>();
 const inflight = new Map<string, Promise<unknown[]>>();
@@ -33,15 +37,20 @@ async function fetchType(type: string): Promise<unknown[]> {
   const promise = (async () => {
     const { data, error } = await sb
       .from(TABLE)
-      .select("doc_id, data")
+      .select("doc_id, data, position, slug, published_at")
       .eq("type", type)
-      .order("updated_at", { ascending: true });
-    const rows = error
-      ? []
-      : ((data ?? []) as Row[]).map((row) => ({
-          ...(row.data ?? {}),
-          id: row.doc_id,
-        }));
+      .order("position", { ascending: true });
+    if (error) {
+      inflight.delete(type);
+      throw new Error(error.message);
+    }
+    const rows = ((data ?? []) as Row[]).map((row) => ({
+      ...(row.data ?? {}),
+      id: row.doc_id,
+      position: row.position,
+      slug: row.slug ?? row.data?.slug,
+      publishedAtMeta: row.published_at,
+    }));
     cache.set(type, rows);
     inflight.delete(type);
     return rows;
@@ -65,20 +74,21 @@ export function clearCmsCache(type?: string) {
   }
 }
 
-type CollectionState<T> = { data: T[]; loading: boolean; usingCms: boolean };
+type CollectionState<T> = CmsState<T[]>;
 
 export function useCmsCollection<T>(type: string, fallback: T[]): CollectionState<T> {
   const [state, setState] = useState<CollectionState<T>>({
     data: fallback,
     loading: isSupabaseConfigured,
     usingCms: false,
+    error: null,
   });
   const fallbackRef = useRef(fallback);
   fallbackRef.current = fallback;
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
-      setState({ data: fallbackRef.current, loading: false, usingCms: false });
+      setState(cmsFallback(fallbackRef.current));
       return;
     }
 
@@ -88,11 +98,11 @@ export function useCmsCollection<T>(type: string, fallback: T[]): CollectionStat
         if (cancelled) return;
         // Supabase is configured and the fetch succeeded: treat CMS as source of
         // truth even when the collection is empty (e.g. after deleting all items).
-        setState({ data: rows as T[], loading: false, usingCms: true });
+        setState(cmsSuccess(rows as T[]));
       })
-      .catch(() => {
+      .catch((error: unknown) => {
         if (!cancelled) {
-          setState({ data: fallbackRef.current, loading: false, usingCms: false });
+          setState(cmsFallback(fallbackRef.current, error));
         }
       });
 
@@ -104,20 +114,21 @@ export function useCmsCollection<T>(type: string, fallback: T[]): CollectionStat
   return state;
 }
 
-type SingletonState<T> = { data: T; loading: boolean; usingCms: boolean };
+type SingletonState<T> = CmsState<T>;
 
 export function useCmsSingleton<T>(type: string, fallback: T): SingletonState<T> {
   const [state, setState] = useState<SingletonState<T>>({
     data: fallback,
     loading: isSupabaseConfigured,
     usingCms: false,
+    error: null,
   });
   const fallbackRef = useRef(fallback);
   fallbackRef.current = fallback;
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
-      setState({ data: fallbackRef.current, loading: false, usingCms: false });
+      setState(cmsFallback(fallbackRef.current));
       return;
     }
 
@@ -127,14 +138,14 @@ export function useCmsSingleton<T>(type: string, fallback: T): SingletonState<T>
         if (cancelled) return;
         const first = rows[0] as T | undefined;
         if (first) {
-          setState({ data: first, loading: false, usingCms: true });
+          setState(cmsSuccess(first));
         } else {
-          setState({ data: fallbackRef.current, loading: false, usingCms: false });
+          setState(cmsFallback(fallbackRef.current));
         }
       })
-      .catch(() => {
+      .catch((error: unknown) => {
         if (!cancelled) {
-          setState({ data: fallbackRef.current, loading: false, usingCms: false });
+          setState(cmsFallback(fallbackRef.current, error));
         }
       });
 

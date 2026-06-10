@@ -196,6 +196,13 @@ export type CmsCvPage = {
   lastName?: string;
   role?: LocalizedValue;
   summary?: LocalizedValue;
+  contacts?: {
+    email?: string;
+    phone?: string;
+    location?: LocalizedValue;
+    portfolioLabel?: LocalizedValue;
+    portfolioUrl?: string;
+  };
 };
 
 // A post is public unless explicitly marked as a draft. Content seeded before
