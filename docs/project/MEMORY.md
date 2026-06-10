@@ -10,7 +10,7 @@ Last reviewed: 2026-06-10 WAT
 
 - Main production history lives on `main`.
 - Redesign work should happen on `dev`, which tracks `origin/dev`.
-- Use `npm run build` as the primary regression check because the repo has no formal test, lint, or formatter scripts yet.
+- Use `npm run build` and `npm run typecheck` as regression checks (no formal test or lint scripts yet).
 - Vercel should keep `main` as the production branch and use `dev` as the review/preview branch until Carole validates the redesign.
 - Vercel build settings: framework `Vite`, build command `npm run build`, output directory `dist`.
 - `vercel.json` rewrites all routes to `/index.html` so React Router deep links can load correctly on Vercel.
@@ -68,6 +68,12 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
 - **Empty collections**: `useCmsCollection` sets `usingCms: true` when Supabase fetch succeeds even if `[]` — prevents i18n resurrection after deleting all items.
 - **Content parity fixes**: Footer reads `siteSettings` flat social fields + CMS services; Home uses CMS hero portrait and about image; Readings uses CMS book cover URLs. `CmsSiteSettings` typed with `instagram` / `linkedin`.
 - **Admin UI**: collection rows `items-start`, editor toolbar wraps, localized list delete button alignment.
+
+### Remaining optional work (2026-06-10)
+- Home section headings (services, testimonials, contact) editable via CMS.
+- Page `/about` and CV header still 100 % i18n.
+- Orphan `category` collection (Blog does not use it).
+- SEO metadata from `siteSettings`.
 
 ### Public Site Data Layer
 - Hook file: `src/cms/cmsContent.ts` — exports `useCmsCollection(type, fallback)`, `useCmsSingleton(type, fallback)`, and `cmsImageUrl(image)`.
@@ -133,7 +139,7 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
   router. Layout:
   - `docs/GUIDELINE.md`, `docs/SECURITY.md`
   - `docs/workflows/AGENT_DEV.md`
-  - `docs/project/MEMORY.md`, `docs/project/NEXT_STEPS.md`
+  - `docs/project/MEMORY.md`
   - `README.md` and `ATTRIBUTIONS.md` stay at root.
 - **Security model documented in `docs/SECURITY.md`** (secret locations, no
   secret behind a `VITE_` prefix, rotation, incident runbook). Git history is

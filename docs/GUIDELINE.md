@@ -28,12 +28,14 @@ npm install
 npm run dev:site      # Vite site (port 5173) — includes the /dashboard route
 npm run dev           # alias of vite
 npm run build
+npm run typecheck
 ```
 
 Current `package.json` scripts:
 
 - `npm run dev` / `npm run dev:site`: start the Vite site (port 5173); the custom `/dashboard` route is served by the same server
 - `npm run build`: builds the Vite site → `dist/`
+- `npm run typecheck`: runs `tsc --noEmit` on `src/`
 
 Dashboard seed and agent verification (credentials in `.env.local` — see `workflows/AGENT_DEV.md`):
 
@@ -57,6 +59,7 @@ There is no formal test runner, lint script, or formatter script configured in `
 Current practical checks:
 
 - `npm run build`: primary regression check
+- `npm run typecheck`: TypeScript strict check (`src/`)
 - Manual browser verification through the Vite dev server
 
 If you add any of the following, update this file:
@@ -64,7 +67,6 @@ If you add any of the following, update this file:
 - unit/integration tests
 - linting
 - formatting
-- typecheck-only script
 
 ## Project Memory
 
@@ -200,8 +202,7 @@ Project guidance (all under `docs/`, entry point `AGENTS.md` at repo root):
 - `docs/GUIDELINE.md`: canonical repo-specific implementation guide
 - `docs/SECURITY.md`: security model and secret-handling workflow
 - `docs/workflows/AGENT_DEV.md`: autonomous CMS seed + browser verification
-- `docs/project/MEMORY.md`: current project memory and redesign notes
-- `docs/project/NEXT_STEPS.md`: temporary handoff / current todo
+- `docs/project/MEMORY.md`: current project memory, redesign notes, optional backlog
 
 ## Coding Conventions
 

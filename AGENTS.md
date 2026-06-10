@@ -14,8 +14,7 @@ développeurs. Les documents de guidage vivent dans **`docs/`**.
   `AGENT_PREVIEW_URL` dans le navigateur intégré de l'outil courant (Cursor via
   MCP `browser_navigate` ; Codex/Claude Code via leur propre preview ; le
   navigateur système n'est qu'une option secondaire, en cas de bénéfice précis).
-- **`docs/project/MEMORY.md`** — mémoire produit/design vivante (contexte courant).
-- **`docs/project/NEXT_STEPS.md`** — passation / todo de la session en cours.
+- **`docs/project/MEMORY.md`** — mémoire produit/design vivante (contexte courant, backlog optionnel).
 
 ## Réflexes
 
