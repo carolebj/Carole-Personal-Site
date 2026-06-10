@@ -53,13 +53,75 @@ console.log("✅  Connecté.\n");
 const id = (prefix) => `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 const L = (fr, en = "") => ({ fr, en });
 const TABLE = "cms_documents";
+const PUBLIC_TABLE = "cms_public_documents";
 
-async function upsert(type, docId, data) {
-  const { error } = await sb.from(TABLE).upsert(
-    { type, doc_id: docId, data: { ...data, id: docId }, updated_at: new Date().toISOString() },
-    { onConflict: "type,doc_id" },
-  );
+async function insertIfMissing(type, docId, data, position) {
+  const { data: existing, error: lookupError } = await sb
+    .from(TABLE)
+    .select("doc_id, data, status, position, slug")
+    .eq("type", type)
+    .eq("doc_id", docId)
+    .maybeSingle();
+  if (lookupError) throw new Error(`${type}/${docId}: ${lookupError.message}`);
+  if (existing) {
+    const { data: revision, error: revisionLookupError } = await sb
+      .from("cms_revisions")
+      .select("revision_id")
+      .eq("type", type)
+      .eq("doc_id", docId)
+      .limit(1)
+      .maybeSingle();
+    if (revisionLookupError) throw new Error(`${type}/${docId} revision: ${revisionLookupError.message}`);
+    if (!revision) {
+      const { error: revisionError } = await sb.from("cms_revisions").insert({
+        type,
+        doc_id: docId,
+        data: existing.data,
+        status: existing.status,
+        position: existing.position,
+        slug: existing.slug,
+      });
+      if (revisionError) throw new Error(`${type}/${docId} revision: ${revisionError.message}`);
+    }
+    process.stdout.write("·");
+    return;
+  }
+
+  const now = new Date().toISOString();
+  const payload = { ...data, id: docId };
+  const slug = typeof data.slug === "string" ? data.slug : null;
+  const { error } = await sb.from(TABLE).insert({
+    type,
+    doc_id: docId,
+    data: payload,
+    status: "published",
+    position,
+    slug,
+    created_at: now,
+    updated_at: now,
+    published_at: now,
+  });
   if (error) throw new Error(`${type}/${docId}: ${error.message}`);
+
+  const { error: publicError } = await sb.from(PUBLIC_TABLE).insert({
+    type,
+    doc_id: docId,
+    data: payload,
+    position,
+    slug,
+    published_at: now,
+  });
+  if (publicError) throw new Error(`${type}/${docId} public: ${publicError.message}`);
+
+  const { error: revisionError } = await sb.from("cms_revisions").insert({
+    type,
+    doc_id: docId,
+    data: payload,
+    status: "published",
+    position,
+    slug,
+  });
+  if (revisionError) throw new Error(`${type}/${docId} revision: ${revisionError.message}`);
   process.stdout.write(".");
 }
 
@@ -306,6 +368,13 @@ const seed = {
       "Jeune professionnelle en communication, j'ai acquis une expérience concrète en gestion de contenus, coordination d'activités et appui à la mise en œuvre de stratégies de communication. Organisée et proactive, je souhaite évoluer au sein d'une structure où je pourrai renforcer mes compétences tout en contribuant activement aux projets.",
       "As a young communications professional, I have gained hands-on experience in content management, activity coordination, and support for communication strategy deployment. Organized and proactive, I am looking to grow within a structure where I can strengthen my skills while actively contributing to projects.",
     ),
+    contacts: {
+      email: "caroletonoukouen@gmail.com",
+      phone: "+229 01 95 93 44 54",
+      location: L("Cotonou, Bénin", "Cotonou, Benin"),
+      portfolioLabel: L("Behance.net", "Behance.net"),
+      portfolioUrl: "https://www.behance.net/caroletonoukouen",
+    },
   },
 
   siteSettings: {
@@ -674,6 +743,55 @@ const seed = {
       description: L("Spécialisation communication digitale et stratégie de marque.", ""),
       highlights: [],
     },
+    {
+      id: "cv-education",
+      title: L(
+        "Licence en littérature et civilisation américaines · Université de Parakou · 2020",
+        "Bachelor's degree in American literature and civilization · University of Parakou · 2020",
+      ),
+      category: "education",
+      highlights: [
+        L("Growth marketing · Digital Valley · 2026", "Growth marketing · Digital Valley · 2026"),
+        L("Stratégie des médias sociaux · Impacter · 2022", "Social media strategy · Impacter · 2022"),
+        L("Rédaction web SEO · LFI · 2022", "SEO web writing · LFI · 2022"),
+        L("Design graphique · EtriLabs · 2019", "Graphic design · EtriLabs · 2019"),
+      ],
+    },
+    {
+      id: "cv-skills",
+      title: L(
+        "Rédaction de contenu, storytelling et communication institutionnelle",
+        "Content writing, storytelling, and institutional communication",
+      ),
+      category: "skill",
+      highlights: [
+        L("Graphisme avec Canva et Adobe Suite", "Graphic design with Canva and Adobe Suite"),
+        L("Community management", "Community management"),
+        L("Coordination d'événements", "Event coordination"),
+        L("Traduction et adaptation FR/EN", "FR/EN translation and adaptation"),
+        L("Meta Business Suite, Trello et WordPress", "Meta Business Suite, Trello, and WordPress"),
+        L("Analyse des performances et reporting", "Performance analysis and reporting"),
+      ],
+    },
+    {
+      id: "cv-achievements",
+      title: L(
+        "Participation à la stratégie de positionnement visuel du Réseau Revia Afrique",
+        "Contributed to the visual positioning strategy of Réseau Revia Afrique",
+      ),
+      category: "achievement",
+      highlights: [
+        L("Graphiste bénévole à Women in Tech Bénin", "Volunteer graphic designer for Women in Tech Benin"),
+      ],
+    },
+    {
+      id: "cv-languages",
+      title: L("Français : courant, langue native", "French: fluent, native language"),
+      category: "language",
+      highlights: [
+        L("Anglais : B2, intermédiaire avancé", "English: B2, upper-intermediate"),
+      ],
+    },
   ],
 
 };
@@ -681,34 +799,20 @@ const seed = {
 // --- insertion ---------------------------------------------------------------
 const singletons = ["homePage", "aboutPage", "cvPage", "siteSettings"];
 
-// Le dashboard devient la source de vérité : on repart d'un état propre.
-// On efface les types courants ET les anciens noms de types (toolResource, reading)
-// qui peuvent encore traîner dans Supabase suite à des seeds précédents.
-const legacyTypes = ["toolResource", "reading", "category"];
-const typesToWipe = [...new Set([...Object.keys(seed), ...legacyTypes])];
-
-console.log("🧹  Nettoyage du contenu existant (par type)…\n");
-for (const type of typesToWipe) {
-  const { error } = await sb.from(TABLE).delete().eq("type", type);
-  if (error) {
-    console.log(`  ${type.padEnd(20)}  ⚠️  ${error.message}`);
-  }
-}
-
 console.log("\n🖼️  Préparation des visuels carnet…");
 await hydrateCarnetImages(seed);
 
-console.log("\n📥  Insertion du contenu réel…\n");
+console.log("\n📥  Initialisation additive (les contenus existants sont préservés)…\n");
 
 for (const [type, value] of Object.entries(seed)) {
   process.stdout.write(`  ${type.padEnd(16)} `);
   try {
     if (singletons.includes(type)) {
-      await upsert(type, type, value);
+      await insertIfMissing(type, type, value, 0);
     } else {
-      for (const doc of value) {
+      for (const [position, doc] of value.entries()) {
         const docId = doc.slug ?? doc.name?.fr ?? id(type);
-        await upsert(type, docId, doc);
+        await insertIfMissing(type, docId, doc, position);
       }
     }
     console.log(" ✅");
@@ -717,4 +821,4 @@ for (const [type, value] of Object.entries(seed)) {
   }
 }
 
-console.log("\n🎉  Seed terminé. Rafraîchis /dashboard pour voir le contenu.\n");
+console.log("\n🎉  Initialisation terminée. Aucun contenu existant n'a été écrasé.\n");

@@ -13,6 +13,7 @@ import { spawn } from "child_process";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { chromium } from "playwright";
+import { createClient } from "@supabase/supabase-js";
 import {
   ensureFreshDevServer,
   openPreview,
@@ -26,15 +27,14 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const BASE_URL = resolveBaseUrl();
 const email = process.env.CMS_SEED_EMAIL;
 const password = process.env.CMS_SEED_PASSWORD;
-const skipSeed = process.argv.includes("--skip-seed");
+const shouldSeed = process.argv.includes("--seed");
 const fresh = process.argv.includes("--fresh");
 const shouldOpen = !process.argv.includes("--no-open");
 const openAll = process.argv.includes("--open-all");
 const openPath = resolveOpenPath();
 
 function fail(message) {
-  console.error(`\n❌  ${message}`);
-  process.exit(1);
+  throw new Error(message);
 }
 
 function ok(message) {
@@ -43,6 +43,32 @@ function ok(message) {
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function openFirstCollectionDocument(page, collectionLabel) {
+  await page.getByRole("heading", { name: collectionLabel, exact: true }).waitFor();
+  const rows = page.locator("main ul > li");
+  const rowCount = await rows.count();
+  if (rowCount === 0) fail(`Collection "${collectionLabel}" vide.`);
+
+  const firstRow = rows.first();
+  const editButton = firstRow.locator('button[aria-label^="Modifier "]');
+  if ((await editButton.count()) !== 1) {
+    fail(`Action d'édition introuvable dans "${collectionLabel}".`);
+  }
+  await editButton.click();
+  await page.waitForTimeout(400);
+}
+
+async function waitForPublishedEditor(page) {
+  try {
+    await page.getByRole("button", { name: "Mettre à jour", exact: true }).waitFor({ timeout: 8_000 });
+  } catch {
+    const alerts = await page.locator('[role="alert"]').allTextContents();
+    fail(alerts.length
+      ? `Publication non finalisée : ${alerts.join(" · ")}`
+      : "Publication non finalisée : l'éditeur n'est pas revenu à l'état publié.");
+  }
 }
 
 async function runSeed() {
@@ -58,19 +84,25 @@ async function runSeed() {
 }
 
 async function login(page) {
-  await page.goto(`${BASE_URL}/dashboard`, { waitUntil: "networkidle" });
-  await page.waitForTimeout(800);
+  await page.goto(`${BASE_URL}/dashboard`, { waitUntil: "domcontentloaded" });
+  const emailInput = page.locator('input[type="email"]');
+  const dashboardNav = page.locator("nav");
+  const state = await Promise.race([
+    emailInput.waitFor({ state: "visible", timeout: 15_000 }).then(() => "login"),
+    dashboardNav.waitFor({ state: "visible", timeout: 15_000 }).then(() => "dashboard"),
+  ]);
+  if (state === "dashboard") return;
 
-  const onLogin = await page.locator('input[type="email"]').isVisible().catch(() => false);
-  if (!onLogin) return;
-
-  await page.fill('input[type="email"]', email);
+  await emailInput.fill(email);
   await page.fill('input[type="password"]', password);
   await page.click('button[type="submit"]');
-  await page.waitForTimeout(2000);
+  await dashboardNav.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
 
-  if (await page.locator('input[type="email"]').isVisible().catch(() => false)) {
-    fail("Connexion dashboard impossible — vérifie CMS_SEED_EMAIL / CMS_SEED_PASSWORD.");
+  if (await emailInput.isVisible().catch(() => false)) {
+    const error = await page.locator('[role="alert"]').textContent().catch(() => null);
+    fail(error
+      ? `Connexion dashboard impossible : ${error}`
+      : "Connexion dashboard impossible — vérifie CMS_SEED_EMAIL / CMS_SEED_PASSWORD.");
   }
   ok("Connexion dashboard");
 }
@@ -97,14 +129,11 @@ async function verifyDashboard() {
     await page.locator("nav button", { hasText: "Ressources" }).first().click();
     await page.waitForTimeout(600);
 
-    const listText = await page.locator("main").innerText();
-    if (!listText.includes("LE DÉPÔT")) {
-      fail("Ressource LE DÉPÔT absente — le seed n'a peut-être pas abouti.");
-    }
+    await page.getByRole("heading", { name: "Ressources", exact: true }).waitFor();
+    if ((await page.locator("main ul > li").count()) === 0) fail("Collection Ressources vide.");
     ok("Liste ressources peuplée");
 
-    await page.locator("main button", { hasText: "LE DÉPÔT" }).first().click();
-    await page.waitForTimeout(600);
+    await openFirstCollectionDocument(page, "Ressources");
 
     const saveBtn = page.locator("button", { hasText: "Enregistrer" });
     if (!(await saveBtn.isDisabled())) {
@@ -112,13 +141,28 @@ async function verifyDashboard() {
     }
     ok("Bouton Enregistrer inactif (état propre)");
 
-    const titleInput = page.locator("input").first();
-    await titleInput.fill("LE DÉPÔT test");
+    const titleInput = page.locator("#cms-title-fr");
+    const originalTitle = await titleInput.inputValue();
+    await titleInput.fill(`${originalTitle} test`);
     await page.waitForTimeout(200);
     if (await saveBtn.isDisabled()) {
       fail('Bouton "Enregistrer" devrait être actif après modification.');
     }
     ok("Bouton Enregistrer actif (état dirty)");
+
+    page.once("dialog", (dialog) => dialog.dismiss());
+    await page.locator("nav button", { hasText: "Articles du blog" }).first().click();
+    if (!(await page.locator("#cms-title-fr").count())) {
+      fail("La garde de navigation n'a pas conservé l'éditeur après annulation.");
+    }
+    await titleInput.fill(originalTitle);
+    for (let attempt = 0; attempt < 20 && !(await saveBtn.isDisabled()); attempt += 1) {
+      await sleep(50);
+    }
+    if (!(await saveBtn.isDisabled())) {
+      fail("L'éditeur n'est pas revenu à un état propre après restauration du champ.");
+    }
+    ok("Navigation protégée en cas de modifications non enregistrées");
 
     const img = page.locator("img[src]").first();
     const src = await img.getAttribute("src");
@@ -130,17 +174,17 @@ async function verifyDashboard() {
     await page.locator("nav button", { hasText: "Lectures & références" }).click();
     await page.waitForTimeout(500);
     await page.locator("nav button", { hasText: "Ouvrages recommandés" }).click();
-    await page.waitForTimeout(600);
-    await page.locator("main button", { hasText: "Everybody Writes" }).first().click();
-    await page.waitForTimeout(600);
+    await openFirstCollectionDocument(page, "Ouvrages recommandés");
 
-    const bookImg = page.locator('img[src*="books.google"]').first();
+    const bookImg = page.locator("main img[src]").first();
     if (!(await bookImg.count())) {
       fail("Couverture ouvrage absente.");
     }
     ok("Couverture ouvrage présente");
 
     await verifyBlogFlow(page);
+    await verifyPublicFallback(page);
+    await verifyDashboardErrorState(page);
 
     console.log("\n🎉  Vérification dashboard OK.\n");
   } finally {
@@ -152,76 +196,265 @@ async function verifyDashboard() {
 // it, then clean up so the run leaves no test data behind.
 async function verifyBlogFlow(page) {
   const marker = `__E2E__ ${Date.now().toString(36)}`;
+  const slug = `e2e-${Date.now().toString(36)}`;
+  const supabaseUrl = process.env.VITE_SUPABASE_URL;
+  const supabaseKey =
+    process.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? process.env.VITE_SUPABASE_ANON_KEY;
+  const sb = createClient(supabaseUrl, supabaseKey);
+  const { error: authError } = await sb.auth.signInWithPassword({ email, password });
+  if (authError) fail(`Connexion Supabase E2E impossible : ${authError.message}`);
+  const { data: baselineOrder, error: baselineError } = await sb
+    .from("cms_documents")
+    .select("doc_id, position")
+    .eq("type", "blogPost")
+    .is("deleted_at", null)
+    .order("position");
+  if (baselineError) fail(`Lecture de l'ordre initial impossible : ${baselineError.message}`);
 
-  page.on("dialog", (dialog) => dialog.accept());
+  try {
+    await page.locator("nav button", { hasText: "Articles du blog" }).first().click();
+    await page.waitForTimeout(500);
+    await page.locator("main button", { hasText: "Nouveau" }).first().click();
+    await page.waitForTimeout(500);
 
-  await page.locator("nav button", { hasText: "Articles du blog" }).first().click();
-  await page.waitForTimeout(500);
+    await page.fill("#cms-slug", slug);
+    await page.fill("#cms-title-fr", marker);
+    await page.fill("#cms-title-en", `${marker} EN`);
+    await page.fill("#cms-excerpt-fr", "Extrait de vérification");
+    await page.fill("#cms-excerpt-en", "Verification excerpt");
+    await page.fill("#cms-body-fr", "Contenu de vérification");
+    await page.fill("#cms-body-en", "Verification content");
+    ok("Nouvel article bilingue créé en brouillon");
 
-  await page.locator("main button", { hasText: "Nouveau" }).first().click();
-  await page.waitForTimeout(500);
+    await page.locator("button", { hasText: "Enregistrer" }).click();
+    await page.waitForTimeout(500);
+    const { data: unpublishedDraft } = await sb
+      .from("cms_public_documents")
+      .select("doc_id")
+      .eq("type", "blogPost")
+      .eq("slug", slug)
+      .maybeSingle();
+    if (unpublishedDraft) fail("Le brouillon est visible dans la table publique.");
+    ok("Brouillon invisible publiquement");
 
-  const draftPill = page.locator("main", { hasText: "Brouillon" });
-  if (!(await draftPill.count())) {
-    fail('Nouvel article : badge "Brouillon" attendu dans l\'éditeur.');
+    await page.locator("button", { hasText: "Aperçu" }).first().click();
+    await page.waitForTimeout(300);
+    if (!(await page.locator("main").innerText()).includes(marker)) {
+      fail("Aperçu français incomplet.");
+    }
+    await page.getByRole("button", { name: "EN", exact: true }).click();
+    if (!(await page.locator("main").innerText()).includes(`${marker} EN`)) {
+      fail("Aperçu anglais incomplet.");
+    }
+    ok("Aperçus FR et EN");
+    await page.locator("button", { hasText: "Éditer" }).first().click();
+
+    await page.locator("button", { hasText: /^Publier$/ }).click();
+    await waitForPublishedEditor(page);
+    const { data: published } = await sb
+      .from("cms_public_documents")
+      .select("data")
+      .eq("type", "blogPost")
+      .eq("slug", slug)
+      .maybeSingle();
+    if (!published) fail("L'article publié est absent de cms_public_documents.");
+    ok("Publication transactionnelle visible dans la table publique");
+
+    await page.fill("#cms-title-fr", `${marker} modifié`);
+    await page.locator("button", { hasText: "Enregistrer" }).click();
+    await page.waitForTimeout(700);
+    const { data: stillPublished } = await sb
+      .from("cms_public_documents")
+      .select("data")
+      .eq("type", "blogPost")
+      .eq("slug", slug)
+      .single();
+    if (stillPublished?.data?.title?.fr !== marker) {
+      fail("La copie publique a changé pendant une simple sauvegarde de brouillon.");
+    }
+    ok("La version publique reste stable pendant l'édition");
+
+    await page.getByRole("button", { name: "Publier les modifications", exact: true }).click();
+    await waitForPublishedEditor(page);
+    const { data: updatedPublic } = await sb
+      .from("cms_public_documents")
+      .select("data")
+      .eq("type", "blogPost")
+      .eq("slug", slug)
+      .single();
+    if (updatedPublic?.data?.title?.fr !== `${marker} modifié`) {
+      fail("La mise à jour publiée n'est pas visible dans la table publique.");
+    }
+    ok("Mise à jour publiée");
+
+    await page.locator("button", { hasText: "Historique" }).click();
+    await page.waitForTimeout(400);
+    const history = page.getByRole("dialog", { name: "Historique des versions" });
+    if (!(await history.count())) {
+      fail("Historique des versions absent.");
+    }
+    const restoreButtons = history.getByRole("button", { name: "Restaurer cette version" });
+    if ((await restoreButtons.count()) < 3) {
+      fail("L'historique ne contient pas assez de versions pour tester la restauration.");
+    }
+    page.once("dialog", (dialog) => dialog.accept());
+    await restoreButtons.last().click();
+    await page.waitForTimeout(500);
+    if ((await page.locator("#cms-title-fr").inputValue()) !== marker) {
+      fail("La restauration de révision n'a pas restauré le titre initial.");
+    }
+    const { data: publicDuringRestore } = await sb
+      .from("cms_public_documents")
+      .select("data")
+      .eq("type", "blogPost")
+      .eq("slug", slug)
+      .single();
+    if (publicDuringRestore?.data?.title?.fr !== `${marker} modifié`) {
+      fail("Restaurer une révision a modifié la version publique avant publication.");
+    }
+    ok("Restauration d'une révision en brouillon");
+
+    await page.getByRole("button", { name: "Publier les modifications", exact: true }).click();
+    await waitForPublishedEditor(page);
+
+    const { data: beforeOrder } = await sb
+      .from("cms_documents")
+      .select("position")
+      .eq("type", "blogPost")
+      .eq("slug", slug)
+      .single();
+    await page.locator("main").getByRole("button", { name: "Articles du blog", exact: true }).click();
+    await page.waitForTimeout(300);
+    const testRow = page.locator("main li").filter({ hasText: marker }).first();
+    const upButton = testRow.getByRole("button", { name: "Monter", exact: true });
+    if (await upButton.isDisabled()) {
+      fail("Le document E2E devrait pouvoir être déplacé vers le haut.");
+    }
+    await upButton.click();
+    await page.getByRole("button", { name: "Enregistrer l'ordre", exact: true }).click();
+    await page.waitForTimeout(500);
+    const { data: afterOrder } = await sb
+      .from("cms_public_documents")
+      .select("position")
+      .eq("type", "blogPost")
+      .eq("slug", slug)
+      .single();
+    if (afterOrder?.position === beforeOrder?.position) {
+      fail("L'ordre public n'a pas été mis à jour.");
+    }
+    ok("Réorganisation publique vérifiée");
+
+    await testRow.getByRole("button", { name: `Modifier ${marker}`, exact: true }).click();
+    await page.waitForTimeout(300);
+
+    page.once("dialog", (dialog) => dialog.accept());
+    await page.locator("button", { hasText: "Dépublier" }).click();
+    await page.waitForTimeout(700);
+    const { data: unpublished } = await sb
+      .from("cms_public_documents")
+      .select("doc_id")
+      .eq("type", "blogPost")
+      .eq("slug", slug)
+      .maybeSingle();
+    if (unpublished) fail("L'article dépublié reste dans la table publique.");
+    ok("Dépublication vérifiée");
+
+    page.once("dialog", (dialog) => dialog.accept());
+    await page.locator("main").getByRole("button", { name: "Corbeille", exact: true }).click();
+    await page.waitForTimeout(500);
+    const { data: trashed } = await sb
+      .from("cms_documents")
+      .select("status, deleted_at")
+      .eq("type", "blogPost")
+      .eq("slug", slug)
+      .single();
+    if (trashed?.status !== "trashed" || !trashed.deleted_at) {
+      fail("Le document n'a pas été déplacé dans la corbeille.");
+    }
+
+    await page.locator("nav").getByRole("button", { name: "Corbeille", exact: true }).click();
+    await page.waitForTimeout(300);
+    const trashRow = page.locator("main li").filter({ hasText: marker }).first();
+    await trashRow.getByRole("button", { name: "Restaurer", exact: true }).click();
+    await page.waitForTimeout(400);
+    const { data: restored } = await sb
+      .from("cms_documents")
+      .select("status, deleted_at")
+      .eq("type", "blogPost")
+      .eq("slug", slug)
+      .single();
+    if (restored?.status !== "draft" || restored.deleted_at) {
+      fail("La restauration depuis la corbeille a échoué.");
+    }
+    ok("Corbeille et restauration vérifiées");
+  } finally {
+    await sb.from("cms_revisions").delete().eq("type", "blogPost").eq("slug", slug);
+    await sb.from("cms_public_documents").delete().eq("type", "blogPost").eq("slug", slug);
+    await sb.from("cms_documents").delete().eq("type", "blogPost").eq("slug", slug);
+    if (baselineOrder?.length) {
+      await sb.rpc("cms_reorder_documents", {
+        p_type: "blogPost",
+        p_items: baselineOrder.map((item) => ({ id: item.doc_id, position: item.position })),
+      });
+    }
+    ok("Données E2E nettoyées");
   }
-  const publishBtn = page.locator("button", { hasText: "Publier" }).first();
-  if (!(await publishBtn.count())) {
-    fail('Nouvel article : bouton "Publier" attendu.');
-  }
-  ok("Nouvel article créé en brouillon");
+}
 
-  // Title is the second text input (first is the slug field).
-  const inputs = page.locator("main input");
-  await inputs.nth(0).fill(`e2e-${Date.now().toString(36)}`);
-  await inputs.nth(1).fill(marker);
-  await page.waitForTimeout(200);
-
-  // Preview must render the shared reader without crashing.
-  await page.locator("button", { hasText: "Aperçu" }).first().click();
-  await page.waitForTimeout(500);
-  const previewText = await page.locator("main").innerText();
-  if (!previewText.includes(marker)) {
-    fail("Aperçu : le titre saisi devrait apparaître dans le rendu.");
+async function verifyPublicFallback(page) {
+  const pattern = "**/rest/v1/cms_public_documents*";
+  const abortRequest = (route) => route.abort("failed");
+  await page.route(pattern, abortRequest);
+  try {
+    await page.goto(`${BASE_URL}/blog`, { waitUntil: "networkidle" });
+    if (!(await page.getByRole("heading", { name: "Blog", exact: true }).count())) {
+      fail("La page Blog ne s'affiche pas pendant une erreur Supabase publique.");
+    }
+    if ((await page.locator('main a[href^="/blog/"]').count()) === 0) {
+      fail("Le fallback local du Blog est vide pendant une erreur Supabase.");
+    }
+    ok("Fallback public conservé pendant une erreur Supabase");
+  } finally {
+    await page.unroute(pattern, abortRequest);
   }
-  ok("Aperçu article rend le contenu saisi");
-  await page.locator("button", { hasText: "Éditer" }).first().click();
-  await page.waitForTimeout(300);
+}
 
-  await publishBtn.click();
-  await page.waitForTimeout(1500);
-  const publishedPill = page.locator("main", { hasText: "Publié" });
-  const unpublishBtn = page.locator("button", { hasText: "Repasser en brouillon" });
-  if (!(await publishedPill.count()) || !(await unpublishBtn.count())) {
-    fail('Publication : badge "Publié" + bouton "Repasser en brouillon" attendus.');
+async function verifyDashboardErrorState(page) {
+  const pattern = "**/rest/v1/cms_documents*";
+  const abortRequest = (route) => route.abort("failed");
+  await page.route(pattern, abortRequest);
+  try {
+    await page.goto(`${BASE_URL}/dashboard`, { waitUntil: "domcontentloaded" });
+    const errorHeading = page.getByRole("heading", {
+      name: "Le contenu n'a pas pu être chargé",
+      exact: true,
+    });
+    await errorHeading.waitFor({ state: "visible", timeout: 8_000 }).catch(() => {});
+    if (!(await errorHeading.count())) {
+      fail("L'erreur de chargement dashboard n'est pas affichée explicitement.");
+    }
+  } finally {
+    await page.unroute(pattern, abortRequest);
   }
-  ok("Article publié");
-
-  // Cleanup: back to the list and delete the test article.
-  await page.locator('main button', { hasText: "Articles du blog" }).first().click();
-  await page.waitForTimeout(600);
-  const row = page.locator("li", { hasText: marker }).first();
-  if (await row.count()) {
-    await row.locator('button[title="Supprimer"]').first().click();
-    await page.waitForTimeout(800);
-    ok("Article de test supprimé (nettoyage)");
-  }
+  await page.getByRole("button", { name: "Réessayer", exact: true }).click();
+  await page.getByRole("heading", { name: /Bonjour/ }).waitFor();
+  ok("Erreur dashboard explicite et bouton Réessayer");
 }
 
 // --- main --------------------------------------------------------------------
 
-if (!email || !password) {
-  fail("CMS_SEED_EMAIL et CMS_SEED_PASSWORD requis dans .env.local (voir docs/workflows/AGENT_DEV.md).");
-}
-
 console.log("\n🔍  Vérification dashboard CMS\n");
 
 try {
-  if (!skipSeed) {
+  if (!email || !password) {
+    fail("CMS_SEED_EMAIL et CMS_SEED_PASSWORD requis dans .env.local (voir docs/workflows/AGENT_DEV.md).");
+  }
+
+  if (shouldSeed) {
     await runSeed();
     ok("Seed terminé");
   } else {
-    console.log("⏭️   Seed ignoré (--skip-seed)");
+    console.log("⏭️   Initialisation ignorée (mode non destructif par défaut)");
   }
 
   await new Promise((resolve, reject) => {
@@ -243,5 +476,6 @@ try {
     await openPreview(urls);
   }
 } catch (error) {
-  fail(error instanceof Error ? error.message : String(error));
+  console.error(`\n❌  ${error instanceof Error ? error.message : String(error)}`);
+  process.exitCode = 1;
 }
