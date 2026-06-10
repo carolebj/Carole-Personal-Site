@@ -4,7 +4,7 @@ This Worker protects the portfolio CMS translation workflow.
 
 Flow:
 
-1. Sanity Studio calls the site endpoint: `/api/translate`.
+1. The dashboard calls the site endpoint: `/api/translate` (authenticated Supabase session).
 2. The site endpoint calls this Cloudflare Worker with a server-side bearer token.
 3. The Worker verifies the token, validates the payload, and calls OpenAI through Cloudflare AI Gateway.
 4. AI Gateway handles usage visibility and rate limiting.
