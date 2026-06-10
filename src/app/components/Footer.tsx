@@ -9,8 +9,9 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { langLabels, useLang, type Lang } from "../i18n/LanguageContext";
 import { useTheme } from "../theme/ThemeContext";
-import { useCmsSingleton } from "../../cms/cmsContent";
-import type { CmsSiteSettings } from "../../cms/types";
+import { useCmsCollection, useCmsSingleton } from "../../cms/cmsContent";
+import type { CmsService, CmsSiteSettings } from "../../cms/types";
+import { toServiceViewModel } from "../../cms/adapters";
 
 const languages: { code: Lang; flag: string }[] = [
   { code: "fr", flag: "FR" },
@@ -403,6 +404,7 @@ export default function Footer() {
   const { resolvedTheme } = useTheme();
   const shouldReduceMotion = useReducedMotion();
   const { data: siteData } = useCmsSingleton<CmsSiteSettings | null>("siteSettings", null);
+  const { data: cmsServices, usingCms: usingCmsServices } = useCmsCollection<CmsService>("service", []);
   const year = new Date().getFullYear();
   const footerRef = useRef<HTMLElement>(null);
   const shaderSectionRef = useRef<HTMLElement>(null);
@@ -417,35 +419,60 @@ export default function Footer() {
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
   const socialLinks = useMemo(() => {
+    const contactLink = siteData?.contactEmail
+      ? { label: t("footer.contactEmail"), href: `mailto:${siteData.contactEmail}`, external: true as const }
+      : { label: t("footer.contactEmail"), href: "/contact", external: false as const };
+
     const cmsLinks =
       siteData?.socialLinks
         ?.filter((link) => link.label && link.url)
         .map((link) => ({
           label: link.label!,
           href: link.url!,
-          external: true,
+          external: true as const,
         })) ?? [];
 
     if (cmsLinks.length > 0) {
-      return cmsLinks.concat([
-        { label: t("footer.contactEmail"), href: "/contact", external: false },
-      ]);
+      return cmsLinks.concat([contactLink]);
+    }
+
+    const flatLinks = [
+      siteData?.linkedin
+        ? { label: t("footer.linkedin"), href: siteData.linkedin, external: true as const }
+        : null,
+      siteData?.instagram
+        ? { label: "Instagram", href: siteData.instagram, external: true as const }
+        : null,
+    ].filter((link): link is { label: string; href: string; external: true } => link !== null);
+
+    if (flatLinks.length > 0) {
+      return flatLinks.concat([contactLink]);
     }
 
     return [
-      { label: t("footer.behance"), href: "https://www.behance.net/caroletonoukouen", external: true },
-      { label: t("footer.linkedin"), href: "https://www.linkedin.com/in/caroletonoukouen/", external: true },
-      { label: t("footer.contactEmail"), href: "/contact", external: false },
+      { label: t("footer.behance"), href: "https://www.behance.net/caroletonoukouen", external: true as const },
+      { label: t("footer.linkedin"), href: "https://www.linkedin.com/in/caroletonoukouen/", external: true as const },
+      contactLink,
     ];
   }, [siteData, t]);
 
   const serviceLinks = useMemo(() => {
+    if (usingCmsServices) {
+      return cmsServices.map((service) => {
+        const view = toServiceViewModel(service, i18n.language);
+        return {
+          label: `${view.title} ${view.accent}`.trim(),
+          href: `/services/${view.slug}`,
+        };
+      });
+    }
+
     const items = t("services.items", { returnObjects: true }) as ServiceItem[];
     return items.map((item) => ({
       label: `${item.title} ${item.accent}`.trim(),
       href: `/services/${item.slug}`,
     }));
-  }, [t, i18n.language]);
+  }, [cmsServices, usingCmsServices, i18n.language, t]);
 
   useEffect(() => {
     const getFooterRestY = () => {

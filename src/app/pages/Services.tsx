@@ -56,14 +56,14 @@ const serviceAccentClasses = [
 
 export default function Services() {
   const { t, i18n } = useTranslation();
-  const { data: cmsServices } = useCmsCollection<CmsService>("service", []);
+  const { data: cmsServices, usingCms: usingCmsServices } = useCmsCollection<CmsService>("service", []);
   const locale = i18n.language;
   const services = useMemo(() => {
-    if (cmsServices.length > 0) {
+    if (usingCmsServices) {
       return cmsServices.map((s) => toServiceViewModel(s, locale));
     }
     return t("services.items", { returnObjects: true }) as Service[];
-  }, [cmsServices, locale, t]);
+  }, [cmsServices, usingCmsServices, locale, t]);
 
   return (
     <main className="overflow-hidden bg-[#fcf9f8] px-5 pb-20 pt-28 text-[#1c1b1b] dark:bg-[#13100f] dark:text-[#f8f1ec] sm:px-8 md:pt-36">

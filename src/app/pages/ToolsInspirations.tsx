@@ -230,12 +230,12 @@ export default function ToolsInspirations() {
   const locale = i18n.language;
   // Resources and communities are stored as two distinct types in the dashboard.
   // The type label (Ressource / Communauté) is inferred from the collection name.
-  const { data: cmsResourceItems } = useCmsCollection("resource", [] as CmsResource[]);
-  const { data: cmsCommunityItems } = useCmsCollection("community", [] as CmsResource[]);
+  const { data: cmsResourceItems, usingCms: usingCmsResources } = useCmsCollection("resource", [] as CmsResource[]);
+  const { data: cmsCommunityItems, usingCms: usingCmsCommunities } = useCmsCollection("community", [] as CmsResource[]);
 
   const content = useMemo((): CarnetPageContent => {
-    const hasCmsData = cmsResourceItems.length > 0 || cmsCommunityItems.length > 0;
-    if (hasCmsData) {
+    const usingCms = usingCmsResources || usingCmsCommunities;
+    if (usingCms) {
       const langPrefix = locale.startsWith("en") ? "en" : "fr";
       const typeLabel = (isCommunity: boolean) =>
         isCommunity
@@ -274,7 +274,7 @@ export default function ToolsInspirations() {
       };
     }
     return t("carnetPage", { returnObjects: true }) as CarnetPageContent;
-  }, [cmsResourceItems, cmsCommunityItems, locale, t]);
+  }, [cmsResourceItems, cmsCommunityItems, usingCmsResources, usingCmsCommunities, locale, t]);
 
   const typeFilters = content.typeFilters;
   const categoryFilters = content.categories;

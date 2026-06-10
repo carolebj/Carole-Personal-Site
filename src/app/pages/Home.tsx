@@ -502,14 +502,17 @@ function VisualTuningPanel({
 export default function Home() {
   const { t, i18n } = useTranslation();
   const locale = i18n.language;
-  const { data: cmsHome } = useCmsSingleton<CmsHomePage | null>("homePage", null);
-  const { data: cmsServices } = useCmsCollection<CmsService>("service", []);
-  const { data: cmsTestimonials } = useCmsCollection<CmsTestimonial>("testimonial", []);
-  const usingCms = Boolean(cmsHome);
+  const { data: cmsHome, usingCms: usingCmsHome } = useCmsSingleton<CmsHomePage | null>("homePage", null);
+  const { data: cmsServices, usingCms: usingCmsServices } = useCmsCollection<CmsService>("service", []);
+  const { data: cmsTestimonials, usingCms: usingCmsTestimonials } =
+    useCmsCollection<CmsTestimonial>("testimonial", []);
+  const usingCms = usingCmsHome;
 
   const heroData = cmsHome?.hero;
   const manifestoData = cmsHome?.manifesto;
   const aboutData = cmsHome?.about;
+  const heroPortraitSrc = cmsImageUrl(heroData?.portrait) ?? portraitImage;
+  const aboutImageSrc = cmsImageUrl(aboutData?.image) ?? aboutSectionImage;
 
   const heroTitle = usingCms && heroData?.title ? localized(heroData.title, locale) : t("hero.titleStart");
   const heroAccent = usingCms && heroData?.accent ? localized(heroData.accent, locale) : t("hero.titleAccent");
@@ -520,20 +523,20 @@ export default function Home() {
       : -1;
 
   const services = useMemo(() => {
-    if (cmsServices.length > 0) {
+    if (usingCmsServices) {
       return cmsServices.map((s) => toServiceViewModel(s, locale));
     }
     return t("services.items", { returnObjects: true }) as Service[];
-  }, [cmsServices, locale, t]);
+  }, [cmsServices, usingCmsServices, locale, t]);
 
   const traits = t("about.traits", { returnObjects: true }) as Trait[];
 
   const testimonials = useMemo(() => {
-    if (cmsTestimonials.length > 0) {
+    if (usingCmsTestimonials) {
       return cmsTestimonials.map((t) => toTestimonialViewModel(t, locale));
     }
     return t("testimonials.items", { returnObjects: true }) as Testimonial[];
-  }, [cmsTestimonials, locale, t]);
+  }, [cmsTestimonials, usingCmsTestimonials, locale, t]);
 
   const circularTestimonials = useMemo(
     () =>
@@ -708,7 +711,7 @@ export default function Home() {
             />
             <div className="organic-shape relative z-10 aspect-[4/5] w-[74%] max-w-[330px] overflow-hidden bg-[#fbaa51] shadow-[0_24px_60px_rgba(28,27,27,0.18)] sm:max-w-[350px] lg:max-w-[360px]">
               <img
-                src={portraitImage}
+                src={heroPortraitSrc}
                 alt={t("hero.imageAlt")}
                 className="h-full w-full object-contain object-bottom"
                 style={{
@@ -800,7 +803,7 @@ export default function Home() {
                 style={{ width: "178%", height: "178%", left: "-38.5%", top: "-38%" }}
               >
                 <img
-                  src={aboutSectionImage}
+                  src={aboutImageSrc}
                   alt={t("about.imageAlt")}
                   className="h-full w-full object-cover [clip-path:inset(0.75%)]"
                   style={{ opacity: showAboutVideo ? 0 : 1 }}
@@ -818,7 +821,7 @@ export default function Home() {
                   loop
                   playsInline
                   preload="auto"
-                  poster={aboutSectionImage}
+                  poster={aboutImageSrc}
                   className="h-full w-full object-cover [clip-path:inset(0.75%)]"
                   onCanPlayThrough={() => setAboutVideoCanPlayThrough(true)}
                   onPlaying={() => setAboutVideoPlaying(true)}

@@ -34,14 +34,14 @@ export default function Blog() {
     [t]
   );
   const emptyCmsPosts = useMemo<CmsBlogPost[]>(() => [], []);
-  const { data: cmsPosts } = useCmsCollection<CmsBlogPost>("blogPost", emptyCmsPosts);
+  const { data: cmsPosts, usingCms } = useCmsCollection<CmsBlogPost>("blogPost", emptyCmsPosts);
   const publishedCmsPosts = useMemo(() => cmsPosts.filter(isPublishedPost), [cmsPosts]);
   const posts = useMemo(
     () =>
-      publishedCmsPosts.length > 0
+      usingCms
         ? publishedCmsPosts.map((post) => toBlogPostViewModel(post, i18n.language))
         : legacyPosts,
-    [publishedCmsPosts, i18n.language, legacyPosts]
+    [usingCms, publishedCmsPosts, i18n.language, legacyPosts]
   );
   const featuredPost = posts.find((post) => post.featured) ?? posts[0];
   const categories = useMemo(

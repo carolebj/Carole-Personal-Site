@@ -88,6 +88,8 @@ export type CmsSiteSettings = {
   title?: LocalizedValue;
   description?: LocalizedValue;
   contactEmail?: string;
+  instagram?: string;
+  linkedin?: string;
   socialLinks?: Array<{
     label?: string;
     url?: string;

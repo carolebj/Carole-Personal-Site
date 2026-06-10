@@ -33,8 +33,7 @@ const contactIcons = [EnvelopeIcon, PhoneIcon, MapPinIcon, LinkIcon];
 export default function Cv() {
   const { t, i18n } = useTranslation();
   const locale = i18n.language;
-  const { data: cmsEntries } = useCmsCollection<CmsCvEntry>("cvEntry", []);
-  const usingCms = cmsEntries.length > 0;
+  const { data: cmsEntries, usingCms } = useCmsCollection<CmsCvEntry>("cvEntry", []);
   const contacts = t("cv.contacts", { returnObjects: true }) as CvContact[];
   const cvData = useMemo(() => {
     if (usingCms) {

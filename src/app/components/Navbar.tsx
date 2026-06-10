@@ -289,14 +289,14 @@ export default function Navbar() {
   const { t, i18n } = useTranslation();
   const { enabled: hapticsEnabled, toggleEnabled: toggleHaptics } = useHaptics();
   const location = useLocation();
-  const { data: cmsServices } = useCmsCollection<CmsService>("service", []);
+  const { data: cmsServices, usingCms: usingCmsServices } = useCmsCollection<CmsService>("service", []);
   const locale = i18n.language;
   const services = useMemo(() => {
-    if (cmsServices.length > 0) {
+    if (usingCmsServices) {
       return cmsServices.map((s) => toServiceViewModel(s, locale));
     }
     return t("services.items", { returnObjects: true }) as ServicePreview[];
-  }, [cmsServices, locale, t]);
+  }, [cmsServices, usingCmsServices, locale, t]);
   const serviceIcons = [DocumentTextIcon, MegaphoneIcon, PencilSquareIcon, ChartBarIcon];
   const logoDropdownPhase = useDropdownTransition(isLogoMenuOpen);
 

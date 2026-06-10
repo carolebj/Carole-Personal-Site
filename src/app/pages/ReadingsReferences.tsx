@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { localized } from "../../cms/types";
 import type { CmsReading } from "../../cms/types";
-import { useCmsCollection } from "../../cms/cmsContent";
+import { cmsImageUrl, useCmsCollection } from "../../cms/cmsContent";
 
 // Dashboard stores books and references as two distinct types.
 // `book` maps to the "Ouvrages recommandés" section; `reference` to "Articles, newsletters & contenus cités".
@@ -15,6 +15,7 @@ type ReadingItem = {
   date?: string;
   desc: string;
   link?: string;
+  coverUrl?: string;
 };
 
 type ReadingsContent = {
@@ -38,6 +39,7 @@ const bookCovers: Record<string, string> = {
 
 function BookCard({ item, index }: { item: ReadingItem; index: number }) {
   const { t } = useTranslation();
+  const coverUrl = item.coverUrl ?? bookCovers[item.title];
   return (
     <motion.article
       initial={{ opacity: 0, y: 12 }}
@@ -53,7 +55,7 @@ function BookCard({ item, index }: { item: ReadingItem; index: number }) {
       <div className="shrink-0 self-start">
         <Book
           title={item.title}
-          coverUrl={bookCovers[item.title]}
+          coverUrl={coverUrl}
           width={180}
           color="#22201f"
           textColor="#f8f1ec"
@@ -153,13 +155,13 @@ function ReferenceCard({
 export default function ReadingsReferences() {
   const { t, i18n } = useTranslation();
   const locale = i18n.language;
-  const { data: cmsBooks } = useCmsCollection("book", [] as CmsReading[]);
-  const { data: cmsReferences } = useCmsCollection("reference", [] as CmsReading[]);
+  const { data: cmsBooks, usingCms: usingCmsBooks } = useCmsCollection("book", [] as CmsReading[]);
+  const { data: cmsReferences, usingCms: usingCmsReferences } = useCmsCollection("reference", [] as CmsReading[]);
 
   const content = useMemo((): ReadingsContent => {
     const fallback = t("carnetPage", { returnObjects: true }) as ReadingsContent;
-    const hasCmsData = cmsBooks.length > 0 || cmsReferences.length > 0;
-    if (!hasCmsData) return fallback;
+    const usingCms = usingCmsBooks || usingCmsReferences;
+    if (!usingCms) return fallback;
 
     const toItem = (r: CmsReading): ReadingItem => ({
       title: localized(r.title, locale),
@@ -167,6 +169,7 @@ export default function ReadingsReferences() {
       date: r.date || undefined,
       desc: localized(r.description, locale),
       link: r.url || undefined,
+      coverUrl: cmsImageUrl(r.image),
     });
 
     const bookItems = cmsBooks.map(toItem);
@@ -174,11 +177,11 @@ export default function ReadingsReferences() {
 
     const readingsSections = fallback.readingsSections.map((section, i) => {
       const items = i === 0 ? bookItems : referenceItems;
-      return { ...section, items: items.length > 0 ? items : section.items };
+      return { ...section, items };
     });
 
     return { ...fallback, readingsSections };
-  }, [cmsBooks, cmsReferences, locale, t]);
+  }, [cmsBooks, cmsReferences, usingCmsBooks, usingCmsReferences, locale, t]);
 
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const booksSection = content.readingsSections[0];

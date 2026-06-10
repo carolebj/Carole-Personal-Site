@@ -48,14 +48,14 @@ function AnimatedDigits({ value }: { value: string }) {
 export default function ServiceDetail() {
   const { slug } = useParams();
   const { t, i18n } = useTranslation();
-  const { data: cmsServices } = useCmsCollection<CmsService>("service", []);
+  const { data: cmsServices, usingCms: usingCmsServices } = useCmsCollection<CmsService>("service", []);
   const locale = i18n.language;
   const services = useMemo(() => {
-    if (cmsServices.length > 0) {
+    if (usingCmsServices) {
       return cmsServices.map((s) => toServiceViewModel(s, locale));
     }
     return t("services.items", { returnObjects: true }) as ServiceDetail[];
-  }, [cmsServices, locale, t]);
+  }, [cmsServices, usingCmsServices, locale, t]);
   const slugAliases: Record<string, string> = {
     "direction-social-media": "communication-digitale",
     "social-media-direction": "digital-communication",
