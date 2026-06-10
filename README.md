@@ -1,14 +1,21 @@
 # Carole Portfolio version 1.0
 
+Bilingual editorial portfolio (React + Vite + TypeScript + Tailwind v4) with a custom admin dashboard at `/dashboard` backed by Supabase.
+
 ## Commands
 
 ```bash
-npm run dev
-npm run build
-npm run cms:dev
-npm run cms:build
+npm install
+npm run dev        # Vite site (port 5173), includes /dashboard
+npm run build      # production build → dist/
+npm run cms:seed   # push content + images to Supabase
+npm run cms:verify # seed + headless dashboard checks
 ```
 
-Copy `.env.example` to `.env.local` and fill the Sanity values before using the CMS.
+## Setup
 
-See `CMS_SETUP.md` for the full Sanity setup checklist.
+1. Copy `.env.example` to `.env.local`.
+2. Fill `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` (Supabase → Project Settings → API).
+3. For seed/verify automation, set `CMS_SEED_EMAIL` and `CMS_SEED_PASSWORD`.
+
+See `GUIDELINE.md` for architecture and `AGENT_DEV.md` for the agent seed/verify workflow.
