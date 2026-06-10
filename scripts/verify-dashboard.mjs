@@ -153,6 +153,8 @@ async function verifyDashboard() {
 async function verifyBlogFlow(page) {
   const marker = `__E2E__ ${Date.now().toString(36)}`;
 
+  page.on("dialog", (dialog) => dialog.accept());
+
   await page.locator("nav button", { hasText: "Articles du blog" }).first().click();
   await page.waitForTimeout(500);
 

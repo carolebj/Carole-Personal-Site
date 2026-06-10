@@ -29,9 +29,9 @@ function FieldShell({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-baseline justify-between gap-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
         <label className={labelClass}>{label}</label>
-        {help ? <span className="text-xs text-text-muted/80">{help}</span> : null}
+        {help ? <span className="text-xs text-text-muted/80 sm:text-right">{help}</span> : null}
       </div>
       {children}
     </div>
@@ -128,7 +128,7 @@ function LocalizedListInput({
           <button
             type="button"
             onClick={() => remove(i)}
-            className="mt-1 rounded p-1.5 text-text-muted hover:bg-surface-page-muted hover:text-destructive"
+            className="mt-7 shrink-0 self-start rounded p-1.5 text-text-muted hover:bg-surface-page-muted hover:text-destructive sm:self-center sm:mt-0"
             title="Supprimer"
           >
             <TrashIcon className="size-4" />

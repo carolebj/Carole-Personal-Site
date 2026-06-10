@@ -142,7 +142,7 @@ export function CollectionList({
         ) : (
           <ul className="divide-y divide-border-subtle">
             {docs.map((doc) => (
-              <li key={doc.id} className="flex items-center gap-3 px-5 py-3.5">
+              <li key={doc.id} className="flex items-start gap-3 px-5 py-3.5">
                 <button onClick={() => onEdit(doc)} className="flex flex-1 flex-col items-start text-left">
                   <span className="flex items-center gap-2 text-sm font-medium text-text-primary">
                     {docTitle(type, doc)}
@@ -158,14 +158,14 @@ export function CollectionList({
                 </button>
                 <button
                   onClick={() => onEdit(doc)}
-                  className="rounded p-1.5 text-text-muted hover:bg-surface-page-muted hover:text-text-primary"
+                  className="mt-0.5 rounded p-1.5 text-text-muted hover:bg-surface-page-muted hover:text-text-primary"
                   title="Modifier"
                 >
                   <PencilSquareIcon className="size-4" />
                 </button>
                 <button
                   onClick={() => onDelete(doc)}
-                  className="rounded p-1.5 text-text-muted hover:bg-surface-page-muted hover:text-destructive"
+                  className="mt-0.5 rounded p-1.5 text-text-muted hover:bg-surface-page-muted hover:text-destructive"
                   title="Supprimer"
                 >
                   <TrashIcon className="size-4" />
@@ -273,7 +273,7 @@ export function DocumentEditor({
         >
           <ArrowLeftIcon className="size-4" /> {type.kind === "collection" ? type.label : "Accueil"}
         </button>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
           {isBlog ? (
             <div className="flex items-center gap-2">
               <span

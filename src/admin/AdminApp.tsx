@@ -22,7 +22,7 @@ import {
 } from "./data";
 import LoginScreen from "./LoginScreen";
 import Overview from "./Overview";
-import { CollectionList, DocumentEditor } from "./views";
+import { CollectionList, DocumentEditor, docTitle } from "./views";
 import { LoadingShell, ToastStack, useToasts } from "./feedback";
 
 type View =
@@ -364,11 +364,26 @@ export default function AdminApp() {
   };
 
   const deleteDoc = async (typeName: string, doc: AnyDoc) => {
+    const type = contentTypes.find((t) => t.name === typeName);
+    const label = type ? docTitle(type, doc) : "cet élément";
+    if (!window.confirm(`Supprimer « ${label} » ? Cette action est définitive.`)) {
+      return;
+    }
+
+    const previousContent = content;
     setContent((prev) => {
       const base = prev ?? {};
       return { ...base, [typeName]: asArray(base[typeName]).filter((item) => item.id !== doc.id) };
     });
-    await removeDoc(typeName, doc.id);
+
+    try {
+      await removeDoc(typeName, doc.id);
+      pushToast("success", "Élément supprimé.");
+    } catch (error) {
+      setContent(previousContent);
+      const message = error instanceof Error ? error.message : "Suppression impossible.";
+      pushToast("error", message);
+    }
   };
 
   const handleReset = async () => {
