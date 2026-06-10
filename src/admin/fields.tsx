@@ -10,6 +10,7 @@ import {
 import { cn } from "../app/components/ui/utils";
 import type { FieldDef } from "./schema";
 import { uploadImage } from "./data";
+import type { ValidationIssue } from "./validation";
 
 type Localized = { fr?: string; en?: string };
 
@@ -19,21 +20,40 @@ const inputClass =
 const labelClass = "text-xs font-medium uppercase tracking-wide text-text-muted";
 
 function FieldShell({
+  id,
+  labelFor = id,
   label,
   help,
+  issues = [],
   children,
 }: {
+  id: string;
+  labelFor?: string;
   label: string;
   help?: string;
+  issues?: ValidationIssue[];
   children: React.ReactNode;
 }) {
+  const issueId = issues.length ? `${id}-issues` : undefined;
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2" id={`field-${id}`}>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
-        <label className={labelClass}>{label}</label>
+        <label className={labelClass} htmlFor={labelFor}>{label}</label>
         {help ? <span className="text-xs text-text-muted/80 sm:text-right">{help}</span> : null}
       </div>
-      {children}
+      <div>{children}</div>
+      {issues.length ? (
+        <ul id={issueId} className="space-y-1 text-xs">
+          {issues.map((issue) => (
+            <li
+              key={`${issue.path}-${issue.message}`}
+              className={issue.severity === "error" ? "text-destructive" : "text-amber-700 dark:text-amber-300"}
+            >
+              {issue.message}
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </div>
   );
 }
@@ -50,10 +70,26 @@ function LocalizedInput({
   value,
   onChange,
   multiline,
+  id,
+  label,
+  required,
+  englishRequired,
+  recommended,
+  describedBy,
+  invalidFr,
+  invalidEn,
 }: {
   value: Localized;
   onChange: (next: Localized) => void;
   multiline?: boolean;
+  id: string;
+  label: string;
+  required?: boolean;
+  englishRequired?: boolean;
+  recommended?: boolean;
+  describedBy?: string;
+  invalidFr?: boolean;
+  invalidEn?: boolean;
 }) {
   const fr = value?.fr ?? "";
   const en = value?.en ?? "";
@@ -67,9 +103,17 @@ function LocalizedInput({
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center gap-2">
           <LangBadge>FR</LangBadge>
-          <span className="text-[11px] text-text-muted">Requis</span>
+          <span className="text-[11px] text-text-muted">
+            {required ? "Requis" : recommended ? "Recommandé" : "Optionnel"}
+          </span>
         </div>
         <Field
+          id={`${id}-fr`}
+          name={`${id}-fr`}
+          aria-label={`${label} — français`}
+          aria-describedby={describedBy}
+          aria-invalid={invalidFr || undefined}
+          aria-required={required || undefined}
           className={cn(inputClass, multiline && "min-h-[88px] resize-y")}
           value={fr}
           onChange={(e) => onChange({ fr: e.target.value, en })}
@@ -79,7 +123,9 @@ function LocalizedInput({
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <LangBadge>EN</LangBadge>
-            <span className="text-[11px] text-text-muted">Optionnel</span>
+            <span className="text-[11px] text-text-muted">
+              {required ? (englishRequired ? "Requis" : "Recommandé") : recommended ? "Recommandé" : "Optionnel"}
+            </span>
           </div>
           <div className="flex items-center gap-1">
             <button
@@ -93,6 +139,12 @@ function LocalizedInput({
           </div>
         </div>
         <Field
+          id={`${id}-en`}
+          name={`${id}-en`}
+          aria-label={`${label} — anglais`}
+          aria-describedby={describedBy}
+          aria-invalid={invalidEn || undefined}
+          aria-required={(required && englishRequired) || undefined}
           className={cn(inputClass, multiline && "min-h-[88px] resize-y")}
           value={en}
           onChange={(e) => onChange({ fr, en: e.target.value })}
@@ -105,9 +157,23 @@ function LocalizedInput({
 function LocalizedListInput({
   value,
   onChange,
+  id,
+  label,
+  required,
+  englishRequired,
+  describedBy,
+  invalidFr,
+  invalidEn,
 }: {
   value: Localized[];
   onChange: (next: Localized[]) => void;
+  id: string;
+  label: string;
+  required?: boolean;
+  englishRequired?: boolean;
+  describedBy?: string;
+  invalidFr?: boolean;
+  invalidEn?: boolean;
 }) {
   const items = Array.isArray(value) ? value : [];
   const update = (i: number, next: Localized) =>
@@ -123,7 +189,17 @@ function LocalizedListInput({
           className="flex items-start gap-2 rounded-md border border-border-subtle/70 bg-surface-panel-muted/60 p-2"
         >
           <div className="flex-1">
-            <LocalizedInput value={item} onChange={(next) => update(i, next)} />
+            <LocalizedInput
+              id={`${id}-${i}`}
+              label={`${label} ${i + 1}`}
+              value={item}
+              onChange={(next) => update(i, next)}
+              required={required}
+              englishRequired={englishRequired}
+              describedBy={describedBy}
+              invalidFr={invalidFr}
+              invalidEn={invalidEn}
+            />
           </div>
           <button
             type="button"
@@ -149,22 +225,32 @@ function LocalizedListInput({
 function ImageInput({
   value,
   onChange,
+  id,
+  describedBy,
+  invalid,
 }: {
   value: { url?: string; alt?: Localized } | null;
   onChange: (next: { url?: string; alt?: Localized } | null) => void;
+  id: string;
+  describedBy?: string;
+  invalid?: boolean;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
   const url = value?.url;
 
   const pick = async (file?: File) => {
     if (!file) return;
     setUploading(true);
+    setUploadError("");
     try {
       const result = await uploadImage(file);
       if (result) {
         onChange({ url: result.url, alt: value?.alt ?? { fr: "", en: "" } });
       }
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Téléversement impossible.");
     } finally {
       setUploading(false);
     }
@@ -185,6 +271,7 @@ function ImageInput({
         <div className="flex flex-col gap-2">
           <input
             ref={fileRef}
+            name={`${id}-upload`}
             type="file"
             accept="image/*"
             className="hidden"
@@ -210,12 +297,19 @@ function ImageInput({
           ) : null}
         </div>
       </div>
+      {uploadError ? <p className="text-xs text-destructive" role="alert">{uploadError}</p> : null}
       {url ? (
         <div>
           <span className="mb-1 block text-xs text-text-muted">Texte alternatif (accessibilité)</span>
           <LocalizedInput
+            id={`${id}-alt`}
+            label="Texte alternatif"
             value={value?.alt ?? { fr: "", en: "" }}
             onChange={(alt) => onChange({ url, alt })}
+            recommended
+            describedBy={describedBy}
+            invalidFr={invalid}
+            invalidEn={invalid}
           />
         </div>
       ) : null}
@@ -227,35 +321,88 @@ export function FieldRenderer({
   field,
   value,
   onChange,
+  path,
+  issues = [],
+  publishLocales = "fr",
 }: {
   field: FieldDef;
   value: unknown;
   onChange: (next: unknown) => void;
+  path?: string;
+  issues?: ValidationIssue[];
+  publishLocales?: "bilingual" | "fr";
 }) {
+  const fieldPath = path ?? field.name;
+  const fieldId = `cms-${fieldPath.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
+  const ownIssues = issues.filter((issue) =>
+    issue.path === fieldPath || (field.type === "image" && issue.path.startsWith(`${fieldPath}.`)),
+  );
+  const issueId = ownIssues.length ? `${fieldId}-issues` : undefined;
+  const invalid = ownIssues.some((issue) => issue.severity === "error");
+  const invalidWithoutLocale = ownIssues.some((issue) => issue.severity === "error" && !issue.locale);
+  const invalidFr = invalidWithoutLocale || ownIssues.some((issue) => issue.severity === "error" && issue.locale === "fr");
+  const invalidEn = invalidWithoutLocale || ownIssues.some((issue) => issue.severity === "error" && issue.locale === "en");
   switch (field.type) {
     case "localizedString":
       return (
-        <FieldShell label={field.label} help={field.help}>
-          <LocalizedInput value={(value as Localized) ?? {}} onChange={onChange} />
+        <FieldShell id={fieldId} labelFor={`${fieldId}-fr`} label={field.label} help={field.help} issues={ownIssues}>
+          <LocalizedInput
+            id={fieldId}
+            label={field.label}
+            value={(value as Localized) ?? {}}
+            onChange={onChange}
+            required={field.required}
+            englishRequired={field.required && publishLocales === "bilingual"}
+            describedBy={issueId}
+            invalidFr={invalidFr}
+            invalidEn={invalidEn}
+          />
         </FieldShell>
       );
     case "localizedText":
     case "localizedRichText":
       return (
-        <FieldShell label={field.label} help={field.help}>
-          <LocalizedInput value={(value as Localized) ?? {}} onChange={onChange} multiline />
+        <FieldShell id={fieldId} labelFor={`${fieldId}-fr`} label={field.label} help={field.help} issues={ownIssues}>
+          <LocalizedInput
+            id={fieldId}
+            label={field.label}
+            value={(value as Localized) ?? {}}
+            onChange={onChange}
+            multiline
+            required={field.required}
+            englishRequired={field.required && publishLocales === "bilingual"}
+            describedBy={issueId}
+            invalidFr={invalidFr}
+            invalidEn={invalidEn}
+          />
         </FieldShell>
       );
     case "localizedList":
       return (
-        <FieldShell label={field.label} help={field.help}>
-          <LocalizedListInput value={(value as Localized[]) ?? []} onChange={onChange} />
+        <FieldShell id={fieldId} label={field.label} help={field.help} issues={ownIssues}>
+          <LocalizedListInput
+            id={fieldId}
+            label={field.label}
+            value={(value as Localized[]) ?? []}
+            onChange={onChange}
+            required={field.required}
+            englishRequired={field.required && publishLocales === "bilingual"}
+            describedBy={issueId}
+            invalidFr={invalidFr}
+            invalidEn={invalidEn}
+          />
         </FieldShell>
       );
     case "image":
       return (
-        <FieldShell label={field.label} help={field.help}>
-          <ImageInput value={(value as { url?: string; alt?: Localized } | null) ?? null} onChange={onChange} />
+        <FieldShell id={fieldId} label={field.label} help={field.help} issues={ownIssues}>
+          <ImageInput
+            id={fieldId}
+            value={(value as { url?: string; alt?: Localized } | null) ?? null}
+            onChange={onChange}
+            describedBy={issueId}
+            invalid={invalid}
+          />
         </FieldShell>
       );
     case "boolean": {
@@ -288,9 +435,14 @@ export function FieldRenderer({
     }
     case "select":
       return (
-        <FieldShell label={field.label} help={field.help}>
+        <FieldShell id={fieldId} label={field.label} help={field.help} issues={ownIssues}>
           <select
+            id={fieldId}
+            name={fieldId}
             className={inputClass}
+            aria-describedby={issueId}
+            aria-invalid={invalid || undefined}
+            aria-required={field.required || undefined}
             value={(value as string) ?? ""}
             onChange={(e) => onChange(e.target.value)}
           >
@@ -312,7 +464,7 @@ export function FieldRenderer({
             : [...selected, val],
         );
       return (
-        <FieldShell label={field.label} help={field.help}>
+        <FieldShell id={fieldId} label={field.label} help={field.help} issues={ownIssues}>
           <div className="flex flex-wrap gap-2">
             {field.options?.map((opt) => {
               const active = selected.includes(opt.value);
@@ -348,6 +500,9 @@ export function FieldRenderer({
                 key={sub.name}
                 field={sub}
                 value={(value as Record<string, unknown>)?.[sub.name]}
+                path={`${fieldPath}.${sub.name}`}
+                issues={issues}
+                publishLocales={publishLocales}
                 onChange={(next) =>
                   onChange({ ...((value as Record<string, unknown>) ?? {}), [sub.name]: next })
                 }
@@ -358,10 +513,15 @@ export function FieldRenderer({
       );
     default:
       return (
-        <FieldShell label={field.label} help={field.help}>
+        <FieldShell id={fieldId} label={field.label} help={field.help} issues={ownIssues}>
           <input
+            id={fieldId}
+            name={fieldId}
             className={inputClass}
             type={field.type === "date" ? "date" : field.type === "email" ? "email" : "text"}
+            aria-describedby={issueId}
+            aria-invalid={invalid || undefined}
+            aria-required={field.required || undefined}
             placeholder={field.placeholder}
             value={(value as string) ?? ""}
             onChange={(e) => onChange(e.target.value)}

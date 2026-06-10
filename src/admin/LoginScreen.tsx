@@ -45,10 +45,13 @@ export default function LoginScreen({
           className="flex flex-col gap-4 rounded-xl border border-border-subtle bg-surface-panel p-6 shadow-[var(--shadow-panel)]"
         >
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium uppercase tracking-wide text-text-muted">Email</label>
+            <label htmlFor="cms-login-email" className="text-xs font-medium uppercase tracking-wide text-text-muted">Email</label>
             <input
+              id="cms-login-email"
+              name="email"
               type="email"
               autoComplete="email"
+              spellCheck={false}
               className={inputClass}
               placeholder="carole@exemple.com"
               value={email}
@@ -59,8 +62,10 @@ export default function LoginScreen({
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium uppercase tracking-wide text-text-muted">Mot de passe</label>
+            <label htmlFor="cms-login-password" className="text-xs font-medium uppercase tracking-wide text-text-muted">Mot de passe</label>
             <input
+              id="cms-login-password"
+              name="password"
               type="password"
               autoComplete="current-password"
               className={inputClass}
@@ -73,11 +78,12 @@ export default function LoginScreen({
             />
           </div>
 
-          {error ? <p className="text-xs text-destructive">{error}</p> : null}
+          {error ? <p className="text-xs text-destructive" role="alert">{error}</p> : null}
 
           <button
             type="submit"
             disabled={loading}
+            aria-busy={loading}
             className="mt-1 inline-flex items-center justify-center gap-2 rounded-md bg-action-strong px-4 py-2.5 text-sm font-medium text-text-on-strong transition-colors hover:bg-action-strong-hover disabled:opacity-60"
           >
             {loading ? (

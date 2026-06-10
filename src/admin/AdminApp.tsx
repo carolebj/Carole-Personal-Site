@@ -1,32 +1,45 @@
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ArrowRightStartOnRectangleIcon,
   ArrowPathIcon,
+  ArrowRightStartOnRectangleIcon,
+  Bars3Icon,
   ChevronDownIcon,
   Squares2X2Icon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import { cn } from "../app/components/ui/utils";
 import { contentTypes, type ContentType } from "./schema";
 import { TypeIcon } from "./iconMap";
 import { emptyDoc, type AnyDoc, type ContentStore } from "./store";
 import {
-  isRemote,
+  fetchContent,
+  fetchTrash,
   getCurrentUser,
+  isRemote,
+  listRevisions,
+  permanentlyDeleteDoc,
+  persistDoc,
+  publishDoc,
+  reorderDocs,
+  resetDemo,
+  restoreDoc,
+  restoreRevision,
   signInWithPassword,
   signOutUser,
-  fetchContent,
-  persistDoc,
-  removeDoc,
-  resetDemo,
+  trashDoc,
+  unpublishDoc,
   type AuthUser,
+  type Revision,
 } from "./data";
 import LoginScreen from "./LoginScreen";
-import Overview from "./Overview";
-import { CollectionList, DocumentEditor, docTitle } from "./views";
+import { CollectionList, DocumentEditor, TrashView, docTitle } from "./views";
 import { LoadingShell, ToastStack, useToasts } from "./feedback";
+
+const Overview = lazy(() => import("./Overview"));
 
 type View =
   | { kind: "home" }
+  | { kind: "trash" }
   | { kind: "list"; typeName: string }
   | { kind: "edit"; typeName: string; doc: AnyDoc };
 
@@ -41,9 +54,7 @@ function sectionAccordions(types: ContentType[]) {
   const map = new Map<string, ContentType[]>();
   for (const type of types) {
     if (!type.section) continue;
-    const list = map.get(type.section) ?? [];
-    list.push(type);
-    map.set(type.section, list);
+    map.set(type.section, [...(map.get(type.section) ?? []), type]);
   }
   return Array.from(map.entries()).map(([label, sectionTypes]) => ({
     label,
@@ -52,408 +63,359 @@ function sectionAccordions(types: ContentType[]) {
   }));
 }
 
-function NavItem({
-  type,
-  active,
-  onSelect,
-  nested,
-}: {
-  type: ContentType;
-  active: boolean;
-  onSelect: (type: ContentType) => void;
-  nested?: boolean;
-}) {
-  return (
-    <li>
-      <button
-        onClick={() => onSelect(type)}
-        className={cn(
-          "flex w-full items-center gap-2.5 rounded-md py-2 text-left text-sm leading-snug transition-colors",
-          nested ? "pl-8 pr-2.5" : "px-2.5",
-          active
-            ? "bg-surface-accent-muted font-medium text-text-accent"
-            : "text-text-secondary hover:bg-surface-page-muted hover:text-text-primary",
-        )}
-      >
-        <TypeIcon icon={type.icon} className="size-4 shrink-0" />
-        <span className="min-w-0">{type.label}</span>
-      </button>
-    </li>
-  );
-}
-
 function Sidebar({
   activeType,
-  homeActive,
+  viewKind,
   email,
+  collapsed,
+  onToggle,
   onHome,
+  onTrash,
   onSelect,
   onSignOut,
   onReset,
 }: {
   activeType: string | null;
-  homeActive: boolean;
+  viewKind: View["kind"];
   email: string;
+  collapsed: boolean;
+  onToggle: () => void;
   onHome: () => void;
+  onTrash: () => void;
   onSelect: (type: ContentType) => void;
   onSignOut: () => void;
   onReset: (() => void) | null;
 }) {
+  const [expandedSection, setExpandedSection] = useState<string | null>(DEFAULT_ACCORDION);
   const groups: { id: "content" | "settings"; label: string }[] = [
     { id: "content", label: "Contenu" },
     { id: "settings", label: "Réglages" },
   ];
 
-  const [expandedSection, setExpandedSection] = useState<string | null>(DEFAULT_ACCORDION);
-
   useEffect(() => {
-    if (!activeType) return;
-    const active = contentTypes.find((t) => t.name === activeType);
+    const active = contentTypes.find((type) => type.name === activeType);
     if (active?.section) setExpandedSection(active.section);
   }, [activeType]);
 
-  const toggleSection = (label: string, defaultType: ContentType) => {
-    if (expandedSection === label) {
-      onSelect(defaultType);
-      return;
-    }
-    setExpandedSection(label);
-    onSelect(defaultType);
-  };
-
   return (
-    <aside className="flex w-64 shrink-0 flex-col border-r border-border-subtle bg-surface-panel">
-      <button onClick={onHome} className="px-5 py-5 text-left">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-text-accent">Admin</p>
-        <p className="font-serif text-lg text-text-primary">Carole Tonoukouen</p>
-      </button>
+    <aside className={cn("sticky top-0 flex h-dvh shrink-0 flex-col border-r border-border-subtle bg-surface-panel transition-[width] duration-200", collapsed ? "w-[4.5rem]" : "w-64")}>
+      <div className="flex items-center justify-between gap-2 px-3 py-4">
+        {!collapsed ? (
+          <button onClick={onHome} className="min-w-0 text-left">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-text-accent">Admin</p>
+            <p className="truncate font-serif text-lg text-text-primary">Carole Tonoukouen</p>
+          </button>
+        ) : null}
+        <button onClick={onToggle} className="flex size-11 shrink-0 items-center justify-center rounded-md text-text-muted hover:bg-surface-page-muted" aria-label={collapsed ? "Déployer la barre latérale" : "Réduire la barre latérale"}>
+          <Bars3Icon className="size-5" />
+        </button>
+      </div>
 
-      <nav className="flex-1 overflow-y-auto px-3 pb-4">
-        <button
-          onClick={onHome}
-          className={cn(
-            "mb-4 flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors",
-            homeActive
-              ? "bg-surface-accent-muted font-medium text-text-accent"
-              : "text-text-secondary hover:bg-surface-page-muted hover:text-text-primary",
-          )}
-        >
-          <Squares2X2Icon className="size-4 shrink-0" />
-          Vue d'ensemble
+      <nav className="flex-1 overflow-y-auto px-2 pb-4">
+        <button onClick={onHome} title="Vue d'ensemble" className={cn("mb-1 flex w-full items-center gap-2.5 rounded-md px-3 py-2.5 text-sm", viewKind === "home" ? "bg-surface-accent-muted font-medium text-text-accent" : "text-text-secondary hover:bg-surface-page-muted")}>
+          <Squares2X2Icon className="size-5 shrink-0" /> {!collapsed ? "Vue d'ensemble" : null}
+        </button>
+        <button onClick={onTrash} title="Corbeille" className={cn("mb-4 flex w-full items-center gap-2.5 rounded-md px-3 py-2.5 text-sm", viewKind === "trash" ? "bg-surface-accent-muted font-medium text-text-accent" : "text-text-secondary hover:bg-surface-page-muted")}>
+          <TrashIcon className="size-5 shrink-0" /> {!collapsed ? "Corbeille" : null}
         </button>
 
         {groups.map((group) => {
           const groupTypes = contentTypes.filter((type) => type.group === group.id);
           const flatTypes = groupTypes.filter((type) => !type.section);
           const accordions = sectionAccordions(groupTypes);
-
           return (
             <div key={group.id} className="mb-4">
-              <p className="px-2 pb-1.5 text-[10px] font-semibold uppercase tracking-wide text-text-muted/70">
-                {group.label}
-              </p>
-              <ul className="flex flex-col gap-0.5">
+              {!collapsed ? <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wide text-text-muted/70">{group.label}</p> : null}
+              <ul className="space-y-0.5">
                 {flatTypes.map((type) => (
-                  <NavItem
-                    key={type.name}
-                    type={type}
-                    active={activeType === type.name}
-                    onSelect={onSelect}
-                  />
+                  <li key={type.name}>
+                    <button onClick={() => onSelect(type)} title={type.label} className={cn("flex min-h-10 w-full items-center gap-2.5 rounded-md px-3 py-2 text-left text-sm", activeType === type.name ? "bg-surface-accent-muted font-medium text-text-accent" : "text-text-secondary hover:bg-surface-page-muted")}>
+                      <TypeIcon icon={type.icon} className="size-4 shrink-0" /> {!collapsed ? <span>{type.label}</span> : null}
+                    </button>
+                  </li>
                 ))}
-                {accordions.map(({ label, types, defaultType }) => {
+                {!collapsed ? accordions.map(({ label, types, defaultType }) => {
                   const open = expandedSection === label;
-                  const sectionActive = types.some((t) => t.name === activeType);
                   return (
                     <li key={label}>
-                      <button
-                        type="button"
-                        aria-expanded={open}
-                        onClick={() => toggleSection(label, defaultType)}
-                        className={cn(
-                          "flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm transition-colors",
-                          sectionActive && !open
-                            ? "font-medium text-text-accent"
-                            : "text-text-secondary hover:bg-surface-page-muted hover:text-text-primary",
-                        )}
-                      >
-                        <ChevronDownIcon
-                          className={cn(
-                            "size-4 shrink-0 transition-transform duration-200",
-                            open ? "rotate-0" : "-rotate-90",
-                          )}
-                        />
-                        <span className="min-w-0 leading-snug">{label}</span>
+                      <button onClick={() => {
+                        setExpandedSection(open ? null : label);
+                        if (!open) onSelect(defaultType);
+                      }} aria-expanded={open} className="flex min-h-10 w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-text-secondary hover:bg-surface-page-muted">
+                        <ChevronDownIcon className={cn("size-4 transition-transform", !open && "-rotate-90")} />
+                        {label}
                       </button>
-                      {open ? (
-                        <ul className="mt-0.5 flex flex-col gap-0.5">
-                          {types.map((type) => (
-                            <NavItem
-                              key={type.name}
-                              type={type}
-                              active={activeType === type.name}
-                              onSelect={onSelect}
-                              nested
-                            />
-                          ))}
-                        </ul>
-                      ) : null}
+                      {open ? <ul className="space-y-0.5">
+                        {types.map((type) => (
+                          <li key={type.name}>
+                            <button onClick={() => onSelect(type)} className={cn("flex min-h-10 w-full items-center gap-2.5 rounded-md py-2 pl-9 pr-2 text-left text-sm", activeType === type.name ? "bg-surface-accent-muted font-medium text-text-accent" : "text-text-secondary hover:bg-surface-page-muted")}>
+                              <TypeIcon icon={type.icon} className="size-4" /> {type.label}
+                            </button>
+                          </li>
+                        ))}
+                      </ul> : null}
                     </li>
                   );
-                })}
+                }) : null}
               </ul>
             </div>
           );
         })}
       </nav>
 
-      <div className="border-t border-border-subtle p-3">
-        <p className="truncate px-2 pb-2 text-xs text-text-muted" title={email}>
-          {email}
-        </p>
-        {onReset ? (
-          <button
-            onClick={onReset}
-            className="mb-1 flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-xs text-text-muted hover:bg-surface-page-muted hover:text-text-primary"
-          >
-            <ArrowPathIcon className="size-4" /> Réinitialiser la démo
-          </button>
-        ) : null}
-        <button
-          onClick={onSignOut}
-          className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-xs text-text-muted hover:bg-surface-page-muted hover:text-text-primary"
-        >
-          <ArrowRightStartOnRectangleIcon className="size-4" /> Se déconnecter
-        </button>
+      <div className="border-t border-border-subtle p-2">
+        {!collapsed ? <p className="truncate px-2 py-2 text-xs text-text-muted" title={email}>{email}</p> : null}
+        {onReset ? <button onClick={onReset} title="Réinitialiser la démo" className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-xs text-text-muted hover:bg-surface-page-muted"><ArrowPathIcon className="size-4" /> {!collapsed ? "Réinitialiser la démo" : null}</button> : null}
+        <button onClick={onSignOut} title="Se déconnecter" className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-xs text-text-muted hover:bg-surface-page-muted"><ArrowRightStartOnRectangleIcon className="size-4" /> {!collapsed ? "Se déconnecter" : null}</button>
       </div>
     </aside>
   );
 }
 
 function FullScreenMessage({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex min-h-dvh items-center justify-center bg-surface-page text-sm text-text-muted">
-      {children}
-    </div>
-  );
+  return <div className="flex min-h-dvh items-center justify-center bg-surface-page text-sm text-text-muted">{children}</div>;
 }
 
 export default function AdminApp() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
   const [content, setContent] = useState<ContentStore | null>(null);
+  const [contentError, setContentError] = useState<string | null>(null);
   const [view, setView] = useState<View>({ kind: "home" });
-  const { toasts, push: pushToast, dismiss: dismissToast } = useToasts();
+  const [dirty, setDirty] = useState(false);
+  const [collapsed, setCollapsed] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 900 : false,
+  );
+  const [trash, setTrash] = useState<Array<{ type: string; doc: AnyDoc }>>([]);
+  const { toasts, push: notify, dismiss } = useToasts();
 
-  useEffect(() => {
-    let cancelled = false;
-    getCurrentUser()
-      .then((u) => {
-        if (!cancelled) {
-          setUser(u);
-          setAuthChecked(true);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) setAuthChecked(true);
-      });
-    return () => {
-      cancelled = true;
-    };
+  const loadContent = useCallback(async () => {
+    setContent(null);
+    setContentError(null);
+    try {
+      const [nextContent, nextTrash] = await Promise.all([fetchContent(), fetchTrash()]);
+      setContent(nextContent);
+      setTrash(nextTrash);
+    } catch (error) {
+      setContentError(error instanceof Error ? error.message : "Chargement du contenu impossible.");
+    }
   }, []);
 
   useEffect(() => {
-    if (!user) {
-      setContent(null);
-      return;
-    }
-    let cancelled = false;
-    fetchContent()
-      .then((store) => {
-        if (!cancelled) setContent(store);
+    getCurrentUser()
+      .then((next) => {
+        setUser(next);
+        setAuthChecked(true);
       })
-      .catch(() => {
-        if (!cancelled) setContent({});
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [user]);
+      .catch(() => setAuthChecked(true));
+  }, []);
 
-  const activeType = useMemo(() => {
-    if (view.kind === "list") return view.typeName;
-    if (view.kind === "edit") return view.typeName;
-    return null;
-  }, [view]);
+  useEffect(() => {
+    if (user) void loadContent();
+    else setContent(null);
+  }, [loadContent, user]);
 
-  if (!authChecked) {
-    return <FullScreenMessage>Chargement…</FullScreenMessage>;
-  }
+  const activeType = view.kind === "list" || view.kind === "edit" ? view.typeName : null;
+  const currentType = activeType ? contentTypes.find((type) => type.name === activeType) ?? null : null;
 
-  if (!user) {
-    return (
-      <LoginScreen
-        remote={isRemote}
-        onSubmit={async (email, password) => {
-          const res = await signInWithPassword(email, password);
-          if (res.user) {
-            setUser(res.user);
-            return undefined;
-          }
-          return res.error ?? "Connexion impossible.";
-        }}
-      />
-    );
-  }
+  const guard = useCallback((action: () => void) => {
+    if (dirty && !window.confirm("Des modifications ne sont pas enregistrées. Quitter sans sauvegarder ?")) return;
+    setDirty(false);
+    action();
+  }, [dirty]);
 
-  if (!content) {
-    return (
-      <div className="flex min-h-dvh bg-surface-page text-text-primary">
-        <aside className="flex w-64 shrink-0 flex-col border-r border-border-subtle bg-surface-panel px-3 py-5">
-          <div className="h-12 animate-pulse rounded-md bg-border-subtle/70" />
-        </aside>
-        <main className="flex-1">
-          <LoadingShell />
-        </main>
-      </div>
-    );
-  }
-
-  const openType = (type: ContentType) => {
-    if (type.kind === "singleton") {
-      const doc = (content[type.name] as AnyDoc) ?? emptyDoc(type.name);
-      setView({ kind: "edit", typeName: type.name, doc });
-    } else {
-      setView({ kind: "list", typeName: type.name });
-    }
-  };
-
-  const saveDoc = async (typeName: string, doc: AnyDoc) => {
-    const type = contentTypes.find((t) => t.name === typeName);
-    if (!type) return;
-
-    const previousContent = content;
-    const previousView = view;
-
-    setContent((prev) => {
-      const base = prev ?? {};
+  const openType = useCallback((type: ContentType) => {
+    if (!content) return;
+    guard(() => {
       if (type.kind === "singleton") {
-        return { ...base, [typeName]: doc };
-      }
-      const list = asArray(base[typeName]);
-      const exists = list.some((item) => item.id === doc.id);
-      const nextList = exists
-        ? list.map((item) => (item.id === doc.id ? doc : item))
-        : [...list, doc];
-      return { ...base, [typeName]: nextList };
+        setView({ kind: "edit", typeName: type.name, doc: (content[type.name] as AnyDoc) ?? emptyDoc(type.name) });
+      } else setView({ kind: "list", typeName: type.name });
     });
+  }, [content, guard]);
 
+  const updateContentDoc = useCallback((type: ContentType, doc: AnyDoc) => {
+    setContent((previous) => {
+      const base = previous ?? {};
+      if (type.kind === "singleton") return { ...base, [type.name]: doc };
+      const list = asArray(base[type.name]);
+      return {
+        ...base,
+        [type.name]: list.some((item) => item.id === doc.id)
+          ? list.map((item) => item.id === doc.id ? doc : item)
+          : [...list, doc].sort((a, b) => a.position - b.position),
+      };
+    });
+    setView((previous) => previous.kind === "edit" && previous.doc.id === doc.id ? { ...previous, doc } : previous);
+  }, []);
+
+  const save = async (type: ContentType, doc: AnyDoc) => {
     try {
-      await persistDoc(typeName, doc);
-      if (previousView.kind === "edit" && previousView.typeName === typeName && previousView.doc.id === doc.id) {
-        setView({ kind: "edit", typeName, doc });
-      }
-      pushToast("success", "Modifications enregistrées.");
+      const saved = await persistDoc(type.name, doc);
+      updateContentDoc(type, saved);
+      notify("success", "Brouillon enregistré.");
+      return saved;
     } catch (error) {
-      setContent(previousContent);
-      setView(previousView);
-      const message = error instanceof Error ? error.message : "Enregistrement impossible.";
-      pushToast("error", message);
+      notify("error", error instanceof Error ? error.message : "Enregistrement impossible.");
       throw error;
     }
   };
 
-  const deleteDoc = async (typeName: string, doc: AnyDoc) => {
-    const type = contentTypes.find((t) => t.name === typeName);
-    const label = type ? docTitle(type, doc) : "cet élément";
-    if (!window.confirm(`Supprimer « ${label} » ? Cette action est définitive.`)) {
-      return;
-    }
-
-    const previousContent = content;
-    setContent((prev) => {
-      const base = prev ?? {};
-      return { ...base, [typeName]: asArray(base[typeName]).filter((item) => item.id !== doc.id) };
-    });
-
+  const publish = async (type: ContentType, doc: AnyDoc) => {
     try {
-      await removeDoc(typeName, doc.id);
-      pushToast("success", "Élément supprimé.");
+      const published = await publishDoc(type.name, doc.id);
+      updateContentDoc(type, published);
+      notify("success", "Contenu publié.");
+      return published;
     } catch (error) {
-      setContent(previousContent);
-      const message = error instanceof Error ? error.message : "Suppression impossible.";
-      pushToast("error", message);
+      notify("error", error instanceof Error ? error.message : "Publication impossible.");
+      throw error;
     }
   };
 
-  const handleReset = async () => {
-    const store = await resetDemo();
-    setContent(store);
-    setView({ kind: "home" });
+  const unpublish = async (type: ContentType, doc: AnyDoc) => {
+    try {
+      const next = await unpublishDoc(type.name, doc.id);
+      updateContentDoc(type, next);
+      notify("success", "Contenu retiré du site public.");
+      return next;
+    } catch (error) {
+      notify("error", error instanceof Error ? error.message : "Dépublication impossible.");
+      throw error;
+    }
   };
 
-  const currentType = activeType
-    ? contentTypes.find((t) => t.name === activeType) ?? null
-    : null;
+  const moveToTrash = (type: ContentType, doc: AnyDoc) => {
+    if (!window.confirm(`Envoyer « ${docTitle(type, doc)} » à la corbeille ?`)) return;
+    void trashDoc(type.name, doc.id).then(() => {
+      setContent((previous) => ({ ...(previous ?? {}), [type.name]: asArray(previous?.[type.name]).filter((item) => item.id !== doc.id) }));
+      setView(type.kind === "collection" ? { kind: "list", typeName: type.name } : { kind: "home" });
+      setDirty(false);
+      notify("success", "Élément déplacé dans la corbeille.");
+    }).catch((error) => notify("error", error instanceof Error ? error.message : "Suppression impossible."));
+  };
+
+  const openTrash = () => guard(() => {
+    setView({ kind: "trash" });
+    void fetchTrash().then(setTrash).catch((error) => notify("error", error instanceof Error ? error.message : "Corbeille indisponible."));
+  });
+
+  if (!authChecked) return <FullScreenMessage>Chargement…</FullScreenMessage>;
+  if (!user) {
+    return <LoginScreen remote={isRemote} onSubmit={async (email, password) => {
+      const result = await signInWithPassword(email, password);
+      if (result.user) {
+        setUser(result.user);
+        return undefined;
+      }
+      return result.error ?? "Connexion impossible.";
+    }} />;
+  }
+
+  if (contentError) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-surface-page p-6">
+        <div className="max-w-lg rounded-xl border border-destructive/30 bg-surface-panel p-6 text-center">
+          <h1 className="font-serif text-2xl text-text-primary">Le contenu n'a pas pu être chargé</h1>
+          <p className="mt-3 text-sm text-destructive">{contentError}</p>
+          <button onClick={() => void loadContent()} className="mt-5 rounded-md bg-action-strong px-4 py-2 text-sm font-medium text-text-on-strong">Réessayer</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!content) return <div className="flex min-h-dvh bg-surface-page"><div className="w-64 border-r border-border-subtle bg-surface-panel" /><main className="flex-1"><LoadingShell /></main></div>;
 
   return (
     <div className="flex min-h-dvh bg-surface-page text-text-primary">
+      <a href="#cms-main" className="sr-only z-[100] rounded-md bg-action-strong px-4 py-2 text-text-on-strong focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
+        Aller au contenu principal
+      </a>
       <Sidebar
         activeType={activeType}
-        homeActive={view.kind === "home"}
+        viewKind={view.kind}
         email={user.email}
-        onHome={() => setView({ kind: "home" })}
+        collapsed={collapsed}
+        onToggle={() => setCollapsed((value) => !value)}
+        onHome={() => guard(() => setView({ kind: "home" }))}
+        onTrash={openTrash}
         onSelect={openType}
-        onSignOut={async () => {
-          await signOutUser();
+        onSignOut={() => guard(() => void signOutUser().then(() => {
           setUser(null);
           setView({ kind: "home" });
-        }}
-        onReset={isRemote ? null : handleReset}
+        }))}
+        onReset={isRemote ? null : () => guard(() => void resetDemo().then((store) => {
+          setContent(store);
+          setView({ kind: "home" });
+        }))}
       />
 
-      <main className="flex-1 overflow-y-auto">
-        {!isRemote ? (
-          <div className="border-b border-border-accent-muted bg-surface-accent-muted/40 px-6 py-2 text-center text-xs text-text-accent">
-            Démo — le contenu est stocké dans ton navigateur, rien n'est publié sur le site réel.
-          </div>
+      <main id="cms-main" tabIndex={-1} className="min-w-0 flex-1 overflow-y-auto">
+        {!isRemote ? <div className="border-b border-border-accent-muted bg-surface-accent-muted/40 px-6 py-2 text-center text-xs text-text-accent">Démo locale — rien n'est publié sur le site réel.</div> : null}
+
+        {view.kind === "home" ? (
+          <Suspense fallback={<LoadingShell />}>
+            <Overview email={user.email} content={content} trashCount={trash.length} onOpen={openType} />
+          </Suspense>
         ) : null}
 
-        {view.kind === "home" && (
-          <Overview email={user.email} content={content} onOpen={openType} />
-        )}
+        {view.kind === "trash" ? (
+          <TrashView
+            items={trash.flatMap(({ type, doc }) => {
+              const definition = contentTypes.find((item) => item.name === type);
+              return definition ? [{ type: definition, doc }] : [];
+            })}
+            onRestore={(type, doc) => void restoreDoc(type.name, doc.id).then((restored) => {
+              updateContentDoc(type, restored);
+              setTrash((items) => items.filter((item) => !(item.type === type.name && item.doc.id === doc.id)));
+              notify("success", "Élément restauré en brouillon.");
+            }).catch((error) => notify("error", error instanceof Error ? error.message : "Restauration impossible."))}
+            onDelete={(type, doc) => {
+              if (!window.confirm("Supprimer définitivement cet élément et son historique ?")) return;
+              void permanentlyDeleteDoc(type.name, doc.id).then(() => {
+                setTrash((items) => items.filter((item) => !(item.type === type.name && item.doc.id === doc.id)));
+                notify("success", "Élément supprimé définitivement.");
+              }).catch((error) => notify("error", error instanceof Error ? error.message : "Suppression impossible."));
+            }}
+          />
+        ) : null}
 
-        {view.kind === "list" && currentType && (
+        {view.kind === "list" && currentType ? (
           <CollectionList
             type={currentType}
             docs={asArray(content[currentType.name])}
-            onEdit={(doc) => setView({ kind: "edit", typeName: currentType.name, doc })}
-            onCreate={() =>
-              setView({ kind: "edit", typeName: currentType.name, doc: emptyDoc(currentType.name) })
-            }
-            onDelete={(doc) => deleteDoc(currentType.name, doc)}
+            onEdit={(doc) => guard(() => setView({ kind: "edit", typeName: currentType.name, doc }))}
+            onCreate={() => guard(() => setView({ kind: "edit", typeName: currentType.name, doc: emptyDoc(currentType.name, asArray(content[currentType.name]).length) }))}
+            onTrash={(doc) => moveToTrash(currentType, doc)}
+            onReorder={async (docs) => {
+              const ordered = await reorderDocs(currentType.name, docs);
+              setContent((previous) => ({ ...(previous ?? {}), [currentType.name]: ordered }));
+            }}
+            notify={notify}
           />
-        )}
+        ) : null}
 
-        {view.kind === "edit" && currentType && (
+        {view.kind === "edit" && currentType ? (
           <DocumentEditor
             key={`${currentType.name}-${view.doc.id}`}
             type={currentType}
             doc={view.doc}
-            onBack={() =>
-              setView(
-                currentType.kind === "collection"
-                  ? { kind: "list", typeName: currentType.name }
-                  : { kind: "home" },
-              )
-            }
-            onSave={(doc) => saveDoc(currentType.name, doc)}
-            notify={pushToast}
+            onBack={() => guard(() => setView(currentType.kind === "collection" ? { kind: "list", typeName: currentType.name } : { kind: "home" }))}
+            onSave={(doc) => save(currentType, doc)}
+            onPublish={(doc) => publish(currentType, doc)}
+            onUnpublish={(doc) => unpublish(currentType, doc)}
+            onTrash={(doc) => moveToTrash(currentType, doc)}
+            onDirtyChange={setDirty}
+            loadRevisions={() => listRevisions(currentType.name, view.doc.id)}
+            onRestoreRevision={async (revision: Revision) => {
+              const restored = await restoreRevision(revision);
+              updateContentDoc(currentType, restored);
+              return restored;
+            }}
+            notify={notify}
           />
-        )}
+        ) : null}
       </main>
-
-      <ToastStack toasts={toasts} onDismiss={dismissToast} />
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
     </div>
   );
 }

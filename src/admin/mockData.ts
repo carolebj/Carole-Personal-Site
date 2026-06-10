@@ -1,12 +1,11 @@
 // Seed content for the dashboard mockup. Values are illustrative only and live
 // entirely in the browser; nothing here is published to the real site.
 
-import type { ContentStore } from "./store";
 import { bookCoversBySlug, carnetImagesBySlug } from "./carnetImages";
 
 const L = (fr: string, en = "") => ({ fr, en });
 
-export const seedContent: ContentStore = {
+export const seedContent = {
   homePage: {
     id: "homePage",
     hero: {
@@ -114,6 +113,13 @@ export const seedContent: ContentStore = {
       "Jeune professionnelle en communication avec une expérience concrète en gestion de contenus et coordination d'activités.",
       "Young communications professional with hands-on experience in content management and activity coordination.",
     ),
+    contacts: {
+      email: "caroletonoukouen@gmail.com",
+      phone: "+229 01 95 93 44 54",
+      location: L("Cotonou, Bénin", "Cotonou, Benin"),
+      portfolioLabel: L("Behance.net", "Behance.net"),
+      portfolioUrl: "https://www.behance.net/caroletonoukouen",
+    },
   },
   service: [
     {
@@ -347,6 +353,37 @@ export const seedContent: ContentStore = {
       period: L("2020 – 2022", ""),
       description: L("", ""),
       highlights: [],
+    },
+    {
+      id: "cv-skills",
+      title: L(
+        "Rédaction de contenu, storytelling et communication institutionnelle",
+        "Content writing, storytelling, and institutional communication",
+      ),
+      category: "skill",
+      highlights: [
+        L("Graphisme avec Canva et Adobe Suite", "Graphic design with Canva and Adobe Suite"),
+        L("Community management", "Community management"),
+      ],
+    },
+    {
+      id: "cv-achievements",
+      title: L(
+        "Participation à la stratégie de positionnement visuel du Réseau Revia Afrique",
+        "Contributed to the visual positioning strategy of Réseau Revia Afrique",
+      ),
+      category: "achievement",
+      highlights: [
+        L("Graphiste bénévole à Women in Tech Bénin", "Volunteer graphic designer for Women in Tech Benin"),
+      ],
+    },
+    {
+      id: "cv-languages",
+      title: L("Français : courant, langue native", "French: fluent, native language"),
+      category: "language",
+      highlights: [
+        L("Anglais : B2, intermédiaire avancé", "English: B2, upper-intermediate"),
+      ],
     },
   ],
   siteSettings: {

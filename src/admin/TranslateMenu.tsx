@@ -15,6 +15,7 @@ import {
   translateDocument,
   type TranslateTarget,
 } from "./translateDoc";
+import { useDialogFocus } from "./useDialogFocus";
 
 type PendingTarget = { target: TranslateTarget; label: string; count: number };
 
@@ -34,6 +35,10 @@ export function TranslateMenu({
   const [running, setRunning] = useState(false);
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const confirmDialogRef = useDialogFocus(Boolean(pending), () => {
+    if (!running) setPending(null);
+  });
 
   const translatable = listTranslatable(draft, fields);
   const disabled = !isRemote || translatable.length === 0;
@@ -43,8 +48,16 @@ export function TranslateMenu({
     const onClick = (event: MouseEvent) => {
       if (!containerRef.current?.contains(event.target as Node)) setMenuOpen(false);
     };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
     document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKeyDown);
+    menuRef.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKeyDown);
+    };
   }, [menuOpen]);
 
   const openConfirm = (target: TranslateTarget, label: string) => {
@@ -106,6 +119,8 @@ export function TranslateMenu({
             disabled={disabled}
             aria-haspopup="menu"
             aria-expanded={menuOpen}
+            aria-controls="translation-menu"
+            aria-label="Ouvrir la traduction ciblée"
             title="Traduction ciblée"
             className="inline-flex items-center border-l border-border-subtle px-1.5 text-text-accent hover:bg-surface-accent-muted disabled:cursor-not-allowed disabled:text-text-muted/50 disabled:hover:bg-transparent"
           >
@@ -115,6 +130,8 @@ export function TranslateMenu({
 
         {menuOpen ? (
           <div
+            ref={menuRef}
+            id="translation-menu"
             role="menu"
             className="absolute right-0 z-30 mt-1 w-72 overflow-hidden rounded-lg border border-border-subtle bg-surface-panel shadow-[var(--shadow-panel)]"
           >
@@ -146,12 +163,12 @@ export function TranslateMenu({
 
       {pending ? (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center overscroll-contain bg-black/40 p-4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="translate-confirm-title"
         >
-          <div className="w-full max-w-md rounded-xl border border-border-subtle bg-surface-panel p-5 shadow-[var(--shadow-panel)]">
+          <div ref={confirmDialogRef} tabIndex={-1} aria-busy={running} className="w-full max-w-md rounded-xl border border-border-subtle bg-surface-panel p-5 shadow-[var(--shadow-panel)]">
             <div className="flex items-start gap-3">
               <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-surface-accent-muted text-text-accent">
                 <ExclamationTriangleIcon className="size-4" />

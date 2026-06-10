@@ -8,11 +8,26 @@
 import { contentTypes } from "./schema";
 import { seedContent } from "./mockData";
 
-export type AnyDoc = Record<string, unknown> & { id: string };
+export type EditorialStatus = "draft" | "published" | "trashed";
+
+export type DocumentMeta = {
+  id: string;
+  status: EditorialStatus;
+  position: number;
+  slug?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  publishedAtMeta?: string;
+  deletedAt?: string;
+  updatedBy?: string;
+};
+
+export type AnyDoc = Record<string, unknown> & DocumentMeta;
 export type ContentStore = Record<string, AnyDoc | AnyDoc[]>;
 
 const CONTENT_KEY = "admin-demo-content-v5";
 const SESSION_KEY = "admin-demo-session-v1";
+const REVISIONS_KEY = "admin-demo-revisions-v1";
 
 function readJson<T>(key: string): T | null {
   try {
@@ -34,9 +49,9 @@ function writeJson(key: string, value: unknown) {
 export function loadContent(): ContentStore {
   const stored = readJson<ContentStore>(CONTENT_KEY);
   if (stored) {
-    return stored;
+    return normalizeStore(stored);
   }
-  const seeded = structuredClone(seedContent);
+  const seeded = normalizeStore(structuredClone(seedContent) as unknown as ContentStore);
   writeJson(CONTENT_KEY, seeded);
   return seeded;
 }
@@ -46,18 +61,93 @@ export function saveContent(store: ContentStore) {
 }
 
 export function resetContent(): ContentStore {
-  const seeded = structuredClone(seedContent);
+  const seeded = normalizeStore(structuredClone(seedContent) as unknown as ContentStore);
   writeJson(CONTENT_KEY, seeded);
+  writeJson(REVISIONS_KEY, []);
   return seeded;
+}
+
+function normalizeDoc(doc: AnyDoc, position: number): AnyDoc {
+  const updatedAt =
+    typeof doc.updatedAt === "string" ? doc.updatedAt : new Date().toISOString();
+  const status =
+    doc.status === "draft" || doc.status === "trashed" ? doc.status : "published";
+  return {
+    ...doc,
+    status,
+    position: typeof doc.position === "number" ? doc.position : position,
+    createdAt: typeof doc.createdAt === "string" ? doc.createdAt : updatedAt,
+    updatedAt,
+    publishedAtMeta:
+      typeof doc.publishedAtMeta === "string"
+        ? doc.publishedAtMeta
+        : status === "published"
+          ? updatedAt
+          : undefined,
+  };
+}
+
+function normalizeStore(store: ContentStore): ContentStore {
+  const next: ContentStore = {};
+  for (const type of contentTypes) {
+    const value = store[type.name];
+    if (type.kind === "collection") {
+      next[type.name] = (Array.isArray(value) ? value : [])
+        .map((doc, index) => normalizeDoc(doc, index))
+        .sort((a, b) => a.position - b.position);
+    } else if (value && !Array.isArray(value)) {
+      next[type.name] = normalizeDoc(value, 0);
+    }
+  }
+  return next;
+}
+
+export type StoredRevision = {
+  revisionId: number;
+  type: string;
+  docId: string;
+  doc: AnyDoc;
+  createdAt: string;
+  createdBy?: string;
+};
+
+export function loadRevisions(): StoredRevision[] {
+  return readJson<StoredRevision[]>(REVISIONS_KEY) ?? [];
+}
+
+export function recordRevision(type: string, doc: AnyDoc, createdBy?: string) {
+  const revisions = loadRevisions();
+  revisions.unshift({
+    revisionId: Date.now(),
+    type,
+    docId: doc.id,
+    doc: structuredClone(doc),
+    createdAt: new Date().toISOString(),
+    createdBy,
+  });
+  const retained = revisions.filter((revision, index, all) => {
+    const sameDocumentBefore = all
+      .slice(0, index)
+      .filter((item) => item.type === revision.type && item.docId === revision.docId).length;
+    return sameDocumentBefore < 10;
+  });
+  writeJson(REVISIONS_KEY, retained);
 }
 
 export function createId(typeName: string) {
   return `${typeName}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
-export function emptyDoc(typeName: string): AnyDoc {
+export function emptyDoc(typeName: string, position = 0): AnyDoc {
   const type = contentTypes.find((t) => t.name === typeName);
-  const doc: AnyDoc = { id: createId(typeName) };
+  const now = new Date().toISOString();
+  const doc: AnyDoc = {
+    id: createId(typeName),
+    status: "draft",
+    position,
+    createdAt: now,
+    updatedAt: now,
+  };
   type?.fields.forEach((field) => {
     if (field.type === "boolean") doc[field.name] = false;
     else if (field.type === "localizedList") doc[field.name] = [];
@@ -66,8 +156,6 @@ export function emptyDoc(typeName: string): AnyDoc {
     else if (field.type === "image") doc[field.name] = null;
     else doc[field.name] = "";
   });
-  // Blog posts start as drafts so nothing goes live before the editor publishes.
-  if (typeName === "blogPost") doc.status = "draft";
   return doc;
 }
 

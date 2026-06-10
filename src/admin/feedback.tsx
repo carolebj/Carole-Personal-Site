@@ -36,8 +36,8 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
 
   return (
     <div
-      role="status"
-      aria-live="polite"
+      role={toast.kind === "error" ? "alert" : "status"}
+      aria-live={toast.kind === "error" ? "assertive" : "polite"}
       className={cn(
         "flex items-start gap-2 rounded-lg border px-4 py-3 text-sm shadow-[var(--shadow-panel)]",
         toast.kind === "success"
@@ -54,7 +54,7 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
       <button
         type="button"
         onClick={onDismiss}
-        className="rounded p-0.5 text-text-muted hover:text-text-primary"
+        className="flex size-10 shrink-0 items-center justify-center rounded text-text-muted hover:text-text-primary"
         aria-label="Fermer la notification"
       >
         <XMarkIcon className="size-4" />

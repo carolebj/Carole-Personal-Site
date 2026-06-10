@@ -34,6 +34,8 @@ export type FieldDef = {
   placeholder?: string;
   options?: SelectOption[];
   fields?: FieldDef[];
+  required?: boolean;
+  validation?: "slug" | "url" | "email" | "date";
 };
 
 export type IconKey =
@@ -61,6 +63,8 @@ export type ContentType = {
   section?: string;
   titleField: string;
   subtitleField?: string;
+  publishLocales: "bilingual" | "fr";
+  preview: "page" | "context";
   fields: FieldDef[];
 };
 
@@ -70,6 +74,12 @@ const localizedString = (name: string, label: string, extra: Partial<FieldDef> =
   type: "localizedString",
   ...extra,
 });
+
+const requiredLocalizedString = (
+  name: string,
+  label: string,
+  extra: Partial<FieldDef> = {},
+): FieldDef => localizedString(name, label, { required: true, ...extra });
 
 const seoPage = (name: string, label: string): FieldDef => ({
   name,
@@ -101,6 +111,8 @@ export const contentTypes: ContentType[] = [
     icon: "home",
     group: "content",
     titleField: "hero.title",
+    publishLocales: "bilingual",
+    preview: "page",
     fields: [
       {
         name: "hero",
@@ -108,7 +120,7 @@ export const contentTypes: ContentType[] = [
         type: "group",
         fields: [
           localizedString("eyebrow", "Sur-titre"),
-          localizedString("title", "Titre"),
+          requiredLocalizedString("title", "Titre"),
           localizedString("accent", "Mot accentué"),
           localizedString("titleEnd", "Fin du titre"),
           { name: "description", label: "Description", type: "localizedText" },
@@ -181,13 +193,15 @@ export const contentTypes: ContentType[] = [
     icon: "about",
     group: "content",
     titleField: "hero.title",
+    publishLocales: "bilingual",
+    preview: "page",
     fields: [
       {
         name: "hero",
         label: "En-tête",
         type: "group",
         fields: [
-          localizedString("title", "Titre"),
+          requiredLocalizedString("title", "Titre"),
           { name: "subtitle", label: "Sous-titre", type: "localizedText" },
         ],
       },
@@ -236,9 +250,18 @@ export const contentTypes: ContentType[] = [
     group: "content",
     titleField: "title",
     subtitleField: "accent",
+    publishLocales: "bilingual",
+    preview: "page",
     fields: [
-      { name: "slug", label: "Identifiant URL", type: "slug", help: "Utilisé dans l'adresse /services/…" },
-      localizedString("title", "Titre"),
+      {
+        name: "slug",
+        label: "Identifiant URL",
+        type: "slug",
+        help: "Utilisé dans l'adresse /services/…",
+        required: true,
+        validation: "slug",
+      },
+      requiredLocalizedString("title", "Titre"),
       localizedString("accent", "Accroche courte"),
       { name: "description", label: "Description", type: "localizedText" },
       { name: "detailIntro", label: "Intro de la page détail", type: "localizedText" },
@@ -270,10 +293,12 @@ export const contentTypes: ContentType[] = [
     group: "content",
     titleField: "title",
     subtitleField: "category",
+    publishLocales: "bilingual",
+    preview: "page",
     fields: [
-      { name: "slug", label: "Identifiant URL", type: "slug" },
-      localizedString("title", "Titre"),
-      { name: "excerpt", label: "Extrait", type: "localizedText" },
+      { name: "slug", label: "Identifiant URL", type: "slug", required: true, validation: "slug" },
+      requiredLocalizedString("title", "Titre"),
+      { name: "excerpt", label: "Extrait", type: "localizedText", required: true },
       localizedString("category", "Catégorie", {
         help: "Libellé affiché sur l'article et dans les filtres du blog (ex. Stratégie, Organisation).",
       }),
@@ -282,7 +307,7 @@ export const contentTypes: ContentType[] = [
       { name: "featured", label: "Mettre en avant", type: "boolean" },
       { name: "coverImage", label: "Image de couverture", type: "image" },
       { name: "takeaways", label: "À retenir", type: "localizedList" },
-      { name: "body", label: "Contenu", type: "localizedRichText" },
+      { name: "body", label: "Contenu", type: "localizedRichText", required: true },
     ],
   },
   {
@@ -295,10 +320,12 @@ export const contentTypes: ContentType[] = [
     group: "content",
     titleField: "name",
     subtitleField: "role",
+    publishLocales: "fr",
+    preview: "context",
     fields: [
-      { name: "name", label: "Nom", type: "text" },
+      { name: "name", label: "Nom", type: "text", required: true },
       localizedString("role", "Rôle / entreprise"),
-      { name: "quote", label: "Citation", type: "localizedText" },
+      { name: "quote", label: "Citation", type: "localizedText", required: true },
       { name: "portrait", label: "Portrait", type: "image" },
     ],
   },
@@ -314,8 +341,10 @@ export const contentTypes: ContentType[] = [
     group: "content",
     section: "Ressources & communautés",
     titleField: "title",
+    publishLocales: "fr",
+    preview: "context",
     fields: [
-      localizedString("title", "Titre"),
+      requiredLocalizedString("title", "Titre"),
       {
         name: "categories",
         label: "Filtres thématiques",
@@ -328,7 +357,7 @@ export const contentTypes: ContentType[] = [
         ],
       },
       { name: "description", label: "Description", type: "localizedText" },
-      { name: "url", label: "Lien", type: "url" },
+      { name: "url", label: "Lien", type: "url", validation: "url" },
       { name: "image", label: "Visuel", type: "image" },
     ],
   },
@@ -342,8 +371,10 @@ export const contentTypes: ContentType[] = [
     group: "content",
     section: "Ressources & communautés",
     titleField: "title",
+    publishLocales: "fr",
+    preview: "context",
     fields: [
-      localizedString("title", "Titre"),
+      requiredLocalizedString("title", "Titre"),
       {
         name: "categories",
         label: "Filtres thématiques",
@@ -356,7 +387,7 @@ export const contentTypes: ContentType[] = [
         ],
       },
       { name: "description", label: "Description", type: "localizedText" },
-      { name: "url", label: "Lien", type: "url" },
+      { name: "url", label: "Lien", type: "url", validation: "url" },
       { name: "image", label: "Visuel", type: "image" },
     ],
   },
@@ -372,12 +403,14 @@ export const contentTypes: ContentType[] = [
     section: "Lectures & références",
     titleField: "title",
     subtitleField: "author",
+    publishLocales: "fr",
+    preview: "context",
     fields: [
-      localizedString("title", "Titre"),
-      { name: "author", label: "Auteur", type: "text" },
+      requiredLocalizedString("title", "Titre"),
+      { name: "author", label: "Auteur", type: "text", required: true },
       { name: "date", label: "Année", type: "text", placeholder: "2024" },
       { name: "description", label: "Description", type: "localizedText" },
-      { name: "url", label: "Lien Google Books", type: "url" },
+      { name: "url", label: "Lien Google Books", type: "url", validation: "url" },
       { name: "image", label: "Couverture", type: "image" },
     ],
   },
@@ -392,9 +425,11 @@ export const contentTypes: ContentType[] = [
     section: "Lectures & références",
     titleField: "title",
     subtitleField: "author",
+    publishLocales: "fr",
+    preview: "context",
     fields: [
-      localizedString("title", "Titre"),
-      { name: "author", label: "Auteur / source", type: "text" },
+      requiredLocalizedString("title", "Titre"),
+      { name: "author", label: "Auteur / source", type: "text", required: true },
       localizedString("typeLabel", "Type affiché", { placeholder: "Newsletter" }),
       {
         name: "cardStyle",
@@ -406,7 +441,7 @@ export const contentTypes: ContentType[] = [
         ],
       },
       { name: "description", label: "Description", type: "localizedText" },
-      { name: "url", label: "Lien", type: "url" },
+      { name: "url", label: "Lien", type: "url", validation: "url" },
     ],
   },
   {
@@ -418,12 +453,26 @@ export const contentTypes: ContentType[] = [
     icon: "cv",
     group: "content",
     titleField: "lastName",
+    publishLocales: "fr",
+    preview: "page",
     fields: [
       localizedString("eyebrow", "Sur-titre"),
-      { name: "firstName", label: "Prénom", type: "text", placeholder: "Carole" },
-      { name: "lastName", label: "Nom", type: "text", placeholder: "Tonoukouen" },
+      { name: "firstName", label: "Prénom", type: "text", placeholder: "Carole", required: true },
+      { name: "lastName", label: "Nom", type: "text", placeholder: "Tonoukouen", required: true },
       localizedString("role", "Titre / rôle"),
       { name: "summary", label: "Introduction", type: "localizedText" },
+      {
+        name: "contacts",
+        label: "Coordonnées",
+        type: "group",
+        fields: [
+          { name: "email", label: "Email", type: "email", validation: "email" },
+          { name: "phone", label: "Téléphone", type: "text" },
+          localizedString("location", "Localisation"),
+          localizedString("portfolioLabel", "Libellé du portfolio"),
+          { name: "portfolioUrl", label: "Lien du portfolio", type: "url", validation: "url" },
+        ],
+      },
     ],
   },
   {
@@ -436,12 +485,15 @@ export const contentTypes: ContentType[] = [
     group: "content",
     titleField: "title",
     subtitleField: "organization",
+    publishLocales: "fr",
+    preview: "context",
     fields: [
-      localizedString("title", "Intitulé"),
+      requiredLocalizedString("title", "Intitulé"),
       {
         name: "category",
         label: "Catégorie",
         type: "select",
+        required: true,
         options: [
           { value: "experience", label: "Expérience" },
           { value: "education", label: "Formation" },
@@ -465,8 +517,10 @@ export const contentTypes: ContentType[] = [
     icon: "settings",
     group: "settings",
     titleField: "title",
+    publishLocales: "bilingual",
+    preview: "page",
     fields: [
-      localizedString("title", "Nom du site"),
+      requiredLocalizedString("title", "Nom du site"),
       { name: "description", label: "Description par défaut (SEO)", type: "localizedText" },
       {
         name: "siteUrl",
@@ -474,6 +528,7 @@ export const contentTypes: ContentType[] = [
         type: "url",
         help: "Base pour le canonical et le partage social (ex. https://carole-portfolio.vercel.app).",
         placeholder: "https://carole-portfolio.vercel.app",
+        validation: "url",
       },
       { name: "ogImage", label: "Image de partage (Open Graph)", type: "image" },
       {
@@ -491,9 +546,9 @@ export const contentTypes: ContentType[] = [
           seoPage("carnetReadings", "Carnet · Lectures & références"),
         ],
       },
-      { name: "contactEmail", label: "Email de contact", type: "email" },
-      { name: "instagram", label: "Instagram (URL)", type: "url" },
-      { name: "linkedin", label: "LinkedIn (URL)", type: "url" },
+      { name: "contactEmail", label: "Email de contact", type: "email", validation: "email" },
+      { name: "instagram", label: "Instagram (URL)", type: "url", validation: "url" },
+      { name: "linkedin", label: "LinkedIn (URL)", type: "url", validation: "url" },
     ],
   },
 ];

@@ -3,20 +3,19 @@ import { BlogArticleContent } from "../app/pages/BlogArticleContent";
 
 type Localized = { fr?: string; en?: string };
 
-function fr(value: unknown): string {
-  if (value && typeof value === "object") {
-    const loc = value as Localized;
-    return loc.fr || loc.en || "";
-  }
-  return typeof value === "string" ? value : "";
-}
-
 // Renders the editor preview using the exact same component as the public
 // reading page (`BlogArticle`), so what the editor sees matches what ships.
-export default function BlogPreview({ doc }: { doc: AnyDoc }) {
+export default function BlogPreview({ doc, locale = "fr" }: { doc: AnyDoc; locale?: "fr" | "en" }) {
+  const read = (value: unknown) => {
+    if (value && typeof value === "object") {
+      const loc = value as Localized;
+      return loc[locale] || loc.fr || loc.en || "";
+    }
+    return typeof value === "string" ? value : "";
+  };
   const date = typeof doc.publishedAt === "string" ? doc.publishedAt : "";
   const takeaways = Array.isArray(doc.takeaways)
-    ? (doc.takeaways as Localized[]).map((t) => fr(t)).filter(Boolean)
+    ? (doc.takeaways as Localized[]).map((t) => read(t)).filter(Boolean)
     : [];
 
   return (
@@ -26,13 +25,13 @@ export default function BlogPreview({ doc }: { doc: AnyDoc }) {
           showEmptyHint
           post={{
             slug: typeof doc.slug === "string" ? doc.slug : "preview",
-            title: fr(doc.title) || "Titre de l'article",
-            excerpt: fr(doc.excerpt),
-            category: fr(doc.category) || "Catégorie",
-            readingTime: fr(doc.readingTime) || "5 min",
+            title: read(doc.title) || "Titre de l'article",
+            excerpt: read(doc.excerpt),
+            category: read(doc.category) || "Catégorie",
+            readingTime: read(doc.readingTime) || "5 min",
             date,
             takeaways,
-            body: fr(doc.body),
+            body: read(doc.body),
             imageSrc: (doc.coverImage as { url?: string } | null)?.url,
           }}
         />

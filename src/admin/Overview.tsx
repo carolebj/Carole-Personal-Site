@@ -21,6 +21,7 @@ import {
 import { contentTypes, type ContentType } from "./schema";
 import { TypeIcon } from "./iconMap";
 import type { AnyDoc, ContentStore } from "./store";
+import { documentCompleteness } from "./validation";
 
 function asArray(value: AnyDoc | AnyDoc[] | undefined): AnyDoc[] {
   if (Array.isArray(value)) return value;
@@ -66,10 +67,12 @@ export default function Overview({
   email,
   content,
   onOpen,
+  trashCount,
 }: {
   email: string;
   content: ContentStore;
   onOpen: (type: ContentType) => void;
+  trashCount: number;
 }) {
   const firstName = email.split("@")[0];
 
@@ -97,6 +100,16 @@ export default function Overview({
     [content],
   );
 
+  const allDocuments = useMemo(
+    () => contentTypes.flatMap((type) => asArray(content[type.name]).map((doc) => ({ type, doc }))),
+    [content],
+  );
+  const draftCount = allDocuments.filter(({ doc }) => doc.status !== "published").length;
+  const incompleteCount = allDocuments.filter(({ type, doc }) => {
+    const quality = documentCompleteness(type, doc);
+    return quality.errors > 0 || quality.warnings > 0;
+  }).length;
+
   const carnetData = useMemo(
     () => [
       { name: "Ressources", value: count(content, "resource") },
@@ -113,15 +126,16 @@ export default function Overview({
       <h1 className="font-serif text-3xl text-text-primary">Bonjour {firstName}</h1>
       <p className="mt-2 text-sm text-text-muted">Vue d'ensemble du contenu du site.</p>
 
-      <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mt-8 grid grid-cols-2 gap-4 xl:grid-cols-5">
         <Kpi icon={<Squares2X2Icon className="size-5" />} label="Éléments au total" value={totalItems} />
-        <Kpi icon={<NewspaperIcon className="size-5" />} label="Articles" value={count(content, "blogPost")} />
+        <Kpi icon={<NewspaperIcon className="size-5" />} label="Brouillons / à republier" value={draftCount} />
         <Kpi
           icon={<ChatBubbleLeftRightIcon className="size-5" />}
-          label="Témoignages"
-          value={count(content, "testimonial")}
+          label="Contenus incomplets"
+          value={incompleteCount}
         />
         <Kpi icon={<StarIcon className="size-5" />} label="Articles en avant" value={featuredCount} />
+        <Kpi icon={<BookOpenIcon className="size-5" />} label="Dans la corbeille" value={trashCount} />
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[1.5fr_1fr]">
@@ -136,10 +150,9 @@ export default function Overview({
                   tick={{ fontSize: 11, fill: "var(--text-muted)" }}
                   axisLine={false}
                   tickLine={false}
-                  interval={0}
-                  angle={-18}
-                  textAnchor="end"
-                  height={50}
+                  interval="preserveStartEnd"
+                  minTickGap={14}
+                  height={36}
                 />
                 <YAxis
                   allowDecimals={false}
