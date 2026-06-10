@@ -11,7 +11,9 @@
     "cms:verify": "node --env-file=.env.local scripts/verify-dashboard.mjs",
     "cms:preview": "node --env-file=.env.local scripts/open-preview.mjs",
     "worker:deploy": "npx wrangler deploy --config cloudflare/translate-worker/wrangler.jsonc",
-    "worker:dev": "npx wrangler dev --config cloudflare/translate-worker/wrangler.jsonc"
+    "worker:dev": "npx wrangler dev --config cloudflare/translate-worker/wrangler.jsonc",
+    "security:scan": "node scripts/check-secrets.mjs",
+    "security:install-hooks": "node scripts/install-hooks.mjs"
   },
   "dependencies": {
     "@calcom/embed-react": "^1.5.3",

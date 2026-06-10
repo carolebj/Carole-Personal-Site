@@ -1,0 +1,10 @@
+#!/bin/sh
+# Garde-fou sécurité : bloque tout commit contenant un secret probable.
+# Installé via : npm run security:install-hooks
+node scripts/check-secrets.mjs --staged
+status=$?
+if [ "$status" -ne 0 ]; then
+  echo ""
+  echo "Commit bloqué par le scan de secrets (voir ci-dessus)."
+  exit 1
+fi
