@@ -55,14 +55,6 @@ export default defineConfig({
             return
           }
 
-          if (request.url === '/admin' || request.url?.startsWith('/admin/')) {
-            const targetPath = request.url === '/admin' ? '/admin/' : request.url
-            response.statusCode = 302
-            response.setHeader('Location', `http://127.0.0.1:3333${targetPath}`)
-            response.end()
-            return
-          }
-
           next()
         })
       },
@@ -100,10 +92,6 @@ export default defineConfig({
             return 'vendor-i18n'
           }
 
-          if (id.includes('/@sanity/client/') || id.includes('/@sanity/image-url/')) {
-            return 'vendor-sanity'
-          }
-
           if (id.includes('/@heroicons/')) {
             return 'vendor-icons'
           }
@@ -113,8 +101,6 @@ export default defineConfig({
       },
     },
   },
-  // In dev, /admin redirects to the Studio server started by `npm run dev`.
-
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
 })
