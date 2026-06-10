@@ -140,16 +140,76 @@ async function verifyDashboard() {
     }
     ok("Couverture ouvrage présente");
 
+    await verifyBlogFlow(page);
+
     console.log("\n🎉  Vérification dashboard OK.\n");
   } finally {
     await browser.close();
   }
 }
 
+// Exercises the full blog editorial flow: create a draft, preview it, publish
+// it, then clean up so the run leaves no test data behind.
+async function verifyBlogFlow(page) {
+  const marker = `__E2E__ ${Date.now().toString(36)}`;
+
+  await page.locator("nav button", { hasText: "Articles du blog" }).first().click();
+  await page.waitForTimeout(500);
+
+  await page.locator("main button", { hasText: "Nouveau" }).first().click();
+  await page.waitForTimeout(500);
+
+  const draftPill = page.locator("main", { hasText: "Brouillon" });
+  if (!(await draftPill.count())) {
+    fail('Nouvel article : badge "Brouillon" attendu dans l\'éditeur.');
+  }
+  const publishBtn = page.locator("button", { hasText: "Publier" }).first();
+  if (!(await publishBtn.count())) {
+    fail('Nouvel article : bouton "Publier" attendu.');
+  }
+  ok("Nouvel article créé en brouillon");
+
+  // Title is the second text input (first is the slug field).
+  const inputs = page.locator("main input");
+  await inputs.nth(0).fill(`e2e-${Date.now().toString(36)}`);
+  await inputs.nth(1).fill(marker);
+  await page.waitForTimeout(200);
+
+  // Preview must render the shared reader without crashing.
+  await page.locator("button", { hasText: "Aperçu" }).first().click();
+  await page.waitForTimeout(500);
+  const previewText = await page.locator("main").innerText();
+  if (!previewText.includes(marker)) {
+    fail("Aperçu : le titre saisi devrait apparaître dans le rendu.");
+  }
+  ok("Aperçu article rend le contenu saisi");
+  await page.locator("button", { hasText: "Éditer" }).first().click();
+  await page.waitForTimeout(300);
+
+  await publishBtn.click();
+  await page.waitForTimeout(1500);
+  const publishedPill = page.locator("main", { hasText: "Publié" });
+  const unpublishBtn = page.locator("button", { hasText: "Repasser en brouillon" });
+  if (!(await publishedPill.count()) || !(await unpublishBtn.count())) {
+    fail('Publication : badge "Publié" + bouton "Repasser en brouillon" attendus.');
+  }
+  ok("Article publié");
+
+  // Cleanup: back to the list and delete the test article.
+  await page.locator('main button', { hasText: "Articles du blog" }).first().click();
+  await page.waitForTimeout(600);
+  const row = page.locator("li", { hasText: marker }).first();
+  if (await row.count()) {
+    await row.locator('button[title="Supprimer"]').first().click();
+    await page.waitForTimeout(800);
+    ok("Article de test supprimé (nettoyage)");
+  }
+}
+
 // --- main --------------------------------------------------------------------
 
 if (!email || !password) {
-  fail("CMS_SEED_EMAIL et CMS_SEED_PASSWORD requis dans .env.local (voir AGENT_DEV.md).");
+  fail("CMS_SEED_EMAIL et CMS_SEED_PASSWORD requis dans .env.local (voir docs/workflows/AGENT_DEV.md).");
 }
 
 console.log("\n🔍  Vérification dashboard CMS\n");
