@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toBlogPostViewModel } from "../../cms/adapters";
 import { cmsImageUrl, useCmsCollection } from "../../cms/cmsContent";
-import type { CmsBlogPost, CmsImage } from "../../cms/types";
+import { isPublishedPost, type CmsBlogPost, type CmsImage } from "../../cms/types";
 import abstractAuditImage from "../../assets/blog/blog-abstract-audit.svg";
 import abstractContentImage from "../../assets/blog/blog-abstract-content.svg";
 import abstractEditorialImage from "../../assets/blog/blog-abstract-editorial.svg";
@@ -35,12 +35,13 @@ export default function Blog() {
   );
   const emptyCmsPosts = useMemo<CmsBlogPost[]>(() => [], []);
   const { data: cmsPosts } = useCmsCollection<CmsBlogPost>("blogPost", emptyCmsPosts);
+  const publishedCmsPosts = useMemo(() => cmsPosts.filter(isPublishedPost), [cmsPosts]);
   const posts = useMemo(
     () =>
-      cmsPosts.length > 0
-        ? cmsPosts.map((post) => toBlogPostViewModel(post, i18n.language))
+      publishedCmsPosts.length > 0
+        ? publishedCmsPosts.map((post) => toBlogPostViewModel(post, i18n.language))
         : legacyPosts,
-    [cmsPosts, i18n.language, legacyPosts]
+    [publishedCmsPosts, i18n.language, legacyPosts]
   );
   const featuredPost = posts.find((post) => post.featured) ?? posts[0];
   const categories = useMemo(

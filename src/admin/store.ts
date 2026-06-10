@@ -66,6 +66,8 @@ export function emptyDoc(typeName: string): AnyDoc {
     else if (field.type === "image") doc[field.name] = null;
     else doc[field.name] = "";
   });
+  // Blog posts start as drafts so nothing goes live before the editor publishes.
+  if (typeName === "blogPost") doc.status = "draft";
   return doc;
 }
 
