@@ -202,7 +202,8 @@ Project guidance (all under `docs/`, entry point `AGENTS.md` at repo root):
 - `docs/GUIDELINE.md`: canonical repo-specific implementation guide
 - `docs/SECURITY.md`: security model and secret-handling workflow
 - `docs/workflows/AGENT_DEV.md`: autonomous CMS seed + browser verification
-- `docs/project/MEMORY.md`: current project memory, redesign notes, optional backlog
+- `docs/project/MEMORY.md`: current project memory and redesign notes
+- `docs/project/NEXT_STEPS.md`: temporary handoff / current todo
 
 ## Coding Conventions
 

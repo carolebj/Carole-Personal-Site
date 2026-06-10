@@ -38,12 +38,14 @@ Sanity Studio has been **replaced** by a fully custom admin dashboard backed by 
 - Media assets in a `media` Storage bucket (public read, authenticated write).
 - Database schema and RLS policies: `supabase/schema.sql`.
 - Seed: `npm run cms:seed` (reads `CMS_SEED_EMAIL` / `CMS_SEED_PASSWORD` from `.env.local`).
-- Agent verification: `npm run cms:verify` — seed, fresh Vite restart, Playwright checks; then agent opens **one** URL in the **current agent tool's built-in browser** by default (Cursor → MCP `browser_navigate`; Codex/Claude Code → their own preview). System browser (Chrome/Safari) is a secondary option, used only when there's a specific benefit. Default preview path `/dashboard`; URL also written to `.cursor/preview.url`. See `../workflows/AGENT_DEV.md`.
+- Agent verification: `npm run cms:verify` — seed (optional `--skip-seed`), réutilise Vite si déjà actif (`--fresh` seulement si cache deps bloquant), Playwright checks (`npm run playwright:install` une fois par machine). Agent opens **one** URL in the **current agent tool's built-in browser** by default. See `../workflows/AGENT_DEV.md`.
 - Use `VITE_SUPABASE_PUBLISHABLE_KEY` (new Supabase recommended key); `VITE_SUPABASE_ANON_KEY` is accepted as fallback for older setups.
 
 ### Content Types
-Singletons (one doc per type): `homePage`, `siteSettings`.
-Collections (multiple docs): `service`, `blogPost`, `testimonial`, `cvEntry`, `category`.
+Singletons (one doc per type): `homePage`, `aboutPage`, `cvPage`, `siteSettings`.
+`homePage` groups: `hero`, `manifesto`, `about`, plus home section headings `servicesSection`, `testimonialsSection`, `contactSection` (titles/subtitles editable in dashboard; i18n fallback when CMS off or field empty).
+Collections (multiple docs): `service`, `blogPost`, `testimonial`, `cvEntry`.
+Blog categories: champ localisé `blogPost.category` (pas de collection séparée — les filtres du blog dérivent des libellés présents sur les articles publiés).
 Carnet — Ressources & communautés: `resource` (plateformes/outils), `community` (communautés africaines).
 Carnet — Lectures & références: `book` (ouvrages recommandés), `reference` (articles & newsletters).
 
@@ -70,15 +72,18 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
 - **Admin UI**: collection rows `items-start`, editor toolbar wraps, localized list delete button alignment.
 
 ### Remaining optional work (2026-06-10)
-- Home section headings (services, testimonials, contact) editable via CMS.
-- Page `/about` and CV header still 100 % i18n.
-- Orphan `category` collection (Blog does not use it).
-- SEO metadata from `siteSettings`.
+
+Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
+
+- ~~Home section headings via CMS~~ — `homePage.servicesSection`, `testimonialsSection`, `contactSection` (2026-06-10)
+- ~~About page + CV header via CMS~~ — `aboutPage`, `cvPage` singletons (2026-06-10)
+- ~~Orphan `category` collection~~ — supprimée (2026-06-10) ; taxonomie blog = `blogPost.category` localisé
+- ~~SEO metadata from `siteSettings`~~ — `seoPages`, `siteUrl`, `ogImage` ; `src/app/components/Seo.tsx` + overrides articles/services (2026-06-10)
 
 ### Public Site Data Layer
 - Hook file: `src/cms/cmsContent.ts` — exports `useCmsCollection(type, fallback)`, `useCmsSingleton(type, fallback)`, and `cmsImageUrl(image)`.
 - These hooks fetch from Supabase (public RLS read) and fall back to i18n local data when Supabase returns nothing.
-- **All** public pages now read from Supabase: `Home`, `Services`, `ServiceDetail`, `Blog`, `BlogArticle`, `Cv`, `Navbar`, `Footer`, `ToolsInspirations`, `ReadingsReferences`.
+- **All** public pages now read from Supabase: `Home`, `About`, `Services`, `ServiceDetail`, `Blog`, `BlogArticle`, `Cv` (header + entries), `Navbar`, `Footer`, `ToolsInspirations`, `ReadingsReferences`.
 - Images are flat public URLs (`CmsImage = { url, alt }`); resolve with `cmsImageUrl()`.
 - `i18n` locales (`fr.tsx`, `en.tsx`) are now **fallback only**, not the primary source of truth.
 
@@ -131,6 +136,7 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
 - Public pages are route-lazy-loaded in `src/app/routes.tsx`.
 - The Cal.com booking widget is isolated in `src/app/components/CalMeetingEmbed.tsx` and lazy-loaded.
 - Design tokens: `src/styles/tokens.css` (primitives, semantics, dark-mode); `src/styles/global.css` (base styles).
+- **UI design system (2026-06-10)** — public pages use semantic Tailwind tokens (`bg-surface-page`, `text-text-accent`, etc.) from `tokens.css`. Shared layout: `src/app/components/layout/publicPage.ts` (`PAGE_MAIN` = `pt-28 md:pt-36`). Shared components: `SectionEyebrow`, `PageHero`, `ContactForm`. Border-radius rule: cards `rounded-lg`, primary CTAs `rounded-full`, inputs `rounded-md` (contact page panels may use `rounded-xl`). Carnet pages share tokens but keep muted eyebrows (`text-text-muted`).
 
 ## Repo Organization & Security (2026-06-10)
 
@@ -139,7 +145,7 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
   router. Layout:
   - `docs/GUIDELINE.md`, `docs/SECURITY.md`
   - `docs/workflows/AGENT_DEV.md`
-  - `docs/project/MEMORY.md`
+  - `docs/project/MEMORY.md`, `docs/project/NEXT_STEPS.md`
   - `README.md` and `ATTRIBUTIONS.md` stay at root.
 - **Security model documented in `docs/SECURITY.md`** (secret locations, no
   secret behind a `VITE_` prefix, rotation, incident runbook). Git history is

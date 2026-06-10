@@ -58,7 +58,8 @@ npm run cms:seed                              # seed seul
 npm run cms:preview                             # redémarre Vite + ouvre 1 onglet
 npm run cms:verify -- --skip-seed             # vérif sans re-seed
 npm run cms:verify -- --no-open                 # vérif sans ouvrir le navigateur
-npm run cms:verify -- --no-fresh                # ne pas redémarrer Vite
+npm run cms:verify -- --fresh                   # tuer le port 5173 + Vite --force (cache deps)
+npm run playwright:install                      # une fois par machine (ou après bump playwright)
 npm run cms:verify -- --open=/carnet/outils-inspirations   # ouvrir une page site précise
 npm run cms:verify -- --open-all                # exception : lister toutes les URLs carnet
 npm run cms:verify -- --browser=system          # ouvrir Safari/Chrome (déconseillé)
@@ -120,7 +121,8 @@ Si l'affichage semble ancien : **Cmd+Shift+R** sur l'onglet ouvert.
 | `Connexion dashboard impossible` | Vérifier email/mot de passe Supabase Auth |
 | `Visuel ressource absent` | Vérifier `public/cms/resources/` puis `npm run cms:seed` |
 | Port 5173 occupé | `DASHBOARD_URL=http://127.0.0.1:5185` ou libérer le port |
-| Playwright manquant | `npx playwright install chromium` |
+| Playwright manquant | `npm run playwright:install` (cache persistant `~/Library/Caches/ms-playwright` sur macOS) |
+| Vite affiche une vieille version | `npm run cms:verify -- --fresh` puis hard refresh navigateur |
 
 ## Sécurité
 
