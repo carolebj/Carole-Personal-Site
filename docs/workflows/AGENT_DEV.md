@@ -1,6 +1,6 @@
 # AGENT_DEV.md
 
-Guide pour les agents (et développeurs) qui travaillent sur le dashboard CMS. Objectif : **seed, test navigateur et validation sans action manuelle de Carole**.
+Guide pour les agents (et développeurs) qui travaillent sur le dashboard CMS. Objectif : **initialisation additive optionnelle, test navigateur et validation sans action manuelle de Carole**.
 
 ## Configuration unique (`.env.local`, non versionné)
 
@@ -29,8 +29,8 @@ npm run cms:verify
 
 Ce script :
 
-1. Lance le **seed Supabase** (contenu + visuels carnet)
-2. **Redémarre Vite** sur le port 5173 (`--force`, cache invalidé) — évite l'affichage obsolète
+1. Préserve les contenus existants et crée uniquement des documents temporaires préfixés `__E2E__`
+2. Réutilise Vite s'il tourne déjà (`--fresh` pour forcer un redémarrage)
 3. Vérifie le dashboard en headless (Playwright)
 4. **Prépare une URL unique** — par défaut `/dashboard` (point d'entrée pour naviguer)
 5. Affiche un bloc **« OÙ VÉRIFIER »** + ligne `AGENT_PREVIEW_URL=…` (aussi écrite dans `.cursor/preview.url`)
@@ -54,9 +54,15 @@ Après `npm run cms:verify`, l'agent **doit** afficher `AGENT_PREVIEW_URL` dans 
 Variantes :
 
 ```bash
-npm run cms:seed                              # seed seul
+npm run cms:seed                              # initialisation additive, n'écrase rien
+npm run cms:backfill                          # simule les compléments de champs vides
+npm run cms:backfill -- --apply               # complète + publie sans écraser
+npm run cms:export                            # export JSON avant migration/maintenance
+npm run cms:reset -- --confirm=RESET_CMS      # remise à zéro destructive explicite
+npm run cms:media:cleanup                     # simulation médias orphelins > 30 jours
+npm run cms:trash:cleanup                     # simulation corbeille expirée > 30 jours
 npm run cms:preview                             # redémarre Vite + ouvre 1 onglet
-npm run cms:verify -- --skip-seed             # vérif sans re-seed
+npm run cms:verify -- --seed                  # initialise les contenus manquants avant vérif
 npm run cms:verify -- --no-open                 # vérif sans ouvrir le navigateur
 npm run cms:verify -- --fresh                   # tuer le port 5173 + Vite --force (cache deps)
 npm run playwright:install                      # une fois par machine (ou après bump playwright)
@@ -109,7 +115,8 @@ Si l'affichage semble ancien : **Cmd+Shift+R** sur l'onglet ouvert.
 | `.env.local` | Secrets locaux (Supabase + identifiants seed) |
 | `.env.example` | Modèle sans secrets |
 | `scripts/seed-supabase.mjs` | Source de vérité initiale → Supabase |
-| `scripts/verify-dashboard.mjs` | Seed + checks Playwright |
+| `scripts/backfill-cms-content.mjs` | Compléments éditoriaux et médias, fusion additive uniquement |
+| `scripts/verify-dashboard.mjs` | Checks Playwright isolés, seed uniquement avec `--seed` |
 | `public/cms/resources/` | Visuels carnet servis au dashboard et au site |
 | `src/admin/carnetImages.ts` | URLs partagées seed / mock |
 

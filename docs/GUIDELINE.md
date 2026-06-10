@@ -37,11 +37,17 @@ Current `package.json` scripts:
 - `npm run build`: builds the Vite site → `dist/`
 - `npm run typecheck`: runs `tsc --noEmit` on `src/`
 
-Dashboard seed and agent verification (credentials in `.env.local` — see `workflows/AGENT_DEV.md`):
+Dashboard initialization and agent verification (credentials in `.env.local` — see `workflows/AGENT_DEV.md`):
 
 ```bash
-npm run cms:seed      # push content + images to Supabase
-npm run cms:verify    # seed + headless browser checks on /dashboard
+npm run cms:seed      # initialisation additive : ajoute uniquement les contenus absents
+npm run cms:backfill  # simulation : complète uniquement les valeurs vides
+npm run cms:backfill -- --apply # complète, versionne et republie sans écraser
+npm run cms:export    # sauvegarde JSON locale avant migration/maintenance
+npm run cms:verify    # checks headless non destructifs sur /dashboard
+npm run cms:media:cleanup # simulation des médias orphelins de plus de 30 jours
+npm run cms:trash:cleanup # simulation des éléments expirés de la corbeille
+npm run cms:reset -- --confirm=RESET_CMS # remise à zéro volontaire et destructive
 ```
 
 Agents must run `npm run cms:verify` after CMS-related changes and confirm success before handing off.
@@ -84,7 +90,7 @@ If you add any of the following, update this file:
 3. `src/app/routes.tsx` defines the browser router.
 4. `src/app/Layout.tsx` initializes i18n, renders `Navbar`, `Outlet`, `Footer`, and `ScrollRestoration`.
 5. `src/app/pages/Home.tsx` composes the landing page sections in order.
-6. Public pages fetch content via `src/cms/cmsContent.ts` (`useCmsCollection` / `useCmsSingleton`) which reads from Supabase; when Supabase is empty or unconfigured, they fall back to local i18n data.
+6. Public pages fetch content via `src/cms/cmsContent.ts` (`useCmsCollection` / `useCmsSingleton`) which reads from Supabase. Local i18n data is used only when Supabase is unavailable, misconfigured, or returns an error; a successful empty result remains authoritative.
 7. `/dashboard/*` is a separate lazy-loaded route outside `Layout`; it loads `src/admin/AdminApp.tsx` which handles its own auth and content management.
 
 ## Routing Model
@@ -166,7 +172,7 @@ Dashboard (custom CMS):
 - `src/admin/schema.ts`: **single source of truth** for all content types and their fields; forms are generated from this file
 - `src/admin/fields.tsx`: renders individual form fields (text, localized, tags, image, boolean, select…)
 - `src/admin/views.tsx`: `CollectionList` and `DocumentEditor` components
-- `src/admin/data.ts`: unified data layer — calls Supabase when configured, falls back to `localStorage` demo store
+- `src/admin/data.ts`: couche éditoriale — brouillons, publication transactionnelle, ordre, corbeille et révisions
 - `src/admin/store.ts`: localStorage demo store and `emptyDoc` factory
 - `src/admin/mockData.ts`: seed content for the demo store (mirrors real site content)
 - `src/admin/iconMap.tsx`: maps schema `IconKey` values to Heroicons
@@ -174,15 +180,15 @@ Dashboard (custom CMS):
 - `src/admin/LoginScreen.tsx`: email + password login form
 - `src/admin/BlogPreview.tsx`: read-only blog article preview that mirrors the public site layout
 - `src/lib/supabase.ts`: Supabase client factory — reads `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`
-- `supabase/schema.sql`: Supabase table definition, RLS policies, storage bucket setup
-- `scripts/seed-supabase.mjs`: seed/reset script — authenticates as editor, wipes each type, reinserts real content
+- `supabase/schema.sql`: schéma courant ; migration additive dans `supabase/migrations/`
+- `scripts/seed-supabase.mjs`: initialisation idempotente, sans écrasement des contenus existants
 
 Public site CMS layer:
 
-- `src/cms/cmsContent.ts`: `useCmsCollection(type, fallback)` and `useCmsSingleton(type, fallback)` hooks — fetch from Supabase, fall back to provided i18n data
+- `src/cms/cmsContent.ts`: `useCmsCollection(type, fallback)` and `useCmsSingleton(type, fallback)` hooks — fetch published snapshots from Supabase and use i18n only as an error/configuration fallback
 - `src/cms/types.ts`: shared TypeScript types for all content models
 - `src/cms/adapters.ts`: view-model mappers (CMS doc → page shape)
-- `src/cms/cmsContent.ts`: Supabase reader — `useCmsCollection`, `useCmsSingleton`, `cmsImageUrl`
+- `src/cms/cmsContent.ts`: lecteur public de `cms_public_documents`, avec fallback i18n et état d'erreur distinct
 
 All public pages read from Supabase via `useCmsCollection` / `useCmsSingleton`, with i18n as fallback. Sanity (client, GROQ queries, Studio, configs, packages) has been fully removed.
 
@@ -201,7 +207,7 @@ Project guidance (all under `docs/`, entry point `AGENTS.md` at repo root):
 
 - `docs/GUIDELINE.md`: canonical repo-specific implementation guide
 - `docs/SECURITY.md`: security model and secret-handling workflow
-- `docs/workflows/AGENT_DEV.md`: autonomous CMS seed + browser verification
+- `docs/workflows/AGENT_DEV.md`: initialisation CMS additive + vérification navigateur autonome
 - `docs/project/MEMORY.md`: current project memory and redesign notes
 - `docs/project/NEXT_STEPS.md`: temporary handoff / current todo
 

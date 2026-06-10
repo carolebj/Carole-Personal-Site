@@ -8,8 +8,8 @@ Bilingual editorial portfolio (React + Vite + TypeScript + Tailwind v4) with a c
 npm install
 npm run dev        # Vite site (port 5173), includes /dashboard
 npm run build      # production build → dist/
-npm run cms:seed   # push content + images to Supabase
-npm run cms:verify # seed + headless dashboard checks
+npm run cms:seed   # ajoute uniquement les contenus et images initiaux absents
+npm run cms:verify # vérification dashboard non destructive
 ```
 
 ## Setup

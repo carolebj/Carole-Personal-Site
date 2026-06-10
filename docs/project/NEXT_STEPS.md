@@ -37,7 +37,8 @@ seed et fallback i18n.
 
 **Décision : option A** — collection `category` supprimée. Le blog garde un champ
 `blogPost.category` localisé par article ; les filtres publics restent dérivés des
-libellés des articles publiés. Nettoyage Supabase via `legacyTypes` au prochain seed.
+libellés des articles publiés. Toute ancienne ligne `category` doit être archivée
+par une maintenance explicite, jamais par le seed additif.
 
 ### Priorité 4 — SEO depuis `siteSettings`
 
@@ -53,6 +54,10 @@ mega-menus clavier, lazy load, VT services, références CMS (`typeLabel` / `car
 
 ## À faire (prochaine session) 🔜
 
+- L'accès développeur au projet client `ztrcnlirfbmjnzcovpgj` est actif.
+- Les migrations éditoriales sont appliquées et les 30 contenus existants sont
+  préservés. `npm run cms:verify` et l'inspection visuelle desktop, petit laptop
+  et mobile passent.
 - Image OG par défaut à uploader dans le dashboard quand l'asset est prêt.
 - Archiver ou supprimer `docs/project/UI_AUDIT.md` si la passe UI est validée visuellement.
 
@@ -60,8 +65,8 @@ mega-menus clavier, lazy load, VT services, références CMS (`typeLabel` / `car
 
 ```bash
 npm run dev:site     # serveur + /dashboard
-npm run cms:seed     # (re)peupler Supabase
-npm run cms:verify   # seed + checks navigateur
+npm run cms:seed     # ajouter uniquement les contenus initiaux absents
+npm run cms:verify   # checks navigateur non destructifs
 npm run typecheck    # tsc --noEmit
 npm run build        # régression build
 ```

@@ -33,12 +33,20 @@ Sanity Studio has been **replaced** by a fully custom admin dashboard backed by 
 
 ### Supabase Backend
 - Project URL: `https://ztrcnlirfbmjnzcovpgj.supabase.co`
-- All content stored in a single `public.cms_documents` table: columns `type TEXT`, `doc_id TEXT`, `data JSONB`, `updated_at TIMESTAMPTZ`.
-- Row Level Security: public SELECT, authenticated INSERT/UPDATE/DELETE.
+- `cms_documents` contient la copie de travail authentifiée (brouillon, ordre,
+  métadonnées, corbeille).
+- `cms_public_documents` contient uniquement le dernier snapshot publié et est
+  la seule table de contenu lisible publiquement.
+- `cms_revisions` conserve les 10 dernières sauvegardes par document.
+- Migration additive : `supabase/migrations/20260610194517_editorial_workflow.sql`.
+- RLS : lecture publique uniquement sur les snapshots publiés ; gestion des
+  brouillons et révisions réservée aux comptes authentifiés.
 - Media assets in a `media` Storage bucket (public read, authenticated write).
 - Database schema and RLS policies: `supabase/schema.sql`.
-- Seed: `npm run cms:seed` (reads `CMS_SEED_EMAIL` / `CMS_SEED_PASSWORD` from `.env.local`).
-- Agent verification: `npm run cms:verify` — seed (optional `--skip-seed`), réutilise Vite si déjà actif (`--fresh` seulement si cache deps bloquant), Playwright checks (`npm run playwright:install` une fois par machine). Agent opens **one** URL in the **current agent tool's built-in browser** by default. See `../workflows/AGENT_DEV.md`.
+- Seed: `npm run cms:seed` ajoute seulement les documents absents. La remise à
+  zéro exige `npm run cms:reset -- --confirm=RESET_CMS` et crée d'abord un export.
+- Agent verification: `npm run cms:verify` est non destructif et nettoie
+  uniquement ses documents `__E2E__`. `--seed` initialise les contenus manquants.
 - Use `VITE_SUPABASE_PUBLISHABLE_KEY` (new Supabase recommended key); `VITE_SUPABASE_ANON_KEY` is accepted as fallback for older setups.
 
 ### Content Types
@@ -57,16 +65,49 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
 - Initial content load uses skeleton placeholders instead of a blank wait state.
 - Carnet visuals are seeded from existing site assets (`public/cms/resources/` + Supabase Storage upload in `scripts/seed-supabase.mjs`). Book covers use Google Books image URLs.
 
-### Blog — Draft/Published + Shared Reader (2026-06-10)
-- **Editorial status** lives in the JSONB `data` (no SQL migration): `status: "draft" | "published"`. A doc **without** `status` is treated as published (backward compatible with pre-draft seed content). New blog posts are created as drafts (`emptyDoc` in `src/admin/store.ts`).
-- **Editor** (`src/admin/views.tsx` `DocumentEditor`): blogPost shows a status pill + **Publier / Repasser en brouillon** button (publishing also persists pending edits and stamps `publishedAt` if empty). `CollectionList` shows a **Brouillon** badge.
-- **Public filtering**: `isPublishedPost` in `src/cms/types.ts`; `Blog.tsx` and `BlogArticle.tsx` filter drafts before mapping to view models. Known limit: public RLS reads all rows, so drafts are filtered client-side (no UI leak; acceptable for this portfolio).
+### Workflow éditorial (2026-06-10)
+- Migration appliquée au projet client `ztrcnlirfbmjnzcovpgj` : 30 documents
+  préservés, 30 snapshots publics et 30 révisions initiales. Les migrations
+  locales portent les mêmes versions que l'historique Supabase.
+- `npm run cms:verify` passe sur le projet client : publication, mise à jour,
+  restauration de révision, ordre public, dépublication, corbeille, fallback
+  public et état d'erreur dashboard. Les documents `__E2E__` sont supprimés en
+  `finally`.
+- Tous les types, singletons compris, utilisent une copie de travail et une
+  publication explicite. Enregistrer ne touche pas au snapshot public.
+- Statuts visibles : publié, brouillon, modifications à publier, corbeille.
+- Validation centralisée dans `src/admin/schema.ts` + `validation.ts` :
+  Accueil/About/Services/Blog bilingues ; Témoignages/Carnet/CV français requis.
+- Aperçu FR/EN pour chaque type, ordre manuel des collections, recherche,
+  filtres statut/langue/date, historique restaurable et corbeille 30 jours.
+- Les slugs sont uniques par type. Les médias orphelins sont nettoyés en différé
+  avec `npm run cms:media:cleanup`.
 - **Shared reader**: `src/app/pages/BlogArticleContent.tsx` renders the article identically for the public page (`BlogArticle`, `interactive`) and the dashboard preview (`BlogPreview`). It accepts a plain-text `body` (paragraphs split on blank lines via `bodyToParagraphs`), PortableText blocks (legacy), or `sections` (i18n fallback).
 - **Bug fixed**: `body` is plain localized text, not PortableText. It was being passed to `<PortableText>` on the public blog page **and** the home `manifesto`/`about` sections (broken render). Types are now honest (`body?: LocalizedValue`); `Home.tsx` renders paragraphs via `bodyToParagraphs`.
-- **Verification**: `scripts/verify-dashboard.mjs` now exercises the full create → preview → publish flow with cleanup. Run `npm run cms:verify`.
+- **Verification**: le script couvre brouillon invisible, aperçu FR/EN,
+  publication et mise à jour, stabilité du snapshot public pendant l'édition,
+  restauration de révision, ordre public, dépublication, corbeille/restauration
+  et erreurs réseau avec fallback/réessai.
+- **Bugs révélés par l'E2E** : l'égalité dirty est désormais indépendante de
+  l'ordre des clés JSON ; l'horodatage technique utilise `publishedAtMeta` et
+  n'écrase plus le champ éditorial `blogPost.publishedAt`.
+- **Parité contenu et médias (2026-06-10)** : `npm run cms:backfill` simule une
+  fusion récursive qui complète uniquement les valeurs vides ; `-- --apply`
+  téléverse les médias, crée les révisions puis republie. La première passe a
+  enrichi 14 documents sans écraser les ajustements existants. Les 30 documents
+  actifs correspondent aux 30 snapshots publics, sans contenu requis incomplet.
+- **Médias pilotés par le dashboard** : portraits accueil/À propos/témoignages,
+  couvertures blog et image Open Graph sont dans Supabase Storage avec textes
+  alternatifs FR/EN. Les 18 URL d'images publiées ont été vérifiées en HTTP.
+- **CMS autoritaire** : dès qu'une lecture Supabase réussit, les pages utilisent
+  ses champs et ses collections tels quels. Les dictionnaires i18n ne remplacent
+  plus silencieusement un champ CMS vide ; ils restent le fallback global en cas
+  d'erreur ou de configuration absente.
 
 ### Dashboard polish — delete flow & CMS parity (2026-06-10)
-- **Delete safety**: confirm dialog, optimistic UI with rollback + error toast (mirrors `saveDoc`). `removeDoc` / `persistDoc` call `clearCmsCache(type)` so the public site refetches after writes.
+- **Delete safety**: les suppressions passent par une corbeille restaurable ;
+  la suppression définitive efface aussi l'historique. Les écritures invalident
+  le cache du lecteur public.
 - **Empty collections**: `useCmsCollection` sets `usingCms: true` when Supabase fetch succeeds even if `[]` — prevents i18n resurrection after deleting all items.
 - **Content parity fixes**: Footer reads `siteSettings` flat social fields + CMS services; Home uses CMS hero portrait and about image; Readings uses CMS book cover URLs. `CmsSiteSettings` typed with `instagram` / `linkedin`.
 - **Admin UI**: collection rows `items-start`, editor toolbar wraps, localized list delete button alignment.
@@ -82,7 +123,9 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
 
 ### Public Site Data Layer
 - Hook file: `src/cms/cmsContent.ts` — exports `useCmsCollection(type, fallback)`, `useCmsSingleton(type, fallback)`, and `cmsImageUrl(image)`.
-- These hooks fetch from Supabase (public RLS read) and fall back to i18n local data when Supabase returns nothing.
+- Ces hooks lisent les snapshots publiés. Une collection vide réussie reste
+  vide ; une erreur réseau ou de schéma déclenche le fallback i18n et expose
+  également un champ `error`.
 - **All** public pages now read from Supabase: `Home`, `About`, `Services`, `ServiceDetail`, `Blog`, `BlogArticle`, `Cv` (header + entries), `Navbar`, `Footer`, `ToolsInspirations`, `ReadingsReferences`.
 - Images are flat public URLs (`CmsImage = { url, alt }`); resolve with `cmsImageUrl()`.
 - `i18n` locales (`fr.tsx`, `en.tsx`) are now **fallback only**, not the primary source of truth.

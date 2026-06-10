@@ -33,6 +33,28 @@ Règle d'or sur les préfixes Vite : **toute variable préfixée `VITE_` est
 embarquée dans le bundle et donc publique.** Ne jamais mettre un secret derrière
 un préfixe `VITE_`.
 
+### Propriété du projet Supabase client
+
+Le projet Supabase reste dans une organisation appartenant au client. Le compte
+du développeur est invité comme membre de cette organisation avec le rôle le
+plus limité compatible avec le travail demandé :
+
+- **Developer** pour les données, migrations et fonctions ;
+- **Administrator** uniquement si les réglages du projet, les clés API ou
+  l'authentification doivent être administrés.
+
+Sur l'offre gratuite, les rôles sont appliqués à l'organisation entière : cette
+organisation doit donc rester dédiée aux projets du client concernés. Ne jamais
+partager le mot de passe du compte propriétaire du client, ni un Personal Access
+Token. Chaque intervenant utilise son propre compte Supabase et son propre token
+local.
+
+Les migrations versionnées dans `supabase/migrations/` sont la source de vérité.
+Après l'invitation, lier le dépôt au projet client avec la CLI Supabase et
+appliquer les migrations depuis ce dépôt. Le connecteur Supabase peut servir à
+l'inspection, de préférence limité au `project_ref`; il ne remplace pas les
+migrations versionnées pour une base contenant les données réelles du client.
+
 ## 3. Le coffre-fort de secrets, ici
 
 La vidéo recommande un gestionnaire de secrets (AWS Secrets Manager, HashiCorp
@@ -73,20 +95,32 @@ dépense si l'endpoint est abusé. À configurer impérativement :
 
 ## 6. Point d'attention connu
 
-- L'endpoint `api/translate.js` **exige désormais une session Supabase valide**
+- L'endpoint `api/translate.js` **exige une session Supabase valide**
   (en-tête `Authorization: Bearer <access_token>`) avant d'appeler le service de
-  traduction. Un appel sans session valide reçoit un `401`. Le client (bouton
-  « Traduire ») doit donc envoyer le token de session ; il est actuellement un
-  stub de démo (`src/admin/fields.tsx`) qui recopie FR→EN sans appel réseau.
-  Quand on le câblera réellement, il devra récupérer le token via
-  `getSupabase().auth.getSession()` et le passer dans l'en-tête `Authorization`.
+  traduction. Le menu document-level du dashboard récupère le token via
+  `getSupabase().auth.getSession()` ; il est désactivé en mode démo et affiche
+  une confirmation de coût avant tout appel.
   Le plafond AI Gateway + budget OpenAI (section 5) reste recommandé en
   complément (défense en profondeur).
 - Variables côté fonction serveur (Vercel) : `SUPABASE_URL` +
   `SUPABASE_PUBLISHABLE_KEY` (à défaut, les `VITE_…` équivalentes sont réutilisées).
   Optionnel : `TRANSLATE_ALLOWED_ORIGIN` pour restreindre l'origine CORS.
 - Les politiques RLS Supabase sont permissives pour « authenticated »
-  (`using (true)`). Acceptable en mono-éditeur ; à durcir si plusieurs comptes.
+  mais exigent désormais une session réelle (`auth.uid() is not null`). Le rôle
+  anonyme ne peut lire que `cms_public_documents` et n'a aucun droit d'écriture.
+- Le bucket `media` est public pour servir les images sans URL signée. Le
+  listing reste réservé au compte authentifié afin que le script de nettoyage
+  puisse identifier les médias orphelins.
+- La protection Supabase contre les mots de passe divulgués est réservée à
+  l'offre Pro. Tant que le projet reste sur l'offre gratuite, utiliser un mot de
+  passe unique et long généré par un gestionnaire de mots de passe.
+- Les brouillons vivent dans `cms_documents`, lisible uniquement par les
+  utilisateurs authentifiés. Le site public lit exclusivement
+  `cms_public_documents`; une sauvegarde ne modifie donc jamais le site tant que
+  l'éditeur ne publie pas.
+- Les médias remplacés restent conservés tant qu'une copie de travail, un
+  snapshot public ou une révision les référence. `npm run cms:media:cleanup`
+  simule le nettoyage ; ajouter `-- --apply` uniquement après revue de la liste.
 
 ## 7. Rotation des secrets
 
