@@ -4,6 +4,10 @@ import { motion } from "motion/react";
 import type React from "react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { PageHero } from "../components/PageHero";
+import { SectionEyebrow } from "../components/SectionEyebrow";
+import { PAGE_MAIN } from "../components/layout/publicPage";
+import { useMotionSafe } from "../hooks/useMotionSafe";
 import { toBlogPostViewModel } from "../../cms/adapters";
 import { cmsImageUrl, useCmsCollection } from "../../cms/cmsContent";
 import { isPublishedPost, type CmsBlogPost, type CmsImage } from "../../cms/types";
@@ -27,6 +31,7 @@ const blogImages = [abstractEditorialImage, abstractContentImage, abstractSocial
 
 export default function Blog() {
   const { i18n, t } = useTranslation();
+  const { reduceMotion, entranceTransition } = useMotionSafe();
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const legacyPosts = useMemo(
@@ -67,29 +72,25 @@ export default function Blog() {
   };
 
   return (
-    <main className="min-h-[70vh] bg-[#fcf9f8] px-5 pb-20 pt-32 text-[#1c1b1b] dark:bg-[#13100f] dark:text-[#f8f1ec] sm:px-8 md:pt-36 lg:px-8">
+    <main className={PAGE_MAIN}>
       <motion.section
-        initial={{ opacity: 0, y: 16 }}
+        initial={reduceMotion ? false : { opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, ease: "easeOut" }}
+        transition={entranceTransition}
         className="mx-auto grid max-w-[1160px] items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14"
       >
-        <div>
-          <p className="text-[12px] font-semibold uppercase tracking-[3px] text-[#854d63] dark:text-[#f0adc4]">
-            {t("blog.eyebrow")}
-          </p>
-          <h1 className="mt-5 font-serif text-[48px] leading-[52px] text-[#1c1b1b] dark:text-[#f8f1ec] md:text-[64px] md:leading-[68px]">
-            {t("blog.title")}
-          </h1>
-          <p className="mt-6 max-w-[640px] text-[18px] leading-8 text-[#5b4137] dark:text-[#dbc9c0]">
-            {t("blog.subtitle")}
-          </p>
-        </div>
+        <PageHero
+          eyebrow={t("blog.eyebrow")}
+          title={t("blog.title")}
+          subtitle={t("blog.subtitle")}
+          titleClassName="text-[48px] leading-[52px] md:text-[64px] md:leading-[68px]"
+        />
 
+        {featuredPost ? (
         <Link
           to={`/blog/${featuredPost.slug}`}
           viewTransition
-          className="group relative mx-auto block w-full max-w-[560px] overflow-hidden rounded-lg border border-[#e4bfb2]/32 bg-white p-4 shadow-[0_24px_70px_rgba(28,27,27,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_90px_rgba(28,27,27,0.12)] dark:border-white/10 dark:bg-[#171111]"
+          className="group relative mx-auto block w-full max-w-[560px] overflow-hidden rounded-lg border border-border-accent/32 bg-white p-4 shadow-[0_24px_70px_rgba(28,27,27,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_90px_rgba(28,27,27,0.12)] dark:border-white/10 dark:bg-surface-panel"
         >
           <div
             className="relative h-[25rem] overflow-hidden rounded-md bg-[#ffd9e4]"
@@ -98,7 +99,8 @@ export default function Blog() {
             <img
               src={getPostImage(featuredPost.slug)}
               alt=""
-              className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.035]"
+              aria-hidden
+              className="public-media-outline h-full w-full object-cover transition duration-700 group-hover:scale-[1.035]"
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(28,27,27,0)_28%,rgba(28,27,27,0.72)_100%)]" />
             <div className="absolute bottom-5 left-5 right-5 text-white">
@@ -114,7 +116,7 @@ export default function Blog() {
             </div>
           </div>
           <div className="grid gap-3 px-2 pt-5 sm:grid-cols-[1fr_auto] sm:items-center">
-            <div className="flex flex-wrap gap-4 text-[12px] font-semibold uppercase tracking-[1.4px] text-[#854d63] dark:text-[#f0adc4]">
+            <div className="flex flex-wrap gap-4 text-[12px] font-semibold uppercase tracking-[1.4px] text-text-accent dark:text-text-accent">
               <span className="inline-flex items-center gap-2">
                 <BookOpenIcon className="size-4" />
                 {featuredPost.category}
@@ -124,37 +126,35 @@ export default function Blog() {
                 {featuredPost.readingTime}
               </span>
             </div>
-            <span className="inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[1.4px] text-[#1c1b1b] transition group-hover:text-[#854d63] dark:text-[#f8f1ec] dark:group-hover:text-[#f0adc4]">
+            <span className="inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[1.4px] text-text-primary transition group-hover:text-text-accent dark:text-text-primary dark:group-hover:text-[#f0adc4]">
               {t("blog.readArticle")}
               <ArrowRightIcon className="size-4 transition group-hover:translate-x-1" />
             </span>
           </div>
         </Link>
+        ) : null}
       </motion.section>
 
       <section className="mx-auto mt-16 max-w-[1160px]">
         <div className="mb-8 space-y-6">
           <div>
-            <p className="text-[12px] font-semibold uppercase tracking-[3px] text-[#854d63] dark:text-[#f0adc4]">
-              {t("blog.latestEyebrow")}
-            </p>
-            <h2 className="mt-3 font-serif text-[32px] leading-9 dark:text-[#f8f1ec]">
+            <SectionEyebrow>{t("blog.latestEyebrow")}</SectionEyebrow>
+            <h2 className="mt-3 font-serif text-[32px] leading-9 dark:text-text-primary">
               {t("blog.latestTitle")}
             </h2>
           </div>
           <motion.div
-            layout
-            className="max-w-[820px] rounded-lg border border-[#e4bfb2]/28 bg-white/78 p-3 shadow-[0_18px_44px_rgba(91,65,55,0.06)] dark:border-white/10 dark:bg-[#171111]"
+            className="max-w-[820px] rounded-lg border border-border-accent/28 bg-white/78 p-3 shadow-[0_18px_44px_rgba(91,65,55,0.06)] dark:border-white/10 dark:bg-surface-panel"
           >
             <label className="relative block">
               <span className="sr-only">{t("blog.searchLabel")}</span>
-              <MagnifyingGlassIcon className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[#854d63] dark:text-[#f0adc4]" />
+              <MagnifyingGlassIcon className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-text-accent dark:text-text-accent" />
               <input
                 type="search"
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder={t("blog.searchPlaceholder")}
-                className="h-12 w-full rounded-md border border-[#e4bfb2]/45 bg-[#fcf9f8] px-12 text-sm text-[#1c1b1b] outline-none transition placeholder:text-[#5b4137]/58 focus:border-[#854d63] dark:border-white/10 dark:bg-white/5 dark:text-[#f8f1ec] dark:placeholder:text-[#dbc9c0]/52"
+                className="public-input h-12 w-full rounded-md border border-border-accent/45 bg-surface-page px-12 text-sm text-text-primary placeholder:text-text-secondary/58 dark:border-white/10 dark:bg-white/5 dark:text-text-primary dark:placeholder:text-[#dbc9c0]/52"
               />
             </label>
             <div className="mt-3 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -165,7 +165,6 @@ export default function Blog() {
 
                 return (
                   <motion.button
-                    layout
                     type="button"
                     key={category}
                     onClick={() => setActiveCategory(categoryValue)}
@@ -173,7 +172,7 @@ export default function Blog() {
                     className={`relative h-10 shrink-0 whitespace-nowrap rounded-full border px-4 text-[11px] font-semibold uppercase tracking-[1.2px] transition ${
                       isActive
                         ? "border-[#854d63] bg-[#854d63] text-white shadow-[0_12px_28px_rgba(133,77,99,0.16)]"
-                        : "border-[#e4bfb2]/70 bg-white text-[#5b4137] hover:border-[#854d63] hover:text-[#854d63] dark:border-white/10 dark:bg-[#171111] dark:text-[#dbc9c0] dark:hover:border-[#f0adc4] dark:hover:text-[#f0adc4]"
+                        : "border-border-accent/70 bg-white text-text-secondary hover:border-[#854d63] hover:text-text-accent dark:border-white/10 dark:bg-surface-panel dark:text-text-secondary dark:hover:border-[#f0adc4] dark:hover:text-[#f0adc4]"
                     }`}
                   >
                     {category}
@@ -189,7 +188,7 @@ export default function Blog() {
               key={post.slug}
               to={`/blog/${post.slug}`}
               viewTransition
-              className="group grid overflow-hidden rounded-lg border border-[#e4bfb2]/28 bg-white shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(28,27,27,0.08)] dark:border-white/10 dark:bg-[#171111] sm:grid-cols-[12rem_1fr]"
+              className="group grid overflow-hidden rounded-lg border border-border-accent/28 bg-white shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(28,27,27,0.08)] dark:border-white/10 dark:bg-surface-panel sm:grid-cols-[12rem_1fr]"
             >
               <div
                 className="h-56 overflow-hidden bg-[#ffd9e4] sm:h-full"
@@ -198,24 +197,27 @@ export default function Blog() {
                 <img
                   src={getPostImage(post.slug)}
                   alt=""
-                  className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.04]"
+                  aria-hidden
+                  loading="lazy"
+                  decoding="async"
+                  className="public-media-outline h-full w-full object-cover transition duration-700 group-hover:scale-[1.04]"
                 />
               </div>
               <div className="p-6">
-                <div className="flex flex-wrap gap-3 text-[11px] font-semibold uppercase tracking-[1.6px] text-[#854d63] dark:text-[#f0adc4]">
+                <div className="flex flex-wrap gap-3 text-[11px] font-semibold uppercase tracking-[1.6px] text-text-accent dark:text-text-accent">
                   <span>{post.category}</span>
                   <span>{post.date}</span>
                 </div>
                 <h3
-                  className="mt-4 font-serif text-[26px] leading-8 text-[#1c1b1b] dark:text-[#f8f1ec]"
+                  className="mt-4 font-serif text-[26px] leading-8 text-text-primary dark:text-text-primary"
                   style={{ viewTransitionName: `blog-title-${post.slug}` } as React.CSSProperties}
                 >
                   {post.title}
                 </h3>
-                <p className="mt-3 text-sm leading-6 text-[#5b4137] dark:text-[#dbc9c0]">
+                <p className="mt-3 text-sm leading-6 text-text-secondary dark:text-text-secondary">
                   {post.excerpt}
                 </p>
-                <span className="mt-5 inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[1.3px] text-[#1c1b1b] transition group-hover:text-[#854d63] dark:text-[#f8f1ec] dark:group-hover:text-[#f0adc4]">
+                <span className="mt-5 inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[1.3px] text-text-primary transition group-hover:text-text-accent dark:text-text-primary dark:group-hover:text-[#f0adc4]">
                   {t("blog.readArticle")}
                   <ArrowRightIcon className="size-4 transition group-hover:translate-x-1" />
                 </span>
@@ -224,7 +226,7 @@ export default function Blog() {
           ))}
         </div>
         {visiblePosts.length === 0 ? (
-          <div className="rounded-lg border border-[#e4bfb2]/28 bg-white p-8 text-center text-[#5b4137] dark:border-white/10 dark:bg-[#171111] dark:text-[#dbc9c0]">
+          <div className="rounded-lg border border-border-accent/28 bg-white p-8 text-center text-text-secondary dark:border-white/10 dark:bg-surface-panel dark:text-text-secondary">
             {t("blog.emptyState")}
           </div>
         ) : null}

@@ -9,6 +9,12 @@
     overflow-x: clip;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
   body {
     @apply bg-background text-foreground;
     overflow-x: clip;
@@ -55,6 +61,25 @@
 }
 
 @layer utilities {
+  .public-input {
+    outline: none;
+    transition:
+      border-color 150ms ease-out,
+      box-shadow 150ms ease-out;
+  }
+
+  .public-input:focus {
+    border-color: #854d63;
+  }
+
+  .public-input:focus-visible {
+    box-shadow: 0 0 0 2px var(--focus-ring);
+  }
+
+  .dark .public-input:focus {
+    border-color: #f0adc4;
+  }
+
   .portfolio-nav-link {
     transition:
       color 180ms ease,
@@ -286,6 +311,14 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root),
+    ::view-transition-group(*) {
+      animation-duration: 0ms !important;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
     .t-icon-swap .t-icon { transition: none !important; }
   }
 
@@ -308,5 +341,14 @@
 
   .organic-shape-third {
     border-radius: 50% 50% 60% 40% / 60% 40% 50% 50%;
+  }
+
+  .public-media-outline {
+    outline: 1px solid rgba(0, 0, 0, 0.1);
+    outline-offset: -1px;
+  }
+
+  .dark .public-media-outline {
+    outline-color: rgba(255, 255, 255, 0.1);
   }
 }

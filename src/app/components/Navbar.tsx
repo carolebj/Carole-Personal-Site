@@ -140,7 +140,7 @@ function ThemeSwitcher({
                   aria-checked={isActive}
                   aria-label={t(`nav.${labelKey}`)}
                   onClick={() => chooseTheme(value)}
-                  className={`relative flex size-9 items-center justify-center rounded-full transition ${
+                  className={`relative flex size-11 items-center justify-center rounded-full transition ${
                     isActive
                       ? "text-[#854d63] dark:text-[#f0adc4]"
                       : "text-[#6d625d] hover:text-[#854d63] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
@@ -205,7 +205,7 @@ function ThemeSwitcher({
                       aria-checked={isActive}
                       aria-label={t(`nav.${labelKey}`)}
                       onClick={() => chooseTheme(value)}
-                      className={`relative flex size-9 items-center justify-center rounded-full transition ${
+                      className={`relative flex size-11 items-center justify-center rounded-full transition ${
                         isActive
                           ? "text-[#854d63] dark:text-[#f0adc4]"
                           : "text-[#8d7b72] hover:text-[#854d63] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
@@ -304,7 +304,13 @@ export default function Navbar() {
     { id: "home", name: t("nav.home"), href: "/", isPageLink: true },
     { id: "about", name: t("nav.about"), href: "/about", isPageLink: true },
     { id: "services", name: t("nav.services"), href: "/services", hasMenu: true, isPageLink: true },
-    { id: "carnet", name: t("nav.carnet"), href: "#carnet", hasCarnetMenu: true },
+    {
+      id: "carnet",
+      name: t("nav.carnet"),
+      href: "/carnet/outils-inspirations",
+      hasCarnetMenu: true,
+      isPageLink: true,
+    },
     { id: "blog", name: t("nav.blog"), href: "/blog", isPageLink: true },
   ];
 
@@ -507,9 +513,20 @@ export default function Navbar() {
                     setHoveredNavId(null);
                     setIsServicesOpen(false);
                   }}
+                  onFocusCapture={() => {
+                    setHoveredNavId(link.id);
+                    setIsServicesOpen(true);
+                  }}
+                  onBlurCapture={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+                      setHoveredNavId(null);
+                      setIsServicesOpen(false);
+                    }
+                  }}
                 >
                   <Link
                     to={link.href}
+                    aria-expanded={isServicesOpen}
                     onClick={() => {
                       setIsServicesOpen(false);
                       setHoveredNavId(null);
@@ -613,16 +630,26 @@ export default function Navbar() {
                     setHoveredNavId(null);
                     setIsCarnetOpen(false);
                   }}
+                  onFocusCapture={() => {
+                    setHoveredNavId(link.id);
+                    setIsCarnetOpen(true);
+                  }}
+                  onBlurCapture={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+                      setHoveredNavId(null);
+                      setIsCarnetOpen(false);
+                    }
+                  }}
                 >
                   <a
                     href={link.href}
+                    aria-expanded={isCarnetOpen}
                     onClick={(event) => {
                       event.preventDefault();
                       setHoveredNavId(link.id);
                       setIsCarnetOpen((current) => !current);
                     }}
                     className={linkClass}
-                    aria-expanded={isCarnetOpen}
                   >
                     {hoverBackground}
                     <span className="relative z-10">{link.name}</span>
@@ -741,7 +768,9 @@ export default function Navbar() {
         </div>
 
         <button
-          className="flex size-10 items-center justify-center rounded-full border border-[#e5e2e1] text-[#1c1b1b] dark:border-white/15 dark:text-[#f8f1ec] lg:hidden"
+          type="button"
+          aria-label={t("nav.menu")}
+          className="flex size-11 items-center justify-center rounded-full border border-[#e5e2e1] text-[#1c1b1b] dark:border-white/15 dark:text-[#f8f1ec] lg:hidden"
           onClick={() => {
             setIsMobileMenuOpen((current) => {
               if (current) {
@@ -751,7 +780,6 @@ export default function Navbar() {
               return !current;
             });
           }}
-          aria-label={t("nav.menu")}
         >
           <span
             className="t-icon-swap size-5"

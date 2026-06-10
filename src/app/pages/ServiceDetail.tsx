@@ -1,10 +1,13 @@
 import { Link, useParams } from "react-router";
 import { motion } from "motion/react";
+import type React from "react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toServiceViewModel } from "../../cms/adapters";
 import { useCmsCollection } from "../../cms/cmsContent";
 import type { CmsService } from "../../cms/types";
+import { PAGE_MAIN } from "../components/layout/publicPage";
+import { useSeoOverride } from "../seo/SeoOverrideContext";
 
 type ServiceDetail = {
   slug: string;
@@ -27,7 +30,7 @@ function AnimatedDigits({ value }: { value: string }) {
   const chars = Array.from(value);
 
   return (
-    <span className="t-digit-group is-animating" aria-label={value}>
+    <span className="t-digit-group is-animating tabular-nums" aria-label={value}>
       {chars.map((char, index) => {
         const staggerIndex = index >= chars.length - 2 ? index - chars.length + 3 : undefined;
         return (
@@ -64,6 +67,17 @@ export default function ServiceDetail() {
   };
   const normalizedSlug = slug ? slugAliases[slug] ?? slug : "";
   const service = services.find((item) => item.slug === normalizedSlug) ?? services[0];
+  const seoOverride = useMemo(
+    () =>
+      service
+        ? {
+            title: `${service.title} — ${service.accent} | Carole Tonoukouen`,
+            description: service.detailIntro || service.description,
+          }
+        : null,
+    [service],
+  );
+  useSeoOverride(seoOverride);
   const whatIsIncluded = service.whatIsIncluded ?? service.bullets;
   const targetAudience = service.targetAudience ?? [];
   const concreteApplications = service.concreteApplications ?? [service.projectDescription];
@@ -86,7 +100,7 @@ export default function ServiceDetail() {
   ];
 
   return (
-    <main className="bg-surface-page px-5 pb-24 pt-32 text-text-primary sm:px-8 md:pt-40 lg:px-8">
+    <main className={`${PAGE_MAIN} pb-24`}>
       <motion.section
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -105,7 +119,10 @@ export default function ServiceDetail() {
             <p className="text-[12px] font-semibold uppercase tracking-[3px] text-text-accent">
               {t("serviceDetail.eyebrow")}
             </p>
-            <h1 className="mt-5 max-w-[720px] font-serif text-[48px] leading-[52px] text-text-primary md:text-[66px] md:leading-[68px]">
+            <h1
+              className="mt-5 max-w-[720px] text-balance font-serif text-[48px] leading-[52px] text-text-primary md:text-[66px] md:leading-[68px]"
+              style={{ viewTransitionName: `service-card-${service.slug}` } as React.CSSProperties}
+            >
               {service.title}
               <br />
               <span className="italic text-text-accent">{service.accent}</span>

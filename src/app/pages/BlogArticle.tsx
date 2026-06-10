@@ -10,6 +10,8 @@ import abstractAuditImage from "../../assets/blog/blog-abstract-audit.svg";
 import abstractContentImage from "../../assets/blog/blog-abstract-content.svg";
 import abstractEditorialImage from "../../assets/blog/blog-abstract-editorial.svg";
 import abstractSocialImage from "../../assets/blog/blog-abstract-social.svg";
+import { PAGE_MAIN } from "../components/layout/publicPage";
+import { useSeoOverride } from "../seo/SeoOverrideContext";
 import { BlogArticleContent } from "./BlogArticleContent";
 
 type BlogPost = {
@@ -51,9 +53,22 @@ export default function BlogArticle() {
   const postIndex = Math.max(0, posts.findIndex((item) => item.slug === post.slug));
   const cmsImage = cmsImageUrl(post.coverImage);
   const postImage = cmsImage ?? blogImages[postIndex % blogImages.length] ?? abstractEditorialImage;
+  const seoOverride = useMemo(
+    () =>
+      post
+        ? {
+            title: `${post.title} | Carole Tonoukouen`,
+            description: post.excerpt,
+            image: postImage,
+            ogType: "article",
+          }
+        : null,
+    [post, postImage],
+  );
+  useSeoOverride(seoOverride);
 
   return (
-    <main className="bg-[#fcf9f8] px-5 pb-20 pt-32 text-[#1c1b1b] dark:bg-[#13100f] dark:text-[#f8f1ec] sm:px-8 md:pt-36 lg:px-8">
+    <main className={PAGE_MAIN}>
       <motion.article
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}

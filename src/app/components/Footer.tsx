@@ -189,6 +189,10 @@ function FooterShaderCanvas({
   }, [darkMode]);
 
   useEffect(() => {
+    if (reducedMotion) {
+      return;
+    }
+
     const canvas = canvasRef.current;
     const gl = canvas?.getContext("webgl", {
       alpha: false,
@@ -400,6 +404,15 @@ function FooterShaderCanvas({
       gl.deleteShader(fragmentShader);
     };
   }, [reducedMotion]);
+
+  if (reducedMotion) {
+    return (
+      <div
+        aria-hidden
+        className="absolute inset-0 h-full w-full bg-[linear-gradient(135deg,#ffd9e4_0%,#fff3ee_38%,#ffdcbd_72%,#f7f6f4_100%)] dark:bg-[linear-gradient(135deg,#2a1a22_0%,#1a1413_45%,#211a19_100%)]"
+      />
+    );
+  }
 
   return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />;
 }
