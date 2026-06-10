@@ -1,6 +1,6 @@
 # GUIDELINE.md
 
-Canonical implementation guide for the Carole Portfolio repo. Use this file for commands, architecture, and coding rules. Use `MEMORY.md` for current product/design decisions and living project context.
+Canonical implementation guide for the Carole Portfolio repo. Use this file for commands, architecture, and coding rules. Use `project/MEMORY.md` for current product/design decisions and living project context. Security model and secret handling live in `SECURITY.md` (same folder).
 
 ## Project Description
 
@@ -35,7 +35,7 @@ Current `package.json` scripts:
 - `npm run dev` / `npm run dev:site`: start the Vite site (port 5173); the custom `/dashboard` route is served by the same server
 - `npm run build`: builds the Vite site → `dist/`
 
-Dashboard seed and agent verification (credentials in `.env.local` — see `AGENT_DEV.md`):
+Dashboard seed and agent verification (credentials in `.env.local` — see `workflows/AGENT_DEV.md`):
 
 ```bash
 npm run cms:seed      # push content + images to Supabase
@@ -195,10 +195,13 @@ Styles and assets:
 - `src/assets/`
 - `src/assets/carole-redesign-*.png`: current Figma-derived redesign image assets
 
-Project guidance:
+Project guidance (all under `docs/`, entry point `AGENTS.md` at repo root):
 
-- `GUIDELINE.md`: canonical repo-specific implementation guide
-- `MEMORY.md`: current project memory and redesign notes
+- `docs/GUIDELINE.md`: canonical repo-specific implementation guide
+- `docs/SECURITY.md`: security model and secret-handling workflow
+- `docs/workflows/AGENT_DEV.md`: autonomous CMS seed + browser verification
+- `docs/project/MEMORY.md`: current project memory and redesign notes
+- `docs/project/NEXT_STEPS.md`: temporary handoff / current todo
 
 ## Coding Conventions
 
@@ -263,7 +266,7 @@ Follow the existing codebase before introducing new patterns.
 - `src/styles/tokens.css`: central primitive and semantic token definitions
 - `src/styles/global.css`: global styles and utilities that consume tokens
 - `src/app/i18n/locales/`: fallback copy — keep accurate but do not treat as primary source
-- `MEMORY.md`: living product/design memory that should stay short and current
+- `project/MEMORY.md`: living product/design memory that should stay short and current
 
 ## Change Guidance for Future Agents
 
@@ -274,4 +277,4 @@ Follow the existing codebase before introducing new patterns.
 - **If adding a new content type to the dashboard**: (1) add it to `src/admin/schema.ts`, (2) add mock data in `mockData.ts`, (3) add icon key in `iconMap.tsx`, (4) add the seed data in `scripts/seed-supabase.mjs`, (5) create a `useCmsCollection` hook call in the relevant public page
 - If changing copy that is also managed from the dashboard, update the seed script and Supabase — not just i18n
 - If changing visual direction, prefer token or shared-style updates over scattered literal values
-- **Always update `MEMORY.md`** when there is a major product, CMS, data model, or architecture change
+- **Always update `project/MEMORY.md`** when there is a major product, CMS, data model, or architecture change

@@ -124,5 +124,5 @@ Si l'affichage semble ancien : **Cmd+Shift+R** sur l'onglet ouvert.
 
 ## Sécurité
 
-- Ne **jamais** committer `.env.local` ni copier les mots de passe dans `MEMORY.md`, `GUIDELINE.md` ou les messages utilisateur.
+- Ne **jamais** committer `.env.local` ni copier les mots de passe dans `../project/MEMORY.md`, `../GUIDELINE.md` ou les messages utilisateur.
 - Les clés `VITE_*` sont publiques côté client ; la protection repose sur les RLS Supabase.

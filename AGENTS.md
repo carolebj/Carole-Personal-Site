@@ -1,9 +1,29 @@
 # AGENTS.md
 
-This repository uses `GUIDELINE.md` as the canonical agent and implementation guide.
+Point d'entrée pour les agents (Cursor, Codex, opencode, Claude Code…) et les
+développeurs. Les documents de guidage vivent dans **`docs/`**.
 
-Before working in this repo, refer to:
+## Carte des documents
 
-- `GUIDELINE.md` for project instructions, commands, architecture, and coding rules
-- `MEMORY.md` for current project memory and living redesign context
-- `AGENT_DEV.md` for **autonomous CMS seed + browser verification** (run `npm run cms:verify`, then open `AGENT_PREVIEW_URL` in the current agent tool's built-in browser by default — Cursor via MCP `browser_navigate`, Codex/Claude Code via their own preview; the system browser is a secondary option, used only when there's a specific benefit)
+- **`docs/GUIDELINE.md`** — guide canonique : commandes, architecture, règles de
+  code. À lire en premier.
+- **`docs/SECURITY.md`** — modèle de sécurité et façon de travailler (secrets,
+  rotation, scan pré-commit, runbook incident).
+- **`docs/workflows/AGENT_DEV.md`** — workflow **seed CMS + vérification
+  navigateur autonome** : lancer `npm run cms:verify`, puis ouvrir
+  `AGENT_PREVIEW_URL` dans le navigateur intégré de l'outil courant (Cursor via
+  MCP `browser_navigate` ; Codex/Claude Code via leur propre preview ; le
+  navigateur système n'est qu'une option secondaire, en cas de bénéfice précis).
+- **`docs/project/MEMORY.md`** — mémoire produit/design vivante (contexte courant).
+- **`docs/project/NEXT_STEPS.md`** — passation / todo de la session en cours.
+
+## Réflexes
+
+- Avant de coder : lire `docs/GUIDELINE.md` puis `docs/project/MEMORY.md`.
+- Avant de toucher aux secrets ou de committer : lire `docs/SECURITY.md` et
+  lancer `npm run security:scan` (le hook pre-commit le fait automatiquement
+  après `npm run security:install-hooks`).
+- Après une modif liée au CMS : suivre `docs/workflows/AGENT_DEV.md` et confirmer
+  le succès de `npm run cms:verify`.
+- Mettre à jour `docs/project/MEMORY.md` à chaque changement majeur (produit,
+  design, architecture, commandes, données).

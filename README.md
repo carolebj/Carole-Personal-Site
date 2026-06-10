@@ -18,4 +18,4 @@ npm run cms:verify # seed + headless dashboard checks
 2. Fill `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` (Supabase → Project Settings → API).
 3. For seed/verify automation, set `CMS_SEED_EMAIL` and `CMS_SEED_PASSWORD`.
 
-See `GUIDELINE.md` for architecture and `AGENT_DEV.md` for the agent seed/verify workflow.
+See `docs/GUIDELINE.md` for architecture, `docs/SECURITY.md` for the security model, and `docs/workflows/AGENT_DEV.md` for the agent seed/verify workflow. Guidance docs live in `docs/` (entry point: `AGENTS.md`).
