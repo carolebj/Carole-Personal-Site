@@ -13,7 +13,8 @@
     "worker:deploy": "npx wrangler deploy --config cloudflare/translate-worker/wrangler.jsonc",
     "worker:dev": "npx wrangler dev --config cloudflare/translate-worker/wrangler.jsonc",
     "security:scan": "node scripts/check-secrets.mjs",
-    "security:install-hooks": "node scripts/install-hooks.mjs"
+    "security:install-hooks": "node scripts/install-hooks.mjs",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@calcom/embed-react": "^1.5.3",
@@ -80,6 +81,7 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.1.12",
+    "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "4.7.0",
     "playwright": "^1.60.0",
     "tailwindcss": "4.1.12",

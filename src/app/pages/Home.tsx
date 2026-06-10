@@ -37,6 +37,7 @@ type Testimonial = {
   quote: string;
   name: string;
   role: string;
+  portrait?: CmsTestimonial["portrait"];
 };
 
 type CircularTestimonial = Testimonial & {

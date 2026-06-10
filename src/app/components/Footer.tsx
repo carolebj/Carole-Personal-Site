@@ -27,6 +27,12 @@ type ServiceItem = {
   accent: string;
 };
 
+type SocialLink = {
+  label: string;
+  href: string;
+  external: boolean;
+};
+
 function FooterColumn({
   title,
   children,
@@ -418,40 +424,40 @@ export default function Footer() {
   const [isShaderAccelerated, setIsShaderAccelerated] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
-  const socialLinks = useMemo(() => {
-    const contactLink = siteData?.contactEmail
-      ? { label: t("footer.contactEmail"), href: `mailto:${siteData.contactEmail}`, external: true as const }
-      : { label: t("footer.contactEmail"), href: "/contact", external: false as const };
+  const socialLinks = useMemo((): SocialLink[] => {
+    const contactLink: SocialLink = siteData?.contactEmail
+      ? { label: t("footer.contactEmail"), href: `mailto:${siteData.contactEmail}`, external: true }
+      : { label: t("footer.contactEmail"), href: "/contact", external: false };
 
-    const cmsLinks =
+    const cmsLinks: SocialLink[] =
       siteData?.socialLinks
         ?.filter((link) => link.label && link.url)
         .map((link) => ({
           label: link.label!,
           href: link.url!,
-          external: true as const,
+          external: true,
         })) ?? [];
 
     if (cmsLinks.length > 0) {
       return cmsLinks.concat([contactLink]);
     }
 
-    const flatLinks = [
+    const flatLinks: SocialLink[] = [
       siteData?.linkedin
-        ? { label: t("footer.linkedin"), href: siteData.linkedin, external: true as const }
+        ? { label: t("footer.linkedin"), href: siteData.linkedin, external: true }
         : null,
       siteData?.instagram
-        ? { label: "Instagram", href: siteData.instagram, external: true as const }
+        ? { label: "Instagram", href: siteData.instagram, external: true }
         : null,
-    ].filter((link): link is { label: string; href: string; external: true } => link !== null);
+    ].filter((link): link is SocialLink => link !== null);
 
     if (flatLinks.length > 0) {
       return flatLinks.concat([contactLink]);
     }
 
     return [
-      { label: t("footer.behance"), href: "https://www.behance.net/caroletonoukouen", external: true as const },
-      { label: t("footer.linkedin"), href: "https://www.linkedin.com/in/caroletonoukouen/", external: true as const },
+      { label: t("footer.behance"), href: "https://www.behance.net/caroletonoukouen", external: true },
+      { label: t("footer.linkedin"), href: "https://www.linkedin.com/in/caroletonoukouen/", external: true },
       contactLink,
     ];
   }, [siteData, t]);
