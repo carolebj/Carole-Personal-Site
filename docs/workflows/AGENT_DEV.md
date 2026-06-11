@@ -15,6 +15,31 @@ Si le mot de passe contient `#`, utilise des guillemets (sinon tout après `#` e
 
 Ces identifiants correspondent au compte **Supabase > Authentication > Users** utilisé pour `/dashboard`. Ils permettent au seed et aux scripts de vérification de s'authentifier sans argument CLI.
 
+## Configuration Vercel
+
+Dans **Vercel > carole-portfolio > Settings > Environment Variables**, ajouter
+les deux variables publiques suivantes aux environnements **Preview** et
+**Production** :
+
+```bash
+VITE_SUPABASE_URL=https://<project-ref>.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+```
+
+Sans elles, le dashboard déployé affiche volontairement le mode démo
+`localStorage` et le site public utilise les contenus i18n de secours. Les
+variables `CMS_SEED_EMAIL` et `CMS_SEED_PASSWORD` restent uniquement dans
+`.env.local` et ne doivent jamais être ajoutées à Vercel.
+
+Les variables `VITE_*` sont intégrées au build Vite : après leur ajout ou leur
+modification, redéployer la branche concernée. L'alias de la branche `dev` est :
+
+```text
+https://carole-portfolio-git-dev-stevens-projects-db687a83.vercel.app/dashboard
+```
+
+L'ancienne route `/admin` redirige vers `/dashboard`.
+
 Optionnel :
 
 ```bash

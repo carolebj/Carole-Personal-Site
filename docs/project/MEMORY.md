@@ -19,6 +19,11 @@ Last reviewed: 2026-06-10 WAT
 - Git author email is now `stevenkejjad@gmail.com`; this fixed Vercel's commit-author validation.
 - Current production alias points to the `main` deployment; current `dev` branch preview is `https://carole-portfolio-git-dev-stevens-projects-db687a83.vercel.app`.
 - Vercel Authentication is disabled for the project; both production and `dev` preview URLs are publicly reachable without login.
+- Vercel must define `VITE_SUPABASE_URL` and
+  `VITE_SUPABASE_PUBLISHABLE_KEY` for both Preview and Production; otherwise
+  `/dashboard` intentionally runs in local demo mode and public pages use i18n
+  fallbacks. Redeploy after changing these build-time variables.
+- The legacy `/admin` URL redirects to `/dashboard`.
 
 ## CMS Direction — Custom Dashboard + Supabase
 
