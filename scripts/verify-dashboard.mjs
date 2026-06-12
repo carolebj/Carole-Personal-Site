@@ -288,12 +288,11 @@ async function verifyBlogFlow(page) {
     ok("Mise à jour publiée");
 
     await page.locator("button", { hasText: "Historique" }).click();
-    await page.waitForTimeout(400);
     const history = page.getByRole("dialog", { name: "Historique des versions" });
-    if (!(await history.count())) {
-      fail("Historique des versions absent.");
-    }
+    await history.waitFor({ state: "visible", timeout: 5_000 });
+    await history.getByText("Chargement…", { exact: true }).waitFor({ state: "hidden", timeout: 5_000 });
     const restoreButtons = history.getByRole("button", { name: "Restaurer cette version" });
+    await restoreButtons.nth(2).waitFor({ state: "visible", timeout: 5_000 });
     if ((await restoreButtons.count()) < 3) {
       fail("L'historique ne contient pas assez de versions pour tester la restauration.");
     }

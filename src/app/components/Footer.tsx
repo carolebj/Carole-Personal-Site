@@ -64,7 +64,7 @@ function FooterLink({
   children: ReactNode;
 }) {
   const className =
-    "block break-words text-[15px] leading-7 text-[#5b4137] transition hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:text-[#f0adc4]";
+    "flex min-h-10 items-center break-words text-[15px] leading-7 text-[#5b4137] transition-colors hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:text-[#f0adc4]";
 
   if (to) {
     return (
@@ -100,7 +100,7 @@ function SocialRow({
   label: string;
 }) {
   const className =
-    "group flex min-w-0 items-center gap-3 text-[15px] leading-7 text-[#5b4137] transition hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:text-[#f0adc4]";
+    "group flex min-h-10 min-w-0 items-center gap-3 text-[15px] leading-7 text-[#5b4137] transition-colors hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:text-[#f0adc4]";
 
   const content = (
     <>
@@ -366,8 +366,11 @@ function FooterShaderCanvas({
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
       const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.max(1, Math.floor(rect.width * pixelRatio));
-      canvas.height = Math.max(1, Math.floor(rect.height * pixelRatio));
+      const width = Math.max(1, Math.floor(rect.width * pixelRatio));
+      const height = Math.max(1, Math.floor(rect.height * pixelRatio));
+      if (canvas.width === width && canvas.height === height) return;
+      canvas.width = width;
+      canvas.height = height;
       gl.viewport(0, 0, canvas.width, canvas.height);
     };
 
@@ -377,7 +380,6 @@ function FooterShaderCanvas({
       lastFrameAt = now;
       shaderTime += reducedMotion ? 0 : delta * speedMultiplierRef.current;
 
-      resize();
       gl.useProgram(program);
       gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
       gl.uniform1f(timeLocation, shaderTime);
@@ -392,12 +394,14 @@ function FooterShaderCanvas({
       }
     };
 
-    window.addEventListener("resize", resize);
+    resize();
+    const resizeObserver = new ResizeObserver(resize);
+    resizeObserver.observe(canvas);
     render();
 
     return () => {
       window.cancelAnimationFrame(animationFrame);
-      window.removeEventListener("resize", resize);
+      resizeObserver.disconnect();
       gl.deleteBuffer(buffer);
       gl.deleteProgram(program);
       gl.deleteShader(vertexShader);
@@ -780,7 +784,7 @@ export default function Footer() {
             <button
               type="button"
               onClick={scrollToTop}
-              className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[2.5px] text-[#5b4137] transition hover:text-[#854d63] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
+              className="inline-flex min-h-10 items-center gap-2 text-[11px] font-semibold uppercase tracking-[2.5px] text-[#5b4137] transition-colors hover:text-[#854d63] active:scale-[0.96] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
             >
               {t("footer.backToTop")}
               <ArrowUpIcon className="size-4" />

@@ -217,6 +217,20 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
   removed; per-field "Copier FR" stays. Results surfaced via the toast system.
 - **Still required (manual, dashboards)**: OpenAI monthly budget/hard limit and
   Cloudflare AI Gateway rate limit (see `docs/SECURITY.md` §5).
+- **AI translation verified end-to-end (2026-06-12)**: authenticated dashboard
+  action → Vercel `/api/translate` → Cloudflare Worker/AI Gateway → OpenAI.
+  A targeted field translation succeeded on the deployed `dev` dashboard; the
+  test was closed without saving and the persisted Supabase content stayed
+  unchanged.
+- **Public performance baseline (2026-06-12)**: the home animation uses the MP4
+  source only; the redundant 13.9 MB QuickTime asset was removed. The production
+  build is about 4.3 MB total. The footer WebGL canvas resizes through a
+  `ResizeObserver` instead of reading and rewriting layout every animation
+  frame.
+- **CMS verification reliability**: history checks must wait for the async
+  loading state instead of using fixed delays. Revision lists use
+  `created_at DESC, revision_id DESC` so rapid consecutive saves remain
+  deterministic.
 
 ## Update Rule
 

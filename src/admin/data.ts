@@ -364,6 +364,7 @@ export async function listRevisions(type: string, docId: string): Promise<Revisi
     .eq("type", type)
     .eq("doc_id", docId)
     .order("created_at", { ascending: false })
+    .order("revision_id", { ascending: false })
     .limit(10);
   if (error) throw new Error(migrationMessage(error.message));
   return (data ?? []).map((row) => ({

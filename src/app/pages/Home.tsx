@@ -12,7 +12,6 @@ import { bodyToParagraphs } from "./BlogArticleContent";
 import portraitImage from "../../assets/carole-redesign-portrait.webp";
 import aboutSectionImage from "../../assets/carole-shape-static.png";
 import aboutShapeVideoMp4 from "../../assets/caole-shape-motion-g.mp4";
-import aboutShapeVideoMov from "../../assets/caole-shape-motion.mov";
 import brandFlagIcon from "../../assets/icons/brand-flag.svg?raw";
 import coffeeCupIcon from "../../assets/icons/coffee-cup.svg?raw";
 import decorativeArc from "../../assets/icons/decorative-arc.svg";
@@ -798,7 +797,6 @@ export default function Home() {
                   }}
                 >
                   <source src={aboutShapeVideoMp4} type="video/mp4" />
-                  <source src={aboutShapeVideoMov} type="video/quicktime" />
                 </video>
               </div>
               ) : null}
