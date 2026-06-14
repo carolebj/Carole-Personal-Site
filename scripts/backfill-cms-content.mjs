@@ -342,7 +342,7 @@ const media = [
   ["testimonial", "testimonial-mq7htl8m-0bn7o", ["portrait"], "src/assets/testimonials/testimonial-cynthia.svg", L("Portrait illustré de Cynthia", "Illustrated portrait of Cynthia")],
   ["testimonial", "testimonial-mq7htlg3-pjbdb", ["portrait"], "src/assets/testimonials/testimonial-julian.svg", L("Portrait illustré de Julian", "Illustrated portrait of Julian")],
   ["testimonial", "testimonial-mq7htlnr-sbti7", ["portrait"], "src/assets/testimonials/testimonial-uzoma.svg", L("Portrait illustré d'Uzoma", "Illustrated portrait of Uzoma")],
-  ["siteSettings", "siteSettings", ["ogImage"], "src/assets/carole-redesign-portrait.webp", L("Portrait de Carole Tonoukouen", "Portrait of Carole Tonoukouen")],
+  ["siteSettings", "siteSettings", ["ogImage"], "src/assets/og-carolet.png", L("Carole Tonoukouen — Chargée de communication digitale", "Carole Tonoukouen — Digital communications officer")],
 ];
 
 function contentType(path) {
@@ -379,6 +379,24 @@ for (const [type, docId, path, file, alt] of media) {
   setNested(content[type][docId], path, { url: data.publicUrl, alt });
 }
 
+/** Media synced from repo — always replace (not merge-only) when applying. */
+const forcedMedia = new Map(
+  media.map(([type, docId, path]) => [`${type}/${docId}/${path.join(".")}`, { type, docId, path }]),
+);
+
+function applyForcedMedia(data, additions) {
+  const next = structuredClone(data);
+  for (const { type, docId, path } of forcedMedia.values()) {
+    let sourceCursor = additions;
+    for (const key of path) sourceCursor = sourceCursor?.[key];
+    if (!sourceCursor) continue;
+    let targetCursor = next;
+    for (const key of path.slice(0, -1)) targetCursor = targetCursor[key] ??= {};
+    targetCursor[path.at(-1)] = structuredClone(sourceCursor);
+  }
+  return next;
+}
+
 const changes = [];
 for (const [type, documents] of Object.entries(content)) {
   for (const [docId, additions] of Object.entries(documents)) {
@@ -395,7 +413,8 @@ for (const [type, documents] of Object.entries(content)) {
       continue;
     }
 
-    const merged = row ? mergeMissing(row.data, additions) : structuredClone(additions);
+    const mergedBase = row ? mergeMissing(row.data, additions) : structuredClone(additions);
+    const merged = row ? applyForcedMedia(mergedBase, additions) : mergedBase;
     if (row && JSON.stringify(merged) === JSON.stringify(row.data)) continue;
     changes.push(`${type}/${docId}`);
     if (!apply) continue;

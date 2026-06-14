@@ -2,6 +2,11 @@
 
 > Todo légère après merge `dev` → `main`. Dernière mise à jour : 2026-06-14.
 
+## Image Open Graph
+
+- Asset repo : `src/assets/og-carolet.png` (1200×630, ~330 Ko).
+- Assignation CMS : dashboard `siteSettings` → image Open Graph, ou `npm run cms:backfill -- --apply` si le champ est encore vide.
+
 ## Prêt pour la production
 
 - Branche `dev` à jour avec `origin/dev`, sans commit en attente sur le code applicatif.
@@ -10,9 +15,8 @@
 
 ## Reste à faire (contenu / ops)
 
-1. **Image OG** — déposer l'asset final dans `src/assets/` (ex. `og-default.webp`), puis l'assigner dans le dashboard (`siteSettings` → image Open Graph) ou mettre à jour le seed/backfill si besoin d'un défaut repo.
-2. **Merge production** — `dev` → `main`, puis smoke test sur `https://carole-portfolio.vercel.app`.
-3. **Sécurité traduction** (dashboards Cloudflare/OpenAI) — plafond mensuel OpenAI + rate limit AI Gateway (`docs/SECURITY.md` §5).
+1. **Pages services** — sur `main`, `/services` affiche « en construction » ; le WIP vit dans `src/app/pages/services-dev/`. Sur `dev`, brancher ces routes (voir README du dossier) jusqu'au merge final.
+2. **Sécurité traduction** (dashboards Cloudflare/OpenAI) — plafond mensuel OpenAI + rate limit AI Gateway (`docs/SECURITY.md` §5).
 
 ## Commandes utiles
 

@@ -575,6 +575,18 @@ const fr = {
     cta: "Discutons de ce besoin",
   },
 
+  servicesConstruction: {
+    eyebrow: "Services",
+    titleStart: "Section",
+    titleAccent: "en cours de construction",
+    description:
+      "Les pages détaillées des services sont en préparation. En attendant, vous pouvez parcourir le reste du portfolio ou me contacter pour en discuter.",
+    note: "Cette section sera bientôt disponible avec une présentation complète de chaque offre.",
+    seoTitle: "Services — en cours de construction | Carole Tonoukouen",
+    backHome: "Retour à l'accueil",
+    contact: "Me contacter",
+  },
+
   errorPages: {
     notFound: {
       title: "Page introuvable",

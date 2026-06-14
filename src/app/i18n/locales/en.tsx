@@ -575,6 +575,18 @@ const en = {
     cta: "Let's discuss this need",
   },
 
+  servicesConstruction: {
+    eyebrow: "Services",
+    titleStart: "Section",
+    titleAccent: "under construction",
+    description:
+      "The detailed service pages are being prepared. In the meantime, feel free to explore the rest of the portfolio or contact me to discuss your needs.",
+    note: "This section will soon include a full presentation of each service offering.",
+    seoTitle: "Services — under construction | Carole Tonoukouen",
+    backHome: "Back to homepage",
+    contact: "Contact me",
+  },
+
   errorPages: {
     notFound: {
       title: "Page not found",
