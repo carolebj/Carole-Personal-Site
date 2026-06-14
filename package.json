@@ -9,6 +9,7 @@
     "dev:site": "vite",
     "cms:seed": "node --env-file=.env.local scripts/seed-supabase.mjs",
     "cms:backfill": "node --env-file=.env.local scripts/backfill-cms-content.mjs",
+    "cms:sync-i18n": "node --env-file=.env.local scripts/sync-cms-from-i18n.mjs",
     "cms:export": "node --env-file=.env.local scripts/export-cms.mjs",
     "cms:reset": "node --env-file=.env.local scripts/reset-cms.mjs",
     "cms:media:cleanup": "node --env-file=.env.local scripts/cleanup-cms-media.mjs",

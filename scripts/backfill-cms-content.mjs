@@ -1,5 +1,6 @@
 import { readFileSync } from "fs";
 import { extname, join } from "path";
+import { fileURLToPath } from "url";
 import { createClient } from "@supabase/supabase-js";
 import { mergeMissing } from "./lib/merge-missing.mjs";
 
@@ -9,7 +10,7 @@ const email = process.env.CMS_SEED_EMAIL;
 const password = process.env.CMS_SEED_PASSWORD;
 const apply = process.argv.includes("--apply");
 const BUCKET = "media";
-const ROOT = new URL("../", import.meta.url);
+const ROOT = fileURLToPath(new URL("../", import.meta.url));
 
 if (!url || !key || !email || !password) {
   console.error("Configuration Supabase ou identifiants CMS manquants dans .env.local.");
@@ -19,28 +20,6 @@ if (!url || !key || !email || !password) {
 const L = (fr, en) => ({ fr, en });
 
 const content = {
-  homePage: {
-    homePage: {
-      hero: {
-        description: L(
-          "Chargée de communication digitale, j'accompagne les marques engagées de la stratégie à la publication.",
-          "As a digital communications officer, I support purpose-driven brands from strategy through publishing.",
-        ),
-      },
-      manifesto: {
-        body: L(
-          "Chaque prise de parole doit servir une intention claire et une communauté réelle.",
-          "Every public message should serve a clear intention and a real community.",
-        ),
-      },
-      about: {
-        body: L(
-          "Carole Tonoukouen, chargée de communication digitale et social media.",
-          "Carole Tonoukouen, digital communications and social media officer.",
-        ),
-      },
-    },
-  },
   service: {
     "strategie-editoriale": {
       accent: L("Une ligne claire, des prises de parole utiles", "A clear line, useful brand messages"),
@@ -366,7 +345,7 @@ if (authError) throw authError;
 for (const [type, docId, path, file, alt] of media) {
   const storagePath = `content/${type}/${docId}/${file.split("/").at(-1)}`;
   if (apply) {
-    const bytes = readFileSync(join(ROOT.pathname, file));
+    const bytes = readFileSync(join(ROOT, file));
     const { error } = await sb.storage.from(BUCKET).upload(storagePath, bytes, {
       upsert: true,
       contentType: contentType(file),
