@@ -1,9 +1,14 @@
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { motion, useMotionTemplate, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import portraitImage from "../../assets/carole-redesign-portrait.webp";
+import { toAboutPageViewModel } from "../../cms/adapters";
+import { cmsImageUrl, useCmsSingleton } from "../../cms/cmsContent";
+import type { CmsAboutPage } from "../../cms/types";
+import workingImage from "../../assets/carole-redesign-working.webp";
+import { SectionEyebrow } from "../components/SectionEyebrow";
+import { PAGE_SCROLL_MARGIN } from "../components/layout/publicPage";
 
 type ProseSection = {
   label: string;
@@ -49,14 +54,6 @@ const fadeUpInView = {
   transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const },
 };
 
-function SectionLabel({ children }: { children: string }) {
-  return (
-    <p className="text-[12px] font-semibold uppercase tracking-[3px] text-text-accent">
-      {children}
-    </p>
-  );
-}
-
 function IlluminatedParagraph({ children }: { children: string }) {
   const paragraphRef = useRef<HTMLParagraphElement>(null);
   const shouldReduceMotion = useReducedMotion();
@@ -101,12 +98,19 @@ function ProseBlock({ paragraphs }: { paragraphs: string[] }) {
 }
 
 export default function About() {
-  const { t } = useTranslation();
-  const content = t("aboutPage", { returnObjects: true }) as AboutPageContent;
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language;
+  const { data: cmsAbout, usingCms } = useCmsSingleton<CmsAboutPage | null>("aboutPage", null);
+  const i18nContent = t("aboutPage", { returnObjects: true }) as AboutPageContent;
+  const content = useMemo(
+    () => toAboutPageViewModel(cmsAbout, locale, usingCms, i18nContent),
+    [cmsAbout, locale, usingCms, i18nContent],
+  );
+  const portraitSrc = usingCms ? cmsImageUrl(cmsAbout?.image) : workingImage;
 
   return (
     <main className="bg-surface-page text-text-primary">
-      <article className="mx-auto max-w-[680px] px-5 pt-32 sm:px-8 md:pt-40">
+      <article className={`mx-auto max-w-[680px] px-5 pt-28 sm:px-8 md:pt-36 ${PAGE_SCROLL_MARGIN}`}>
         <motion.header
           {...fadeUp}
           className="border-b border-border-subtle pb-12 md:pb-14"
@@ -123,7 +127,7 @@ export default function About() {
           {...fadeUp}
           className="mt-14 rounded-lg border border-border-subtle bg-surface-panel p-7 shadow-[var(--shadow-panel)] md:mt-16 md:p-10"
         >
-          <SectionLabel>{content.identity.label}</SectionLabel>
+          <SectionEyebrow>{content.identity.label}</SectionEyebrow>
 
           <div className="mt-8 grid gap-8 md:grid-cols-[minmax(0,1fr)_200px] md:gap-x-10">
             <div>
@@ -138,9 +142,9 @@ export default function About() {
             <figure className="mx-auto w-full max-w-[220px] md:col-start-2 md:row-span-2 md:row-start-1 md:mx-0 md:max-w-none">
               <div className="overflow-hidden rounded-lg border border-border-subtle bg-surface-page">
                 <img
-                  src={portraitImage}
+                  src={portraitSrc}
                   alt={content.imageAlt}
-                  className="aspect-[4/5] w-full object-cover object-[50%_18%]"
+                  className="aspect-[4/5] w-full object-cover object-[50%_28%]"
                 />
               </div>
             </figure>
@@ -155,7 +159,7 @@ export default function About() {
           {...fadeUpInView}
           className="mt-20 border-t border-border-subtle pt-16 md:mt-24 md:pt-20"
         >
-          <SectionLabel>{content.work.label}</SectionLabel>
+          <SectionEyebrow>{content.work.label}</SectionEyebrow>
           <div className="mt-8">
             <ProseBlock paragraphs={content.work.paragraphs} />
           </div>
@@ -165,7 +169,7 @@ export default function About() {
           {...fadeUpInView}
           className="mt-20 border-t border-border-subtle pt-16 md:mt-24 md:pt-20"
         >
-          <SectionLabel>{content.value.label}</SectionLabel>
+          <SectionEyebrow>{content.value.label}</SectionEyebrow>
           <div className="mt-8">
             <ProseBlock paragraphs={content.value.paragraphs} />
           </div>
@@ -175,7 +179,7 @@ export default function About() {
           {...fadeUpInView}
           className="mt-20 border-t border-border-subtle pt-16 md:mt-24 md:pt-20"
         >
-          <SectionLabel>{content.approach.label}</SectionLabel>
+          <SectionEyebrow>{content.approach.label}</SectionEyebrow>
           <div className="mt-8">
             <ProseBlock paragraphs={content.approach.paragraphs} />
           </div>

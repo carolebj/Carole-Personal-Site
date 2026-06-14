@@ -56,7 +56,7 @@ const fr = {
     titleAccent: "moi c'est Carole",
     p1: "J'aide les entreprises, organisations et projets à clarifier leur message, organiser leurs contenus et renforcer leur visibilité digitale.",
     p2: "Je prends en charge la coordination éditoriale, la rédaction, le suivi des supports visuels et les actions de communication. Vous et moi collaborerons pour transformer vos idées, vos temps forts et vos priorités en prises de parole claires.",
-    imageAlt: "Carole travaillant sur une communication digitale",
+    imageAlt: "Portrait de Carole Tonoukouen",
     traits: [
       { label: "Rédactrice" },
       { label: "Stratège" },
@@ -602,7 +602,7 @@ const fr = {
       subtitle:
         "Qui je suis, ce que je fais concrètement et la manière dont j'accompagne les marques et les projets.",
     },
-    imageAlt: "Portrait de Carole Tonoukouen",
+    imageAlt: "Carole travaillant sur une communication digitale",
     identity: {
       label: "Qui je suis",
       greeting: "Enchantée, moi c'est Carole Tonoukouen.",
@@ -654,17 +654,19 @@ const fr = {
   carnetPage: {
     eyebrow: "Carnet",
     title: "Ressources & communautés utiles",
-    subtitle: "Une sélection de plateformes, d'outils, de campagnes inspirantes et de groupes d'entraide pour nourrir et structurer votre communication digitale.",
-    searchPlaceholder: "Rechercher un outil, une source ou une catégorie",
+    subtitle: "Une sélection de bibliothèques, d'outils éditoriaux et de communautés africaines pour nourrir la veille, la stratégie de contenu et les parcours professionnels.",
+    searchPlaceholder: "Rechercher une ressource, une communauté ou un sujet",
     emptyState: "Aucun élément ne correspond à cette recherche.",
-    categories: ["Tous", "Ligne éditoriale", "Microcopie & écriture", "Veille social media", "Inspirations créatives"],
+    typeFilterLabel: "Type de contenu",
+    typeFilters: ["Tous", "Ressource", "Communauté"],
+    categories: ["Tous", "Veille & inspiration", "Social media", "Femmes & numérique"],
     items: [
-      { title: "Good Copy", category: "Microcopie & écriture", desc: "Une ressource précieuse pour analyser et s'inspirer des meilleures microcopies d'e-mails et de parcours utilisateurs.", link: "https://www.goodcopy.co", badge: "Écriture" },
-      { title: "Social Media Today", category: "Veille social media", desc: "Ma source de référence quotidienne pour suivre les mises à jour d'algorithmes et les tendances des réseaux sociaux.", link: "https://www.socialmediatoday.com", badge: "Veille" },
-      { title: "Land Book", category: "Inspirations créatives", desc: "Une superbe galerie de landing pages pour analyser le design, la hiérarchie du message et l'intégration de marque.", link: "https://land-book.com", badge: "Inspiration" },
-      { title: "Hemingway Editor", category: "Microcopie & écriture", desc: "Un outil formidable pour épurer son style, éliminer les phrases trop complexes et clarifier ses textes.", link: "https://hemingwayapp.com", badge: "Outil" },
-      { title: "Pinterest Creative", category: "Inspirations créatives", desc: "Mon tableau de veille créative pour repérer les tendances de mise en page, de typographies et de couleurs.", link: "https://pinterest.com", badge: "Inspiration" },
-      { title: "Buffer Resources", category: "Ligne éditoriale", desc: "Des guides détaillés pour poser les bases de calendriers éditoriaux durables et structurer sa fréquence de publication.", link: "https://buffer.com/library", badge: "Ressource" }
+      { title: "LE DÉPÔT", type: "Ressource", categories: ["Veille & inspiration", "Social media"], desc: "Une bibliothèque vivante de la communication africaine pour découvrir, déposer et référencer des campagnes d'Afrique francophone.", link: "https://ledepot.co/" },
+      { title: "Social Media Room", type: "Communauté", categories: ["Social media"], desc: "Une communauté panafricaine et un cabinet d'accompagnement pour développer ses compétences en social media, accéder à des formations et échanger entre professionnels.", link: "https://socialmediaroom.africa/" },
+      { title: "LAVEIYE", type: "Ressource", categories: ["Veille & inspiration", "Social media"], desc: "Une plateforme de veille qui rassemble des campagnes marketing africaines pour analyser, benchmarker et nourrir des concepts plus solides.", link: "https://laveiye.com/" },
+      { title: "WOMEN IN TECH BENIN", type: "Communauté", categories: ["Femmes & numérique"], desc: "Une plateforme pour connecter, former et inspirer les filles et femmes dans le numérique au Bénin, avec répertoire, mentors, fiches métiers et événements.", link: "https://womenintech.bj/" },
+      { title: "Calendrier du CM 229", type: "Ressource", categories: ["Veille & inspiration", "Social media"], desc: "Un outil éditorial local mis à jour chaque année, avec dates importantes, inspirations de campagnes et conseils de professionnels du digital au Bénin.", link: "https://calendrierducm.bj/" },
+      { title: "Women Techmakers Abomey-Calavi", type: "Communauté", categories: ["Femmes & numérique"], desc: "Une communauté de femmes passionnées par les technologies de programmation, portée par des sessions de renforcement de capacités, de networking et d'inspiration.", link: "https://www.linkedin.com/company/women-techmakers-abomey-calavi/" }
     ],
     discoverBook: "Découvrir",
     readingsTitle: "Lectures & références",

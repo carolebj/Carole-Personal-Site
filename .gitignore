@@ -74,10 +74,21 @@ web_modules/
 
 # dotenv environment variable files
 .env
+.env.*.local
 .env.development.local
 .env.test.local
 .env.production.local
 .env.local
+backups/
+
+# secrets / clés privées (ne jamais committer)
+*.pem
+*.key
+.env.keys
+.dev.vars
+.dev.vars.*
+id_rsa
+id_rsa.pub
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -90,8 +101,6 @@ out
 # Nuxt.js build / generate output
 .nuxt
 dist
-dist-studio
-.sanity
 
 # Gatsby files
 .cache/
@@ -141,3 +150,13 @@ dist-studio
 .DS_Store
 .vercel
 graphify-out/
+
+# Legacy Sanity Studio build artifacts (Sanity removed 2026-06-10)
+.sanity/
+dist-studio/
+
+# Cursor IDE / local agent settings
+.cursor/
+
+# Local screenshots and Playwright output
+output/

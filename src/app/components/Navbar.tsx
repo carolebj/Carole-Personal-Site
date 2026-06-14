@@ -26,9 +26,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { useHaptics } from "../interactions/HapticContext";
 import { useTheme, type ThemePreference } from "../theme/ThemeContext";
 import { toServiceViewModel } from "../../cms/adapters";
-import { servicesQuery } from "../../cms/queries";
+import { useCmsCollection } from "../../cms/cmsContent";
 import type { CmsService } from "../../cms/types";
-import { useSanityQuery } from "../../cms/useSanityQuery";
 
 type ServicePreview = {
   slug: string;
@@ -141,7 +140,7 @@ function ThemeSwitcher({
                   aria-checked={isActive}
                   aria-label={t(`nav.${labelKey}`)}
                   onClick={() => chooseTheme(value)}
-                  className={`relative flex size-9 items-center justify-center rounded-full transition ${
+                  className={`relative flex size-11 items-center justify-center rounded-full transition ${
                     isActive
                       ? "text-[#854d63] dark:text-[#f0adc4]"
                       : "text-[#6d625d] hover:text-[#854d63] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
@@ -206,7 +205,7 @@ function ThemeSwitcher({
                       aria-checked={isActive}
                       aria-label={t(`nav.${labelKey}`)}
                       onClick={() => chooseTheme(value)}
-                      className={`relative flex size-9 items-center justify-center rounded-full transition ${
+                      className={`relative flex size-11 items-center justify-center rounded-full transition ${
                         isActive
                           ? "text-[#854d63] dark:text-[#f0adc4]"
                           : "text-[#8d7b72] hover:text-[#854d63] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
@@ -280,7 +279,6 @@ export default function Navbar() {
   const [isCarnetOpen, setIsCarnetOpen] = useState(false);
   const [isLogoMenuOpen, setIsLogoMenuOpen] = useState(false);
   const [hoveredNavId, setHoveredNavId] = useState<string | null>(null);
-  const [activeSection, setActiveSection] = useState("home");
   const [isCompact, setIsCompact] = useState(false);
   const [isForcedOpen, setIsForcedOpen] = useState(false);
   const logoRef = useRef<HTMLAnchorElement>(null);
@@ -291,14 +289,14 @@ export default function Navbar() {
   const { t, i18n } = useTranslation();
   const { enabled: hapticsEnabled, toggleEnabled: toggleHaptics } = useHaptics();
   const location = useLocation();
-  const { data: cmsServices } = useSanityQuery(servicesQuery, [] as CmsService[]);
+  const { data: cmsServices, usingCms: usingCmsServices } = useCmsCollection<CmsService>("service", []);
   const locale = i18n.language;
   const services = useMemo(() => {
-    if (cmsServices.length > 0) {
+    if (usingCmsServices) {
       return cmsServices.map((s) => toServiceViewModel(s, locale));
     }
     return t("services.items", { returnObjects: true }) as ServicePreview[];
-  }, [cmsServices, locale, t]);
+  }, [cmsServices, usingCmsServices, locale, t]);
   const serviceIcons = [DocumentTextIcon, MegaphoneIcon, PencilSquareIcon, ChartBarIcon];
   const logoDropdownPhase = useDropdownTransition(isLogoMenuOpen);
 
@@ -306,7 +304,13 @@ export default function Navbar() {
     { id: "home", name: t("nav.home"), href: "#home" },
     { id: "about", name: t("nav.about"), href: "/about", isPageLink: true },
     { id: "services", name: t("nav.services"), href: "/services", hasMenu: true, isPageLink: true },
-    { id: "carnet", name: t("nav.carnet"), href: "#carnet", hasCarnetMenu: true },
+    {
+      id: "carnet",
+      name: t("nav.carnet"),
+      href: "/carnet/outils-inspirations",
+      hasCarnetMenu: true,
+      isPageLink: true,
+    },
     { id: "blog", name: t("nav.blog"), href: "/blog", isPageLink: true },
   ];
 
@@ -358,46 +362,6 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    if (location.pathname !== "/") {
-      setActiveSection(
-        location.pathname.startsWith("/blog")
-          ? "blog"
-          : location.pathname === "/about"
-            ? "about"
-            : location.pathname.startsWith("/services")
-              ? "services"
-              : location.pathname.startsWith("/carnet")
-                ? "carnet"
-                : ""
-      );
-      return;
-    }
-
-    const sections = ["home", "about", "services", "testimonials"];
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-        if (visible?.target.id) {
-          setActiveSection(visible.target.id);
-        }
-      },
-      {
-        rootMargin: "-32% 0px -48% 0px",
-        threshold: [0.18, 0.32, 0.52],
-      }
-    );
-
-    sections.forEach((id) => {
-      const section = id === "home" ? document.querySelector("main section") : document.getElementById(id);
-      if (section) observer.observe(section);
-    });
-
-    return () => observer.disconnect();
-  }, [location.pathname]);
 
   const scrollToSection = (
     event: React.MouseEvent<HTMLAnchorElement>,
@@ -515,11 +479,11 @@ export default function Navbar() {
 
         <ul className="relative hidden items-center gap-0 lg:flex">
           {navLinks.map((link) => {
-            const sectionId = link.href.replace("#", "");
-            const isActive =
-              link.href.startsWith("#")
-                ? activeSection === sectionId
-                : activeSection === link.id || location.pathname === link.href;
+            const isActive = link.href.startsWith("#")
+              ? location.pathname.startsWith("/" + link.href.slice(1))
+              : link.href === "/"
+                ? location.pathname === "/"
+                : location.pathname.startsWith(link.href);
             const isHighlighted = hoveredNavId === link.id || isActive || (link.hasMenu && isServicesOpen) || (link.hasCarnetMenu && isCarnetOpen);
             const linkClass = `portfolio-nav-link group relative z-10 inline-flex h-10 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-[13px] font-semibold capitalize leading-4 tracking-[1.4px] transition-colors duration-300 xl:px-4 xl:tracking-[1.8px] ${
               isHighlighted
@@ -549,9 +513,20 @@ export default function Navbar() {
                     setHoveredNavId(null);
                     setIsServicesOpen(false);
                   }}
+                  onFocusCapture={() => {
+                    setHoveredNavId(link.id);
+                    setIsServicesOpen(true);
+                  }}
+                  onBlurCapture={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+                      setHoveredNavId(null);
+                      setIsServicesOpen(false);
+                    }
+                  }}
                 >
                   <Link
                     to={link.href}
+                    aria-expanded={isServicesOpen}
                     onClick={() => {
                       setIsServicesOpen(false);
                       setHoveredNavId(null);
@@ -655,16 +630,26 @@ export default function Navbar() {
                     setHoveredNavId(null);
                     setIsCarnetOpen(false);
                   }}
+                  onFocusCapture={() => {
+                    setHoveredNavId(link.id);
+                    setIsCarnetOpen(true);
+                  }}
+                  onBlurCapture={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+                      setHoveredNavId(null);
+                      setIsCarnetOpen(false);
+                    }
+                  }}
                 >
                   <a
                     href={link.href}
+                    aria-expanded={isCarnetOpen}
                     onClick={(event) => {
                       event.preventDefault();
                       setHoveredNavId(link.id);
                       setIsCarnetOpen((current) => !current);
                     }}
                     className={linkClass}
-                    aria-expanded={isCarnetOpen}
                   >
                     {hoverBackground}
                     <span className="relative z-10">{link.name}</span>
@@ -783,7 +768,9 @@ export default function Navbar() {
         </div>
 
         <button
-          className="flex size-10 items-center justify-center rounded-full border border-[#e5e2e1] text-[#1c1b1b] dark:border-white/15 dark:text-[#f8f1ec] lg:hidden"
+          type="button"
+          aria-label={t("nav.menu")}
+          className="flex size-11 items-center justify-center rounded-full border border-[#e5e2e1] text-[#1c1b1b] dark:border-white/15 dark:text-[#f8f1ec] lg:hidden"
           onClick={() => {
             setIsMobileMenuOpen((current) => {
               if (current) {
@@ -793,7 +780,6 @@ export default function Navbar() {
               return !current;
             });
           }}
-          aria-label={t("nav.menu")}
         >
           <span
             className="t-icon-swap size-5"

@@ -4,10 +4,23 @@ import ErrorPage from "./components/ErrorPage";
 import RouteErrorBoundary from "./components/RouteErrorBoundary";
 import Home from "./pages/Home";
 
+function RouteHydrateFallback() {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="flex min-h-dvh items-center justify-center bg-surface-page px-6 text-sm text-text-muted"
+    >
+      Chargement…
+    </div>
+  );
+}
+
 export const router = createBrowserRouter([
   {
     path: "/",
     Component: Layout,
+    HydrateFallback: RouteHydrateFallback,
     ErrorBoundary: ErrorPage,
     children: [
       {
@@ -65,5 +78,11 @@ export const router = createBrowserRouter([
         lazy: async () => ({ Component: (await import("./components/NotFoundPage")).default }),
       },
     ],
+  },
+  {
+    path: "/dashboard/*",
+    lazy: async () => ({ Component: (await import("../admin/AdminApp")).default }),
+    HydrateFallback: RouteHydrateFallback,
+    ErrorBoundary: RouteErrorBoundary,
   },
 ]);
