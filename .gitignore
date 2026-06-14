@@ -151,6 +151,10 @@ dist
 .vercel
 graphify-out/
 
+# Legacy Sanity Studio build artifacts (Sanity removed 2026-06-10)
+.sanity/
+dist-studio/
+
 # Cursor IDE / local agent settings
 .cursor/
 

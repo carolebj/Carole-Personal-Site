@@ -201,7 +201,8 @@ Styles and assets:
 - `src/styles/global.css`
 - `src/styles/fonts.css`
 - `src/assets/`
-- `src/assets/carole-redesign-*.png`: current Figma-derived redesign image assets
+- `src/assets/carole-redesign-*.webp`: portraits Figma (hero, about) ; `carole-shape-static.png` + `caole-shape-motion-g.mp4` pour la section about
+- `src/assets/resources/` + miroir `public/cms/resources/` : visuels carnet (seed Supabase + URLs statiques dashboard)
 
 Project guidance (all under `docs/`, entry point `AGENTS.md` at repo root):
 
@@ -209,7 +210,8 @@ Project guidance (all under `docs/`, entry point `AGENTS.md` at repo root):
 - `docs/SECURITY.md`: security model and secret-handling workflow
 - `docs/workflows/AGENT_DEV.md`: initialisation CMS additive + vérification navigateur autonome
 - `docs/project/MEMORY.md`: current project memory and redesign notes
-- `docs/project/NEXT_STEPS.md`: temporary handoff / current todo
+- `docs/project/NEXT_STEPS.md`: post-launch todo (OG, merge prod, sécurité traduction)
+- `docs/archive/UI_AUDIT.md`: checklist UI terminée (2026-06-10)
 
 ## Coding Conventions
 

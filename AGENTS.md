@@ -16,8 +16,7 @@ développeurs. Les documents de guidage vivent dans **`docs/`**.
   navigateur système n'est qu'une option secondaire, en cas de bénéfice précis).
 - **`docs/project/MEMORY.md`** — mémoire produit/design vivante (contexte courant).
 - **`docs/project/NEXT_STEPS.md`** — passation / todo de la session en cours.
-- **`docs/project/UI_AUDIT.md`** — checklist passe cohérence UI site public (motion,
-  tokens, a11y, responsive) — à traiter avant les steps CMS si en cours.
+- **`docs/archive/UI_AUDIT.md`** — checklist UI site public (terminée, archivée).
 
 ## Réflexes
 

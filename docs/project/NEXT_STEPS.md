@@ -1,82 +1,24 @@
-# NEXT STEPS — document de passation (temporaire)
+# NEXT_STEPS — post-lancement
 
-> Brouillon de travail pour reprendre la prochaine session. À supprimer une
-> fois les items repris dans `MEMORY.md` / traités. Dernière mise à jour :
-> 2026-06-10.
+> Todo légère après merge `dev` → `main`. Dernière mise à jour : 2026-06-14.
 
-## Où on en est (fait ✅)
+## Prêt pour la production
 
-Les priorités précédentes sont terminées et poussées sur `dev` :
+- Branche `dev` à jour avec `origin/dev`, sans commit en attente sur le code applicatif.
+- CMS client (`ztrcnlirfbmjnzcovpgj`) opérationnel ; `npm run cms:verify` passe.
+- Passe UI (vagues A–D) terminée — checklist archivée dans `docs/archive/UI_AUDIT.md`.
 
-- **P1 — Blog** : brouillon/publié, lecteur partagé, vérif automatisée (`cms:verify`).
-- **P2 — Dashboard** : alignements, parité contenu (Footer, Home, carnet), suppression
-  sécurisée + invalidation cache.
-- **P3 — Hygiène** : `npm run typecheck`, README worker sans Sanity, doc consolidée.
+## Reste à faire (contenu / ops)
 
-Voir `MEMORY.md` pour le détail technique et l'historique.
+1. **Image OG** — déposer l'asset final dans `src/assets/` (ex. `og-default.webp`), puis l'assigner dans le dashboard (`siteSettings` → image Open Graph) ou mettre à jour le seed/backfill si besoin d'un défaut repo.
+2. **Merge production** — `dev` → `main`, puis smoke test sur `https://carole-portfolio.vercel.app`.
+3. **Sécurité traduction** (dashboards Cloudflare/OpenAI) — plafond mensuel OpenAI + rate limit AI Gateway (`docs/SECURITY.md` §5).
 
-## Prérequis UI ✅
-
-Vagues **A**, **B** et **C** de `UI_AUDIT.md` sont traitées (bloquants UX, motion/focus,
-design system partagé). Vague **D** (hygiène, legacy, polish) reste optionnelle.
-
-## Fait (session en cours) ✅
-
-### Priorité 1 — Home : titres de section éditables via CMS
-
-Singleton `homePage` étendu avec `servicesSection`, `testimonialsSection`,
-`contactSection` (schéma admin, types, seed, `Home.tsx` avec fallback i18n).
-
-### Priorité 2 — Page About + en-tête CV depuis le CMS
-
-Singletons `aboutPage` (contenu éditorial `/about`) et `cvPage` (en-tête CV :
-nom, rôle, intro). Adapters `toAboutPageViewModel` / `toCvHeaderViewModel`,
-seed et fallback i18n.
-
-### Priorité 3 — Collection `category` orpheline
-
-**Décision : option A** — collection `category` supprimée. Le blog garde un champ
-`blogPost.category` localisé par article ; les filtres publics restent dérivés des
-libellés des articles publiés. Toute ancienne ligne `category` doit être archivée
-par une maintenance explicite, jamais par le seed additif.
-
-### Priorité 4 — SEO depuis `siteSettings`
-
-`siteSettings` étendu (`siteUrl`, `ogImage`, `seoPages` par route). `Seo.tsx`
-lit le CMS avec fallback i18n ; overrides sur articles blog et fiches service.
-
-## Fait (session en cours) ✅
-
-### Vague D — Hygiène & polish (`UI_AUDIT.md`)
-
-Legacy supprimé, `serviceStyle.ts` partagé, footer shader static en reduced-motion,
-mega-menus clavier, lazy load, VT services, références CMS (`typeLabel` / `cardStyle`).
-
-## À faire (prochaine session) 🔜
-
-- L'accès développeur au projet client `ztrcnlirfbmjnzcovpgj` est actif.
-- Les migrations éditoriales sont appliquées et les 30 contenus existants sont
-  préservés. `npm run cms:verify` et l'inspection visuelle desktop, petit laptop
-  et mobile passent.
-- Image OG par défaut à uploader dans le dashboard quand l'asset est prêt.
-- Archiver ou supprimer `docs/project/UI_AUDIT.md` si la passe UI est validée visuellement.
-
-## Pour reprendre vite (commandes)
+## Commandes utiles
 
 ```bash
-npm run dev:site     # serveur + /dashboard
-npm run cms:seed     # ajouter uniquement les contenus initiaux absents
-npm run cms:verify   # checks navigateur non destructifs
-npm run typecheck    # tsc --noEmit
-npm run build        # régression build
+npm run dev:site
+npm run typecheck
+npm run build
+npm run cms:verify
 ```
-
-Identifiants seed/verify : `.env.local` (`CMS_SEED_EMAIL` / `CMS_SEED_PASSWORD`).
-
-## Points de repère code
-
-- Dashboard : `src/admin/` (`schema.ts`, `views.tsx`, `AdminApp.tsx`).
-- Reader public : `src/cms/cmsContent.ts`.
-- Types contenu : `src/cms/types.ts`.
-- Seed : `scripts/seed-supabase.mjs`.
-- Guides : `../GUIDELINE.md`, `MEMORY.md`, `../workflows/AGENT_DEV.md`, `../SECURITY.md`.
