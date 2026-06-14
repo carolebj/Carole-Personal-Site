@@ -175,29 +175,6 @@ const content = {
       ),
     },
   },
-  testimonial: {
-    "testimonial-mq7htl8m-0bn7o": {
-      role: L("Fondatrice, marque de cosmétiques naturels", "Founder, natural cosmetics brand"),
-      quote: L(
-        "Carole a transformé notre présence en ligne en quelques mois. Notre communauté a vraiment décollé.",
-        "Carole transformed our online presence in just a few months. Our community truly took off.",
-      ),
-    },
-    "testimonial-mq7htlg3-pjbdb": {
-      role: L("Directeur, association culturelle", "Director, cultural association"),
-      quote: L(
-        "Une vraie vision éditoriale, rigoureuse et sensible. Elle comprend nos valeurs et sait les mettre en mots.",
-        "A thoughtful and rigorous editorial vision. She understands our values and knows how to put them into words.",
-      ),
-    },
-    "testimonial-mq7htlnr-sbti7": {
-      role: L("Responsable communication, ONG", "Communications manager, NGO"),
-      quote: L(
-        "Grâce à Carole, nos campagnes ont trouvé le ton juste pour toucher notre public cible.",
-        "Thanks to Carole, our campaigns found the right tone to reach our target audience.",
-      ),
-    },
-  },
   cvEntry: {
     "cvEntry-mq7hto5y-ab5g5": {
       title: L("Chargée de communication digitale", "Digital communications officer"),
@@ -318,9 +295,9 @@ const media = [
   ["aboutPage", "aboutPage", ["image"], "src/assets/carole-redesign-working.webp", L("Carole travaillant sur une communication digitale", "Carole working on digital communication")],
   ["blogPost", "construire-une-ligne-editoriale", ["coverImage"], "src/assets/blog/blog-abstract-editorial.svg", L("Composition abstraite sur la stratégie éditoriale", "Abstract composition about editorial strategy")],
   ["blogPost", "calendrier-editorial-2026", ["coverImage"], "src/assets/blog/blog-abstract-content.svg", L("Composition abstraite sur le calendrier éditorial", "Abstract composition about editorial planning")],
-  ["testimonial", "testimonial-mq7htl8m-0bn7o", ["portrait"], "src/assets/testimonials/testimonial-cynthia.svg", L("Portrait illustré de Cynthia", "Illustrated portrait of Cynthia")],
-  ["testimonial", "testimonial-mq7htlg3-pjbdb", ["portrait"], "src/assets/testimonials/testimonial-julian.svg", L("Portrait illustré de Julian", "Illustrated portrait of Julian")],
-  ["testimonial", "testimonial-mq7htlnr-sbti7", ["portrait"], "src/assets/testimonials/testimonial-uzoma.svg", L("Portrait illustré d'Uzoma", "Illustrated portrait of Uzoma")],
+  ["testimonial", "cynthia-s", ["portrait"], "src/assets/testimonials/testimonial-cynthia.svg", L("Portrait illustré de Cynthia", "Illustrated portrait of Cynthia")],
+  ["testimonial", "julian-f", ["portrait"], "src/assets/testimonials/testimonial-julian.svg", L("Portrait illustré de Julian", "Illustrated portrait of Julian")],
+  ["testimonial", "uzoma-obidike", ["portrait"], "src/assets/testimonials/testimonial-uzoma.svg", L("Portrait illustré d'Uzoma", "Illustrated portrait of Uzoma")],
   ["siteSettings", "siteSettings", ["ogImage"], "src/assets/og-carolet.png", L("Carole Tonoukouen — Chargée de communication digitale", "Carole Tonoukouen — Digital communications officer")],
 ];
 
@@ -381,7 +358,7 @@ for (const [type, documents] of Object.entries(content)) {
   for (const [docId, additions] of Object.entries(documents)) {
     const { data: row, error } = await sb
       .from("cms_documents")
-      .select("data, slug, position")
+      .select("data, slug, position, status")
       .eq("type", type)
       .eq("doc_id", docId)
       .maybeSingle();
@@ -406,11 +383,14 @@ for (const [type, documents] of Object.entries(content)) {
       p_position: row?.position ?? newPosition,
     });
     if (saveError) throw saveError;
-    const { error: publishError } = await sb.rpc("cms_publish_document", {
-      p_type: type,
-      p_doc_id: docId,
-    });
-    if (publishError) throw publishError;
+    const shouldPublish = !row || row.status === "published";
+    if (shouldPublish) {
+      const { error: publishError } = await sb.rpc("cms_publish_document", {
+        p_type: type,
+        p_doc_id: docId,
+      });
+      if (publishError) throw publishError;
+    }
   }
 }
 

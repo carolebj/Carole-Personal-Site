@@ -54,6 +54,9 @@ const fadeUpInView = {
   transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const },
 };
 
+const aboutPanelSection =
+  "rounded-lg border border-border-subtle bg-surface-panel p-7 shadow-[var(--shadow-panel)] md:p-10";
+
 function IlluminatedParagraph({ children }: { children: string }) {
   const paragraphRef = useRef<HTMLParagraphElement>(null);
   const shouldReduceMotion = useReducedMotion();
@@ -125,7 +128,7 @@ export default function About() {
 
         <motion.section
           {...fadeUp}
-          className="mt-14 rounded-lg border border-border-subtle bg-surface-panel p-7 shadow-[var(--shadow-panel)] md:mt-16 md:p-10"
+          className={`mt-14 md:mt-16 ${aboutPanelSection}`}
         >
           <SectionEyebrow>{content.identity.label}</SectionEyebrow>
 
@@ -157,7 +160,7 @@ export default function About() {
 
         <motion.section
           {...fadeUpInView}
-          className="mt-20 border-t border-border-subtle pt-16 md:mt-24 md:pt-20"
+          className={`mt-8 md:mt-10 ${aboutPanelSection}`}
         >
           <SectionEyebrow>{content.work.label}</SectionEyebrow>
           <div className="mt-8">
@@ -167,7 +170,7 @@ export default function About() {
 
         <motion.section
           {...fadeUpInView}
-          className="mt-20 border-t border-border-subtle pt-16 md:mt-24 md:pt-20"
+          className={`mt-8 md:mt-10 ${aboutPanelSection}`}
         >
           <SectionEyebrow>{content.value.label}</SectionEyebrow>
           <div className="mt-8">
@@ -177,7 +180,7 @@ export default function About() {
 
         <motion.section
           {...fadeUpInView}
-          className="mt-20 border-t border-border-subtle pt-16 md:mt-24 md:pt-20"
+          className={`mt-8 md:mt-10 ${aboutPanelSection}`}
         >
           <SectionEyebrow>{content.approach.label}</SectionEyebrow>
           <div className="mt-8">
