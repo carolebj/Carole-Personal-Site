@@ -298,7 +298,12 @@ async function verifyBlogFlow(page) {
     }
     page.once("dialog", (dialog) => dialog.accept());
     await restoreButtons.last().click();
-    await page.waitForTimeout(500);
+    await page.locator("#cms-title-fr").waitFor({ state: "visible", timeout: 5_000 });
+    await page.waitForFunction(
+      (expected) => document.querySelector("#cms-title-fr")?.value === expected,
+      marker,
+      { timeout: 5_000 },
+    );
     if ((await page.locator("#cms-title-fr").inputValue()) !== marker) {
       fail("La restauration de révision n'a pas restauré le titre initial.");
     }

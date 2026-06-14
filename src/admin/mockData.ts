@@ -9,27 +9,33 @@ export const seedContent = {
   homePage: {
     id: "homePage",
     hero: {
-      eyebrow: L("Communication digitale", "Digital communications"),
-      title: L("Donner de la voix", "Giving voice"),
-      accent: L("aux marques", "to brands"),
-      titleEnd: L("qui ont du sens", "that matter"),
+      eyebrow: L("Chargée de communication digitale", "Digital communications officer"),
+      title: L("Construire une communication digitale", "Build digital communication"),
+      accent: L("claire & engageante", "clear & engaging"),
+      titleEnd: L("pour votre marque.", "for your brand."),
       description: L(
-        "Chargée de communication digitale, j'accompagne les marques engagées de la stratégie à la publication.",
-        "",
+        "Je vous accompagne dans la coordination de vos contenus, de vos campagnes et de vos actions de visibilité pour renforcer votre communication avec clarté.",
+        "I help coordinate your content, campaigns, and visibility actions so your communication becomes clearer, more consistent, and easier to activate.",
       ),
-      primaryCta: L("Me contacter", "Get in touch"),
-      secondaryCta: L("Voir les services", "View services"),
+      primaryCta: L("Discutons-en", "Let's talk"),
+      secondaryCta: L("Mes services", "My services"),
       portrait: null,
     },
     manifesto: {
-      title: L("Mon manifeste", "My manifesto"),
-      accent: L("intention", "intention"),
-      body: L("Chaque prise de parole doit servir une intention claire et une communauté réelle.", ""),
+      title: L("Publier sans stratégie", "Posting without strategy"),
+      accent: L("ne suffit plus.", "is no longer enough."),
+      body: L(
+        "Dans un environnement digital saturé, l'attention est la ressource la plus rare. Une communication réussie ne repose pas sur le volume, mais sur la pertinence, la clarté et la cohérence de votre message.\n\nIl est temps de passer d'une communication réactive à une organisation éditoriale intentionnelle.",
+        "In a saturated digital environment, attention is the rarest resource. Strong communication is not built on volume, but on relevance, clarity, and consistency.\n\nIt is time to move from reactive communication to intentional editorial organization.",
+      ),
     },
     about: {
-      title: L("À propos", "About"),
-      accent: L("parcours", "journey"),
-      body: L("Carole Tonoukouen, chargée de communication digitale et social media.", ""),
+      title: L("Enchantée,", "Lovely to meet you,"),
+      accent: L("moi c'est Carole", "I'm Carole"),
+      body: L(
+        "J'aide les entreprises, organisations et projets à clarifier leur message, organiser leurs contenus et renforcer leur visibilité digitale.\n\nJe prends en charge la coordination éditoriale, la rédaction, le suivi des supports visuels et les actions de communication. Vous et moi collaborerons pour transformer vos idées, vos temps forts et vos priorités en prises de parole claires.",
+        "I help businesses, organizations, and projects clarify their message, organize their content, and strengthen their digital visibility.\n\nI support editorial coordination, writing, visual production follow-up, and communication actions. Together, we turn your ideas, key moments, and priorities into clear public-facing messages.",
+      ),
       image: null,
     },
     servicesSection: {
