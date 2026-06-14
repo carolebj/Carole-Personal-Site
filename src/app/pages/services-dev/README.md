@@ -1,14 +1,12 @@
 # Services pages (WIP)
 
-Pages complètes en cours de développement. Sur `main`, `/services` et `/services/:slug`
-affichent `ServicesUnderConstruction.tsx`.
+Pages complètes en cours de développement.
 
-## Activer en local sur `dev`
+| Branche | Routes `/services` |
+|---------|-------------------|
+| **`main`** | `ServicesUnderConstruction.tsx` (placeholder prod) |
+| **`dev`** | `Services.tsx` / `ServiceDetail.tsx` (implémentation active) |
 
-Dans `src/app/routes.tsx`, pointer les routes services vers :
-
-- `./pages/services-dev/ServicesPage`
-- `./pages/services-dev/ServiceDetailPage`
-
-Quand le résultat est prêt, remplacer les exports de `Services.tsx` /
-`ServiceDetailPage.tsx` (ou fusionner le contenu) puis merger `dev` → `main`.
+Ce dossier `services-dev/` conserve une copie miroir du WIP ; sur `dev`, les routes pointent
+directement vers `Services.tsx` / `ServiceDetail.tsx`. Quand le résultat est prêt, merger
+`dev` → `main` en remplaçant les placeholders par les pages finales.
