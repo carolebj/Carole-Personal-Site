@@ -15,7 +15,8 @@ export const homeServiceAccents = [
   {
     icon: "bg-[#ffd9e4]",
     corner: "bg-[#ffd9e4]/55",
-    glyph: "text-text-accent",
+    /** Pastel circle stays light in dark mode — glyph must stay dark for contrast. */
+    glyph: "text-[#854d63]",
     title: "text-text-accent dark:text-[#d8a4c7]",
   },
   {
@@ -33,7 +34,7 @@ export const homeServiceAccents = [
   {
     icon: "bg-[#e5e2e1]",
     corner: "bg-[#e5e2e1]/70",
-    glyph: "text-text-secondary",
+    glyph: "text-[#5b4137]",
     title: "text-text-secondary dark:text-[#ded7d2]",
   },
 ] as const;

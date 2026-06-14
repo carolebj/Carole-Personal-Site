@@ -78,11 +78,17 @@ const visualTuningControls: Array<{
 
 const traitIcons = [documentEditIcon, brandFlagIcon, coffeeCupIcon];
 const traitAccents = [
-  { icon: "bg-[#ffd9e4]", glyph: "text-text-accent" },
+  { icon: "bg-[#ffd9e4]", glyph: "text-[#854d63]" },
   { icon: "bg-[#ffdcbd]", glyph: "text-[#8a5100]" },
   { icon: "bg-[#ffdbcf]", glyph: "text-[#a83900]" },
 ];
 const testimonialImages = [testimonialUzomaImage, testimonialCynthiaImage, testimonialJulianImage];
+
+const testimonialPortraitByName: Record<string, string> = {
+  "Uzoma Obidike": testimonialUzomaImage,
+  "Cynthia S.": testimonialCynthiaImage,
+  "Julian F.": testimonialJulianImage,
+};
 
 function InlineIcon({ src, className }: InlineIconProps) {
   return (
@@ -545,9 +551,11 @@ export default function Home() {
     () =>
       testimonials.map((testimonial, index) => {
         const imgSrc = usingCmsTestimonials
-          ? cmsImageUrl(testimonial.portrait)
+          ? cmsImageUrl(testimonial.portrait) ??
+            testimonialPortraitByName[testimonial.name] ??
+            testimonialImages[index]
           : testimonialImages[index] ?? testimonialImages[0];
-        return { ...testimonial, src: imgSrc ?? "" };
+        return { ...testimonial, src: imgSrc ?? testimonialImages[0] };
       }),
     [testimonials, usingCmsTestimonials]
   );
@@ -691,7 +699,7 @@ export default function Home() {
               }
               className="absolute bottom-7 left-6 z-20 flex items-center gap-3 rounded-2xl border border-white/70 bg-white/90 p-4 shadow-[0_16px_38px_rgba(28,27,27,0.14)] backdrop-blur-md dark:border-white/10 dark:bg-[#201817]/90"
             >
-              <span className="flex size-10 items-center justify-center rounded-full bg-[#ffd9e4] text-text-accent">
+              <span className="flex size-10 items-center justify-center rounded-full bg-[#ffd9e4] text-[#854d63]">
                 <SparklesIcon className="size-4" />
               </span>
               <p className="font-serif text-[16px] leading-4 text-text-primary dark:text-text-primary">
@@ -745,9 +753,9 @@ export default function Home() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.25 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="bg-white px-5 py-16 dark:bg-[#181312] sm:px-8 lg:px-[min(8vw,112px)] lg:py-24"
+        className="bg-white px-5 pb-16 pt-24 dark:bg-[#181312] sm:px-8 lg:px-[min(8vw,112px)] lg:pb-24 lg:pt-32"
       >
-        <div className="mx-auto grid max-w-[1152px] items-center gap-12 lg:grid-cols-[minmax(0,350px)_minmax(0,1fr)] lg:gap-28 xl:grid-cols-[minmax(0,368px)_minmax(0,1fr)]">
+        <div className="mx-auto grid max-w-[1152px] items-center gap-24 lg:grid-cols-[minmax(0,350px)_minmax(0,1fr)] lg:gap-28 xl:grid-cols-[minmax(0,368px)_minmax(0,1fr)]">
           <div className="relative mx-auto aspect-[418.08/522.59] w-full max-w-[292px] sm:max-w-[330px] lg:mx-0 lg:w-[350px] lg:max-w-none xl:w-[368px]">
             <div
               className="absolute rotate-12 bg-[rgba(255,220,189,0.50)]"
@@ -862,18 +870,15 @@ export default function Home() {
             </h2>
             <p className="mt-4 text-base leading-7 text-text-secondary dark:text-[#ded7d2] sm:text-[18px]">{servicesSubtitle}</p>
           </div>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:gap-6">
             {services.map((service, index) => {
               const icon = serviceIcons[index] ?? brandFlagIcon;
               const accent = homeServiceAccents[index] ?? homeServiceAccents[0];
-              const isWide = index === 1 || index === 2;
               return (
                 <Link
                   to={`/services/${service.slug}`}
                   key={`${service.title}-${service.accent}`}
-                  className={`t-resize group relative overflow-hidden rounded-lg border border-border-accent/25 bg-white p-6 text-left no-underline shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(28,27,27,0.08)] dark:border-[#d8a4c7]/16 dark:bg-surface-panel dark:hover:border-[#d8a4c7]/28 dark:hover:shadow-[0_18px_42px_rgba(0,0,0,0.24)] sm:p-7 ${
-                    isWide ? "sm:col-span-2" : ""
-                  }`}
+                  className="t-resize group relative overflow-hidden rounded-lg border border-border-accent/25 bg-white p-6 text-left no-underline shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(28,27,27,0.08)] dark:border-[#d8a4c7]/16 dark:bg-surface-panel dark:hover:border-[#d8a4c7]/28 dark:hover:shadow-[0_18px_42px_rgba(0,0,0,0.24)] sm:p-7"
                 >
                   <div className={`absolute right-0 top-0 size-28 -translate-y-24 translate-x-24 rounded-bl-full ${accent.corner} opacity-0 transition duration-500 ease-out group-hover:-translate-y-9 group-hover:translate-x-9 group-hover:opacity-100`} />
                   <span className={`relative flex size-11 items-center justify-center rounded-full ${accent.icon}`}>
