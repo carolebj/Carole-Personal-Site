@@ -28,8 +28,25 @@ export { isSupabaseConfigured as isRemote } from "../lib/supabase";
 const WORKING_TABLE = "cms_documents";
 const REVISIONS_TABLE = "cms_revisions";
 const BUCKET = "media";
+const DESIGN_BRIEF_TABLE = "design_brief_submissions";
 
 export type AuthUser = { id?: string; email: string };
+
+export type DesignBriefSubmission = {
+  id: string;
+  status: "new" | "reviewed" | "archived";
+  clientName?: string | null;
+  contactName?: string | null;
+  contactEmail?: string | null;
+  projectType?: string | null;
+  answers: Record<string, unknown>;
+  logoStyles: string[];
+  colorPalette: string[];
+  inspirationLinks: string[];
+  assetPaths: string[];
+  createdAt: string;
+  reviewedAt?: string | null;
+};
 
 export type Revision = {
   revisionId: number;
@@ -55,6 +72,22 @@ type WorkingRow = {
   published_at?: string | null;
   deleted_at?: string | null;
   updated_by?: string | null;
+};
+
+type DesignBriefRow = {
+  id: string;
+  status: DesignBriefSubmission["status"];
+  client_name?: string | null;
+  contact_name?: string | null;
+  contact_email?: string | null;
+  project_type?: string | null;
+  answers?: Record<string, unknown> | null;
+  logo_styles?: string[] | null;
+  color_palette?: string[] | null;
+  inspiration_links?: string[] | null;
+  asset_paths?: string[] | null;
+  created_at: string;
+  reviewed_at?: string | null;
 };
 
 const singletonNames = new Set(
@@ -85,6 +118,24 @@ function rowToDoc(row: WorkingRow): AnyDoc {
     publishedAtMeta: row.published_at ?? undefined,
     deletedAt: row.deleted_at ?? undefined,
     updatedBy: row.updated_by ?? undefined,
+  };
+}
+
+function rowToDesignBrief(row: DesignBriefRow): DesignBriefSubmission {
+  return {
+    id: row.id,
+    status: row.status,
+    clientName: row.client_name,
+    contactName: row.contact_name,
+    contactEmail: row.contact_email,
+    projectType: row.project_type,
+    answers: row.answers ?? {},
+    logoStyles: row.logo_styles ?? [],
+    colorPalette: row.color_palette ?? [],
+    inspirationLinks: row.inspiration_links ?? [],
+    assetPaths: row.asset_paths ?? [],
+    createdAt: row.created_at,
+    reviewedAt: row.reviewed_at,
   };
 }
 
@@ -195,6 +246,34 @@ export async function fetchTrash(): Promise<Array<{ type: string; doc: AnyDoc }>
     .order("deleted_at", { ascending: false });
   if (error) throw new Error(migrationMessage(error.message));
   return ((data ?? []) as WorkingRow[]).map((row) => ({ type: row.type, doc: rowToDoc(row) }));
+}
+
+export async function fetchDesignBriefSubmissions(): Promise<DesignBriefSubmission[]> {
+  const sb = getSupabase();
+  if (!sb) return [];
+
+  const { data, error } = await sb
+    .from(DESIGN_BRIEF_TABLE)
+    .select("id, status, client_name, contact_name, contact_email, project_type, answers, logo_styles, color_palette, inspiration_links, asset_paths, created_at, reviewed_at")
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(error.message);
+  return ((data ?? []) as DesignBriefRow[]).map(rowToDesignBrief);
+}
+
+export async function markDesignBriefReviewed(id: string): Promise<DesignBriefSubmission> {
+  const sb = getSupabase();
+  if (!sb) throw new Error("Supabase n'est pas configuré.");
+
+  const { data, error } = await sb
+    .from(DESIGN_BRIEF_TABLE)
+    .update({ status: "reviewed", reviewed_at: new Date().toISOString() })
+    .eq("id", id)
+    .select("id, status, client_name, contact_name, contact_email, project_type, answers, logo_styles, color_palette, inspiration_links, asset_paths, created_at, reviewed_at")
+    .single();
+
+  if (error) throw new Error(error.message);
+  return rowToDesignBrief(data as DesignBriefRow);
 }
 
 function updateDemo(type: string, doc: AnyDoc) {

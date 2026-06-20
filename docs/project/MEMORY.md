@@ -151,6 +151,7 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
   - about/presentation
   - services bento grid
   - service detail routes at `/services/:slug`
+  - design brief wizard at `/services/brief-design` for graphisme / logo / visual identity intake
   - testimonials
   - contact/get-in-touch form section
   - CV route at `/cv` with Carole's education, skills, achievements, languages, and communications experience
@@ -170,6 +171,7 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
   - Carnet pages use a minimal document-like layout with search and interactive resource cards
   - the footer reveal should behave like a temporary pull-beyond-footer moment with a gentle colorful wave shader
   - subtle audio haptics are enabled by default and can be toggled from the logo right-click menu
+  - the design brief wizard is a direct meeting/intake tool: adaptive French questions, local browser persistence, review-before-submit, Supabase submission (`design_brief_submissions`), private `brief-assets` storage, and an authenticated dashboard view under "Briefs design"
 
 ## Implementation Notes
 
