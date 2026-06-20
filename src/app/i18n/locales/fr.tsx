@@ -22,6 +22,7 @@ const fr = {
     menu: "Ouvrir le menu",
     openHeader: "Afficher le menu complet",
     cv: "Curriculum Vitæ - CV",
+    designBrief: "Design Brief",
     haptics: "Retour haptique",
     preview: "Aperçu",
     openService: "Ouvrir le service",

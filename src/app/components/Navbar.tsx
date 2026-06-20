@@ -456,6 +456,15 @@ export default function Navbar() {
               <span className="flex-1">{t("nav.cv")}</span>
               <ChevronRightIcon className="size-4 opacity-50" />
             </Link>
+            <Link
+              to="/services/brief-design"
+              onClick={() => setIsLogoMenuOpen(false)}
+              className="mt-1 flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium text-[#5b4137] transition hover:bg-[#ffd9e4]/35 hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
+            >
+              <PencilSquareIcon className="size-5" />
+              <span className="flex-1">{t("nav.designBrief")}</span>
+              <ChevronRightIcon className="size-4 opacity-50" />
+            </Link>
             <button
               type="button"
               onClick={toggleHaptics}
