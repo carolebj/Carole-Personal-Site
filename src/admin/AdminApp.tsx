@@ -19,7 +19,6 @@ import {
   getCurrentUser,
   isRemote,
   listRevisions,
-  markDesignBriefReviewed,
   permanentlyDeleteDoc,
   persistDoc,
   publishDoc,
@@ -31,6 +30,7 @@ import {
   signOutUser,
   trashDoc,
   unpublishDoc,
+  updateDesignBriefStatus,
   type AuthUser,
   type DesignBriefSubmission,
   type Revision,
@@ -396,11 +396,11 @@ export default function AdminApp() {
           <DesignBriefSubmissions
             submissions={briefSubmissions}
             onRefresh={loadBriefSubmissions}
-            onMarkReviewed={(id) => {
-              void markDesignBriefReviewed(id)
+            onUpdateStatus={(id, status) => {
+              void updateDesignBriefStatus(id, status)
                 .then((updated) => {
                   setBriefSubmissions((items) => items.map((item) => (item.id === id ? updated : item)));
-                  notify("success", "Brief marqué comme vu.");
+                  notify("success", "Statut du brief mis à jour.");
                 })
                 .catch((error) => notify("error", error instanceof Error ? error.message : "Mise à jour impossible."));
             }}
