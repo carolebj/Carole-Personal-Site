@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { CheckCircleIcon, DocumentTextIcon, LinkIcon } from "@heroicons/react/24/outline";
+import { getSupabase } from "../lib/supabase";
 import type { DesignBriefSubmission } from "./data";
 
 function answerText(value: unknown) {
@@ -15,6 +17,11 @@ function formatDate(value: string) {
   }).format(new Date(value));
 }
 
+function attachmentNames(submission: DesignBriefSubmission) {
+  const value = submission.answers.inspirationFileNames;
+  return Array.isArray(value) ? value.map((item) => String(item)) : [];
+}
+
 export default function DesignBriefSubmissions({
   submissions,
   onRefresh,
@@ -24,6 +31,36 @@ export default function DesignBriefSubmissions({
   onRefresh: () => void;
   onMarkReviewed: (id: string) => void;
 }) {
+  const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const sb = getSupabase();
+    const paths = Array.from(new Set(submissions.flatMap((submission) => submission.assetPaths)));
+    if (!sb || paths.length === 0) {
+      setSignedUrls({});
+      return;
+    }
+
+    let cancelled = false;
+    void sb.storage
+      .from("brief-assets")
+      .createSignedUrls(paths, 60 * 60)
+      .then(({ data }) => {
+        if (cancelled) return;
+        setSignedUrls(
+          Object.fromEntries(
+            (data ?? [])
+              .filter((item) => Boolean(item.path && item.signedUrl))
+              .map((item) => [item.path, item.signedUrl]),
+          ),
+        );
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [submissions]);
+
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-10">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -126,12 +163,21 @@ export default function DesignBriefSubmissions({
                         {link}
                       </a>
                     ))}
-                    {submission.assetPaths.map((path) => (
-                      <p key={path} className="flex items-center gap-2 text-text-secondary">
-                        <DocumentTextIcon className="size-4 text-text-accent" />
-                        {path}
-                      </p>
-                    ))}
+                    {submission.assetPaths.map((path, index) => {
+                      const label = attachmentNames(submission)[index] ?? path.split("/").pop() ?? path;
+                      const signedUrl = signedUrls[path];
+                      return signedUrl ? (
+                        <a key={path} href={signedUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-text-accent hover:underline">
+                          <DocumentTextIcon className="size-4" />
+                          {label}
+                        </a>
+                      ) : (
+                        <p key={path} className="flex items-center gap-2 text-text-secondary">
+                          <DocumentTextIcon className="size-4 text-text-accent" />
+                          {label}
+                        </p>
+                      );
+                    })}
                     {submission.inspirationLinks.length === 0 && submission.assetPaths.length === 0 ? (
                       <p className="text-text-muted">Aucune inspiration jointe.</p>
                     ) : null}

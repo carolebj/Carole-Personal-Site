@@ -586,9 +586,16 @@ export default function DesignBrief() {
           cacheControl: "3600",
           upsert: false,
         });
-        if (error) throw error;
+        if (error) {
+          throw new Error(`Le fichier « ${item.file.name} » n'a pas pu être stocké (${error.message}). Le brief n'a pas été soumis afin de ne pas perdre le contexte.`);
+        }
         assetPaths.push(path);
       }
+
+      const answersWithAttachments: Answers = {
+        ...answers,
+        ...(files.length > 0 ? { inspirationFileNames: files.map((item) => item.file.name) } : {}),
+      };
 
       const { error } = await sb.from("design_brief_submissions").insert({
         id: submissionId,
@@ -596,7 +603,7 @@ export default function DesignBrief() {
         contact_name: getAnswerText(answers.contactPerson) || null,
         contact_email: getAnswerText(answers.contactEmail) || null,
         project_type: getAnswerText(answers.projectType) || getAnswerText(answers.guidanceNeed) || null,
-        answers,
+        answers: answersWithAttachments,
         logo_styles: selectedLogoStyles,
         color_palette: selectedColors,
         inspiration_links: splitLinks(answers.inspirationLinks),
