@@ -579,6 +579,8 @@ const fr = {
     eyebrow: "Services",
     titleStart: "Section",
     titleAccent: "en cours de construction",
+    headline: "Les services prennent forme",
+    tagline: "Une page plus claire arrive bientôt. En attendant, vous pouvez revenir à l'accueil ou me contacter directement.",
     description:
       "Les pages détaillées des services sont en préparation. En attendant, vous pouvez parcourir le reste du portfolio ou me contacter pour en discuter.",
     note: "Cette section sera bientôt disponible avec une présentation complète de chaque offre.",

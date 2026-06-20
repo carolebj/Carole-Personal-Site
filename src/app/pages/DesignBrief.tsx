@@ -785,24 +785,24 @@ export default function DesignBrief() {
                         onChange={(event) => setAnswer("inspirationLinks", event.target.value)}
                         rows={3}
                         placeholder="Liens vers Pinterest, Instagram, Behance, anciens logos, moodboards..."
-                        className="public-input min-h-24 w-full rounded-md border border-border-subtle bg-white px-3 py-3 text-[14px] leading-6 text-text-primary placeholder:text-text-muted"
+                        className="public-input min-h-24 w-full rounded-md border border-border-subtle bg-white px-3 py-3 text-[14px] leading-6 text-text-primary placeholder:text-text-muted dark:border-white/10 dark:bg-[#201918] dark:text-[#f8f1ec] dark:placeholder:text-[#cdb9ae]/70"
                       />
-                      <label className="flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-border-accent bg-[#fcf9f8] px-4 py-5 text-center transition hover:bg-white">
-                        <DocumentArrowUpIcon className="size-6 text-text-accent" />
-                        <span className="mt-2 text-[13px] font-semibold text-text-primary">Ajouter des fichiers d'inspiration</span>
-                        <span className="mt-1 text-[12px] leading-5 text-text-muted">PNG, JPG, WebP, GIF ou PDF, 5 Mo maximum par fichier.</span>
+                      <label className="flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-border-accent bg-[#fcf9f8] px-4 py-5 text-center transition hover:bg-white dark:border-[#f0adc4]/35 dark:bg-[#201918] dark:hover:bg-[#2a211f]">
+                        <DocumentArrowUpIcon className="size-6 text-text-accent dark:text-[#f0adc4]" />
+                        <span className="mt-2 text-[13px] font-semibold text-text-primary dark:text-[#f8f1ec]">Ajouter des fichiers d'inspiration</span>
+                        <span className="mt-1 text-[12px] leading-5 text-text-muted dark:text-[#d8c7bf]">PNG, JPG, WebP, GIF ou PDF, 5 Mo maximum par fichier.</span>
                         <input type="file" multiple accept="image/png,image/jpeg,image/webp,image/gif,application/pdf" className="sr-only" onChange={(event) => addFiles(event.target.files)} />
                       </label>
                       {files.length > 0 ? (
                         <div className="grid gap-2 sm:grid-cols-2">
                           {files.map((item) => (
-                            <div key={item.previewUrl} className="flex items-center gap-3 rounded-md border border-border-subtle bg-white p-2">
+                            <div key={item.previewUrl} className="flex items-center gap-3 rounded-md border border-border-subtle bg-white p-2 dark:border-white/10 dark:bg-[#201918]">
                               {item.file.type.startsWith("image/") ? (
                                 <img src={item.previewUrl} alt="" className="size-12 rounded object-cover" />
                               ) : (
                                 <LinkIcon className="size-5 text-text-accent" />
                               )}
-                              <span className="min-w-0 truncate text-[13px] text-text-secondary">{item.file.name}</span>
+                              <span className="min-w-0 truncate text-[13px] text-text-secondary dark:text-[#d8c7bf]">{item.file.name}</span>
                             </div>
                           ))}
                         </div>

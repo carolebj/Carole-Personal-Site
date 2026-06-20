@@ -579,6 +579,8 @@ const en = {
     eyebrow: "Services",
     titleStart: "Section",
     titleAccent: "under construction",
+    headline: "The services are taking shape",
+    tagline: "A clearer page is coming soon. In the meantime, you can return home or contact me directly.",
     description:
       "The detailed service pages are being prepared. In the meantime, feel free to explore the rest of the portfolio or contact me to discuss your needs.",
     note: "This section will soon include a full presentation of each service offering.",

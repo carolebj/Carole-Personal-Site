@@ -1,10 +1,9 @@
-import { HomeIcon, WrenchScrewdriverIcon } from "@heroicons/react/24/outline";
+import { HomeIcon } from "@heroicons/react/24/outline";
 import { motion } from "motion/react";
 import { useMemo } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { PAGE_MAIN } from "../components/layout/publicPage";
-import { PageHero } from "../components/PageHero";
+import { ServiceWorkbench } from "../components/ServiceWorkbench";
 import { useSeoOverride } from "../seo/SeoOverrideContext";
 
 export default function ServicesUnderConstruction() {
@@ -19,51 +18,53 @@ export default function ServicesUnderConstruction() {
   useSeoOverride(seoOverride);
 
   return (
-    <main className={PAGE_MAIN}>
+    <main className="flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center bg-surface-page px-5 pb-20 pt-28 text-text-primary sm:px-8 md:min-h-[calc(100vh-6rem)] md:pt-36">
       <motion.section
-        initial={{ opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
-        className="mx-auto max-w-[820px]"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="flex w-full max-w-[520px] flex-col items-center text-center"
       >
-        <PageHero
-          eyebrow={t("servicesConstruction.eyebrow")}
-          title={
-            <>
-              {t("servicesConstruction.titleStart")}{" "}
-              <span className="italic text-text-accent">{t("servicesConstruction.titleAccent")}</span>
-            </>
-          }
-          titleClassName="text-[42px] leading-[46px] sm:text-[56px] sm:leading-[60px]"
-        />
+        <ServiceWorkbench />
 
-        <div className="mt-10 rounded-lg border border-border-accent/42 bg-surface-panel p-7 shadow-[var(--shadow-panel)] sm:p-10">
-          <div className="flex size-14 items-center justify-center rounded-full bg-surface-accent-muted text-text-accent">
-            <WrenchScrewdriverIcon className="size-7" aria-hidden="true" />
-          </div>
-          <p className="mt-6 max-w-[640px] text-[18px] leading-8 text-text-secondary">
-            {t("servicesConstruction.description")}
-          </p>
-          <p className="mt-4 max-w-[640px] text-[15px] leading-7 text-text-muted">
-            {t("servicesConstruction.note")}
-          </p>
+        <motion.h1
+          className="mt-10 max-w-[18ch] font-serif text-[32px] leading-[1.12] text-text-primary sm:text-[40px]"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {t("servicesConstruction.headline")}
+        </motion.h1>
 
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Link
-              to="/"
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-action-strong px-6 text-[12px] font-semibold uppercase tracking-[1.4px] text-text-on-strong transition hover:bg-action-strong-hover active:scale-[0.98]"
-            >
-              <HomeIcon className="size-4" aria-hidden="true" />
-              {t("servicesConstruction.backHome")}
-            </Link>
-            <Link
-              to="/contact"
-              className="inline-flex h-11 items-center justify-center rounded-full border border-border-accent bg-surface-page px-6 text-[12px] font-semibold uppercase tracking-[1.4px] text-text-accent transition hover:border-border-accent-strong hover:bg-surface-accent-muted active:scale-[0.98]"
-            >
-              {t("servicesConstruction.contact")}
-            </Link>
-          </div>
-        </div>
+        <motion.p
+          className="mt-4 max-w-[36ch] text-[15px] leading-7 text-text-muted"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.28, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {t("servicesConstruction.tagline")}
+        </motion.p>
+
+        <motion.div
+          className="mt-10 flex w-full flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <Link
+            to="/"
+            className="inline-flex h-11 min-w-[200px] items-center justify-center gap-2 rounded-full bg-action-strong px-7 text-[12px] font-semibold uppercase tracking-[1.4px] text-text-on-strong transition hover:bg-action-strong-hover active:scale-[0.98]"
+          >
+            <HomeIcon className="size-4" aria-hidden="true" />
+            {t("servicesConstruction.backHome")}
+          </Link>
+          <Link
+            to="/contact"
+            className="inline-flex h-11 min-w-[200px] items-center justify-center rounded-full border border-border-accent bg-surface-page px-7 text-[12px] font-semibold uppercase tracking-[1.4px] text-text-accent transition hover:border-border-accent-strong hover:bg-surface-accent-muted active:scale-[0.98]"
+          >
+            {t("servicesConstruction.contact")}
+          </Link>
+        </motion.div>
       </motion.section>
     </main>
   );
