@@ -105,7 +105,7 @@ const logoStyles: LogoStyle[] = [
     name: "Monogramme",
     description: "Des lettres entrelacées donnent une perception plus premium.",
     examples: "Louis Vuitton, Chanel, YSL",
-    image: "https://upload.wikimedia.org/wikipedia/commons/4/4d/Chanel_logo.svg",
+    image: "",
   },
   {
     id: "Mascotte",
@@ -632,15 +632,15 @@ export default function DesignBrief() {
         </div>
 
         <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,860px)_260px] xl:items-start">
-          <div className="rounded-lg border border-border-subtle bg-white px-5 py-6 shadow-[0_18px_50px_rgba(28,27,27,0.05)] dark:border-white/10 dark:bg-surface-panel sm:px-8 sm:py-8">
-            <div className="rounded-md border border-[#dbe5f2] bg-[#f5f9ff] p-4 text-[14px] leading-6 text-[#27405f] dark:border-white/10 dark:bg-white/5 dark:text-text-secondary">
+          <div className="rounded-lg border border-border-subtle bg-white px-5 py-6 text-text-primary shadow-[0_18px_50px_rgba(28,27,27,0.05)] dark:border-white/10 dark:bg-[#171312] dark:text-[#f8f1ec] sm:px-8 sm:py-8">
+            <div className="rounded-md border border-[#dbe5f2] bg-[#f5f9ff] p-4 text-[14px] leading-6 text-[#27405f] dark:border-[#f0adc4]/25 dark:bg-[#251d1c] dark:text-[#f4e7df]">
               <div className="flex gap-3">
-                <ExclamationCircleIcon className="mt-0.5 size-5 shrink-0 text-[#2b74c7]" />
+                <ExclamationCircleIcon className="mt-0.5 size-5 shrink-0 text-[#2b74c7] dark:text-[#f0adc4]" />
                 <div>
                   <p>
                     Répondez dans l'ordre. Si une réponse n'est pas encore claire, laissez-la vide : le but est aussi de révéler ce qui doit être cadré avec Carole.
                   </p>
-                  <p className="mt-2 text-[12px] font-semibold uppercase tracking-[1.4px] text-[#2b5f97]">
+                  <p className="mt-2 text-[12px] font-semibold uppercase tracking-[1.4px] text-[#2b5f97] dark:text-[#f0adc4]">
                     Brouillon sauvegardé automatiquement dans ce navigateur
                   </p>
                 </div>
@@ -648,10 +648,10 @@ export default function DesignBrief() {
             </div>
 
             {visibleSections.map((section) => (
-              <section key={section.id} id={section.id} className="scroll-mt-28 border-b border-border-subtle py-10 last:border-b-0">
+              <section key={section.id} id={section.id} className="scroll-mt-28 border-b border-border-subtle py-10 last:border-b-0 dark:border-white/10">
                 <div className="mb-7">
                   <h2 className="font-serif text-[32px] leading-[36px] text-text-primary">{section.title}</h2>
-                  <p className="mt-3 max-w-[700px] text-[14px] leading-6 text-text-muted">{section.intro}</p>
+                  <p className="mt-3 max-w-[700px] text-[14px] leading-6 text-text-muted dark:text-[#d8c7bf]">{section.intro}</p>
                 </div>
 
                 {section.id === "visual" ? (
@@ -660,9 +660,9 @@ export default function DesignBrief() {
                       <div className="flex items-end justify-between gap-4">
                         <div>
                           <h3 className="text-[15px] font-semibold text-text-primary">Types de logos qui vous parlent</h3>
-                          <p className="mt-1 text-[13px] text-text-muted">Choisissez jusqu'à deux familles. Les exemples servent uniquement à comprendre le style.</p>
+                          <p className="mt-1 text-[13px] text-text-muted dark:text-[#d8c7bf]">Choisissez jusqu'à deux familles. Les exemples servent uniquement à comprendre le style.</p>
                         </div>
-                        <p className="text-[13px] text-text-muted">{selectedLogoStyles.length}/2</p>
+                        <p className="text-[13px] text-text-muted dark:text-[#d8c7bf]">{selectedLogoStyles.length}/2</p>
                       </div>
                       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                         {logoStyles.map((style) => {
@@ -674,23 +674,31 @@ export default function DesignBrief() {
                               onClick={() => setAnswer("logoStyles", toggleListValue(answers.logoStyles, style.id, 2))}
                               className={`rounded-lg border p-3 text-left transition ${
                                 selected
-                                  ? "border-[#854d63] bg-[#fff5f8] shadow-[0_12px_28px_rgba(133,77,99,0.12)]"
-                                  : "border-border-subtle bg-[#fcf9f8] hover:-translate-y-0.5 hover:border-[#854d63] hover:bg-white"
+                                  ? "border-[#854d63] bg-[#fff5f8] shadow-[0_12px_28px_rgba(133,77,99,0.12)] dark:border-[#f0adc4] dark:bg-[#332426] dark:shadow-[0_12px_28px_rgba(0,0,0,0.28)]"
+                                  : "border-border-subtle bg-[#fcf9f8] hover:-translate-y-0.5 hover:border-[#854d63] hover:bg-white dark:border-white/12 dark:bg-[#201918] dark:hover:border-[#f0adc4]/70 dark:hover:bg-[#2a211f]"
                               }`}
                             >
-                              <span className="flex h-20 items-center justify-center rounded-md bg-white p-3">
-                                <img src={style.image} alt="" className="max-h-12 max-w-[140px] object-contain" loading="lazy" />
+                              <span className="flex h-20 items-center justify-center rounded-md bg-white p-3 dark:bg-[#f8f1ec]">
+                                {style.id === "Monogramme" ? (
+                                  <span className="relative flex h-14 w-24 items-center justify-center font-serif text-[#161313]" aria-hidden="true">
+                                    <span className="absolute -translate-x-3 text-[48px] italic leading-none">C</span>
+                                    <span className="absolute translate-x-3 text-[48px] italic leading-none">T</span>
+                                    <span className="absolute h-12 w-12 rotate-45 border border-[#161313]/45" />
+                                  </span>
+                                ) : (
+                                  <img src={style.image} alt="" className="max-h-12 max-w-[140px] object-contain" loading="lazy" />
+                                )}
                               </span>
                               <span className="mt-3 flex items-start justify-between gap-3">
                                 <span>
                                   <span className="block text-[14px] font-semibold text-text-primary">{style.name}</span>
-                                  <span className="mt-1 block text-[12px] leading-5 text-text-muted">{style.description}</span>
+                                  <span className="mt-1 block text-[12px] leading-5 text-text-muted dark:text-[#d8c7bf]">{style.description}</span>
                                 </span>
-                                <span className={`flex size-5 shrink-0 items-center justify-center rounded-full border ${selected ? "border-[#854d63] bg-[#854d63] text-white" : "border-border-accent"}`}>
+                                <span className={`flex size-5 shrink-0 items-center justify-center rounded-full border ${selected ? "border-[#854d63] bg-[#854d63] text-white dark:border-[#f0adc4] dark:bg-[#f0adc4] dark:text-[#171312]" : "border-border-accent dark:border-[#f0adc4]/40"}`}>
                                   {selected ? <CheckCircleIcon className="size-4" /> : null}
                                 </span>
                               </span>
-                              <span className="mt-2 block text-[11px] leading-4 text-text-muted">{style.examples}</span>
+                              <span className="mt-2 block text-[11px] leading-4 text-text-muted dark:text-[#cdb9ae]">{style.examples}</span>
                             </button>
                           );
                         })}
