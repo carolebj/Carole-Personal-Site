@@ -17,7 +17,7 @@ const languages: { code: Lang; flag: string }[] = [
   { code: "fr", flag: "FR" },
   { code: "en", flag: "EN" },
 ];
-const FOOTER_REVEAL_DELAY_MS = 1800;
+const FOOTER_REVEAL_DELAY_MS = 900;
 const FOOTER_REVEAL_FAST_DELAY_MS = 1200;
 const SHADER_LONG_PRESS_MS = 320;
 
