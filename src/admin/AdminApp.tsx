@@ -4,6 +4,7 @@ import {
   ArrowRightStartOnRectangleIcon,
   Bars3Icon,
   ChevronDownIcon,
+  DocumentTextIcon,
   Squares2X2Icon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
@@ -13,10 +14,12 @@ import { TypeIcon } from "./iconMap";
 import { emptyDoc, type AnyDoc, type ContentStore } from "./store";
 import {
   fetchContent,
+  fetchDesignBriefSubmissions,
   fetchTrash,
   getCurrentUser,
   isRemote,
   listRevisions,
+  markDesignBriefReviewed,
   permanentlyDeleteDoc,
   persistDoc,
   publishDoc,
@@ -29,16 +32,19 @@ import {
   trashDoc,
   unpublishDoc,
   type AuthUser,
+  type DesignBriefSubmission,
   type Revision,
 } from "./data";
 import LoginScreen from "./LoginScreen";
 import { CollectionList, DocumentEditor, TrashView, docTitle } from "./views";
 import { LoadingShell, ToastStack, useToasts } from "./feedback";
+import DesignBriefSubmissions from "./DesignBriefSubmissions";
 
 const Overview = lazy(() => import("./Overview"));
 
 type View =
   | { kind: "home" }
+  | { kind: "briefs" }
   | { kind: "trash" }
   | { kind: "list"; typeName: string }
   | { kind: "edit"; typeName: string; doc: AnyDoc };
@@ -70,6 +76,7 @@ function Sidebar({
   collapsed,
   onToggle,
   onHome,
+  onBriefs,
   onTrash,
   onSelect,
   onSignOut,
@@ -81,6 +88,7 @@ function Sidebar({
   collapsed: boolean;
   onToggle: () => void;
   onHome: () => void;
+  onBriefs: () => void;
   onTrash: () => void;
   onSelect: (type: ContentType) => void;
   onSignOut: () => void;
@@ -114,6 +122,9 @@ function Sidebar({
       <nav className="flex-1 overflow-y-auto px-2 pb-4">
         <button onClick={onHome} title="Vue d'ensemble" className={cn("mb-1 flex w-full items-center gap-2.5 rounded-md px-3 py-2.5 text-sm", viewKind === "home" ? "bg-surface-accent-muted font-medium text-text-accent" : "text-text-secondary hover:bg-surface-page-muted")}>
           <Squares2X2Icon className="size-5 shrink-0" /> {!collapsed ? "Vue d'ensemble" : null}
+        </button>
+        <button onClick={onBriefs} title="Briefs design" className={cn("mb-1 flex w-full items-center gap-2.5 rounded-md px-3 py-2.5 text-sm", viewKind === "briefs" ? "bg-surface-accent-muted font-medium text-text-accent" : "text-text-secondary hover:bg-surface-page-muted")}>
+          <DocumentTextIcon className="size-5 shrink-0" /> {!collapsed ? "Briefs design" : null}
         </button>
         <button onClick={onTrash} title="Corbeille" className={cn("mb-4 flex w-full items-center gap-2.5 rounded-md px-3 py-2.5 text-sm", viewKind === "trash" ? "bg-surface-accent-muted font-medium text-text-accent" : "text-text-secondary hover:bg-surface-page-muted")}>
           <TrashIcon className="size-5 shrink-0" /> {!collapsed ? "Corbeille" : null}
@@ -187,6 +198,7 @@ export default function AdminApp() {
     typeof window !== "undefined" ? window.innerWidth < 900 : false,
   );
   const [trash, setTrash] = useState<Array<{ type: string; doc: AnyDoc }>>([]);
+  const [briefSubmissions, setBriefSubmissions] = useState<DesignBriefSubmission[]>([]);
   const { toasts, push: notify, dismiss } = useToasts();
 
   const loadContent = useCallback(async () => {
@@ -299,6 +311,17 @@ export default function AdminApp() {
     void fetchTrash().then(setTrash).catch((error) => notify("error", error instanceof Error ? error.message : "Corbeille indisponible."));
   });
 
+  const loadBriefSubmissions = useCallback(() => {
+    void fetchDesignBriefSubmissions()
+      .then(setBriefSubmissions)
+      .catch((error) => notify("error", error instanceof Error ? error.message : "Briefs indisponibles."));
+  }, [notify]);
+
+  const openBriefs = () => guard(() => {
+    setView({ kind: "briefs" });
+    loadBriefSubmissions();
+  });
+
   if (!authChecked) return <FullScreenMessage>Chargement…</FullScreenMessage>;
   if (!user) {
     return <LoginScreen remote={isRemote} onSubmit={async (email, password) => {
@@ -337,6 +360,7 @@ export default function AdminApp() {
         collapsed={collapsed}
         onToggle={() => setCollapsed((value) => !value)}
         onHome={() => guard(() => setView({ kind: "home" }))}
+        onBriefs={openBriefs}
         onTrash={openTrash}
         onSelect={openType}
         onSignOut={() => guard(() => void signOutUser().then(() => {
@@ -356,6 +380,21 @@ export default function AdminApp() {
           <Suspense fallback={<LoadingShell />}>
             <Overview email={user.email} content={content} trashCount={trash.length} onOpen={openType} />
           </Suspense>
+        ) : null}
+
+        {view.kind === "briefs" ? (
+          <DesignBriefSubmissions
+            submissions={briefSubmissions}
+            onRefresh={loadBriefSubmissions}
+            onMarkReviewed={(id) => {
+              void markDesignBriefReviewed(id)
+                .then((updated) => {
+                  setBriefSubmissions((items) => items.map((item) => (item.id === id ? updated : item)));
+                  notify("success", "Brief marqué comme vu.");
+                })
+                .catch((error) => notify("error", error instanceof Error ? error.message : "Mise à jour impossible."));
+            }}
+          />
         ) : null}
 
         {view.kind === "trash" ? (

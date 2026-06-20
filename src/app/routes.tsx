@@ -69,6 +69,11 @@ export const router = createBrowserRouter([
         ErrorBoundary: RouteErrorBoundary,
       },
       {
+        path: "services/brief-design",
+        lazy: async () => ({ Component: (await import("./pages/DesignBrief")).default }),
+        ErrorBoundary: RouteErrorBoundary,
+      },
+      {
         path: "services/:slug",
         lazy: async () => ({ Component: (await import("./pages/ServiceDetail")).default }),
         ErrorBoundary: RouteErrorBoundary,
