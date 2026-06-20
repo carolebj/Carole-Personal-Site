@@ -10,17 +10,17 @@ const steps = [
   {
     label: "Cadrage",
     Icon: ChatBubbleBottomCenterTextIcon,
-    className: "left-4 top-8 rotate-[-5deg] bg-[#ffd9e4]",
+    className: "left-[6%] top-10 rotate-[-5deg] bg-[#ffd9e4]",
   },
   {
     label: "Offres",
     Icon: PencilSquareIcon,
-    className: "left-[96px] top-20 rotate-[4deg] bg-[#ffdcbd]",
+    className: "left-1/2 top-24 -translate-x-1/2 rotate-[4deg] bg-[#ffdcbd]",
   },
   {
     label: "Clarté",
     Icon: SparklesIcon,
-    className: "left-[188px] top-8 rotate-[-2deg] bg-[#f6f3f2]",
+    className: "right-[6%] top-10 rotate-[-2deg] bg-[#f6f3f2]",
   },
 ];
 
@@ -29,16 +29,15 @@ export function ServiceWorkbench({ className = "" }: { className?: string }) {
 
   return (
     <div
-      className={`relative h-[230px] w-full max-w-[340px] overflow-hidden rounded-[32px] border border-border-accent bg-white/70 shadow-[0_24px_70px_rgba(91,65,55,0.08)] dark:border-white/10 dark:bg-white/5 ${className}`.trim()}
+      className={`relative h-[230px] w-full max-w-[560px] overflow-hidden rounded-[32px] border border-border-accent bg-white/70 shadow-[0_24px_70px_rgba(91,65,55,0.08)] dark:border-white/10 dark:bg-white/5 sm:h-[260px] ${className}`.trim()}
       aria-hidden="true"
     >
-      <div className="absolute inset-x-8 top-7 h-px bg-border-accent" />
-      <div className="absolute inset-x-8 bottom-10 h-2 rounded-full bg-[#eee9e8] dark:bg-white/10" />
+      <div className="absolute inset-x-8 bottom-10 h-2 rounded-full bg-[#eee9e8] dark:bg-white/10 sm:inset-x-12" />
 
       {steps.map(({ label, Icon, className: tileClassName }, index) => (
         <motion.div
           key={label}
-          className={`absolute flex h-[92px] w-[116px] flex-col justify-between rounded-2xl border border-white/70 p-4 text-left text-[#1c1b1b] shadow-[0_18px_35px_rgba(91,65,55,0.12)] ${tileClassName}`}
+          className={`absolute flex h-[92px] w-[116px] flex-col justify-between rounded-2xl border border-white/70 p-4 text-left text-[#1c1b1b] shadow-[0_18px_35px_rgba(91,65,55,0.12)] sm:h-[118px] sm:w-[158px] sm:p-5 ${tileClassName}`}
           initial={reducedMotion ? false : { opacity: 0, y: 28, rotate: 0 }}
           animate={
             reducedMotion
