@@ -11,10 +11,56 @@ export const L = (fr, en) => ({ fr, en: en ?? "" });
 const { fr, en } = loadI18nPair();
 
 const BLOG_PUBLISHED_AT = {
-  "clarifier-sa-ligne-editoriale": "2026-05-23",
-  "creer-un-calendrier-editorial-soutenable": "2026-05-18",
-  "adapter-un-message-a-chaque-reseau-social": "2026-05-11",
-  "auditer-sa-presence-digitale": "2026-05-03",
+  "cas-client-coworking-cotonou": "2026-06-14",
+  "calendrier-editorial-campagne-lancement": "2026-04-22",
+  "audit-linkedin-instagram-message": "2026-03-07",
+  "brief-identite-visuelle-logo-charte": "2026-01-18",
+};
+
+const BLOG_COVER_IMAGES = {
+  "cas-client-coworking-cotonou": {
+    url: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1600&q=80",
+    alt: L(
+      "Réunion d'équipe autour d'une table de travail",
+      "Team meeting around a shared work table",
+    ),
+  },
+  "calendrier-editorial-campagne-lancement": {
+    url: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80",
+    alt: L(
+      "Ordinateur ouvert pour organiser un calendrier de campagne",
+      "Laptop used to organize a campaign calendar",
+    ),
+  },
+  "audit-linkedin-instagram-message": {
+    url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1600&q=80",
+    alt: L(
+      "Tableau de données utilisé pour analyser une présence digitale",
+      "Data dashboard used to analyze a digital presence",
+    ),
+  },
+  "brief-identite-visuelle-logo-charte": {
+    url: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1600&q=80",
+    alt: L(
+      "Planche de design graphique et repères visuels",
+      "Graphic design board and visual references",
+    ),
+  },
+};
+
+const TESTIMONIAL_PORTRAITS = {
+  "uzoma-obidike": {
+    url: "https://images.unsplash.com/photo-1590650153855-d9e808231d41?auto=format&fit=crop&w=1200&q=80",
+    alt: L("Portrait professionnel d'Uzoma Obidike", "Professional portrait of Uzoma Obidike"),
+  },
+  "cynthia-s": {
+    url: "https://images.unsplash.com/photo-1590649880765-91b1956b8276?auto=format&fit=crop&w=1200&q=80",
+    alt: L("Portrait professionnel de Cynthia", "Professional portrait of Cynthia"),
+  },
+  "julian-f": {
+    url: "https://images.unsplash.com/photo-1642257859842-c95f9fa8121d?auto=format&fit=crop&w=1200&q=80",
+    alt: L("Portrait professionnel de Julian", "Professional portrait of Julian"),
+  },
 };
 
 const CARNET_SLUG_BY_LINK = {
@@ -287,12 +333,13 @@ export function buildServices() {
 export function buildTestimonials() {
   return fr.testimonials.items.map((item, index) => {
     const enItem = en.testimonials.items[index];
+    const id = testimonialDocId(item.name);
     return {
-      id: testimonialDocId(item.name),
+      id,
       name: item.name,
       role: L(item.role, enItem.role),
       quote: L(item.quote, enItem.quote),
-      portrait: null,
+      portrait: TESTIMONIAL_PORTRAITS[id] ?? null,
     };
   });
 }
@@ -308,7 +355,7 @@ export function buildBlogPosts() {
       publishedAt: BLOG_PUBLISHED_AT[post.slug] ?? "2026-05-01",
       readingTime: L(post.readingTime, enPost.readingTime),
       featured: post.featured ?? false,
-      coverImage: null,
+      coverImage: BLOG_COVER_IMAGES[post.slug] ?? null,
       takeaways: localizedList(post.takeaways, enPost.takeaways),
       body: sectionsToBody(post.sections, enPost.sections),
     };

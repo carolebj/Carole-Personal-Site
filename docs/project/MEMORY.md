@@ -4,12 +4,14 @@
 
 This file is the project-level memory for the Carole Portfolio repo. Keep it short, current, and useful for future agents working on the site.
 
-Last reviewed: 2026-06-10 WAT
+Last reviewed: 2026-06-21 WAT
 
 ## Current Branch Workflow
 
 - Main production history lives on `main`.
 - Redesign work should happen on `dev`, which tracks `origin/dev`.
+- On 2026-06-21, `dev` was reconciled with the latest `main` brief-design/admin
+  workflow changes while preserving the full services pages on `dev`.
 - Use `npm run build` and `npm run typecheck` as regression checks (no formal test or lint scripts yet).
 - Vercel should keep `main` as the production branch and use `dev` as the review/preview branch until Carole validates the redesign.
 - Vercel build settings: framework `Vite`, build command `npm run build`, output directory `dist`.
@@ -172,6 +174,21 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
   - the footer reveal should behave like a temporary pull-beyond-footer moment with a gentle colorful wave shader
   - subtle audio haptics are enabled by default and can be toggled from the logo right-click menu
   - the design brief wizard is a direct meeting/intake tool: adaptive French questions, local browser persistence, review-before-submit, Supabase submission (`design_brief_submissions`), private `brief-assets` storage, and an authenticated dashboard view under "Briefs design"
+  - services redesign first pass (2026-06-21): `/services` uses an editorial
+    offer-map layout, prioritizes the visual identity offer when present, and
+    each service detail page now reads like a working brief with frame,
+    deliverables, audience, applications, and next-service navigation.
+  - new service: `identite-visuelle` / Visual Identity covers logo, brand
+    guidelines, art direction, and digital brand assets. It is the bridge to
+    `/services/brief-design`. It was added to i18n fallback and seeded
+    additively into Supabase without overwriting existing content.
+  - blog/testimonials content pass (2026-06-21): public testimonials use real
+    portrait photography instead of illustrated placeholders; blog articles use
+    real photo covers, varied dates, and more concrete editorial topics. The
+    featured post is the case study `/blog/cas-client-coworking-cotonou`, and
+    the Services menu case-study card now links to this blog article instead of
+    a service detail page. CMS blog/testimonial documents were synchronized
+    directly because Supabase is authoritative when configured.
 
 ## Implementation Notes
 

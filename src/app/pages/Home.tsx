@@ -17,9 +17,6 @@ import coffeeCupIcon from "../../assets/icons/coffee-cup.svg?raw";
 import decorativeArc from "../../assets/icons/decorative-arc.svg";
 import documentEditIcon from "../../assets/icons/document-edit.svg?raw";
 import { homeServiceAccents, serviceIcons } from "../components/serviceStyle";
-import testimonialCynthiaImage from "../../assets/testimonials/testimonial-cynthia.svg";
-import testimonialJulianImage from "../../assets/testimonials/testimonial-julian.svg";
-import testimonialUzomaImage from "../../assets/testimonials/testimonial-uzoma.svg";
 
 type Service = {
   slug: string;
@@ -82,6 +79,12 @@ const traitAccents = [
   { icon: "bg-[#ffdcbd]", glyph: "text-[#8a5100]" },
   { icon: "bg-[#ffdbcf]", glyph: "text-[#a83900]" },
 ];
+const testimonialUzomaImage =
+  "https://images.unsplash.com/photo-1590650153855-d9e808231d41?auto=format&fit=crop&w=1200&q=80";
+const testimonialCynthiaImage =
+  "https://images.unsplash.com/photo-1590649880765-91b1956b8276?auto=format&fit=crop&w=1200&q=80";
+const testimonialJulianImage =
+  "https://images.unsplash.com/photo-1642257859842-c95f9fa8121d?auto=format&fit=crop&w=1200&q=80";
 const testimonialImages = [testimonialUzomaImage, testimonialCynthiaImage, testimonialJulianImage];
 
 const testimonialPortraitByName: Record<string, string> = {

@@ -29,12 +29,13 @@ const WORKING_TABLE = "cms_documents";
 const REVISIONS_TABLE = "cms_revisions";
 const BUCKET = "media";
 const DESIGN_BRIEF_TABLE = "design_brief_submissions";
+const DESIGN_BRIEF_SELECT = "id, status, client_name, contact_name, contact_email, project_type, answers, logo_styles, color_palette, inspiration_links, asset_paths, created_at, reviewed_at, processed_at, archived_at";
 
 export type AuthUser = { id?: string; email: string };
 
 export type DesignBriefSubmission = {
   id: string;
-  status: "new" | "reviewed" | "archived";
+  status: "new" | "reviewed" | "processed" | "archived";
   clientName?: string | null;
   contactName?: string | null;
   contactEmail?: string | null;
@@ -46,6 +47,8 @@ export type DesignBriefSubmission = {
   assetPaths: string[];
   createdAt: string;
   reviewedAt?: string | null;
+  processedAt?: string | null;
+  archivedAt?: string | null;
 };
 
 export type Revision = {
@@ -88,6 +91,8 @@ type DesignBriefRow = {
   asset_paths?: string[] | null;
   created_at: string;
   reviewed_at?: string | null;
+  processed_at?: string | null;
+  archived_at?: string | null;
 };
 
 const singletonNames = new Set(
@@ -136,6 +141,8 @@ function rowToDesignBrief(row: DesignBriefRow): DesignBriefSubmission {
     assetPaths: row.asset_paths ?? [],
     createdAt: row.created_at,
     reviewedAt: row.reviewed_at,
+    processedAt: row.processed_at,
+    archivedAt: row.archived_at,
   };
 }
 
@@ -254,7 +261,7 @@ export async function fetchDesignBriefSubmissions(): Promise<DesignBriefSubmissi
 
   const { data, error } = await sb
     .from(DESIGN_BRIEF_TABLE)
-    .select("id, status, client_name, contact_name, contact_email, project_type, answers, logo_styles, color_palette, inspiration_links, asset_paths, created_at, reviewed_at")
+    .select(DESIGN_BRIEF_SELECT)
     .order("created_at", { ascending: false });
 
   if (error) throw new Error(error.message);
@@ -262,14 +269,30 @@ export async function fetchDesignBriefSubmissions(): Promise<DesignBriefSubmissi
 }
 
 export async function markDesignBriefReviewed(id: string): Promise<DesignBriefSubmission> {
+  return updateDesignBriefStatus(id, "reviewed");
+}
+
+export async function updateDesignBriefStatus(
+  id: string,
+  status: DesignBriefSubmission["status"],
+): Promise<DesignBriefSubmission> {
   const sb = getSupabase();
   if (!sb) throw new Error("Supabase n'est pas configuré.");
 
+  const now = new Date().toISOString();
+  const patch: Record<string, string | null> = { status };
+  if (status === "reviewed") patch.reviewed_at = now;
+  if (status === "processed") {
+    patch.processed_at = now;
+    patch.reviewed_at = now;
+  }
+  if (status === "archived") patch.archived_at = now;
+
   const { data, error } = await sb
     .from(DESIGN_BRIEF_TABLE)
-    .update({ status: "reviewed", reviewed_at: new Date().toISOString() })
+    .update(patch)
     .eq("id", id)
-    .select("id, status, client_name, contact_name, contact_email, project_type, answers, logo_styles, color_palette, inspiration_links, asset_paths, created_at, reviewed_at")
+    .select(DESIGN_BRIEF_SELECT)
     .single();
 
   if (error) throw new Error(error.message);

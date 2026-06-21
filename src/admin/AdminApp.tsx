@@ -19,7 +19,6 @@ import {
   getCurrentUser,
   isRemote,
   listRevisions,
-  markDesignBriefReviewed,
   permanentlyDeleteDoc,
   persistDoc,
   publishDoc,
@@ -31,6 +30,7 @@ import {
   signOutUser,
   trashDoc,
   unpublishDoc,
+  updateDesignBriefStatus,
   type AuthUser,
   type DesignBriefSubmission,
   type Revision,
@@ -54,7 +54,8 @@ function asArray(value: AnyDoc | AnyDoc[] | undefined): AnyDoc[] {
   return value ? [value] : [];
 }
 
-const DEFAULT_ACCORDION = "Ressources & communautés";
+const SERVICES_SECTION = "Services";
+const DEFAULT_ACCORDION = null;
 
 function sectionAccordions(types: ContentType[]) {
   const map = new Map<string, ContentType[]>();
@@ -101,9 +102,13 @@ function Sidebar({
   ];
 
   useEffect(() => {
+    if (viewKind === "briefs") {
+      setExpandedSection(SERVICES_SECTION);
+      return;
+    }
     const active = contentTypes.find((type) => type.name === activeType);
     if (active?.section) setExpandedSection(active.section);
-  }, [activeType]);
+  }, [activeType, viewKind]);
 
   return (
     <aside className={cn("sticky top-0 flex h-dvh shrink-0 flex-col border-r border-border-subtle bg-surface-panel transition-[width] duration-200", collapsed ? "w-[4.5rem]" : "w-64")}>
@@ -120,13 +125,10 @@ function Sidebar({
       </div>
 
       <nav className="flex-1 overflow-y-auto px-2 pb-4">
-        <button onClick={onHome} title="Vue d'ensemble" className={cn("mb-1 flex w-full items-center gap-2.5 rounded-md px-3 py-2.5 text-sm", viewKind === "home" ? "bg-surface-accent-muted font-medium text-text-accent" : "text-text-secondary hover:bg-surface-page-muted")}>
+        <button onClick={onHome} title="Vue d'ensemble" className={cn("mb-1 flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm", viewKind === "home" ? "bg-surface-accent-muted font-medium text-text-accent" : "text-text-secondary hover:bg-surface-page-muted")}>
           <Squares2X2Icon className="size-5 shrink-0" /> {!collapsed ? "Vue d'ensemble" : null}
         </button>
-        <button onClick={onBriefs} title="Briefs design" className={cn("mb-1 flex w-full items-center gap-2.5 rounded-md px-3 py-2.5 text-sm", viewKind === "briefs" ? "bg-surface-accent-muted font-medium text-text-accent" : "text-text-secondary hover:bg-surface-page-muted")}>
-          <DocumentTextIcon className="size-5 shrink-0" /> {!collapsed ? "Briefs design" : null}
-        </button>
-        <button onClick={onTrash} title="Corbeille" className={cn("mb-4 flex w-full items-center gap-2.5 rounded-md px-3 py-2.5 text-sm", viewKind === "trash" ? "bg-surface-accent-muted font-medium text-text-accent" : "text-text-secondary hover:bg-surface-page-muted")}>
+        <button onClick={onTrash} title="Corbeille" className={cn("mb-3 flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm", viewKind === "trash" ? "bg-surface-accent-muted font-medium text-text-accent" : "text-text-secondary hover:bg-surface-page-muted")}>
           <TrashIcon className="size-5 shrink-0" /> {!collapsed ? "Corbeille" : null}
         </button>
 
@@ -135,35 +137,43 @@ function Sidebar({
           const flatTypes = groupTypes.filter((type) => !type.section);
           const accordions = sectionAccordions(groupTypes);
           return (
-            <div key={group.id} className="mb-4">
+            <div key={group.id} className="mb-3">
               {!collapsed ? <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wide text-text-muted/70">{group.label}</p> : null}
               <ul className="space-y-0.5">
                 {flatTypes.map((type) => (
                   <li key={type.name}>
-                    <button onClick={() => onSelect(type)} title={type.label} className={cn("flex min-h-10 w-full items-center gap-2.5 rounded-md px-3 py-2 text-left text-sm", activeType === type.name ? "bg-surface-accent-muted font-medium text-text-accent" : "text-text-secondary hover:bg-surface-page-muted")}>
+                    <button onClick={() => onSelect(type)} title={type.label} className={cn("flex min-h-9 w-full items-center gap-2.5 rounded-md px-3 py-1.5 text-left text-sm", activeType === type.name ? "bg-surface-accent-muted font-medium text-text-accent" : "text-text-secondary hover:bg-surface-page-muted")}>
                       <TypeIcon icon={type.icon} className="size-4 shrink-0" /> {!collapsed ? <span>{type.label}</span> : null}
                     </button>
                   </li>
                 ))}
                 {!collapsed ? accordions.map(({ label, types, defaultType }) => {
                   const open = expandedSection === label;
+                  const sectionActive = types.some((type) => activeType === type.name) || (label === SERVICES_SECTION && viewKind === "briefs");
                   return (
                     <li key={label}>
                       <button onClick={() => {
                         setExpandedSection(open ? null : label);
                         if (!open) onSelect(defaultType);
-                      }} aria-expanded={open} className="flex min-h-10 w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-text-secondary hover:bg-surface-page-muted">
+                      }} aria-expanded={open} className={cn("flex min-h-9 w-full items-center gap-2 rounded-md px-3 py-1.5 text-left text-sm hover:bg-surface-page-muted", sectionActive ? "font-medium text-text-accent" : "text-text-secondary")}>
                         <ChevronDownIcon className={cn("size-4 transition-transform", !open && "-rotate-90")} />
                         {label}
                       </button>
                       {open ? <ul className="space-y-0.5">
                         {types.map((type) => (
                           <li key={type.name}>
-                            <button onClick={() => onSelect(type)} className={cn("flex min-h-10 w-full items-center gap-2.5 rounded-md py-2 pl-9 pr-2 text-left text-sm", activeType === type.name ? "bg-surface-accent-muted font-medium text-text-accent" : "text-text-secondary hover:bg-surface-page-muted")}>
+                            <button onClick={() => onSelect(type)} className={cn("flex min-h-9 w-full items-center gap-2.5 rounded-md py-1.5 pl-9 pr-2 text-left text-sm", activeType === type.name ? "bg-surface-accent-muted font-medium text-text-accent" : "text-text-secondary hover:bg-surface-page-muted")}>
                               <TypeIcon icon={type.icon} className="size-4" /> {type.label}
                             </button>
                           </li>
                         ))}
+                        {label === SERVICES_SECTION ? (
+                          <li>
+                            <button onClick={onBriefs} className={cn("flex min-h-9 w-full items-center gap-2.5 rounded-md py-1.5 pl-9 pr-2 text-left text-sm", viewKind === "briefs" ? "bg-surface-accent-muted font-medium text-text-accent" : "text-text-secondary hover:bg-surface-page-muted")}>
+                              <DocumentTextIcon className="size-4" /> Briefs design
+                            </button>
+                          </li>
+                        ) : null}
                       </ul> : null}
                     </li>
                   );
@@ -386,11 +396,11 @@ export default function AdminApp() {
           <DesignBriefSubmissions
             submissions={briefSubmissions}
             onRefresh={loadBriefSubmissions}
-            onMarkReviewed={(id) => {
-              void markDesignBriefReviewed(id)
+            onUpdateStatus={(id, status) => {
+              void updateDesignBriefStatus(id, status)
                 .then((updated) => {
                   setBriefSubmissions((items) => items.map((item) => (item.id === id ? updated : item)));
-                  notify("success", "Brief marqué comme vu.");
+                  notify("success", "Statut du brief mis à jour.");
                 })
                 .catch((error) => notify("error", error instanceof Error ? error.message : "Mise à jour impossible."));
             }}

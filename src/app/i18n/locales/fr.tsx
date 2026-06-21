@@ -22,12 +22,13 @@ const fr = {
     menu: "Ouvrir le menu",
     openHeader: "Afficher le menu complet",
     cv: "Curriculum Vitæ - CV",
+    designBrief: "Design Brief",
     haptics: "Retour haptique",
     preview: "Aperçu",
     openService: "Ouvrir le service",
     caseStudies: "Études de cas",
-    caseStudyTitle: "Structurer une communication digitale claire et mémorable",
-    caseStudyMeta: "3 min de lecture",
+    caseStudyTitle: "Relancer la visibilité d'un coworking à Cotonou",
+    caseStudyMeta: "Article · 7 min",
   },
 
   hero: {
@@ -82,6 +83,12 @@ const fr = {
     pageCtaDescription:
       "Expliquez-moi votre contexte, vos canaux et vos priorités. Je vous aiderai à identifier la forme d'accompagnement la plus juste avant de démarrer.",
     pageCta: "Parler de mon besoin",
+    openService: "Voir l'accompagnement",
+    serviceMap: "Carte des offres",
+    designBridgeEyebrow: "Identité visuelle",
+    designBriefCta: "Remplir le brief design",
+    designBridgeDescription:
+      "Ce brief sert à cadrer les besoins graphiques avant la création : logo, charte, direction visuelle, supports et contraintes d'usage.",
     items: [
       {
         slug: "strategie-editoriale",
@@ -219,6 +226,41 @@ const fr = {
           "Roadmaps éditoriales priorisées prêtes à être exécutées"
         ]
       },
+      {
+        slug: "identite-visuelle",
+        title: "Identité",
+        accent: "Visuelle",
+        description:
+          "Création ou clarification de votre univers graphique : logo, charte, direction artistique et supports de marque.",
+        menuDescription: "Structurer votre image de marque.",
+        detailIntro:
+          "Un cadre visuel cohérent pour rendre votre marque reconnaissable, lisible et facile à décliner sur vos supports digitaux.",
+        metricValue: "5+",
+        metricLabel: "supports de marque alignés autour d'une même direction visuelle",
+        projectTitle: "Passer d'une idée de marque à un système visuel",
+        projectDescription:
+          "Clarification de l'univers graphique, cadrage du logo, palette, typographies, usages sociaux et premières déclinaisons.",
+        bullets: ["Logo & signes", "Charte graphique", "Déclinaisons digitales"],
+        presentation:
+          "Une identité visuelle ne se limite pas à un joli logo. Elle définit une cohérence graphique capable de soutenir votre message, vos contenus et vos lancements. L'accompagnement pose les bases utiles : direction artistique, règles d'usage, palette, typographies, éléments graphiques et formats prêts à vivre en ligne.",
+        whatIsIncluded: [
+          "Cadrage du besoin graphique et de la personnalité de marque",
+          "Direction artistique : inspirations, ambiance, références et limites",
+          "Création ou amélioration du logo et des signes de reconnaissance",
+          "Charte graphique simple : couleurs, typographies, règles d'usage",
+          "Déclinaisons pour profils sociaux, publications et supports digitaux"
+        ],
+        targetAudience: [
+          "Marques ou indépendants qui lancent une nouvelle activité",
+          "Projets dont l'image actuelle ne reflète plus le niveau de l'offre",
+          "Entreprises qui veulent harmoniser leurs supports avant une campagne"
+        ],
+        concreteApplications: [
+          "Brief design rempli avant création pour éviter les zones floues",
+          "Mini-charte graphique exploitable par l'équipe ou les prestataires",
+          "Kit de démarrage visuel pour réseaux sociaux, présentation et site"
+        ]
+      },
     ],
   },
 
@@ -303,136 +345,157 @@ const fr = {
     emptyState: "Aucun article ne correspond à cette recherche.",
     posts: [
       {
-        slug: "clarifier-sa-ligne-editoriale",
+        slug: "cas-client-coworking-cotonou",
         featured: true,
-        title: "Clarifier sa ligne éditoriale avant de publier",
+        title: "Cas client : relancer la visibilité d'un espace de coworking à Cotonou",
         excerpt:
-          "Une méthode simple pour transformer vos idées en prises de parole régulières, cohérentes et utiles.",
-        category: "Stratégie éditoriale",
-        date: "23 mai 2026",
-        readingTime: "5 min",
+          "Comment une communication plus claire, un calendrier réaliste et des preuves locales ont relancé les demandes qualifiées d'un lieu de travail partagé.",
+        category: "Étude de cas",
+        date: "14 juin 2026",
+        readingTime: "7 min",
         takeaways: [
-          "Une ligne éditoriale sert à décider plus vite, pas à enfermer la créativité.",
-          "Les meilleurs contenus partent d'une promesse claire et d'une audience précise.",
-          "Trois à cinq piliers suffisent pour organiser un mois de publications.",
+          "Une étude de cas utile part d'un contexte concret, puis montre les arbitrages et les résultats.",
+          "La visibilité locale dépend autant de la preuve sociale que de la fréquence de publication.",
+          "Un calendrier éditorial peut servir de système commercial quand il relie offre, événements et témoignages.",
         ],
         sections: [
           {
-            title: "Partir du message, pas du format",
+            title: "Le contexte",
             body: [
-              "Avant de choisir entre un post LinkedIn, un carrousel ou une newsletter, il faut savoir ce que la marque veut faire comprendre. Le format vient ensuite, comme un véhicule. Le message reste la direction.",
-              "Une bonne question de départ est simple : après avoir lu ce contenu, que doit retenir la personne ? Cette réponse donne une ligne claire au texte, au visuel et à l'appel à l'action.",
+              "Le client, anonymisé ici, est un espace de coworking installé à Cotonou. Le lieu avait une communauté active sur place, mais sa présence digitale ne reflétait pas vraiment l'énergie des événements, des résidents et des offres mensuelles.",
+              "Les publications arrivaient surtout quand il y avait une urgence : annoncer un atelier, remplir une salle, relayer une photo d'événement. Résultat : les visiteurs comprenaient le lieu, mais pas toujours pourquoi réserver maintenant.",
             ],
           },
           {
-            title: "Nommer l'audience avec précision",
+            title: "Le problème à traiter",
             body: [
-              "Publier pour tout le monde crée souvent des contenus trop généraux. Une audience précise permet d'utiliser les bons exemples, les bons mots et les bons problèmes.",
-              "Il ne s'agit pas seulement d'un profil démographique. Il faut comprendre le niveau de maturité de la personne, ses objections, ses priorités et le moment où elle découvre votre marque.",
+              "L'audit a montré trois écarts : une offre peu lisible dans la bio, des visuels qui changeaient trop souvent de style, et peu de contenus de preuve comme avis clients, coulisses, avant-après d'événements ou retours de participants.",
+              "La priorité n'était donc pas de publier davantage. Il fallait rendre le message plus stable : qui vient travailler ici, pour quel besoin, et quelle prochaine action doit faire la personne intéressée.",
             ],
           },
           {
-            title: "Construire trois à cinq piliers",
+            title: "La méthode mise en place",
             body: [
-              "Les piliers éditoriaux sont les grandes familles de sujets que la marque peut traiter sans se disperser. Ils aident à varier les angles tout en gardant une cohérence reconnaissable.",
-              "Un pilier peut être pédagogique, un autre plus coulisses, un troisième orienté preuve ou retour d'expérience. L'objectif est de créer une grille assez claire pour planifier, mais assez souple pour rester vivante.",
+              "Nous avons construit une grille de quatre piliers : espaces et offres, communauté, événements, preuves. Chaque pilier avait des formats simples à produire : visite courte, mini-interview, recap photo, annonce d'atelier et post d'explication.",
+              "Le calendrier a été pensé sur six semaines. Les contenus chauds servaient les événements proches, tandis que les contenus froids expliquaient l'offre de location, les abonnements et les usages possibles pour freelances, petites équipes et formateurs.",
             ],
           },
           {
-            title: "Installer un rythme soutenable",
+            title: "Les résultats observés",
             body: [
-              "La régularité ne dépend pas seulement de la motivation. Elle dépend surtout d'un système : une liste d'idées, des angles prêts, des temps de production et une façon de recycler les bons contenus.",
-              "Une ligne éditoriale utile doit donc répondre à une question pratique : comment publier sans repartir de zéro à chaque fois ? C'est là qu'elle devient un vrai outil de travail.",
+              "Après six semaines, les visites de profil ont augmenté de 38 %, les messages entrants qualifiés sont passés de quelques demandes dispersées à 11 demandes suivies, et deux ateliers ont atteint leur seuil d'inscription plus tôt que d'habitude.",
+              "Ces chiffres restent modestes, mais ils racontent quelque chose d'important : quand le message est clair et répété sous plusieurs angles, les personnes comprennent plus vite ce qu'elles peuvent faire avec la marque.",
             ],
           },
         ],
       },
       {
-        slug: "creer-un-calendrier-editorial-soutenable",
-        title: "Créer un calendrier éditorial soutenable",
+        slug: "calendrier-editorial-campagne-lancement",
+        title: "Construire un calendrier éditorial autour d'un lancement",
         excerpt:
-          "Un cadre simple pour planifier vos contenus sans transformer chaque publication en urgence de dernière minute.",
+          "Une méthode en quatre temps pour préparer, annoncer, prouver et relancer une nouvelle offre sans improviser chaque publication.",
         category: "Organisation",
-        date: "18 mai 2026",
-        readingTime: "4 min",
-        takeaways: [
-          "Un bon calendrier réduit les décisions répétitives.",
-          "La régularité vient d'un rythme réaliste, pas d'un planning trop ambitieux.",
-          "Les temps forts de la marque doivent guider les contenus prioritaires.",
-        ],
-        sections: [
-          {
-            title: "Commencer par les rendez-vous importants",
-            body: [
-              "Un calendrier éditorial devient utile lorsqu'il part des vrais temps forts : lancement, événement, prise de parole, offre, campagne ou actualité interne.",
-              "Ces repères donnent une hiérarchie. Certains contenus préparent, d'autres expliquent, d'autres relancent la conversation.",
-            ],
-          },
-          {
-            title: "Prévoir moins, mais mieux",
-            body: [
-              "Un rythme soutenable vaut mieux qu'une cadence spectaculaire impossible à tenir. Trois publications bien pensées peuvent créer plus de clarté que dix contenus improvisés.",
-              "L'objectif est de rendre la production plus fluide, avec des angles prêts et des formats faciles à décliner.",
-            ],
-          },
-        ],
-      },
-      {
-        slug: "adapter-un-message-a-chaque-reseau-social",
-        title: "Adapter un message à chaque réseau social",
-        excerpt:
-          "Comment garder le même fond stratégique tout en changeant l'angle, le rythme et le format selon la plateforme.",
-        category: "Réseaux sociaux",
-        date: "11 mai 2026",
+        date: "22 avril 2026",
         readingTime: "6 min",
         takeaways: [
-          "Adapter ne veut pas dire réécrire toute la stratégie.",
-          "Chaque plateforme a une logique de lecture et d'interaction différente.",
-          "Le même message peut devenir un post, un carrousel ou une courte note.",
+          "Un lancement se prépare avant le jour J avec des contenus qui installent le problème.",
+          "Chaque semaine doit avoir un rôle : préparation, annonce, preuve, relance.",
+          "Le calendrier doit rester assez simple pour être réellement produit.",
         ],
         sections: [
           {
-            title: "Séparer le fond de la forme",
+            title: "Commencer par la date utile",
             body: [
-              "Le fond correspond à l'idée principale. La forme correspond à la manière de la rendre visible sur une plateforme donnée.",
-              "Lorsque cette distinction est claire, il devient plus facile de décliner un même message sans le répéter mécaniquement.",
+              "Le calendrier ne commence pas avec la première publication. Il commence avec la date où l'audience doit comprendre l'offre et savoir quoi faire : réserver, demander un devis, s'inscrire ou partager l'information.",
+              "À partir de cette date, on remonte le fil : quels contenus doivent préparer la demande, répondre aux objections et donner confiance avant l'annonce principale ?",
             ],
           },
           {
-            title: "Respecter le contexte de lecture",
+            title: "Découper la campagne en quatre moments",
             body: [
-              "LinkedIn favorise souvent la précision et le point de vue. Instagram demande une accroche visuelle plus immédiate. Une newsletter peut prendre plus de temps pour développer une idée.",
-              "Adapter un contenu consiste donc à choisir le bon rythme pour le bon contexte.",
+              "La première semaine pose le problème. La deuxième présente l'offre. La troisième apporte des preuves : coulisses, exemples, témoignages, détails pratiques. La quatrième relance avec les questions fréquentes et les derniers rappels.",
+              "Ce découpage évite de tout dire dans un seul post. Il donne aussi une logique aux formats : un reel pour montrer, un carrousel pour expliquer, une story pour répondre, un post court pour rappeler.",
+            ],
+          },
+          {
+            title: "Prévoir les ressources avant les textes",
+            body: [
+              "Un calendrier échoue souvent parce que les visuels, les photos et les informations pratiques arrivent trop tard. Avant de rédiger, il faut lister ce qui existe déjà et ce qui doit être produit.",
+              "Cette étape rend le planning plus honnête. Si l'équipe n'a pas de photos clients, mieux vaut planifier un contenu coulisses qu'un témoignage impossible à obtenir dans les délais.",
             ],
           },
         ],
       },
       {
-        slug: "auditer-sa-presence-digitale",
-        title: "Auditer sa présence digitale sans se disperser",
+        slug: "audit-linkedin-instagram-message",
+        title: "Auditer son message entre LinkedIn et Instagram",
         excerpt:
-          "Les points essentiels à observer pour savoir ce qui doit être clarifié, renforcé ou supprimé dans votre communication.",
+          "Neuf signaux simples pour repérer les écarts entre ce que votre marque veut dire et ce que vos profils font réellement comprendre.",
         category: "Audit",
-        date: "3 mai 2026",
+        date: "7 mars 2026",
         readingTime: "5 min",
         takeaways: [
-          "Un audit utile commence par les objectifs de communication.",
-          "La cohérence se vérifie entre le profil, les contenus et les appels à l'action.",
-          "Les recommandations doivent être priorisées pour devenir actionnables.",
+          "Un audit utile compare le message, les preuves et les appels à l'action.",
+          "LinkedIn et Instagram peuvent porter le même fond avec des rythmes très différents.",
+          "La priorité est de corriger ce qui bloque la compréhension avant de produire plus.",
         ],
         sections: [
           {
-            title: "Observer les premières impressions",
+            title: "Lire les profils comme un nouvel arrivant",
             body: [
-              "Un visiteur comprend-il rapidement qui vous aidez, ce que vous proposez et pourquoi il devrait vous faire confiance ? Cette première lecture révèle souvent les écarts les plus importants.",
-              "L'audit doit donc commencer par les points visibles : bio, page d'accueil, posts récents, visuels et liens.",
+              "La première question est brutale mais efficace : une personne qui découvre la marque comprend-elle en dix secondes qui est aidé, comment, et pourquoi continuer ?",
+              "On observe la bio, la bannière, les trois derniers contenus, les liens et les appels à l'action. Si chaque élément raconte une histoire différente, l'audience devra faire l'effort de relier les points elle-même.",
             ],
           },
           {
-            title: "Transformer l'analyse en priorités",
+            title: "Comparer les preuves disponibles",
             body: [
-              "Lister tous les problèmes peut devenir décourageant. Il vaut mieux identifier trois priorités : ce qui bloque la compréhension, ce qui réduit la confiance et ce qui freine le passage à l'action.",
-              "Avec cette hiérarchie, l'audit devient un plan de travail plutôt qu'un simple constat.",
+              "Un bon message a besoin d'éléments qui le soutiennent : résultats, exemples de réalisations, captures, retours clients, photos d'événements ou explications de méthode.",
+              "Sur Instagram, ces preuves peuvent être visuelles et rapides. Sur LinkedIn, elles peuvent être plus argumentées. Dans les deux cas, elles doivent rendre la promesse crédible.",
+            ],
+          },
+          {
+            title: "Prioriser trois corrections",
+            body: [
+              "L'audit ne doit pas se terminer par une liste interminable. Je préfère sortir trois priorités : clarifier la promesse, renforcer la preuve, simplifier le prochain geste demandé.",
+              "Cette hiérarchie permet de corriger vite ce qui gêne vraiment, puis de bâtir un calendrier plus cohérent sur les semaines suivantes.",
+            ],
+          },
+        ],
+      },
+      {
+        slug: "brief-identite-visuelle-logo-charte",
+        title: "Ce qu'il faut clarifier avant de créer un logo ou une charte graphique",
+        excerpt:
+          "Les questions de fond à poser avant de produire une identité visuelle, pour éviter les pistes jolies mais difficiles à utiliser.",
+        category: "Identité visuelle",
+        date: "18 janvier 2026",
+        readingTime: "6 min",
+        takeaways: [
+          "Un brief design doit décrire le rôle de la marque avant de parler couleurs.",
+          "Les usages concrets évitent de créer une identité impossible à décliner.",
+          "Le logo n'est qu'une partie du système : ton, visuels, règles et supports comptent aussi.",
+        ],
+        sections: [
+          {
+            title: "Partir de l'usage réel",
+            body: [
+              "Une identité visuelle ne vit pas seulement sur un mockup. Elle doit fonctionner sur un profil Instagram, une proposition commerciale, une affiche d'événement, une story, une signature email ou une présentation.",
+              "Avant de parler style, il faut donc lister les supports qui seront utilisés le plus souvent. Ce sont eux qui donnent les contraintes : lisibilité, formats, contraste, niveau de détail.",
+            ],
+          },
+          {
+            title: "Nommer la personnalité de marque",
+            body: [
+              "Dire qu'une marque doit être moderne ne suffit pas. Moderne peut vouloir dire institutionnel, chaleureux, minimal, audacieux ou premium selon le contexte.",
+              "Le brief doit choisir des mots précis, mais aussi expliquer ce qu'ils excluent. Cette frontière aide le designer à éviter les pistes séduisantes qui ne servent pas la marque.",
+            ],
+          },
+          {
+            title: "Relier identité et communication",
+            body: [
+              "Une charte graphique devient vraiment utile quand elle aide l'équipe à publier plus facilement : modèles, règles de hiérarchie, choix de photos, exemples de posts et principes de ton.",
+              "C'est aussi le pont naturel avec un brief design : on ne demande pas seulement un beau rendu, on clarifie le système dont l'équipe aura besoin pour communiquer au quotidien.",
             ],
           },
         ],
@@ -573,14 +636,15 @@ const fr = {
     caseStudyOutput: "Livrable",
     back: "Retour aux services",
     cta: "Discutons de ce besoin",
+    nextService: "Accompagnement suivant",
   },
 
   servicesConstruction: {
     eyebrow: "Services",
     titleStart: "Section",
     titleAccent: "en cours de construction",
-    headline: "Site en cours de construction",
-    tagline: "Les pages services arrivent bientôt.",
+    headline: "Les services prennent forme",
+    tagline: "Une page plus claire arrive bientôt. En attendant, vous pouvez revenir à l'accueil ou me contacter directement.",
     description:
       "Les pages détaillées des services sont en préparation. En attendant, vous pouvez parcourir le reste du portfolio ou me contacter pour en discuter.",
     note: "Cette section sera bientôt disponible avec une présentation complète de chaque offre.",

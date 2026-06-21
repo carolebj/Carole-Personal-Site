@@ -3,6 +3,7 @@ import Layout from "./Layout";
 import ErrorPage from "./components/ErrorPage";
 import RouteErrorBoundary from "./components/RouteErrorBoundary";
 import Home from "./pages/Home";
+import Services from "./pages/Services";
 
 function RouteHydrateFallback() {
   return (
@@ -65,7 +66,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "services",
-        lazy: async () => ({ Component: (await import("./pages/Services")).default }),
+        Component: Services,
         ErrorBoundary: RouteErrorBoundary,
       },
       {

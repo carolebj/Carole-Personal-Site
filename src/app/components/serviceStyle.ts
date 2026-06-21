@@ -37,6 +37,12 @@ export const homeServiceAccents = [
     glyph: "text-[#5b4137]",
     title: "text-text-secondary dark:text-[#ded7d2]",
   },
+  {
+    icon: "bg-[#f4d6a4]",
+    corner: "bg-[#f4d6a4]/55",
+    glyph: "text-[#6f4b13]",
+    title: "text-[#6f4b13] dark:text-[#f4d6a4]",
+  },
 ] as const;
 
 /** Accent tokens for service listing cards on /services. */
@@ -64,5 +70,11 @@ export const servicesPageAccents = [
     marker: "bg-[#e5e2e1]",
     text: "text-text-secondary",
     border: "border-[#d9d0cc]/72",
+  },
+  {
+    surface: "bg-[#fff8e8]",
+    marker: "bg-[#f4d6a4]",
+    text: "text-[#6f4b13]",
+    border: "border-[#e5c88f]/62",
   },
 ] as const;

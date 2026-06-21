@@ -23,12 +23,12 @@ export default function ServicesUnderConstruction() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="flex w-full max-w-[520px] flex-col items-center text-center"
+        className="flex w-full max-w-[760px] flex-col items-center text-center"
       >
         <ServiceWorkbench />
 
         <motion.h1
-          className="mt-10 max-w-[18ch] font-serif text-[32px] leading-[1.12] text-text-primary sm:text-[40px]"
+          className="mt-10 max-w-[24ch] font-serif text-[32px] leading-[1.12] text-text-primary sm:text-[44px]"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -37,7 +37,7 @@ export default function ServicesUnderConstruction() {
         </motion.h1>
 
         <motion.p
-          className="mt-4 max-w-[36ch] text-[15px] leading-7 text-text-muted"
+          className="mt-4 max-w-[62ch] text-[15px] leading-7 text-text-muted"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.28, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}

@@ -94,7 +94,7 @@ create policy "media authenticated write"
 
 create table if not exists public.design_brief_submissions (
   id uuid primary key default gen_random_uuid(),
-  status text not null default 'new' check (status in ('new', 'reviewed', 'archived')),
+  status text not null default 'new' check (status in ('new', 'reviewed', 'processed', 'archived')),
   client_name text,
   contact_name text,
   contact_email text,
@@ -105,7 +105,9 @@ create table if not exists public.design_brief_submissions (
   inspiration_links text[] not null default '{}'::text[],
   asset_paths text[] not null default '{}'::text[],
   created_at timestamptz not null default now(),
-  reviewed_at timestamptz
+  reviewed_at timestamptz,
+  processed_at timestamptz,
+  archived_at timestamptz
 );
 
 create index if not exists design_brief_submissions_created_at_idx

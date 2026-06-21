@@ -22,12 +22,13 @@ const en = {
     menu: "Open menu",
     openHeader: "Show full menu",
     cv: "Curriculum Vitae - CV",
+    designBrief: "Design Brief",
     haptics: "Haptic feedback",
     preview: "Preview",
     openService: "Open service",
     caseStudies: "Case studies",
-    caseStudyTitle: "Structuring clear and memorable digital communication",
-    caseStudyMeta: "3 min read",
+    caseStudyTitle: "Rebuilding visibility for a coworking space in Cotonou",
+    caseStudyMeta: "Article · 7 min",
   },
 
   hero: {
@@ -82,6 +83,12 @@ const en = {
     pageCtaDescription:
       "Tell me about your context, channels, and priorities. I will help identify the clearest support format before we start.",
     pageCta: "Talk about my need",
+    openService: "View the offer",
+    serviceMap: "Offer map",
+    designBridgeEyebrow: "Visual identity",
+    designBriefCta: "Fill the design brief",
+    designBridgeDescription:
+      "This brief frames the graphic need before creation: logo, brand guidelines, visual direction, assets, and usage constraints.",
     items: [
       {
         slug: "editorial-strategy",
@@ -219,6 +226,41 @@ const en = {
           "Prioritized editorial roadmaps ready to be executed"
         ]
       },
+      {
+        slug: "visual-identity",
+        title: "Visual",
+        accent: "Identity",
+        description:
+          "Creation or clarification of your graphic universe: logo, brand guidelines, art direction, and digital brand assets.",
+        menuDescription: "Structure your brand image.",
+        detailIntro:
+          "A coherent visual frame that makes your brand recognizable, readable, and easier to adapt across digital touchpoints.",
+        metricValue: "5+",
+        metricLabel: "brand assets aligned around one visual direction",
+        projectTitle: "Moving from brand idea to visual system",
+        projectDescription:
+          "Clarifying the graphic universe, logo direction, palette, typography, social uses, and first digital adaptations.",
+        bullets: ["Logo & marks", "Brand guidelines", "Digital adaptations"],
+        presentation:
+          "A visual identity is not only a beautiful logo. It defines a graphic coherence that supports your message, content, and launches. This offer sets the useful foundations: art direction, usage rules, palette, typography, graphic elements, and formats ready to live online.",
+        whatIsIncluded: [
+          "Framing the graphic need and brand personality",
+          "Art direction: inspirations, atmosphere, references, and boundaries",
+          "Creation or improvement of the logo and recognition marks",
+          "Simple brand guidelines: colors, typography, and usage rules",
+          "Adaptations for social profiles, publications, and digital assets"
+        ],
+        targetAudience: [
+          "Brands or independents launching a new activity",
+          "Projects whose current image no longer reflects the offer level",
+          "Companies wanting to harmonize assets before a campaign"
+        ],
+        concreteApplications: [
+          "Design brief completed before creation to avoid vague zones",
+          "Mini brand guideline kit usable by the team or providers",
+          "Visual starter kit for social media, presentations, and website"
+        ]
+      },
     ],
   },
 
@@ -303,136 +345,157 @@ const en = {
     emptyState: "No article matches this search.",
     posts: [
       {
-        slug: "clarifier-sa-ligne-editoriale",
+        slug: "cas-client-coworking-cotonou",
         featured: true,
-        title: "Clarify your editorial line before publishing",
+        title: "Case study: rebuilding visibility for a coworking space in Cotonou",
         excerpt:
-          "A simple method to turn scattered ideas into regular, coherent, and useful brand messages.",
-        category: "Editorial strategy",
-        date: "May 23, 2026",
-        readingTime: "5 min",
+          "How clearer messaging, a realistic content calendar, and local proof helped a shared workspace generate more qualified inquiries.",
+        category: "Case study",
+        date: "June 14, 2026",
+        readingTime: "7 min",
         takeaways: [
-          "An editorial line helps you decide faster, not limit creativity.",
-          "Strong content starts with a clear promise and a precise audience.",
-          "Three to five pillars are enough to organize a month of publishing.",
+          "A useful case study starts with context, then shows the decisions and results.",
+          "Local visibility depends on social proof as much as publishing frequency.",
+          "An editorial calendar can support sales when it connects offers, events, and testimonials.",
         ],
         sections: [
           {
-            title: "Start with the message, not the format",
+            title: "The context",
             body: [
-              "Before choosing between a LinkedIn post, a carousel, or a newsletter, the brand needs to know what it wants people to understand. The format comes after, like a vehicle. The message remains the direction.",
-              "A useful starting question is simple: after reading this content, what should the person remember? That answer gives the copy, visual direction, and call to action a clear line.",
+              "The client, anonymized here, is a coworking space based in Cotonou. The space had an active on-site community, but its digital presence did not fully reflect the energy of its events, residents, and monthly offers.",
+              "Posts mostly appeared when something felt urgent: announcing a workshop, filling a room, or sharing an event photo. People understood the place, but not always why they should book now.",
             ],
           },
           {
-            title: "Name the audience precisely",
+            title: "The problem to solve",
             body: [
-              "Publishing for everyone often creates content that feels too general. A precise audience helps you use the right examples, the right words, and the right problems.",
-              "This is not only a demographic profile. You need to understand the person's level of awareness, objections, priorities, and the moment when they discover your brand.",
+              "The audit revealed three gaps: an unclear offer in the bio, visuals that changed style too often, and few proof-led posts such as customer notes, behind-the-scenes moments, before-and-after event recaps, or participant feedback.",
+              "The priority was not to publish more. The message needed to become more stable: who works here, for what need, and what should an interested person do next.",
             ],
           },
           {
-            title: "Build three to five pillars",
+            title: "The method",
             body: [
-              "Editorial pillars are the main subject families a brand can cover without scattering its message. They help vary angles while keeping a recognizable coherence.",
-              "One pillar can be educational, another can show behind-the-scenes work, and a third can focus on proof or experience. The goal is a structure that is clear enough to plan with and flexible enough to stay alive.",
+              "We built a four-pillar grid: spaces and offers, community, events, and proof. Each pillar had simple formats to produce: short visit, mini-interview, photo recap, workshop announcement, and explanation post.",
+              "The calendar covered six weeks. Timely content supported upcoming events, while evergreen content explained room rental, memberships, and use cases for freelancers, small teams, and trainers.",
             ],
           },
           {
-            title: "Create a rhythm you can sustain",
+            title: "The results",
             body: [
-              "Consistency does not only depend on motivation. It mostly depends on a system: a list of ideas, prepared angles, production time, and a way to reuse strong content.",
-              "A useful editorial line should answer a practical question: how can we publish without starting from zero every time? That is when it becomes a real working tool.",
+              "After six weeks, profile visits increased by 38%, qualified inbound messages moved from scattered questions to 11 tracked inquiries, and two workshops reached their registration threshold earlier than usual.",
+              "Those numbers are modest, but they say something important: when the message is clear and repeated through several angles, people understand faster what they can do with the brand.",
             ],
           },
         ],
       },
       {
-        slug: "creer-un-calendrier-editorial-soutenable",
-        title: "Create an editorial calendar you can sustain",
+        slug: "calendrier-editorial-campagne-lancement",
+        title: "Build an editorial calendar around a launch",
         excerpt:
-          "A simple structure to plan content without turning every publication into a last-minute emergency.",
+          "A four-step method to prepare, announce, prove, and follow up on a new offer without improvising every post.",
         category: "Organization",
-        date: "May 18, 2026",
-        readingTime: "4 min",
-        takeaways: [
-          "A strong calendar reduces repeated decisions.",
-          "Consistency comes from a realistic rhythm, not an overly ambitious plan.",
-          "Brand moments should guide the most important content.",
-        ],
-        sections: [
-          {
-            title: "Start with important brand moments",
-            body: [
-              "An editorial calendar becomes useful when it starts with real moments: launches, events, public statements, offers, campaigns, or internal news.",
-              "These markers create hierarchy. Some content prepares the audience, some explains, and some reopens the conversation.",
-            ],
-          },
-          {
-            title: "Plan less, but better",
-            body: [
-              "A sustainable rhythm is stronger than an impressive cadence that cannot last. Three thoughtful publications can create more clarity than ten improvised posts.",
-              "The goal is to make production smoother, with prepared angles and formats that are easy to adapt.",
-            ],
-          },
-        ],
-      },
-      {
-        slug: "adapter-un-message-a-chaque-reseau-social",
-        title: "Adapt one message to each social platform",
-        excerpt:
-          "How to keep the same strategic idea while changing the angle, rhythm, and format for each platform.",
-        category: "Social media",
-        date: "May 11, 2026",
+        date: "April 22, 2026",
         readingTime: "6 min",
         takeaways: [
-          "Adapting does not mean rewriting the whole strategy.",
-          "Each platform has a different reading and interaction logic.",
-          "The same message can become a post, carousel, or short note.",
+          "A launch starts before launch day, with content that frames the problem.",
+          "Each week should have a role: prepare, announce, prove, follow up.",
+          "The calendar must stay simple enough to actually produce.",
         ],
         sections: [
           {
-            title: "Separate the idea from the format",
+            title: "Start with the useful date",
             body: [
-              "The idea is the main message. The format is the way it becomes visible on a specific platform.",
-              "When this distinction is clear, it becomes easier to repurpose a message without repeating it mechanically.",
+              "The calendar does not begin with the first post. It begins with the date when the audience should understand the offer and know what to do: book, request a quote, register, or share the information.",
+              "From that date, work backward: what content must prepare demand, answer objections, and build trust before the main announcement?",
             ],
           },
           {
-            title: "Respect the reading context",
+            title: "Split the campaign into four moments",
             body: [
-              "LinkedIn often rewards precision and point of view. Instagram asks for a more immediate visual hook. A newsletter can take more time to develop an idea.",
-              "Adapting content means choosing the right rhythm for the right context.",
+              "The first week frames the problem. The second presents the offer. The third brings proof: behind-the-scenes material, examples, testimonials, and practical details. The fourth follows up with frequent questions and final reminders.",
+              "This structure avoids saying everything in one post. It also gives each format a job: a reel to show, a carousel to explain, a story to answer, and a short post to remind.",
+            ],
+          },
+          {
+            title: "Plan resources before writing",
+            body: [
+              "Editorial calendars often fail because visuals, photos, and practical details arrive too late. Before writing, list what already exists and what must be produced.",
+              "That step makes the plan more honest. If the team has no customer photos, it is better to plan a behind-the-scenes post than a testimonial that cannot be collected in time.",
             ],
           },
         ],
       },
       {
-        slug: "auditer-sa-presence-digitale",
-        title: "Audit your digital presence without scattering your focus",
+        slug: "audit-linkedin-instagram-message",
+        title: "Audit your message across LinkedIn and Instagram",
         excerpt:
-          "The essential points to review when deciding what needs to be clarified, strengthened, or removed from your communication.",
+          "Nine simple signals to spot gaps between what your brand wants to say and what your profiles actually communicate.",
         category: "Audit",
-        date: "May 3, 2026",
+        date: "March 7, 2026",
         readingTime: "5 min",
         takeaways: [
-          "A useful audit starts with communication goals.",
-          "Coherence is checked across the profile, content, and calls to action.",
-          "Recommendations need priorities to become actionable.",
+          "A useful audit compares message, proof, and calls to action.",
+          "LinkedIn and Instagram can carry the same strategy with different rhythms.",
+          "Fix what blocks understanding before producing more content.",
         ],
         sections: [
           {
-            title: "Look at first impressions",
+            title: "Read the profiles like a newcomer",
             body: [
-              "Can a visitor quickly understand who you help, what you offer, and why they should trust you? This first reading often reveals the most important gaps.",
-              "The audit should therefore start with visible points: bio, homepage, recent posts, visuals, and links.",
+              "The first question is blunt but effective: can someone discovering the brand understand in ten seconds who is helped, how, and why they should keep reading?",
+              "Look at the bio, banner, three latest posts, links, and calls to action. If each element tells a different story, the audience has to connect the dots alone.",
             ],
           },
           {
-            title: "Turn analysis into priorities",
+            title: "Compare the proof available",
             body: [
-              "Listing every problem can become discouraging. It is better to identify three priorities: what blocks understanding, what reduces trust, and what slows action.",
-              "With this hierarchy, the audit becomes a work plan rather than a simple observation.",
+              "A strong message needs evidence to support it: results, work examples, screenshots, client feedback, event photos, or method explanations.",
+              "On Instagram, that proof can be visual and fast. On LinkedIn, it can be more argued. In both cases, it should make the promise credible.",
+            ],
+          },
+          {
+            title: "Prioritize three corrections",
+            body: [
+              "An audit should not end with an endless list. I prefer to extract three priorities: clarify the promise, strengthen proof, and simplify the next action requested.",
+              "That hierarchy helps fix what truly gets in the way, then build a more coherent calendar for the following weeks.",
+            ],
+          },
+        ],
+      },
+      {
+        slug: "brief-identite-visuelle-logo-charte",
+        title: "What to clarify before creating a logo or brand guide",
+        excerpt:
+          "The strategic questions to ask before producing a visual identity, so the result is useful beyond a beautiful first mockup.",
+        category: "Visual identity",
+        date: "January 18, 2026",
+        readingTime: "6 min",
+        takeaways: [
+          "A design brief should describe the brand's role before discussing colors.",
+          "Concrete use cases prevent an identity that is hard to apply.",
+          "The logo is only one part of the system: tone, visuals, rules, and formats matter too.",
+        ],
+        sections: [
+          {
+            title: "Start from real usage",
+            body: [
+              "A visual identity does not live only on a mockup. It has to work on an Instagram profile, a commercial proposal, an event poster, a story, an email signature, or a presentation.",
+              "Before discussing style, list the formats that will be used most often. They define the constraints: readability, ratios, contrast, and level of detail.",
+            ],
+          },
+          {
+            title: "Name the brand personality",
+            body: [
+              "Saying a brand should feel modern is not enough. Modern can mean institutional, warm, minimal, bold, or premium depending on the context.",
+              "The brief should choose precise words, but also explain what they exclude. That boundary helps the designer avoid attractive routes that do not serve the brand.",
+            ],
+          },
+          {
+            title: "Connect identity and communication",
+            body: [
+              "A brand guide becomes truly useful when it helps the team publish more easily: templates, hierarchy rules, photo choices, post examples, and tone principles.",
+              "That is also the natural bridge with a design brief: the goal is not only a beautiful result, but a system the team can use in daily communication.",
             ],
           },
         ],
@@ -573,14 +636,15 @@ const en = {
     caseStudyOutput: "Deliverable",
     back: "Back to services",
     cta: "Let's discuss this need",
+    nextService: "Next offer",
   },
 
   servicesConstruction: {
     eyebrow: "Services",
     titleStart: "Section",
     titleAccent: "under construction",
-    headline: "Site under construction",
-    tagline: "Service pages coming soon.",
+    headline: "The services are taking shape",
+    tagline: "A clearer page is coming soon. In the meantime, you can return home or contact me directly.",
     description:
       "The detailed service pages are being prepared. In the meantime, feel free to explore the rest of the portfolio or contact me to discuss your needs.",
     note: "This section will soon include a full presentation of each service offering.",
