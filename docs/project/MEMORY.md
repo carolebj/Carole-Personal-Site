@@ -173,6 +173,7 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
   - the footer reveal should behave like a temporary pull-beyond-footer moment with a gentle colorful wave shader
   - subtle audio haptics are enabled by default and can be toggled from the logo right-click menu
   - the design brief wizard is a direct meeting/intake tool: adaptive French questions, local browser persistence, review-before-submit, Supabase submission (`design_brief_submissions`), private `brief-assets` storage, and an authenticated dashboard view under "Briefs design"
+  - CLOGIS was split into its own project on 2026-06-28: `/Users/mrsteven/Documents/GitHub/CLOGIS`. The brief originally came through Carole's design brief flow, but project follow-up, memory, sources, and deliverables should now live in the CLOGIS project.
 
 ## Implementation Notes
 
