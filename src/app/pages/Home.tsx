@@ -461,6 +461,8 @@ export default function Home() {
   const { data: cmsServices, usingCms: usingCmsServices } = useCmsCollection<CmsService>("service", []);
   const { data: cmsTestimonials, usingCms: usingCmsTestimonials } =
     useCmsCollection<CmsTestimonial>("testimonial", []);
+  const useCmsTestimonials =
+    usingCmsTestimonials && import.meta.env.VITE_ENABLE_CMS_TESTIMONIALS !== "false";
   const usingCms = usingCmsHome;
 
   const heroData = cmsHome?.hero;
@@ -541,23 +543,23 @@ export default function Home() {
   const traits = t("about.traits", { returnObjects: true }) as Trait[];
 
   const testimonials = useMemo(() => {
-    if (usingCmsTestimonials) {
+    if (useCmsTestimonials) {
       return cmsTestimonials.map((t) => toTestimonialViewModel(t, locale));
     }
     return t("testimonials.items", { returnObjects: true }) as Testimonial[];
-  }, [cmsTestimonials, usingCmsTestimonials, locale, t]);
+  }, [cmsTestimonials, useCmsTestimonials, locale, t]);
 
   const circularTestimonials = useMemo(
     () =>
       testimonials.map((testimonial, index) => {
-        const imgSrc = usingCmsTestimonials
+        const imgSrc = useCmsTestimonials
           ? cmsImageUrl(testimonial.portrait) ??
             testimonialPortraitByName[testimonial.name] ??
             testimonialImages[index]
           : testimonialImages[index] ?? testimonialImages[0];
         return { ...testimonial, src: imgSrc ?? testimonialImages[0] };
       }),
-    [testimonials, usingCmsTestimonials]
+    [testimonials, useCmsTestimonials]
   );
   const [visualTuning, setVisualTuning] = useState(DEFAULT_VISUAL_TUNING);
   const [aboutVideoCanPlayThrough, setAboutVideoCanPlayThrough] = useState(false);
