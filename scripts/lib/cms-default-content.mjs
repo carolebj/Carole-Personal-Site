@@ -194,7 +194,7 @@ export function buildSiteSettingsContent() {
     id: "siteSettings",
     title: L("Carole Tonoukouen", "Carole Tonoukouen"),
     description: siteDescription,
-    siteUrl: "https://carole-portfolio.vercel.app",
+    siteUrl: "https://www.carolebj.com",
     ogImage: null,
     seoPages: {
       home: {

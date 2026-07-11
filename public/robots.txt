@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://carole-portfolio.vercel.app/sitemap.xml
+Sitemap: https://www.carolebj.com/sitemap.xml
