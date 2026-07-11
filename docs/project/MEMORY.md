@@ -207,6 +207,8 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
 - Haptics: `src/app/interactions/HapticContext.tsx`, persists under `portfolio-haptics`.
 - Audio haptic peak gains are `0.024` for hover and `0.046` for click (raised from `0.014` / `0.028` on 2026-07-11, about +4.7 dB); keep them subtle and preserve the explicit toggle in the logo context menu.
 - Public pages are route-lazy-loaded in `src/app/routes.tsx`.
+- Lightweight public route chunks are preloaded during the browser's first idle period, hashed `/assets/*` files use immutable one-year caching on Vercel, and public CMS reads enter a 30-second cooldown after a network failure instead of retrying on every page mount.
+- Hover hit areas must remain geometrically stable: animate imagery or inner content, not the clickable card container itself, to prevent edge-triggered enter/leave vibration.
 - The Cal.com booking widget is isolated in `src/app/components/CalMeetingEmbed.tsx` and lazy-loaded.
 - Design tokens: `src/styles/tokens.css` (primitives, semantics, dark-mode); `src/styles/global.css` (base styles).
 - **UI design system (2026-06-10)** — public pages use semantic Tailwind tokens (`bg-surface-page`, `text-text-accent`, etc.) from `tokens.css`. Shared layout: `src/app/components/layout/publicPage.ts` (`PAGE_MAIN` = `pt-28 md:pt-36`). Shared components: `SectionEyebrow`, `PageHero`, `ContactForm`. Border-radius rule: cards `rounded-lg`, primary CTAs `rounded-full`, inputs `rounded-md` (contact page panels may use `rounded-xl`). Carnet pages share tokens but keep muted eyebrows (`text-text-muted`).
