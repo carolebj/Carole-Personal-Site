@@ -172,6 +172,7 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
   - testimonials use a three-card carousel with the centered card as the active state
   - blog article links use continuity/view transitions from list cards to article pages
   - Carnet pages use a minimal document-like layout with search and interactive resource cards
+  - Carnet resource cards keep imagery dominant at rest, reveal the “À propos” copy through blur on hover/focus, and open the external resource from the entire card rather than a nested CTA
   - the footer reveal should behave like a temporary pull-beyond-footer moment with a gentle colorful wave shader
   - subtle audio haptics are enabled by default and can be toggled from the logo right-click menu
   - the design brief wizard is a direct meeting/intake tool: adaptive French questions, local browser persistence, review-before-submit, Supabase submission (`design_brief_submissions`), private `brief-assets` storage, and an authenticated dashboard view under "Briefs design"

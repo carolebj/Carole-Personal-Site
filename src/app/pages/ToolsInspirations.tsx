@@ -169,59 +169,51 @@ function ResourceCard({
   const imageUrl = item.imageUrl || resourceImages[item.title] || leDepotImage;
 
   return (
-    <motion.article
+    <motion.a
       {...motionProps(index)}
-      className="group relative h-full min-h-[24rem] w-full overflow-hidden rounded-xl border border-border-subtle bg-[#1c1b1b] shadow-lg transition-[transform,box-shadow] duration-300 ease-in-out hover:-translate-y-2 hover:shadow-2xl dark:border-white/10"
+      href={item.link}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={`${item.title} — ${linkLabel}`}
+      className="group relative block h-full min-h-[24rem] w-full overflow-hidden rounded-xl border border-border-subtle bg-[#1c1b1b] shadow-[0_14px_38px_rgba(58,42,35,0.10)] outline-none transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_24px_60px_rgba(58,42,35,0.18)] focus-visible:ring-2 focus-visible:ring-text-accent focus-visible:ring-offset-4 dark:border-white/10 dark:focus-visible:ring-offset-[#171312]"
     >
-      {/* Background Image with Zoom Effect on Hover */}
       <img
         src={imageUrl}
         alt=""
-        className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 ease-in-out group-hover:scale-110"
+        className="absolute inset-0 h-full w-full object-cover object-top transition-[transform,filter] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] [@media(hover:hover)]:group-hover:scale-[1.035] [@media(hover:hover)]:group-hover:blur-[5px] [@media(hover:hover)]:group-hover:brightness-[0.48] group-focus-visible:scale-[1.035] group-focus-visible:blur-[5px] group-focus-visible:brightness-[0.48]"
       />
 
-      {/* Gradient Overlay for Text Readability */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#151313]/90 via-[#151313]/12 to-transparent transition-colors duration-500 [@media(hover:hover)]:group-hover:bg-[#151313]/62 group-focus-visible:bg-[#151313]/62" />
 
-      {/* Content Container */}
       <div className="relative flex h-full min-h-[24rem] flex-col justify-between p-6">
-        {/* Top Section: Badge */}
-        <div className="flex h-20 items-start">
+        <div className="flex items-start justify-between gap-4">
           <span className="flex h-10 w-fit items-center justify-center rounded-full border border-white/50 bg-black/20 px-3 text-[10px] font-semibold uppercase tracking-[1.2px] text-white/95 backdrop-blur-sm">
             {item.type}
           </span>
+          <span className="flex size-10 items-center justify-center rounded-full border border-white/55 bg-black/16 text-white backdrop-blur-sm transition-transform duration-300 [@media(hover:hover)]:group-hover:translate-x-0.5 [@media(hover:hover)]:group-hover:-translate-y-0.5 group-focus-visible:translate-x-0.5 group-focus-visible:-translate-y-0.5" aria-hidden="true">
+            <ArrowUpRightIcon className="size-4" />
+          </span>
         </div>
 
-        {/* Details + CTA — always visible (touch-friendly); hover lifts card only */}
-        <div className="mt-auto space-y-4">
-          <div className="space-y-3">
-            <div>
-              <h3 className="line-clamp-2 font-serif text-[1.5rem] font-bold leading-tight tracking-[-0.02em] text-white md:text-[1.7rem]">
-                {item.title}
-              </h3>
-              <p className="mt-1 line-clamp-1 text-sm text-white/80">{item.categories[0]}</p>
-            </div>
-            <div>
-              <h4 className="text-[11px] font-semibold uppercase tracking-[1.3px] text-white/90">
-                {overviewLabel}
-              </h4>
-              <p className="mt-1 line-clamp-3 text-[13px] leading-relaxed text-white/70">
-                {item.desc}
-              </p>
-            </div>
+        <div className="mt-auto">
+          <div>
+            <h3 className="line-clamp-2 font-serif text-[1.7rem] font-bold leading-[1.02] tracking-[-0.02em] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] md:text-[1.95rem]">
+              {item.title}
+            </h3>
+            <p className="mt-2 line-clamp-1 text-sm font-medium text-white/88 drop-shadow-[0_1px_8px_rgba(0,0,0,0.5)]">{item.categories[0]}</p>
           </div>
-          <a
-            href={item.link}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex min-h-11 items-center gap-2 rounded-md bg-white px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[1px] text-text-primary transition-colors hover:bg-white/90"
-          >
-            {linkLabel}
-            <ArrowUpRightIcon className="ml-1 size-4" aria-hidden="true" />
-          </a>
+
+          <div className="mt-5 translate-y-0 border-t border-white/30 pt-4 opacity-100 transition-[opacity,transform] duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] [@media(hover:hover)]:translate-y-4 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
+            <h4 className="text-[11px] font-semibold uppercase tracking-[1.5px] text-white/90">
+              {overviewLabel}
+            </h4>
+            <p className="mt-2 line-clamp-4 text-[13px] leading-relaxed text-white/82">
+              {item.desc}
+            </p>
+          </div>
         </div>
       </div>
-    </motion.article>
+    </motion.a>
   );
 }
 
