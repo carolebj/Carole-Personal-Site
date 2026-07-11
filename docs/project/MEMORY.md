@@ -188,6 +188,7 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
 - Language selection: detected from browser, persisted in `localStorage` under `portfolio-lang`.
 - Theme: `src/app/theme/ThemeContext.tsx`, follows `prefers-color-scheme`, persists under `portfolio-theme`.
 - Haptics: `src/app/interactions/HapticContext.tsx`, persists under `portfolio-haptics`.
+- Audio haptic peak gains are `0.024` for hover and `0.046` for click (raised from `0.014` / `0.028` on 2026-07-11, about +4.7 dB); keep them subtle and preserve the explicit toggle in the logo context menu.
 - Public pages are route-lazy-loaded in `src/app/routes.tsx`.
 - The Cal.com booking widget is isolated in `src/app/components/CalMeetingEmbed.tsx` and lazy-loaded.
 - Design tokens: `src/styles/tokens.css` (primitives, semantics, dark-mode); `src/styles/global.css` (base styles).
