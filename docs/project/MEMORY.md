@@ -172,7 +172,7 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
   - testimonials use a three-card carousel with the centered card as the active state
   - blog article links use continuity/view transitions from list cards to article pages
   - Carnet pages use a minimal document-like layout with search and interactive resource cards
-  - Carnet resource cards keep imagery dominant at rest, reveal the “À propos” copy through blur on hover/focus, and open the external resource from the entire card rather than a nested CTA
+  - Carnet resource cards keep imagery dominant at rest, anchor their title block 24px from the bottom, and reveal the “À propos” panel with a controlled slide/blur on hover or focus; touch layouts keep the description visible, and the entire card opens the external resource
   - Known book covers are losslessly optimized local JPEG assets; the public reading page prefers them over Google Books URLs and the 3D book texture uses CSS rather than a remote asset
   - Reading references use editorial object metaphors by type: newsletters render as ring-bound ruled notebooks, while cited content renders as taped sticky notes with a folded corner
   - the footer reveal should behave like a temporary pull-beyond-footer moment with a gentle colorful wave shader

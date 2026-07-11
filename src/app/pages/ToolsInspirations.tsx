@@ -167,6 +167,7 @@ function ResourceCard({
   overviewLabel: string;
 }) {
   const imageUrl = item.imageUrl || resourceImages[item.title] || leDepotImage;
+  const [isEngaged, setIsEngaged] = useState(false);
 
   return (
     <motion.a
@@ -175,15 +176,19 @@ function ResourceCard({
       target="_blank"
       rel="noreferrer"
       aria-label={`${item.title} — ${linkLabel}`}
-      className="group relative block h-full min-h-[24rem] w-full overflow-hidden rounded-xl border border-border-subtle bg-[#1c1b1b] shadow-[0_14px_38px_rgba(58,42,35,0.10)] outline-none transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_24px_60px_rgba(58,42,35,0.18)] focus-visible:ring-2 focus-visible:ring-text-accent focus-visible:ring-offset-4 dark:border-white/10 dark:focus-visible:ring-offset-[#171312]"
+      onMouseEnter={() => setIsEngaged(true)}
+      onMouseLeave={() => setIsEngaged(false)}
+      onFocus={() => setIsEngaged(true)}
+      onBlur={() => setIsEngaged(false)}
+      className="group relative block h-full min-h-[24rem] w-full overflow-hidden rounded-xl border border-border-subtle bg-[#1c1b1b] shadow-[0_14px_38px_rgba(58,42,35,0.10)] outline-none transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(58,42,35,0.18)] active:scale-[0.992] focus-visible:ring-2 focus-visible:ring-text-accent focus-visible:ring-offset-4 motion-reduce:transform-none motion-reduce:transition-none dark:border-white/10 dark:focus-visible:ring-offset-[#171312]"
     >
       <img
         src={imageUrl}
         alt=""
-        className="absolute inset-0 h-full w-full object-cover object-top transition-[transform,filter] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] [@media(hover:hover)]:group-hover:scale-[1.035] [@media(hover:hover)]:group-hover:blur-[5px] [@media(hover:hover)]:group-hover:brightness-[0.48] group-focus-visible:scale-[1.035] group-focus-visible:blur-[5px] group-focus-visible:brightness-[0.48]"
+        className="absolute inset-0 h-full w-full object-cover object-top transition-[transform,filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] [@media(hover:hover)]:group-hover:scale-[1.025] [@media(hover:hover)]:group-hover:blur-[4px] [@media(hover:hover)]:group-hover:brightness-[0.48] group-focus-visible:scale-[1.025] group-focus-visible:blur-[4px] group-focus-visible:brightness-[0.48] motion-reduce:transition-none"
       />
 
-      <div className="absolute inset-0 bg-gradient-to-t from-[#151313]/90 via-[#151313]/12 to-transparent transition-colors duration-500 [@media(hover:hover)]:group-hover:bg-[#151313]/62 group-focus-visible:bg-[#151313]/62" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#151313]/90 via-[#151313]/12 to-transparent transition-colors duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] [@media(hover:hover)]:group-hover:bg-[#151313]/62 group-focus-visible:bg-[#151313]/62 motion-reduce:transition-none" />
 
       <div className="relative flex h-full min-h-[24rem] flex-col justify-between p-6">
         <div className="flex items-start justify-between gap-4">
@@ -195,15 +200,18 @@ function ResourceCard({
           </span>
         </div>
 
-        <div className="mt-auto">
-          <div>
+        <div className="absolute inset-x-6 bottom-6">
+          <div className="transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [@media(hover:hover)]:group-hover:-translate-y-[9.25rem] group-focus-visible:-translate-y-[9.25rem] [@media(hover:none)]:-translate-y-[9.25rem] motion-reduce:transition-none">
             <h3 className="line-clamp-2 font-serif text-[1.7rem] font-bold leading-[1.02] tracking-[-0.02em] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] md:text-[1.95rem]">
               {item.title}
             </h3>
             <p className="mt-2 line-clamp-1 text-sm font-medium text-white/88 drop-shadow-[0_1px_8px_rgba(0,0,0,0.5)]">{item.categories[0]}</p>
           </div>
 
-          <div className="mt-5 translate-y-0 border-t border-white/30 pt-4 opacity-100 transition-[opacity,transform] duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] [@media(hover:hover)]:translate-y-4 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
+          <div
+            data-open={isEngaged ? "true" : "false"}
+            className="t-panel-slide resource-card__overview absolute inset-x-0 bottom-0 border-t border-white/30 pt-4 [--panel-translate-y:24px]"
+          >
             <h4 className="text-[11px] font-semibold uppercase tracking-[1.5px] text-white/90">
               {overviewLabel}
             </h4>
