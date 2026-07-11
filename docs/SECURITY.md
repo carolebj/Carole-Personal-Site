@@ -24,6 +24,7 @@ secondes et utilisée à ton insu. La règle est donc :
 | --- | --- | --- | --- |
 | `VITE_SUPABASE_URL` | Publique | Var d'env build (`VITE_`) | Oui (normal) |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Publique (protégée par RLS) | Var d'env build (`VITE_`) | Oui (normal) |
+| `CRON_SECRET` | Secrète | Vercel Production uniquement | Non |
 | `CMS_SEED_EMAIL` / `CMS_SEED_PASSWORD` | **Élevée** (compte éditeur) | `.env.local` uniquement | Non |
 | `OPENAI_API_KEY` | **Critique** (coût) | Coffre-fort : Cloudflare AI Gateway (BYOK) | Non |
 | `TRANSLATE_WORKER_TOKEN` | Élevée | `wrangler secret` (Worker) + var d'env hébergeur du site | Non |
@@ -50,6 +51,11 @@ Token. Chaque intervenant utilise son propre compte Supabase et son propre token
 local.
 
 Les migrations versionnées dans `supabase/migrations/` sont la source de vérité.
+
+Le contrôle quotidien `/api/supabase-keepalive` est appelé uniquement par Vercel
+Cron. Vercel envoie `CRON_SECRET` dans `Authorization: Bearer …` ; l'endpoint
+refuse les appels sans correspondance exacte et utilise uniquement la clé
+publique Supabase pour trois lectures RLS limitées à une ligne chacune.
 Après l'invitation, lier le dépôt au projet client avec la CLI Supabase et
 appliquer les migrations depuis ce dépôt. Le connecteur Supabase peut servir à
 l'inspection, de préférence limité au `project_ref`; il ne remplace pas les
