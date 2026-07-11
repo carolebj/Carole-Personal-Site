@@ -108,54 +108,71 @@ function ReferenceCard({
   index: number;
   fallbackLabel: string;
 }) {
-  const isPinnedNote = item.cardStyle === "pinned";
   const label = item.typeLabel ?? fallbackLabel;
+  const normalizedLabel = label.toLocaleLowerCase();
+  const isNewsletter = normalizedLabel.includes("newsletter");
 
-  if (isPinnedNote) {
+  if (isNewsletter) {
     return (
       <motion.article
-        initial={{ opacity: 0, y: 12, rotate: -0.8 }}
-        animate={{ opacity: 1, y: 0, rotate: -0.8 }}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ y: -3, rotate: -0.25 }}
         transition={{ duration: 0.42, delay: index * 0.07, ease: [0.16, 1, 0.3, 1] }}
-        className="min-h-[16rem] rounded-md border border-border-subtle bg-[#FBF3DB] p-6 text-left text-text-primary dark:border-white/10 dark:bg-[#2b2518] dark:text-text-primary"
+        className="relative min-h-[18rem] overflow-hidden rounded-r-lg border border-[#d8cfc4] bg-[#fbfaf6] py-7 pl-16 pr-7 text-left text-text-primary shadow-[0_16px_35px_rgba(69,52,42,0.10)] dark:border-white/10 dark:bg-[#211d1b] dark:text-text-primary"
       >
-        <div className="mx-auto mb-5 h-2 w-16 rounded-full bg-[#956400]/18 dark:bg-[#f0d48a]/20" />
-        <p className="text-[11px] font-semibold uppercase tracking-[1.8px] text-[#956400] dark:text-[#f0d48a]">
-          {label}
-        </p>
-        <h2 className="mt-4 font-serif text-[30px] leading-9 tracking-[-0.02em]">
-          {item.title}
-        </h2>
-        <p className="mt-4 text-[15px] leading-7 text-text-secondary dark:text-text-secondary">
-          {item.desc}
-        </p>
-        <p className="mt-5 text-[12px] font-semibold uppercase tracking-[1.5px] text-text-muted dark:text-text-muted">
-          {item.author}
-        </p>
+        <div className="absolute inset-y-0 left-0 w-9 border-r border-[#5e463b]/25 bg-[#8f4f68] shadow-[inset_-5px_0_10px_rgba(67,34,47,0.18)] dark:bg-[#6e3d50]" />
+        <div className="absolute inset-y-0 left-[1.65rem] flex flex-col justify-around py-4" aria-hidden="true">
+          {Array.from({ length: 8 }, (_, ring) => (
+            <span key={ring} className="relative block size-4 -translate-x-1/2 rounded-full border border-[#8d8178] bg-[#f2eee8] shadow-[inset_0_1px_2px_rgba(47,35,29,0.22)] dark:border-white/25 dark:bg-[#171312]">
+              <span className="absolute left-1/2 top-1/2 h-px w-6 -translate-x-1/2 -translate-y-1/2 bg-[#514740]/45" />
+            </span>
+          ))}
+        </div>
+        <div className="pointer-events-none absolute inset-y-0 left-9 right-0 opacity-55 [background-image:repeating-linear-gradient(to_bottom,transparent_0,transparent_31px,rgba(137,113,99,.18)_32px)] [background-position:0_4.5rem] dark:opacity-20" />
+
+        <div className="relative flex min-h-[14rem] flex-col">
+          <p className="text-[11px] font-semibold uppercase tracking-[1.8px] text-[#8f4f68] dark:text-[#dda6b8]">
+            {label}
+          </p>
+          <h2 className="mt-4 font-serif text-[32px] leading-9 tracking-[-0.02em]">
+            {item.title}
+          </h2>
+          <p className="mt-5 text-[15px] leading-8 text-text-secondary dark:text-text-secondary">
+            {item.desc}
+          </p>
+          <p className="mt-auto pt-6 text-[12px] font-semibold uppercase tracking-[1.5px] text-text-muted dark:text-text-muted">
+            {item.author}
+          </p>
+        </div>
       </motion.article>
     );
   }
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 12, rotate: 0.65 }}
+      animate={{ opacity: 1, y: 0, rotate: 0.65 }}
+      whileHover={{ y: -4, rotate: -0.35 }}
       transition={{ duration: 0.42, delay: index * 0.07, ease: [0.16, 1, 0.3, 1] }}
-      className="relative min-h-[16rem] overflow-hidden rounded-lg border border-border-subtle bg-[#F7F6F3] p-6 text-left text-text-primary dark:border-white/10 dark:bg-[#1d1817] dark:text-text-primary"
+      className="relative min-h-[18rem] overflow-hidden bg-[#f7df75] p-7 text-left text-[#382f20] shadow-[0_18px_36px_rgba(92,69,25,0.16),inset_0_-18px_28px_rgba(155,112,23,0.08)] dark:bg-[#c9a94f] dark:text-[#241f15]"
     >
-      <div className="absolute inset-x-6 top-0 h-px bg-[#d8d2ca] dark:bg-white/10" />
-      <p className="text-[11px] font-semibold uppercase tracking-[1.8px] text-text-muted dark:text-text-muted">
-        {label}
-      </p>
-      <h2 className="mt-4 font-serif text-[30px] leading-9 tracking-[-0.02em]">
-        {item.title}
-      </h2>
-      <p className="mt-4 text-[15px] leading-7 text-text-secondary dark:text-text-secondary">
-        {item.desc}
-      </p>
-      <p className="mt-6 border-t border-border-subtle pt-4 text-[12px] font-semibold uppercase tracking-[1.5px] text-text-muted dark:border-white/10 dark:text-text-muted">
-        {item.author}
-      </p>
+      <div className="absolute left-1/2 top-0 h-7 w-28 -translate-x-1/2 -translate-y-1/3 rotate-[-2deg] border-x border-white/35 bg-[#eee2c7]/72 shadow-[0_2px_5px_rgba(73,56,30,0.08)] backdrop-blur-[1px]" aria-hidden="true" />
+      <div className="absolute bottom-0 right-0 size-12 bg-[linear-gradient(135deg,rgba(139,103,30,.16)_0_49%,#fff4b5_50%_100%)] shadow-[-3px_-3px_8px_rgba(116,83,18,0.10)] dark:bg-[linear-gradient(135deg,rgba(75,54,18,.18)_0_49%,#e5c966_50%_100%)]" aria-hidden="true" />
+      <div className="relative flex min-h-[14rem] flex-col">
+        <p className="text-[11px] font-semibold uppercase tracking-[1.8px] text-[#81601c] dark:text-[#503b10]">
+          {label}
+        </p>
+        <h2 className="mt-4 font-serif text-[30px] leading-9 tracking-[-0.02em]">
+          {item.title}
+        </h2>
+        <p className="mt-5 text-[15px] leading-7 text-[#594b2d] dark:text-[#332a19]">
+          {item.desc}
+        </p>
+        <p className="mt-auto pt-6 text-[12px] font-semibold uppercase tracking-[1.5px] text-[#765a22] dark:text-[#493711]">
+          {item.author}
+        </p>
+      </div>
     </motion.article>
   );
 }
