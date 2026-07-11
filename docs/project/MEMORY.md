@@ -208,6 +208,7 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
 - Haptics: `src/app/interactions/HapticContext.tsx`, persists under `portfolio-haptics`.
 - Audio haptic peak gains are `0.024` for hover and `0.046` for click (raised from `0.014` / `0.028` on 2026-07-11, about +4.7 dB); keep them subtle and preserve the explicit toggle in the logo context menu.
 - Public pages are route-lazy-loaded in `src/app/routes.tsx`.
+- `dev` and `main` share the same Supabase CMS. Testimonials can be held back on production with the build-time flag `VITE_ENABLE_CMS_TESTIMONIALS=false`; previews and local development default to CMS testimonials when the flag is absent or `true`.
 - Lightweight public route chunks are preloaded during the browser's first idle period, hashed `/assets/*` files use immutable one-year caching on Vercel, and public CMS reads enter a 30-second cooldown after a network failure instead of retrying on every page mount.
 - Hover hit areas must remain geometrically stable: animate imagery or inner content, not the clickable card container itself, to prevent edge-triggered enter/leave vibration.
 - The Cal.com booking widget is isolated in `src/app/components/CalMeetingEmbed.tsx` and lazy-loaded.
