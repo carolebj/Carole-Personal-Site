@@ -199,6 +199,15 @@
       filter    var(--panel-open-dur) var(--panel-ease);
   }
 
+  @media (hover: none) {
+    .resource-card__overview.t-panel-slide {
+      transform: translateY(0);
+      opacity: 1;
+      filter: blur(0);
+      pointer-events: auto;
+    }
+  }
+
   .t-page-slide {
     position: relative;
   }
