@@ -23,6 +23,12 @@
       ]
     }
   ],
+  "crons": [
+    {
+      "path": "/api/supabase-keepalive",
+      "schedule": "17 6 * * *"
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",

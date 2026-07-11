@@ -58,6 +58,7 @@ Notes:
 
 - For dashboard development, only `npm run dev:site` is needed. The dashboard at `/dashboard` is served by the same Vite server as the public site.
 - CMS environment variables live in `.env.local`; see `.env.example`. Required vars for the dashboard: `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`.
+- Production runs `/api/supabase-keepalive` daily at 06:17 UTC through Vercel Cron; it performs three minimal public CMS reads and requires `CRON_SECRET`.
 - `npm run cms:preview` rebuilds a fresh dev server and opens the preview URL in the agent's built-in browser.
 
 ## Test and Quality Commands

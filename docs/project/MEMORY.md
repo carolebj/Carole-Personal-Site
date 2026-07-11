@@ -21,6 +21,7 @@ Last reviewed: 2026-07-11 WAT
 - Git author email is now `stevenkejjad@gmail.com`; this fixed Vercel's commit-author validation.
 - Current production alias points to the `main` deployment; current `dev` branch preview is `https://carole-portfolio-git-dev-stevens-projects-db687a83.vercel.app`.
 - Vercel Authentication is disabled for the project; both production and `dev` preview URLs are publicly reachable without login.
+- The Supabase Free project was restored from an inactivity pause on 2026-07-11. Production runs a secured daily Vercel Cron keepalive (`/api/supabase-keepalive`, 06:17 UTC) that performs three minimal public CMS reads; `CRON_SECRET` must remain configured only on Vercel Production.
 - Vercel must define `VITE_SUPABASE_URL` and
   `VITE_SUPABASE_PUBLISHABLE_KEY` for both Preview and Production; otherwise
   `/dashboard` intentionally runs in local demo mode and public pages use i18n
