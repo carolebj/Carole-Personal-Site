@@ -8,6 +8,8 @@ type HapticContextValue = {
 };
 
 const STORAGE_KEY = "portfolio-haptics";
+const HOVER_GAIN = 0.024;
+const CLICK_GAIN = 0.046;
 const HapticContext = createContext<HapticContextValue | null>(null);
 
 function readStoredPreference() {
@@ -47,7 +49,7 @@ export function HapticProvider({ children }: { children: ReactNode }) {
     oscillator.frequency.exponentialRampToValueAtTime(kind === "click" ? 360 : 620, now + 0.055);
 
     gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(kind === "click" ? 0.028 : 0.014, now + 0.008);
+    gain.gain.exponentialRampToValueAtTime(kind === "click" ? CLICK_GAIN : HOVER_GAIN, now + 0.008);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + (kind === "click" ? 0.085 : 0.045));
 
     oscillator.connect(gain);
