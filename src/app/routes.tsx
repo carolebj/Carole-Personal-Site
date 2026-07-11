@@ -4,6 +4,18 @@ import ErrorPage from "./components/ErrorPage";
 import RouteErrorBoundary from "./components/RouteErrorBoundary";
 import Home from "./pages/Home";
 import Services from "./pages/Services";
+import {
+  loadAboutPage,
+  loadBlogArticlePage,
+  loadBlogPage,
+  loadContactPage,
+  loadCvPage,
+  loadDesignBriefPage,
+  loadNotFoundPage,
+  loadReadingsReferencesPage,
+  loadServiceDetailPage,
+  loadToolsInspirationsPage,
+} from "./publicRouteModules";
 
 function RouteHydrateFallback() {
   return (
@@ -31,37 +43,37 @@ export const router = createBrowserRouter([
       },
       {
         path: "about",
-        lazy: async () => ({ Component: (await import("./pages/About")).default }),
+        lazy: async () => ({ Component: (await loadAboutPage()).default }),
         ErrorBoundary: RouteErrorBoundary,
       },
       {
         path: "blog",
-        lazy: async () => ({ Component: (await import("./pages/Blog")).default }),
+        lazy: async () => ({ Component: (await loadBlogPage()).default }),
         ErrorBoundary: RouteErrorBoundary,
       },
       {
         path: "blog/:slug",
-        lazy: async () => ({ Component: (await import("./pages/BlogArticle")).default }),
+        lazy: async () => ({ Component: (await loadBlogArticlePage()).default }),
         ErrorBoundary: RouteErrorBoundary,
       },
       {
         path: "carnet/outils-inspirations",
-        lazy: async () => ({ Component: (await import("./pages/ToolsInspirations")).default }),
+        lazy: async () => ({ Component: (await loadToolsInspirationsPage()).default }),
         ErrorBoundary: RouteErrorBoundary,
       },
       {
         path: "carnet/lectures-references",
-        lazy: async () => ({ Component: (await import("./pages/ReadingsReferences")).default }),
+        lazy: async () => ({ Component: (await loadReadingsReferencesPage()).default }),
         ErrorBoundary: RouteErrorBoundary,
       },
       {
         path: "cv",
-        lazy: async () => ({ Component: (await import("./pages/Cv")).default }),
+        lazy: async () => ({ Component: (await loadCvPage()).default }),
         ErrorBoundary: RouteErrorBoundary,
       },
       {
         path: "contact",
-        lazy: async () => ({ Component: (await import("./pages/Contact")).default }),
+        lazy: async () => ({ Component: (await loadContactPage()).default }),
         ErrorBoundary: RouteErrorBoundary,
       },
       {
@@ -71,17 +83,17 @@ export const router = createBrowserRouter([
       },
       {
         path: "services/brief-design",
-        lazy: async () => ({ Component: (await import("./pages/DesignBrief")).default }),
+        lazy: async () => ({ Component: (await loadDesignBriefPage()).default }),
         ErrorBoundary: RouteErrorBoundary,
       },
       {
         path: "services/:slug",
-        lazy: async () => ({ Component: (await import("./pages/ServiceDetail")).default }),
+        lazy: async () => ({ Component: (await loadServiceDetailPage()).default }),
         ErrorBoundary: RouteErrorBoundary,
       },
       {
         path: "*",
-        lazy: async () => ({ Component: (await import("./components/NotFoundPage")).default }),
+        lazy: async () => ({ Component: (await loadNotFoundPage()).default }),
       },
     ],
   },

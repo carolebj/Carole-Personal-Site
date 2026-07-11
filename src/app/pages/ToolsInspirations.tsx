@@ -180,7 +180,7 @@ function ResourceCard({
       onMouseLeave={() => setIsEngaged(false)}
       onFocus={() => setIsEngaged(true)}
       onBlur={() => setIsEngaged(false)}
-      className="group relative block h-full min-h-[24rem] w-full overflow-hidden rounded-xl border border-border-subtle bg-[#1c1b1b] shadow-[0_14px_38px_rgba(58,42,35,0.10)] outline-none transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(58,42,35,0.18)] active:scale-[0.992] focus-visible:ring-2 focus-visible:ring-text-accent focus-visible:ring-offset-4 motion-reduce:transform-none motion-reduce:transition-none dark:border-white/10 dark:focus-visible:ring-offset-[#171312]"
+      className="group relative block h-full min-h-[24rem] w-full overflow-hidden rounded-xl border border-border-subtle bg-[#1c1b1b] shadow-[0_14px_38px_rgba(58,42,35,0.10)] outline-none transition-[box-shadow,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-white/30 hover:shadow-[0_24px_60px_rgba(58,42,35,0.18)] focus-visible:ring-2 focus-visible:ring-text-accent focus-visible:ring-offset-4 motion-reduce:transition-none dark:border-white/10 dark:focus-visible:ring-offset-[#171312]"
     >
       <img
         src={imageUrl}

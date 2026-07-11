@@ -19,6 +19,9 @@ type Row = {
 
 const cache = new Map<string, unknown[]>();
 const inflight = new Map<string, Promise<unknown[]>>();
+const CMS_FAILURE_COOLDOWN_MS = 30_000;
+let cmsUnavailableUntil = 0;
+let lastCmsError = "Le contenu distant est temporairement indisponible.";
 
 async function fetchType(type: string): Promise<unknown[]> {
   if (cache.has(type)) {
@@ -27,6 +30,9 @@ async function fetchType(type: string): Promise<unknown[]> {
   const existing = inflight.get(type);
   if (existing) {
     return existing;
+  }
+  if (Date.now() < cmsUnavailableUntil) {
+    throw new Error(lastCmsError);
   }
 
   const sb = getSupabase();
@@ -41,7 +47,6 @@ async function fetchType(type: string): Promise<unknown[]> {
       .eq("type", type)
       .order("position", { ascending: true });
     if (error) {
-      inflight.delete(type);
       throw new Error(error.message);
     }
     const rows = ((data ?? []) as Row[]).map((row) => ({
@@ -53,8 +58,14 @@ async function fetchType(type: string): Promise<unknown[]> {
     }));
     cache.set(type, rows);
     inflight.delete(type);
+    cmsUnavailableUntil = 0;
     return rows;
-  })();
+  })().catch((error: unknown) => {
+    inflight.delete(type);
+    lastCmsError = error instanceof Error ? error.message : String(error);
+    cmsUnavailableUntil = Date.now() + CMS_FAILURE_COOLDOWN_MS;
+    throw error;
+  });
 
   inflight.set(type, promise);
   return promise;

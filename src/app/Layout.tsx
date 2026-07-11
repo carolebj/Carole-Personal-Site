@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Outlet, ScrollRestoration } from "react-router";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -6,8 +7,23 @@ import { SeoOverrideProvider } from "./seo/SeoOverrideContext";
 import { HapticProvider } from "./interactions/HapticContext";
 import { ThemeProvider } from "./theme/ThemeContext";
 import "./i18n/i18n";
+import { preloadPublicRoutes } from "./publicRouteModules";
 
 export default function Layout() {
+  useEffect(() => {
+    const preload = () => {
+      void preloadPublicRoutes();
+    };
+
+    if ("requestIdleCallback" in window) {
+      const idleId = window.requestIdleCallback(preload, { timeout: 1500 });
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timeoutId = setTimeout(preload, 800);
+    return () => clearTimeout(timeoutId);
+  }, []);
+
   return (
     <ThemeProvider>
       <HapticProvider>
