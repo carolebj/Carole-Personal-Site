@@ -171,6 +171,7 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
   - blog article links use continuity/view transitions from list cards to article pages
   - Carnet pages use a minimal document-like layout with search and interactive resource cards
   - Carnet resource cards keep imagery dominant at rest, reveal the “À propos” copy through blur on hover/focus, and open the external resource from the entire card rather than a nested CTA
+  - Known book covers are losslessly optimized local JPEG assets; the public reading page prefers them over Google Books URLs and the 3D book texture uses CSS rather than a remote asset
   - the footer reveal should behave like a temporary pull-beyond-footer moment with a gentle colorful wave shader
   - subtle audio haptics are enabled by default and can be toggled from the logo right-click menu
   - the design brief wizard is a direct meeting/intake tool: adaptive French questions, local browser persistence, review-before-submit, Supabase submission (`design_brief_submissions`), private `brief-assets` storage, and an authenticated dashboard view under "Briefs design"

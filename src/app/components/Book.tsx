@@ -80,6 +80,9 @@ export function Book({
               <img
                 src={coverUrl}
                 alt={title}
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
                 className="h-full w-full object-cover"
               />
               <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,.52),rgba(255,255,255,0)_17%,rgba(0,0,0,0)_78%,rgba(0,0,0,.08))]" />
@@ -143,11 +146,7 @@ export function Book({
           {textured && (
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-cover bg-no-repeat opacity-[.16] mix-blend-multiply"
-              style={{
-                backgroundImage:
-                  "url('https://assets.vercel.com/image/upload/v1720554484/front/design/book-texture.avif')",
-              }}
+              className="pointer-events-none absolute inset-0 opacity-[.12] mix-blend-multiply [background-image:radial-gradient(circle_at_20%_15%,rgba(73,52,38,.22)_0_0.5px,transparent_0.7px),radial-gradient(circle_at_78%_66%,rgba(73,52,38,.18)_0_0.45px,transparent_0.7px)] [background-size:5px_5px,7px_7px]"
             />
           )}
         </div>
