@@ -311,6 +311,7 @@ export function buildServices() {
     const enItem = en.services.items[index];
     return {
       slug: item.slug,
+      featured: item.featured ?? false,
       title: L(item.title, enItem.title),
       accent: L(item.accent, enItem.accent),
       description: L(item.description, enItem.description),

@@ -13,6 +13,7 @@ export type CmsImage = {
 
 export type CmsService = {
   slug: string;
+  featured?: boolean;
   title: LocalizedValue;
   accent?: LocalizedValue;
   description?: LocalizedValue;

@@ -78,6 +78,7 @@ const en = {
     pageSignalOne: "Strategy before publishing",
     pageSignalTwo: "Organization before scattering",
     includedPreview: "Support preview",
+    featuredOffer: "Trending offer",
     pageCtaEyebrow: "Choose the right frame",
     pageCtaTitle: "Not sure yet which support format matches your need?",
     pageCtaDescription:
@@ -228,6 +229,7 @@ const en = {
       },
       {
         slug: "visual-identity",
+        featured: true,
         title: "Visual",
         accent: "Identity",
         description:

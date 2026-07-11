@@ -16,6 +16,7 @@ import { servicesPageAccents } from "../components/serviceStyle";
 
 type Service = {
   slug: string;
+  featured?: boolean;
   title: string;
   accent: string;
   description: string;
@@ -46,11 +47,10 @@ export default function Services() {
     return t("services.items", { returnObjects: true }) as Service[];
   }, [cmsServices, usingCmsServices, locale, t]);
 
-  const designService = services.find(isDesignService);
   const firstService = services[0];
-  const featureService = designService ?? firstService;
+  const featureService = services.find((service) => service.featured) ?? firstService;
   const featureIsDesign = featureService ? isDesignService(featureService) : false;
-  const regularServices = services.filter((service) => service.slug !== featureService?.slug);
+  const regularServices = services;
 
   return (
     <main className={`${PAGE_MAIN} overflow-hidden bg-surface-page pb-24`}>
@@ -58,35 +58,20 @@ export default function Services() {
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="mx-auto grid max-w-[1180px] gap-12 px-5 sm:px-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,0.72fr)] lg:px-0"
+        className="mx-auto max-w-[1180px] px-5 sm:px-8 lg:px-0"
       >
         <div>
           <p className="text-[12px] font-semibold uppercase tracking-[3px] text-text-accent">
             {t("services.pageEyebrow")}
           </p>
-          <h1 className="mt-6 max-w-[760px] text-balance font-serif text-[52px] leading-[54px] text-text-primary sm:text-[72px] sm:leading-[72px] lg:text-[88px] lg:leading-[84px]">
+          <h1 className="mt-6 max-w-[1120px] text-balance font-serif text-[52px] leading-[54px] text-text-primary sm:text-[72px] sm:leading-[72px] lg:text-[88px] lg:leading-[84px]">
             {t("services.pageTitleStart")}{" "}
             <span className="italic text-text-accent">{t("services.pageTitleAccent")}</span>
           </h1>
-          <p className="mt-7 max-w-[620px] text-[18px] leading-8 text-text-secondary">
+          <p className="mt-7 max-w-[920px] text-[18px] leading-8 text-text-secondary">
             {t("services.pageDescription")}
           </p>
         </div>
-
-        <aside className="self-end border-y border-border-accent-muted py-6 lg:mb-3">
-          <div className="grid gap-6 sm:grid-cols-2">
-            {[t("services.pageSignalOne"), t("services.pageSignalTwo")].map((signal, index) => (
-              <div key={signal}>
-                <p className="font-serif text-[42px] italic leading-none text-text-accent">
-                  {String(index + 1).padStart(2, "0")}
-                </p>
-                <p className="mt-3 max-w-[13rem] text-[13px] font-semibold uppercase leading-5 tracking-[1.5px] text-text-secondary">
-                  {signal}
-                </p>
-              </div>
-            ))}
-          </div>
-        </aside>
       </motion.section>
 
       {featureService ? (
@@ -103,7 +88,7 @@ export default function Services() {
                   {featureIsDesign ? <PaintBrushIcon className="size-5" /> : <SparklesIcon className="size-5" />}
                 </span>
                 <span className="text-[11px] font-semibold uppercase tracking-[2.4px] text-text-accent">
-                  {featureIsDesign ? t("services.designBridgeEyebrow") : t("serviceDetail.eyebrow")}
+                  {t("services.featuredOffer")}
                 </span>
               </div>
 

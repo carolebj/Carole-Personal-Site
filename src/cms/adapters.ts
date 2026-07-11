@@ -97,6 +97,7 @@ export function toServiceViewModel(service: CmsService, locale: string) {
 
   return {
     slug: service.slug,
+    featured: service.featured ?? false,
     title: localized(service.title, locale),
     accent: localized(service.accent, locale),
     description: localized(service.description, locale),

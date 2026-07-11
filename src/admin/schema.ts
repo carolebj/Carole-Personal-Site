@@ -262,6 +262,12 @@ export const contentTypes: ContentType[] = [
         required: true,
         validation: "slug",
       },
+      {
+        name: "featured",
+        label: "Offre en vogue",
+        type: "boolean",
+        help: "Une seule offre peut être mise en vogue. Elle bénéficie d'un bloc éditorial renforcé sur la page Services.",
+      },
       requiredLocalizedString("title", "Titre"),
       localizedString("accent", "Accroche courte"),
       { name: "description", label: "Description", type: "localizedText" },

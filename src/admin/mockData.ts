@@ -131,6 +131,7 @@ export const seedContent = {
     {
       id: "service-strategy",
       slug: "strategie-editoriale",
+      featured: true,
       title: L("Stratégie éditoriale", "Editorial strategy"),
       accent: L("Une ligne claire, des prises de parole utiles", ""),
       description: L("Définition de la ligne éditoriale, des piliers de contenu et du calendrier.", ""),

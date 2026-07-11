@@ -78,6 +78,7 @@ const fr = {
     pageSignalOne: "Stratégie avant publication",
     pageSignalTwo: "Organisation avant dispersion",
     includedPreview: "Aperçu de l'accompagnement",
+    featuredOffer: "Offre en vogue",
     pageCtaEyebrow: "Choisir le bon cadre",
     pageCtaTitle: "Vous ne savez pas encore quel accompagnement correspond à votre besoin ?",
     pageCtaDescription:
@@ -228,6 +229,7 @@ const fr = {
       },
       {
         slug: "identite-visuelle",
+        featured: true,
         title: "Identité",
         accent: "Visuelle",
         description:

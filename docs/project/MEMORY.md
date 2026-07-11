@@ -26,6 +26,7 @@ Last reviewed: 2026-07-11 WAT
   `/dashboard` intentionally runs in local demo mode and public pages use i18n
   fallbacks. Redeploy after changing these build-time variables.
 - The legacy `/admin` URL redirects to `/dashboard`.
+- The Services page uses a CMS-controlled `featured` flag for the single “offre en vogue”. The featured service receives the large editorial spotlight but remains present in the complete offer list. Editors can switch the featured published service directly from the Services collection list in the dashboard.
 
 ## CMS Direction — Custom Dashboard + Supabase
 

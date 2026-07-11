@@ -284,6 +284,14 @@ export default function AdminApp() {
 
   const publish = async (type: ContentType, doc: AnyDoc) => {
     try {
+      if (type.name === "service" && doc.featured) {
+        const otherFeatured = asArray(content?.service).filter((item) => item.id !== doc.id && item.featured);
+        for (const item of otherFeatured) {
+          const saved = await persistDoc("service", { ...item, featured: false });
+          const updated = item.publishedAtMeta ? await publishDoc("service", saved.id) : saved;
+          updateContentDoc(type, updated);
+        }
+      }
       const published = await publishDoc(type.name, doc.id);
       updateContentDoc(type, published);
       notify("success", "Contenu publié.");
@@ -291,6 +299,17 @@ export default function AdminApp() {
     } catch (error) {
       notify("error", error instanceof Error ? error.message : "Publication impossible.");
       throw error;
+    }
+  };
+
+  const featureService = async (type: ContentType, selected: AnyDoc) => {
+    const serviceDocs = asArray(content?.service);
+    for (const item of serviceDocs) {
+      const shouldFeature = item.id === selected.id;
+      if (Boolean(item.featured) === shouldFeature) continue;
+      const saved = await persistDoc("service", { ...item, featured: shouldFeature });
+      const updated = item.publishedAtMeta ? await publishDoc("service", saved.id) : saved;
+      updateContentDoc(type, updated);
     }
   };
 
@@ -439,6 +458,7 @@ export default function AdminApp() {
               const ordered = await reorderDocs(currentType.name, docs);
               setContent((previous) => ({ ...(previous ?? {}), [currentType.name]: ordered }));
             }}
+            onFeature={currentType.name === "service" ? (doc) => featureService(currentType, doc) : undefined}
             notify={notify}
           />
         ) : null}

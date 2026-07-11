@@ -21,6 +21,9 @@ const L = (fr, en) => ({ fr, en });
 
 const content = {
   service: {
+    "identite-visuelle": {
+      featured: true,
+    },
     "strategie-editoriale": {
       accent: L("Une ligne claire, des prises de parole utiles", "A clear line, useful brand messages"),
       description: L(

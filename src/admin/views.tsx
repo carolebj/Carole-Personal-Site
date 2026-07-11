@@ -10,6 +10,7 @@ import {
   EyeIcon,
   MagnifyingGlassIcon,
   PencilSquareIcon,
+  StarIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { cn } from "../app/components/ui/utils";
@@ -102,6 +103,7 @@ export function CollectionList({
   onCreate,
   onTrash,
   onReorder,
+  onFeature,
   notify,
 }: {
   type: ContentType;
@@ -110,6 +112,7 @@ export function CollectionList({
   onCreate: () => void;
   onTrash: (doc: AnyDoc) => void;
   onReorder: (docs: AnyDoc[]) => Promise<void>;
+  onFeature?: (doc: AnyDoc) => Promise<void>;
   notify: (kind: "success" | "error", message: string) => void;
 }) {
   const [query, setQuery] = useState("");
@@ -120,6 +123,7 @@ export function CollectionList({
   const [ordered, setOrdered] = useState(docs);
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [ordering, setOrdering] = useState(false);
+  const [featuringId, setFeaturingId] = useState<string | null>(null);
 
   useEffect(() => setOrdered(docs), [docs]);
 
@@ -194,6 +198,19 @@ export function CollectionList({
       setOrdered(docs);
     } finally {
       setOrdering(false);
+    }
+  };
+
+  const feature = async (doc: AnyDoc) => {
+    if (!onFeature || doc.featured || !doc.publishedAtMeta) return;
+    setFeaturingId(doc.id);
+    try {
+      await onFeature(doc);
+      notify("success", "L'offre en vogue a été mise à jour sur le site.");
+    } catch (error) {
+      notify("error", error instanceof Error ? error.message : "Mise en vogue impossible.");
+    } finally {
+      setFeaturingId(null);
     }
   };
 
@@ -290,6 +307,11 @@ export function CollectionList({
                     <span className="flex flex-wrap items-center gap-2 text-sm font-medium text-text-primary">
                       {docTitle(type, doc)}
                       <StatusBadge doc={doc} />
+                      {type.name === "service" && doc.featured ? (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-border-accent bg-surface-accent-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-text-accent">
+                          <StarIcon className="size-3 fill-current" /> En vogue
+                        </span>
+                      ) : null}
                       <span className={cn(
                         "rounded-full px-2 py-0.5 text-[10px]",
                         quality.errors
@@ -304,6 +326,24 @@ export function CollectionList({
                     {docSubtitle(type, doc) ? <span className="mt-0.5 block text-xs text-text-muted">{docSubtitle(type, doc)}</span> : null}
                     {doc.updatedAt ? <span className="mt-1 block text-[11px] text-text-muted/70">Modifié le {new Date(doc.updatedAt).toLocaleString("fr-FR")}</span> : null}
                   </button>
+                  {type.name === "service" && onFeature ? (
+                    <button
+                      type="button"
+                      onClick={() => void feature(doc)}
+                      disabled={Boolean(doc.featured) || !doc.publishedAtMeta || featuringId !== null}
+                      className={cn(
+                        "flex size-10 items-center justify-center rounded transition",
+                        doc.featured
+                          ? "bg-surface-accent-muted text-text-accent"
+                          : "text-text-muted hover:bg-surface-page-muted hover:text-text-accent",
+                        (!doc.publishedAtMeta || featuringId !== null) && "disabled:cursor-not-allowed disabled:opacity-35",
+                      )}
+                      aria-label={`Mettre ${docTitle(type, doc)} en vogue`}
+                      title={doc.publishedAtMeta ? "Mettre cette offre en vogue" : "Publier l'offre avant de la mettre en vogue"}
+                    >
+                      <StarIcon className={cn("size-4", Boolean(doc.featured) && "fill-current", featuringId === doc.id && "animate-pulse")} />
+                    </button>
+                  ) : null}
                   {canOrder ? (
                     <div className="flex">
                       <button type="button" onClick={() => move(doc.id, -1)} disabled={index === 0} aria-label="Monter" className="flex size-10 items-center justify-center rounded text-text-muted hover:bg-surface-page-muted disabled:opacity-25"><ArrowUpIcon className="size-4" /></button>
