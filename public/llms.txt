@@ -4,11 +4,11 @@ Portfolio de Carole Tonoukouen, communicante narrative, plume editoriale et cons
 
 ## Pages principales
 
-- [Accueil](https://carole-portfolio.vercel.app/)
-- [A propos](https://carole-portfolio.vercel.app/about)
-- [Services](https://carole-portfolio.vercel.app/services)
-- [Carnet](https://carole-portfolio.vercel.app/blog)
-- [Contact](https://carole-portfolio.vercel.app/contact)
+- [Accueil](https://www.carolebj.com/)
+- [A propos](https://www.carolebj.com/about)
+- [Services](https://www.carolebj.com/services)
+- [Carnet](https://www.carolebj.com/blog)
+- [Contact](https://www.carolebj.com/contact)
 
 ## Domaines
 

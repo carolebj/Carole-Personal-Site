@@ -411,7 +411,7 @@ export const seedContent = {
       "Portfolio de Carole Tonoukouen, chargée de communication digitale.",
       "Portfolio of Carole Tonoukouen, digital communications officer.",
     ),
-    siteUrl: "https://carole-portfolio.vercel.app",
+    siteUrl: "https://www.carolebj.com",
     ogImage: null,
     seoPages: {
       home: {

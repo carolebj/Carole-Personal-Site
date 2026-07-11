@@ -5,7 +5,7 @@ import { getFallbackSeo, pathnameToSeoPageKey, type SeoPageKey } from "./fallbac
 import type { SeoOverride } from "./SeoOverrideContext";
 
 const DEFAULT_SITE_NAME = "Carole Tonoukouen";
-const DEFAULT_SITE_URL = "https://carole-portfolio.vercel.app";
+const DEFAULT_SITE_URL = "https://www.carolebj.com";
 
 export function resolveSiteUrl(settings: CmsSiteSettings | null | undefined) {
   const fromCms = settings?.siteUrl?.trim();

@@ -277,7 +277,7 @@ const content = {
         "Portfolio de Carole Tonoukouen, chargée de communication digitale : stratégie éditoriale, contenus, campagnes et visibilité de marque.",
         "Portfolio of Carole Tonoukouen, digital communications officer: editorial strategy, content, campaigns, and brand visibility.",
       ),
-      siteUrl: "https://carole-portfolio.vercel.app",
+      siteUrl: "https://www.carolebj.com",
     },
   },
 };

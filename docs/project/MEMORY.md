@@ -4,7 +4,7 @@
 
 This file is the project-level memory for the Carole Portfolio repo. Keep it short, current, and useful for future agents working on the site.
 
-Last reviewed: 2026-06-21 WAT
+Last reviewed: 2026-07-11 WAT
 
 ## Current Branch Workflow
 
@@ -16,7 +16,7 @@ Last reviewed: 2026-06-21 WAT
 - Vercel should keep `main` as the production branch and use `dev` as the review/preview branch until Carole validates the redesign.
 - Vercel build settings: framework `Vite`, build command `npm run build`, output directory `dist`.
 - `vercel.json` rewrites all routes to `/index.html` so React Router deep links can load correctly on Vercel.
-- Vercel project `carole-portfolio` exists under `stevens-projects-db687a83`; current public alias is `https://carole-portfolio.vercel.app`.
+- Vercel project `carole-portfolio` exists under `stevens-projects-db687a83`; the canonical public domain is `https://www.carolebj.com`, with `https://carolebj.com` redirected to it. The `carole-portfolio.vercel.app` alias remains technical only.
 - Vercel GitHub integration is connected to `mrstev3n/Carole-Portfolio-version-1.0`.
 - Git author email is now `stevenkejjad@gmail.com`; this fixed Vercel's commit-author validation.
 - Current production alias points to the `main` deployment; current `dev` branch preview is `https://carole-portfolio-git-dev-stevens-projects-db687a83.vercel.app`.
