@@ -27,8 +27,8 @@ const fr = {
     preview: "Aperçu",
     openService: "Ouvrir le service",
     caseStudies: "Études de cas",
-    caseStudyTitle: "Structurer une communication digitale claire et mémorable",
-    caseStudyMeta: "3 min de lecture",
+    caseStudyTitle: "Relancer la visibilité d'un coworking à Cotonou",
+    caseStudyMeta: "Article · 7 min",
   },
 
   hero: {

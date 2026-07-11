@@ -596,7 +596,7 @@ export default function Navbar() {
                             </ul>
                         </div>
                         <Link
-                          to={i18n.language === "fr" ? "/services/communication-digitale" : "/services/digital-communication"}
+                          to="/blog/cas-client-coworking-cotonou"
                           onClick={() => setIsServicesOpen(false)}
                             className="group flex min-h-[230px] w-[280px] shrink-0 flex-col justify-between rounded-xl border border-[#e5e2e1]/70 bg-[#f7f6f4] p-5 text-[#1c1b1b] transition-colors duration-300 hover:bg-[#f3ecec] dark:border-white/10 dark:bg-[#211a19] dark:text-[#f8f1ec] dark:hover:bg-[#29201f]"
                         >
@@ -860,6 +860,16 @@ export default function Navbar() {
                                   {service.title} <span className="italic text-[#854d63] dark:text-[#f0adc4]">{service.accent}</span>
                                 </Link>
                               ))}
+                              <Link
+                                to="/blog/cas-client-coworking-cotonou"
+                                onClick={() => {
+                                  setIsMobileMenuOpen(false);
+                                  setOpenMobileAccordion(null);
+                                }}
+                                className="mt-2 rounded-md border border-[#854d63]/15 bg-white/70 px-3 py-3 text-[13px] font-semibold leading-5 text-[#854d63] dark:border-[#f0adc4]/20 dark:bg-white/5 dark:text-[#f0adc4]"
+                              >
+                                {t("nav.caseStudies")} · {t("nav.caseStudyMeta")}
+                              </Link>
                             </div>
                           </motion.div>
                         ) : null}

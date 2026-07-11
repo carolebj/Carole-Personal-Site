@@ -27,8 +27,8 @@ const en = {
     preview: "Preview",
     openService: "Open service",
     caseStudies: "Case studies",
-    caseStudyTitle: "Structuring clear and memorable digital communication",
-    caseStudyMeta: "3 min read",
+    caseStudyTitle: "Rebuilding visibility for a coworking space in Cotonou",
+    caseStudyMeta: "Article · 7 min",
   },
 
   hero: {

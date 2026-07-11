@@ -6,10 +6,6 @@ import { toBlogPostViewModel } from "../../cms/adapters";
 import { cmsImageUrl, useCmsCollection } from "../../cms/cmsContent";
 import { isPublishedPost, localized, type CmsBlogPost, type CmsImage } from "../../cms/types";
 import type { PortableTextBlock } from "@portabletext/types";
-import abstractAuditImage from "../../assets/blog/blog-abstract-audit.svg";
-import abstractContentImage from "../../assets/blog/blog-abstract-content.svg";
-import abstractEditorialImage from "../../assets/blog/blog-abstract-editorial.svg";
-import abstractSocialImage from "../../assets/blog/blog-abstract-social.svg";
 import { PAGE_MAIN } from "../components/layout/publicPage";
 import { useSeoOverride } from "../seo/SeoOverrideContext";
 import { BlogArticleContent } from "./BlogArticleContent";
@@ -30,7 +26,12 @@ type BlogPost = {
   coverImage?: CmsImage;
 };
 
-const blogImages = [abstractEditorialImage, abstractContentImage, abstractSocialImage, abstractAuditImage];
+const blogImages = [
+  "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1600&q=80",
+];
 
 export default function BlogArticle() {
   const { slug } = useParams();
@@ -54,7 +55,7 @@ export default function BlogArticle() {
   const cmsImage = cmsImageUrl(post.coverImage);
   const postImage = usingCms
     ? cmsImage
-    : blogImages[postIndex % blogImages.length] ?? abstractEditorialImage;
+    : blogImages[postIndex % blogImages.length] ?? blogImages[0];
   const seoOverride = useMemo(
     () =>
       post
