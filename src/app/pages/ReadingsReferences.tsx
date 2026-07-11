@@ -10,6 +10,9 @@ import { cmsImageUrl, useCmsCollection } from "../../cms/cmsContent";
 import { Book } from "../components/Book";
 import { PageHero } from "../components/PageHero";
 import { PAGE_MAIN_SPACIOUS } from "../components/layout/publicPage";
+import everybodyWritesCover from "../../assets/books/everybody-writes.jpg";
+import leBugHumainCover from "../../assets/books/le-bug-humain.jpg";
+import storybrandCover from "../../assets/books/storybrand.jpg";
 
 type ReadingItem = {
   title: string;
@@ -36,14 +39,14 @@ type ReadingsContent = {
 };
 
 const bookCovers: Record<string, string> = {
-  "Everybody Writes": "https://books.google.com/books/content?id=QGtECQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-  Storybrand: "https://books.google.com/books/content?id=b3xDDgAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-  "Le Bug Humain": "https://books.google.com/books/content?id=_yODDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+  "Everybody Writes": everybodyWritesCover,
+  Storybrand: storybrandCover,
+  "Le Bug Humain": leBugHumainCover,
 };
 
 function BookCard({ item, index }: { item: ReadingItem; index: number }) {
   const { t } = useTranslation();
-  const coverUrl = item.coverUrl ?? bookCovers[item.title];
+  const coverUrl = bookCovers[item.title] ?? item.coverUrl;
   return (
     <motion.article
       initial={{ opacity: 0, y: 12 }}
