@@ -556,7 +556,7 @@ export const contentTypes: ContentType[] = [
         ],
       },
       { name: "contactEmail", label: "Email de contact", type: "email", validation: "email" },
-      { name: "instagram", label: "Instagram (URL)", type: "url", validation: "url" },
+      { name: "behance", label: "Behance (URL)", type: "url", validation: "url" },
       { name: "linkedin", label: "LinkedIn (URL)", type: "url", validation: "url" },
     ],
   },

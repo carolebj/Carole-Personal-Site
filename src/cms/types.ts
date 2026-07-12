@@ -112,6 +112,8 @@ export type CmsSiteSettings = {
     carnetReadings?: CmsSeoPageMeta;
   };
   contactEmail?: string;
+  behance?: string;
+  /** Legacy CMS field retained for stored-document compatibility. */
   instagram?: string;
   linkedin?: string;
   socialLinks?: Array<{

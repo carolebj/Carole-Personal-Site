@@ -20,6 +20,8 @@ const languages: { code: Lang; flag: string }[] = [
 const FOOTER_REVEAL_DELAY_MS = 900;
 const FOOTER_REVEAL_FAST_DELAY_MS = 1200;
 const SHADER_LONG_PRESS_MS = 320;
+const CAROLE_BEHANCE_URL = "https://www.behance.net/caroletonoukouen";
+const CAROLE_LINKEDIN_URL = "https://www.linkedin.com/in/caroletonoukouen/";
 
 type ServiceItem = {
   slug: string;
@@ -442,13 +444,15 @@ export default function Footer() {
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
   const socialLinks = useMemo((): SocialLink[] => {
-    const contactLink: SocialLink = siteData?.contactEmail
-      ? { label: t("footer.contactEmail"), href: `mailto:${siteData.contactEmail}`, external: true }
-      : { label: t("footer.contactEmail"), href: "/contact", external: false };
+    const contactLink: SocialLink = {
+      label: t("footer.contactEmail"),
+      href: "/contact",
+      external: false,
+    };
 
     const cmsLinks: SocialLink[] =
       siteData?.socialLinks
-        ?.filter((link) => link.label && link.url)
+        ?.filter((link) => link.label && link.url && !link.label.toLowerCase().includes("instagram"))
         .map((link) => ({
           label: link.label!,
           href: link.url!,
@@ -456,27 +460,30 @@ export default function Footer() {
         })) ?? [];
 
     if (cmsLinks.length > 0) {
-      return cmsLinks.concat([contactLink]);
+      const linksWithoutBehance = cmsLinks.filter(
+        (link) => !link.label.toLowerCase().includes("behance"),
+      );
+      return [
+        { label: t("footer.behance"), href: CAROLE_BEHANCE_URL, external: true },
+        ...linksWithoutBehance,
+        contactLink,
+      ];
     }
 
     const flatLinks: SocialLink[] = [
-      siteData?.linkedin
-        ? { label: t("footer.linkedin"), href: siteData.linkedin, external: true }
-        : null,
-      siteData?.instagram
-        ? { label: "Instagram", href: siteData.instagram, external: true }
-        : null,
+      {
+        label: t("footer.behance"),
+        href: siteData?.behance || CAROLE_BEHANCE_URL,
+        external: true,
+      },
+      {
+        label: t("footer.linkedin"),
+        href: siteData?.linkedin || CAROLE_LINKEDIN_URL,
+        external: true,
+      },
     ].filter((link): link is SocialLink => link !== null);
 
-    if (flatLinks.length > 0) {
-      return flatLinks.concat([contactLink]);
-    }
-
-    return [
-      { label: t("footer.behance"), href: "https://www.behance.net/caroletonoukouen", external: true },
-      { label: t("footer.linkedin"), href: "https://www.linkedin.com/in/caroletonoukouen/", external: true },
-      contactLink,
-    ];
+    return flatLinks.concat([contactLink]);
   }, [siteData, t]);
 
   const serviceLinks = useMemo(() => {
@@ -605,7 +612,7 @@ export default function Footer() {
   }, [shouldReduceMotion]);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: shouldReduceMotion ? "auto" : "smooth" });
   };
 
   const resetShaderReturnTimer = () => {
@@ -663,8 +670,8 @@ export default function Footer() {
         className="relative border-t border-[#e5e2e1]/80 bg-[#fcf9f8] dark:border-white/10 dark:bg-[#13100f]"
       >
         <div className="mx-auto max-w-[1680px] px-6 pb-12 pt-16 sm:px-8 lg:px-12 lg:pb-12 lg:pt-20 xl:px-16">
-          <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-12 xl:gap-x-12">
-            <div className="min-w-0 md:col-span-2 lg:col-span-12 xl:col-span-4">
+          <div className="grid grid-cols-1 gap-12 min-[480px]:grid-cols-2 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-12 xl:gap-x-12">
+            <div className="min-w-0 min-[480px]:col-span-2 lg:col-span-12 xl:col-span-4">
               <p className="font-serif text-[clamp(2.35rem,3.2vw,3.35rem)] italic leading-none tracking-[-0.01em] text-[#1c1b1b] dark:text-[#f8f1ec]">
                 Carole T.
               </p>
@@ -720,9 +727,6 @@ export default function Footer() {
                 <li>
                   <FooterLink to="/carnet/outils-inspirations">{t("nav.carnet")}</FooterLink>
                 </li>
-                <li>
-                  <FooterLink to="/contact">{t("nav.contact")}</FooterLink>
-                </li>
               </ul>
             </FooterColumn>
 
@@ -759,7 +763,7 @@ export default function Footer() {
 
             <FooterColumn
               title={t("footer.socialTitle")}
-              className="md:col-span-2 lg:col-span-6 xl:col-span-2"
+              className="min-[480px]:col-span-1 lg:col-span-6 xl:col-span-2"
             >
               <ul className="space-y-4">
                 {socialLinks.map((link) => (

@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { toAboutPageViewModel } from "../../cms/adapters";
 import { cmsImageUrl, useCmsSingleton } from "../../cms/cmsContent";
 import type { CmsAboutPage } from "../../cms/types";
-import workingImage from "../../assets/carole-redesign-working.webp";
+import aboutPortrait from "../../assets/carole-about-portrait.avif";
 import { SectionEyebrow } from "../components/SectionEyebrow";
 import { PAGE_SCROLL_MARGIN } from "../components/layout/publicPage";
 
@@ -109,7 +109,7 @@ export default function About() {
     () => toAboutPageViewModel(cmsAbout, locale, usingCms, i18nContent),
     [cmsAbout, locale, usingCms, i18nContent],
   );
-  const portraitSrc = usingCms ? cmsImageUrl(cmsAbout?.image) : workingImage;
+  const portraitSrc = usingCms ? cmsImageUrl(cmsAbout?.image) || aboutPortrait : aboutPortrait;
 
   return (
     <main className="bg-surface-page text-text-primary">

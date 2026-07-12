@@ -301,7 +301,7 @@ export function buildSiteSettingsContent() {
       },
     },
     contactEmail: "caroletonoukouen@gmail.com",
-    instagram: "https://instagram.com/",
+    behance: "https://www.behance.net/caroletonoukouen",
     linkedin: "https://linkedin.com/",
   };
 }
