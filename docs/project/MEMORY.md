@@ -216,6 +216,20 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
   prefix `[Carole Site]`; do not reintroduce the word “portfolio” in this email
   label. Production readiness still requires a
   durable anti-abuse layer and an explicit publication of the current code lot.
+  Resend Receiving is enabled for `carolebj.com`; Namecheap routes the root MX
+  to `inbound-smtp.eu-west-1.amazonaws.com`. The preview-only endpoint
+  `/api/resend-inbound` verifies signed `email.received` webhooks, accepts only
+  `contact@carolebj.com`, retrieves content and attachments with a separate
+  full-access key, then forwards to Carole's Gmail with the original sender in
+  `reply_to`. `RESEND_INBOUND_API_KEY` and `RESEND_WEBHOOK_SECRET` are encrypted
+  in Vercel Preview + Production. The Resend webhook currently targets an
+  ephemeral preview; switch it to `https://www.carolebj.com/api/resend-inbound`
+  only after the endpoint has been explicitly published to production.
+  Contact-form notifications use a branded HTML email based on the validated
+  warm editorial proposal: segmented color strip, CT monogram, serif subject,
+  sender identity card, plum reply button and compact transactional footer.
+  `api/contact-email.js` owns this template, escapes every visitor-controlled
+  value, and `api/contact.js` retains a plain-text fallback plus `reply_to`.
 
 - Keep routing in `src/app/routes.tsx` → `Layout` for public pages; `/dashboard/*` is outside `Layout`.
 - User-facing copy stays in `src/app/i18n/locales/fr.tsx` and `src/app/i18n/locales/en.tsx` as fallback. As dashboard content grows, i18n values become increasingly redundant — do not add new copy to i18n if it will be managed from the dashboard.
@@ -230,7 +244,7 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
 - `dev` and `main` share the same Supabase CMS. Testimonials can be held back on production with the build-time flag `VITE_ENABLE_CMS_TESTIMONIALS=false`; previews and local development default to CMS testimonials when the flag is absent or `true`.
 - Lightweight public route chunks are preloaded during the browser's first idle period, hashed `/assets/*` files use immutable one-year caching on Vercel, and public CMS reads enter a 30-second cooldown after a network failure instead of retrying on every page mount.
 - Hover hit areas must remain geometrically stable: animate imagery or inner content, not the clickable card container itself, to prevent edge-triggered enter/leave vibration.
-- The Cal.com booking widget is isolated in `src/app/components/CalMeetingEmbed.tsx` and lazy-loaded.
+- The Cal.com booking widget is isolated in `src/app/components/CalMeetingEmbed.tsx` and lazy-loaded. It targets `meetcarole/rendez-vous`: 45-minute meetings, hourly starts, Monday-Friday 20:00-22:00, Saturday 10:00-12:00 and 15:00-22:00, Sunday unavailable, in `Africa/Porto-Novo`. The event always requires manual confirmation, explains the 24-hour review window, and requires cancellation reasons from both host and attendee.
 - Design tokens: `src/styles/tokens.css` (primitives, semantics, dark-mode); `src/styles/global.css` (base styles).
 - **UI design system (2026-06-10)** — public pages use semantic Tailwind tokens (`bg-surface-page`, `text-text-accent`, etc.) from `tokens.css`. Shared layout: `src/app/components/layout/publicPage.ts` (`PAGE_MAIN` = `pt-28 md:pt-36`). Shared components: `SectionEyebrow`, `PageHero`, `ContactForm`. Border-radius rule: cards `rounded-lg`, primary CTAs `rounded-full`, inputs `rounded-md` (contact page panels may use `rounded-xl`). Carnet pages share tokens but keep muted eyebrows (`text-text-muted`).
 

@@ -37,6 +37,12 @@
    rate limit), le comportement `reply_to` en répondant au message reçu, puis
    la publication du lot de code en production. Conserver la tâche TickTick
    ouverte jusqu'à ces validations.
+   La réception Resend, le MX racine Namecheap, la clé entrante dédiée, le
+   webhook signé et le transfert vers Gmail sont configurés en preview.
+   `contact@carolebj.com` est ajouté dans Gmail via SMTP Resend et attend la
+   validation du MX entrant pour recevoir son e-mail de confirmation. Restent
+   le test réel réception/réponse, puis le remplacement de l'URL éphémère du
+   webhook par l'URL de production après publication explicite.
 5. **Contenu CMS footer** — Behance et la nouvelle photo À propos avec son texte
    alternatif ont été publiés le 2026-07-12. Ne pas réintroduire le champ
    Instagram dans `siteSettings`.
