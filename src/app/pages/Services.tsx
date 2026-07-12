@@ -4,14 +4,14 @@ import {
   PaintBrushIcon,
   SparklesIcon,
 } from "@heroicons/react/24/outline";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { useMemo } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { toServiceViewModel } from "../../cms/adapters";
 import { useCmsCollection } from "../../cms/cmsContent";
 import type { CmsService } from "../../cms/types";
-import { PAGE_MAIN } from "../components/layout/publicPage";
+import { PAGE_MAIN, PAGE_SCROLL_MARGIN } from "../components/layout/publicPage";
 import { servicesPageAccents } from "../components/serviceStyle";
 
 type Service = {
@@ -38,6 +38,8 @@ function isDesignService(service: Service) {
 
 export default function Services() {
   const { t, i18n } = useTranslation();
+  const shouldReduceMotion = useReducedMotion();
+  const navigate = useNavigate();
   const { data: cmsServices, usingCms: usingCmsServices } = useCmsCollection<CmsService>("service", []);
   const locale = i18n.language;
   const services = useMemo(() => {
@@ -150,6 +152,16 @@ export default function Services() {
               <a
                 key={service.slug}
                 href={`#${service.slug}`}
+                onClick={(event) => {
+                  event.preventDefault();
+                  const target = document.getElementById(service.slug);
+                  if (!target) return;
+                  void navigate(`#${service.slug}`, { preventScrollReset: true });
+                  target.scrollIntoView({
+                    behavior: shouldReduceMotion ? "auto" : "smooth",
+                    block: "start",
+                  });
+                }}
                 className="text-[13px] leading-5 text-text-secondary transition hover:text-text-accent"
               >
                 {serviceNumbers[index] ?? String(index + 1).padStart(2, "0")} {service.title} {service.accent}
@@ -172,7 +184,7 @@ export default function Services() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-                className={`group grid gap-7 rounded-lg border ${accent.border} bg-surface-panel p-5 transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(91,65,55,0.09)] dark:border-white/10 dark:bg-surface-panel sm:p-7 lg:grid-cols-[0.78fr_1fr_auto] lg:items-center`}
+                className={`group grid gap-7 rounded-lg border ${accent.border} ${PAGE_SCROLL_MARGIN} bg-surface-panel p-5 transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(91,65,55,0.09)] dark:border-white/10 dark:bg-surface-panel sm:p-7 lg:grid-cols-[0.78fr_1fr_auto] lg:items-center`}
               >
                 <div>
                   <p className="text-[12px] font-semibold uppercase tracking-[2px] text-text-muted">
