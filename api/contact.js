@@ -1,3 +1,5 @@
+import { renderContactEmail } from "./contact-email.js";
+
 const CONTACT_EMAIL = "caroletonoukouen@gmail.com";
 const MAX_BODY_BYTES = 12_000;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -60,6 +62,7 @@ export default async function handler(request, response) {
         to: [CONTACT_EMAIL],
         reply_to: email,
         subject: `[Carole Site] ${subject}`,
+        html: renderContactEmail({ name, email, subject, message }),
         text: [`Nom : ${name}`, `Email : ${email}`, `Sujet : ${subject}`, "", message].join("\n"),
         headers: {
           "X-Priority": "1",

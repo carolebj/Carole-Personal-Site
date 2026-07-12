@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import { afterEach, test } from "node:test";
 import handler from "../api/contact.js";
+import { renderContactEmail } from "../api/contact-email.js";
 import { isSuccessfulContactResponse } from "../src/app/components/contactResponse.ts";
 
 const originalFetch = globalThis.fetch;
@@ -50,6 +51,24 @@ test("contact delivery keeps secrets server-side and marks messages important", 
   assert.equal(payload.subject, "[Carole Site] Audit");
   assert.equal(payload.headers["X-Priority"], "1");
   assert.equal(payload.headers.Importance, "high");
+  assert.match(payload.html, /NOUVEAU MESSAGE DEPUIS CAROLEBJ\.COM/);
+  assert.match(payload.html, /Répondre à Awa/);
+  assert.match(payload.html, /mailto:awa@example\.com\?subject=Re%3A%20Audit/);
+});
+
+test("contact email escapes untrusted form content", () => {
+  const html = renderContactEmail({
+    name: "<Awa>",
+    email: "awa@example.com",
+    subject: 'Audit "urgent"',
+    message: "Bonjour\n<script>alert(1)</script>",
+    receivedAt: new Date("2026-07-12T20:35:00Z"),
+  });
+
+  assert.doesNotMatch(html, /<script>/);
+  assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+  assert.match(html, /Audit &quot;urgent&quot;/);
+  assert.match(html, /12 juillet 2026 · 21:35/);
 });
 
 test("contact delivery rejects the honeypot", async () => {
