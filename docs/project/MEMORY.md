@@ -196,17 +196,23 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
   `Carole Tonoukouen <contact@carolebj.com>`. A preview test from that sender was
   marked `Delivered` on 2026-07-12. Contact-message subjects use the identifying
   prefix `[Carole Site]`; do not reintroduce the word “portfolio” in this email
-  label. Production readiness still requires a
-  durable anti-abuse layer and an explicit publication of the current code lot.
+  label. The production contact form and branded HTML notification were
+  validated end to end in Gmail on 2026-07-12. Production hardening still
+  requires a durable anti-abuse layer.
   Resend Receiving is enabled for `carolebj.com`; Namecheap routes the root MX
-  to `inbound-smtp.eu-west-1.amazonaws.com`. The preview-only endpoint
+  to `inbound-smtp.eu-west-1.amazonaws.com`. The production endpoint
   `/api/resend-inbound` verifies signed `email.received` webhooks, accepts only
   `contact@carolebj.com`, retrieves content and attachments with a separate
   full-access key, then forwards to Carole's Gmail with the original sender in
   `reply_to`. `RESEND_INBOUND_API_KEY` and `RESEND_WEBHOOK_SECRET` are encrypted
-  in Vercel Preview + Production. The Resend webhook currently targets an
-  ephemeral preview; switch it to `https://www.carolebj.com/api/resend-inbound`
-  only after the endpoint has been explicitly published to production.
+  in Vercel Preview + Production. The enabled Resend webhook targets
+  `https://www.carolebj.com/api/resend-inbound` and listens for
+  `email.received` events. A Gmail-to-`contact@carolebj.com` test completed with
+  HTTP 200 on the first webhook attempt and was forwarded back to Gmail.
+  Gmail's send-as alias `Carole Tonoukouen <contact@carolebj.com>` was verified
+  on 2026-07-12 through the production inbound flow. Gmail can now send from
+  the professional address. The contact notification's `reply_to` and branded
+  reply button both resolve to the visitor email supplied by the form.
   Contact-form notifications use a branded HTML email based on the validated
   warm editorial proposal: segmented color strip, CT monogram, serif subject,
   sender identity card, plum reply button and compact transactional footer.
