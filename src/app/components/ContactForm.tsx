@@ -2,6 +2,7 @@ import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { useState, type FormHTMLAttributes } from "react";
 import { useTranslation } from "react-i18next";
 import { shakeInvalidField } from "./contactFormUtils";
+import { isSuccessfulContactResponse } from "./contactResponse";
 
 type ContactFormVariant = "embedded" | "page";
 
@@ -31,6 +32,7 @@ export function ContactForm({
   const { t } = useTranslation();
   const [invalidFields, setInvalidFields] = useState<string[]>([]);
   const [formError, setFormError] = useState("");
+  const [submitState, setSubmitState] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const isPage = variant === "page";
   const inputRadius = isPage ? "rounded-xl" : "rounded-md";
   const labelLayout = isPage ? "grid gap-2" : "block";
@@ -44,22 +46,40 @@ export function ContactForm({
     }
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     const form = event.currentTarget;
+    event.preventDefault();
 
     if (form.checkValidity()) {
-      event.preventDefault();
       const formData = new FormData(form);
-      const name = String(formData.get("name") ?? "");
-      const email = String(formData.get("email") ?? "");
-      const subject = String(formData.get("subject") || t("contactSection.subject"));
-      const message = String(formData.get("message") ?? "");
-      const body = [name, email, message].filter(Boolean).join("\n\n");
-      window.location.href = `mailto:caroletonoukouen@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      setSubmitState("submitting");
+      setFormError("");
+
+      try {
+        const response = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: String(formData.get("name") ?? ""),
+            email: String(formData.get("email") ?? ""),
+            subject: String(formData.get("subject") || t("contactSection.subject")),
+            message: String(formData.get("message") ?? ""),
+            website: String(formData.get("website") ?? ""),
+          }),
+        });
+
+        if (!(await isSuccessfulContactResponse(response))) {
+          throw new Error("contact_submission_failed");
+        }
+        form.reset();
+        setSubmitState("success");
+      } catch {
+        setSubmitState("error");
+      }
       return;
     }
 
-    event.preventDefault();
+    setSubmitState("idle");
     const invalidElements = Array.from(form.elements)
       .filter(
         (element): element is HTMLInputElement | HTMLTextAreaElement =>
@@ -87,6 +107,12 @@ export function ContactForm({
       {...formProps}
       className={`t-input-wrap ${formError ? "is-error" : ""} ${className} ${formProps?.className ?? ""}`.trim()}
     >
+      <div className="hidden" aria-hidden="true">
+        <label>
+          Website
+          <input name="website" tabIndex={-1} autoComplete="off" />
+        </label>
+      </div>
       {showTitle ? (
         <h2 className="font-serif text-[32px] leading-none text-text-primary">
           {t("contactPage.formTitle")}
@@ -152,14 +178,26 @@ export function ContactForm({
         {formError}
       </p>
 
+      {submitState === "success" ? (
+        <p role="status" aria-live="polite" className="text-sm font-medium text-text-accent">
+          {t("contactSection.success")}
+        </p>
+      ) : null}
+      {submitState === "error" ? (
+        <p role="alert" className="text-sm font-medium text-destructive dark:text-[#ff8aa1]">
+          {t("contactSection.sendError")}
+        </p>
+      ) : null}
+
       <button
         type="submit"
+        disabled={submitState === "submitting"}
         className={`inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-full bg-action-strong px-6 text-[12px] font-semibold uppercase tracking-[1px] text-text-on-strong transition hover:bg-action-accent dark:bg-text-primary dark:text-[#1c1415] dark:hover:bg-text-accent dark:hover:text-text-on-strong ${
           isPage ? "w-fit gap-3 px-7" : "mt-5 w-full justify-center gap-2 sm:w-auto"
         }`}
       >
         <PaperAirplaneIcon className="size-4" aria-hidden="true" />
-        {t("contactSection.submit")}
+        {submitState === "submitting" ? t("contactSection.submitting") : t("contactSection.submit")}
       </button>
     </form>
   );

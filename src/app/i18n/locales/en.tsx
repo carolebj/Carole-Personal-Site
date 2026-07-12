@@ -282,6 +282,9 @@ const en = {
     subject: "Subject",
     message: "Message",
     submit: "Send message",
+    submitting: "Sending…",
+    success: "Thank you, your message has been sent to Carole.",
+    sendError: "Your message could not be sent. Please try again in a moment.",
     meetingLink: "Or choose to book a call",
   },
 

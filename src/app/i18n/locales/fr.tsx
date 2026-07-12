@@ -282,6 +282,9 @@ const fr = {
     subject: "Sujet",
     message: "Message",
     submit: "Envoyer le message",
+    submitting: "Envoi en cours…",
+    success: "Merci, votre message a bien été envoyé à Carole.",
+    sendError: "Le message n’a pas pu être envoyé. Réessayez dans quelques instants.",
     meetingLink: "Ou opter pour un rendez-vous",
   },
 
