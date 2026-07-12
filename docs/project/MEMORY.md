@@ -4,7 +4,7 @@
 
 This file is the project-level memory for the Carole Portfolio repo. Keep it short, current, and useful for future agents working on the site.
 
-Last reviewed: 2026-07-11 WAT
+Last reviewed: 2026-07-12 WAT
 
 ## Current Branch Workflow
 
@@ -179,6 +179,25 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
   - CLOGIS was split into its own project on 2026-06-28: `/Users/mrsteven/Documents/GitHub/CLOGIS`. The brief originally came through Carole's design brief flow, but project follow-up, memory, sources, and deliverables should now live in the CLOGIS project.
 
 ## Implementation Notes
+
+- The About page keeps its image field CMS-authoritative and uses the bundled
+  `src/assets/carole-about-portrait.avif` portrait as the local fallback.
+- The published `siteSettings` document uses Carole's Behance profile
+  (`https://www.behance.net/caroletonoukouen`) and no longer carries the legacy
+  Instagram placeholder. Its LinkedIn URL is
+  `https://www.linkedin.com/in/caroletonoukouen/`.
+- Contact forms submit to the server-only Vercel function `/api/contact`, which
+  targets Carole's Gmail through her dedicated Resend account. Resend's
+  **Emails > Sending** view is the operational delivery log; do not duplicate
+  it with a mailbox inside the site dashboard. `RESEND_API_KEY` and
+  `CONTACT_FROM_EMAIL` are encrypted on Vercel Preview + Production and must
+  remain server-only. `carolebj.com` is verified in Resend through DKIM, SPF and
+  MX records hosted at Namecheap, and the configured sender is
+  `Carole Tonoukouen <contact@carolebj.com>`. A preview test from that sender was
+  marked `Delivered` on 2026-07-12. Contact-message subjects use the identifying
+  prefix `[Carole Site]`; do not reintroduce the word “portfolio” in this email
+  label. Production readiness still requires a
+  durable anti-abuse layer and an explicit publication of the current code lot.
 
 - Keep routing in `src/app/routes.tsx` → `Layout` for public pages; `/dashboard/*` is outside `Layout`.
 - User-facing copy stays in `src/app/i18n/locales/fr.tsx` and `src/app/i18n/locales/en.tsx` as fallback. As dashboard content grows, i18n values become increasingly redundant — do not add new copy to i18n if it will be managed from the dashboard.
