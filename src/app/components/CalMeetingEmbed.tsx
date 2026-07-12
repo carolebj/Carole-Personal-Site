@@ -9,7 +9,7 @@ export default function CalMeetingEmbed() {
 
   useEffect(() => {
     (async () => {
-      const cal = await getCalApi({ namespace: "meet-carole" });
+      const cal = await getCalApi({ namespace: "rendez-vous-carole" });
       cal("ui", {
         theme: resolvedTheme,
         cssVarsPerTheme: {
@@ -35,8 +35,8 @@ export default function CalMeetingEmbed() {
   return (
     <div className="cal-meeting-embed mx-auto w-full max-w-[760px] overflow-hidden rounded-2xl border border-[#e5e2e1]/85 bg-white dark:border-white/10 dark:bg-[#171312]">
       <Cal
-        namespace="meet-carole"
-        calLink="mrstev3n/meet-carole"
+        namespace="rendez-vous-carole"
+        calLink="meetcarole/rendez-vous"
         config={{
           layout: "month_view",
           useSlotsViewOnSmallScreen: "true",
