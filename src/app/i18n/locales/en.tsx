@@ -620,7 +620,7 @@ const en = {
       subtitle:
         "Who I am, what I do in practice, and how I support brands and projects.",
     },
-    imageAlt: "Carole working on digital communication",
+    imageAlt: "Portrait of Carole Tonoukouen",
     identity: {
       label: "Who I am",
       greeting: "Lovely to meet you. I'm Carole Tonoukouen.",

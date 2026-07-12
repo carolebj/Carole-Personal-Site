@@ -72,7 +72,7 @@ export const seedContent = {
       ),
     },
     image: null,
-    imageAlt: L("Carole travaillant sur une communication digitale", "Carole working on digital communication"),
+    imageAlt: L("Portrait de Carole Tonoukouen", "Portrait of Carole Tonoukouen"),
     identity: {
       label: L("Qui je suis", "Who I am"),
       greeting: L("Enchantée, moi c'est Carole Tonoukouen.", "Lovely to meet you. I'm Carole Tonoukouen."),
@@ -435,8 +435,8 @@ export const seedContent = {
         description: L("Ouvrages et newsletters repères.", "Reference books and newsletters."),
       },
     },
-    contactEmail: "hello@carole.com",
-    instagram: "https://instagram.com/",
+    contactEmail: "caroletonoukouen@gmail.com",
+    behance: "https://www.behance.net/caroletonoukouen",
     linkedin: "https://linkedin.com/",
   },
 };

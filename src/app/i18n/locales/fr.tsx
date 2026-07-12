@@ -620,7 +620,7 @@ const fr = {
       subtitle:
         "Qui je suis, ce que je fais concrètement et la manière dont j'accompagne les marques et les projets.",
     },
-    imageAlt: "Carole travaillant sur une communication digitale",
+    imageAlt: "Portrait de Carole Tonoukouen",
     identity: {
       label: "Qui je suis",
       greeting: "Enchantée, moi c'est Carole Tonoukouen.",

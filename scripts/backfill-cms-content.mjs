@@ -9,6 +9,7 @@ const key = process.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? process.env.VITE_SUPABA
 const email = process.env.CMS_SEED_EMAIL;
 const password = process.env.CMS_SEED_PASSWORD;
 const apply = process.argv.includes("--apply");
+const only = process.argv.find((argument) => argument.startsWith("--only="))?.slice("--only=".length);
 const BUCKET = "media";
 const ROOT = fileURLToPath(new URL("../", import.meta.url));
 
@@ -271,6 +272,11 @@ const content = {
       },
     },
   },
+  aboutPage: {
+    aboutPage: {
+      imageAlt: L("Portrait de Carole Tonoukouen", "Portrait of Carole Tonoukouen"),
+    },
+  },
   siteSettings: {
     siteSettings: {
       description: L(
@@ -292,7 +298,7 @@ const newDocumentPositions = {
 const media = [
   ["homePage", "homePage", ["hero", "portrait"], "src/assets/carole-redesign-portrait.webp", L("Portrait de Carole Tonoukouen", "Portrait of Carole Tonoukouen")],
   ["homePage", "homePage", ["about", "image"], "src/assets/carole-shape-static.png", L("Carole Tonoukouen", "Carole Tonoukouen")],
-  ["aboutPage", "aboutPage", ["image"], "src/assets/carole-redesign-working.webp", L("Carole travaillant sur une communication digitale", "Carole working on digital communication")],
+  ["aboutPage", "aboutPage", ["image"], "src/assets/carole-about-portrait.avif", L("Portrait de Carole Tonoukouen", "Portrait of Carole Tonoukouen")],
   ["blogPost", "construire-une-ligne-editoriale", ["coverImage"], "src/assets/blog/blog-abstract-editorial.svg", L("Composition abstraite sur la stratégie éditoriale", "Abstract composition about editorial strategy")],
   ["blogPost", "calendrier-editorial-2026", ["coverImage"], "src/assets/blog/blog-abstract-content.svg", L("Composition abstraite sur le calendrier éditorial", "Abstract composition about editorial planning")],
   ["testimonial", "cynthia-s", ["portrait"], "src/assets/testimonials/testimonial-cynthia.svg", L("Portrait illustré de Cynthia", "Illustrated portrait of Cynthia")],
@@ -300,12 +306,16 @@ const media = [
   ["testimonial", "uzoma-obidike", ["portrait"], "src/assets/testimonials/testimonial-uzoma.svg", L("Portrait illustré d'Uzoma", "Illustrated portrait of Uzoma")],
   ["siteSettings", "siteSettings", ["ogImage"], "src/assets/og-carolet.png", L("Carole Tonoukouen — Chargée de communication digitale", "Carole Tonoukouen — Digital communications officer")],
 ];
+const selectedMedia = only
+  ? media.filter(([type, docId]) => `${type}/${docId}` === only)
+  : media;
 
 function contentType(path) {
   return {
     ".png": "image/png",
     ".svg": "image/svg+xml",
     ".webp": "image/webp",
+    ".avif": "image/avif",
   }[extname(path)] ?? "application/octet-stream";
 }
 
@@ -319,7 +329,7 @@ const sb = createClient(url, key);
 const { error: authError } = await sb.auth.signInWithPassword({ email, password });
 if (authError) throw authError;
 
-for (const [type, docId, path, file, alt] of media) {
+for (const [type, docId, path, file, alt] of selectedMedia) {
   const storagePath = `content/${type}/${docId}/${file.split("/").at(-1)}`;
   if (apply) {
     const bytes = readFileSync(join(ROOT, file));
@@ -337,7 +347,7 @@ for (const [type, docId, path, file, alt] of media) {
 
 /** Media synced from repo — always replace (not merge-only) when applying. */
 const forcedMedia = new Map(
-  media.map(([type, docId, path]) => [`${type}/${docId}/${path.join(".")}`, { type, docId, path }]),
+  selectedMedia.map(([type, docId, path]) => [`${type}/${docId}/${path.join(".")}`, { type, docId, path }]),
 );
 
 function applyForcedMedia(data, additions) {
@@ -356,6 +366,7 @@ function applyForcedMedia(data, additions) {
 const changes = [];
 for (const [type, documents] of Object.entries(content)) {
   for (const [docId, additions] of Object.entries(documents)) {
+    if (only && `${type}/${docId}` !== only) continue;
     const { data: row, error } = await sb
       .from("cms_documents")
       .select("data, slug, position, status")
@@ -371,6 +382,9 @@ for (const [type, documents] of Object.entries(content)) {
 
     const mergedBase = row ? mergeMissing(row.data, additions) : structuredClone(additions);
     const merged = row ? applyForcedMedia(mergedBase, additions) : mergedBase;
+    if (type === "aboutPage" && docId === "aboutPage" && additions.imageAlt) {
+      merged.imageAlt = structuredClone(additions.imageAlt);
+    }
     if (row && JSON.stringify(merged) === JSON.stringify(row.data)) continue;
     changes.push(`${type}/${docId}`);
     if (!apply) continue;
