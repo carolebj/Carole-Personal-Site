@@ -19,7 +19,7 @@ import {
   SunIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import caroleLogoSymbol from "../../assets/logos/carole-CT-logo.svg";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
@@ -287,6 +287,7 @@ export default function Navbar() {
   const carnetMenuRef = useRef<HTMLLIElement>(null);
   const lastScrollYRef = useRef(0);
   const { t, i18n } = useTranslation();
+  const shouldReduceMotion = useReducedMotion();
   const { enabled: hapticsEnabled, toggleEnabled: toggleHaptics } = useHaptics();
   const location = useLocation();
   const { data: cmsServices, usingCms: usingCmsServices } = useCmsCollection<CmsService>("service", []);
@@ -380,7 +381,7 @@ export default function Navbar() {
     }
 
     const target = href === "#home" ? document.querySelector("main section") : document.querySelector(href);
-    target?.scrollIntoView({ behavior: "smooth", block: "start" });
+    target?.scrollIntoView({ behavior: shouldReduceMotion ? "auto" : "smooth", block: "start" });
     setIsMobileMenuOpen(false);
     setIsServicesOpen(false);
     setHoveredNavId(null);
@@ -423,7 +424,7 @@ export default function Navbar() {
         <Link
           ref={logoRef}
           to="/"
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          onClick={() => window.scrollTo({ top: 0, behavior: shouldReduceMotion ? "auto" : "smooth" })}
           onContextMenu={handleLogoContextMenu}
           className="flex items-center gap-2 text-[#1c1b1b] dark:text-[#f8f1ec]"
           aria-label="Carole Tonoukouen"

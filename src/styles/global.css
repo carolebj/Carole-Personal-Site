@@ -4,15 +4,8 @@
   }
 
   html {
-    scroll-behavior: smooth;
     font-size: var(--font-size);
     overflow-x: clip;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
   }
 
   body {
@@ -329,12 +322,12 @@
 
   ::view-transition-old(root),
   ::view-transition-new(root) {
-    animation-duration: 420ms;
+    animation-duration: 200ms;
     animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   ::view-transition-group(*) {
-    animation-duration: 520ms;
+    animation-duration: 220ms;
     animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
