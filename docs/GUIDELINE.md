@@ -84,6 +84,23 @@ If you add any of the following, update this file:
 - Update `MEMORY.md` when there is a major product, design, branch, architecture, command, or content-direction change.
 - Keep `MEMORY.md` short, current, and reusable; do not turn it into a granular changelog.
 
+## Operational Workflow
+
+### Browser and authenticated sessions
+
+- Use the Codex in-app browser by default for previews, navigation, visual checks, and web work.
+- If an external service requires authentication, state the exact access need first. The user can then connect the relevant account in the in-app browser and provide the appropriate next step.
+- Do not use Dia for general browsing, previews, tests, developer tools, or authenticated client services. Dia is reserved for private email sessions when the user explicitly directs the agent there, such as work inside Carole's Gmail account.
+- Do not assume that another client account should be opened in Dia. Until the user says otherwise, request access through the in-app browser.
+- Use Chrome or Chrome DevTools only when a concrete technical need cannot be handled reliably in the in-app browser; explain that need before switching tools.
+
+### Task tracking
+
+- When work produces an actionable set of tasks, record those tasks in TickTick under the `Carole - Personal site` list in the `Work` folder.
+- Treat TickTick as the operational source of truth for that task set: keep deferred or blocked items open, and mark an item complete only after the requested result has been implemented and verified.
+- As work progresses, update the corresponding TickTick items instead of maintaining an independent competing checklist in chat or project documentation.
+- Suggestions, hypotheses, and missing inputs are not automatically implementation decisions. Add them as reviewable TickTick tasks when useful, and wait for explicit user validation before changing product behavior.
+
 ## Architecture Overview
 
 ## Boot Flow
