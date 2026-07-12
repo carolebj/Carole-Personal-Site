@@ -25,6 +25,9 @@ secondes et utilisée à ton insu. La règle est donc :
 | `VITE_SUPABASE_URL` | Publique | Var d'env build (`VITE_`) | Oui (normal) |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Publique (protégée par RLS) | Var d'env build (`VITE_`) | Oui (normal) |
 | `CRON_SECRET` | Secrète | Vercel Production uniquement | Non |
+| `RESEND_API_KEY` | Élevée | Variables chiffrées Vercel Preview + Production | Non |
+| `RESEND_INBOUND_API_KEY` | **Élevée** (accès complet Resend) | Variables chiffrées Vercel Preview + Production | Non |
+| `RESEND_WEBHOOK_SECRET` | Élevée | Variables chiffrées Vercel Preview + Production | Non |
 | `CMS_SEED_EMAIL` / `CMS_SEED_PASSWORD` | **Élevée** (compte éditeur) | `.env.local` uniquement | Non |
 | `OPENAI_API_KEY` | **Critique** (coût) | Coffre-fort : Cloudflare AI Gateway (BYOK) | Non |
 | `TRANSLATE_WORKER_TOKEN` | Élevée | `wrangler secret` (Worker) + var d'env hébergeur du site | Non |
