@@ -2,6 +2,8 @@
 
 Bilingual personal website for Carole Tonoukouen (React + Vite + TypeScript + Tailwind v4), with a custom admin dashboard at `/dashboard` backed by Supabase.
 
+Production: https://www.carolebj.com
+
 ## Commands
 
 ```bash
