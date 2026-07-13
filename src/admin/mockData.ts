@@ -396,15 +396,15 @@ export const seedContent = {
     id: "siteSettings",
     title: L("Carole Tonoukouen", "Carole Tonoukouen"),
     description: L(
-      "Portfolio de Carole Tonoukouen, chargée de communication digitale.",
-      "Portfolio of Carole Tonoukouen, digital communications officer.",
+      "Site personnel de Carole Tonoukouen, chargée de communication digitale.",
+      "Personal website of Carole Tonoukouen, digital communications officer.",
     ),
     siteUrl: "https://www.carolebj.com",
     ogImage: null,
     seoPages: {
       home: {
         title: L("Carole Tonoukouen | Communication digitale", "Carole Tonoukouen | Digital communication"),
-        description: L("Portfolio de communication digitale.", "Digital communications portfolio."),
+        description: L("Site personnel de Carole Tonoukouen.", "Personal website of Carole Tonoukouen."),
       },
       about: {
         title: L("À propos | Carole Tonoukouen", "About | Carole Tonoukouen"),

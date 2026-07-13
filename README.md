@@ -1,6 +1,6 @@
-# Carole Portfolio version 1.0
+# Carole Personal Site
 
-Bilingual editorial portfolio (React + Vite + TypeScript + Tailwind v4) with a custom admin dashboard at `/dashboard` backed by Supabase.
+Bilingual personal website for Carole Tonoukouen (React + Vite + TypeScript + Tailwind v4), with a custom admin dashboard at `/dashboard` backed by Supabase.
 
 ## Commands
 

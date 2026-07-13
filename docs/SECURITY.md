@@ -1,6 +1,6 @@
 # SECURITY.md — façon de travailler et gestion des secrets
 
-> Document de référence sécurité pour le portfolio Carole. À lire avant toute
+> Document de référence sécurité pour le site personnel de Carole. À lire avant toute
 > manipulation de clés, de variables d'environnement ou de déploiement.
 > Inspiré d'un principe simple : **un secret ne doit jamais entrer dans Git, et
 > en production il vit dans un coffre-fort, pas dans un fichier `.env`.**

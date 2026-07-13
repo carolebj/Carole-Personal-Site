@@ -50,7 +50,7 @@ export async function translateToEnglish({ text, format }) {
     body: JSON.stringify({
       model: process.env.OPENAI_TRANSLATION_MODEL ?? "gpt-4o-mini",
       instructions:
-        "Translate French portfolio CMS content into natural, polished English. Preserve meaning, tone, names, formatting cues, and do not add commentary.",
+        "Translate French personal-site CMS content into natural, polished English. Preserve meaning, tone, names, formatting cues, and do not add commentary.",
       input: `Format: ${format ?? "plainText"}\n\nFrench content:\n${text}`,
       max_output_tokens: 1200,
     }),

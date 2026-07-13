@@ -15,13 +15,13 @@ développeurs. Les documents de guidage vivent dans **`docs/`**.
   MCP `browser_navigate` ; Codex/Claude Code via leur propre preview ; le
   navigateur système n'est qu'une option secondaire, en cas de bénéfice précis).
 - **`docs/project/MEMORY.md`** — mémoire produit/design vivante (contexte courant).
-- **`docs/project/NEXT_STEPS.md`** — passation / todo de la session en cours.
 - **`docs/archive/UI_AUDIT.md`** — checklist UI site public (terminée, archivée).
 
 ## Réflexes
 
-- Avant de coder : lire `docs/GUIDELINE.md`, `docs/project/MEMORY.md`, puis
-  `docs/project/NEXT_STEPS.md` pour la todo courante.
+- Avant de coder : lire `docs/GUIDELINE.md` puis `docs/project/MEMORY.md`.
+- Pour la todo courante, consulter et maintenir la liste TickTick
+  `Carole - Personal site` du dossier `Work`.
 - Avant de toucher aux secrets ou de committer : lire `docs/SECURITY.md` et
   lancer `npm run security:scan` (le hook pre-commit le fait automatiquement
   après `npm run security:install-hooks`).

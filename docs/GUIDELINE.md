@@ -1,10 +1,10 @@
 # GUIDELINE.md
 
-Canonical implementation guide for the Carole Portfolio repo. Use this file for commands, architecture, and coding rules. Use `project/MEMORY.md` for current product/design decisions and living project context. Security model and secret handling live in `SECURITY.md` (same folder).
+Canonical implementation guide for the Carole Personal Site repo. Use this file for commands, architecture, and coding rules. Use `project/MEMORY.md` for current product/design decisions and living project context. Security model and secret handling live in `SECURITY.md` (same folder).
 
 ## Project Description
 
-Carole Portfolio is a bilingual personal portfolio site built with React, Vite, TypeScript, and Tailwind CSS v4.
+Carole Personal Site is Carole Tonoukouen's bilingual professional website, built with React, Vite, TypeScript, and Tailwind CSS v4.
 It renders a single-page editorial social media direction experience for Carole Tonoukouen with sections for hero content, manifesto, about/presentation, services, testimonials, and contact/newsletter footer.
 Routing is handled with `react-router` in data-router style, even though the current public surface is effectively a single home page plus error and fallback routes.
 Translations are managed with `react-i18next` and support French and English, with browser/localStorage-based language selection.
@@ -230,7 +230,6 @@ Project guidance (all under `docs/`, entry point `AGENTS.md` at repo root):
 - `docs/SECURITY.md`: security model and secret-handling workflow
 - `docs/workflows/AGENT_DEV.md`: initialisation CMS additive + vérification navigateur autonome
 - `docs/project/MEMORY.md`: current project memory and redesign notes
-- `docs/project/NEXT_STEPS.md`: post-launch todo (OG, merge prod, sécurité traduction)
 - `docs/archive/UI_AUDIT.md`: checklist UI terminée (2026-06-10)
 
 ## Coding Conventions

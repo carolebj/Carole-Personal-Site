@@ -15,12 +15,12 @@ const fallbackByKey: Record<SeoPageKey, { fr: SeoCopy; en: SeoCopy }> = {
     fr: {
       title: "Carole Tonoukouen | Communication digitale",
       description:
-        "Portfolio de Carole Tonoukouen, chargée de communication digitale : stratégie éditoriale, contenus, campagnes et visibilité de marque.",
+        "Site personnel de Carole Tonoukouen, chargée de communication digitale : stratégie éditoriale, contenus, campagnes et visibilité de marque.",
     },
     en: {
       title: "Carole Tonoukouen | Digital communication",
       description:
-        "Portfolio of Carole Tonoukouen, digital communications officer: editorial strategy, content, campaigns, and brand visibility.",
+        "Personal website of Carole Tonoukouen, digital communications officer: editorial strategy, content, campaigns, and brand visibility.",
     },
   },
   about: {
