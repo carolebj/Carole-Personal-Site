@@ -1,33 +1,29 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 import {
-  ArrowUpRightIcon,
   Bars3Icon,
-  BookOpenIcon,
-  BriefcaseIcon,
-  ChartBarIcon,
-  ChevronDownIcon,
+  CalculatorIcon,
   ChevronRightIcon,
   ComputerDesktopIcon,
   DocumentTextIcon,
-  MegaphoneIcon,
   MoonIcon,
   PencilSquareIcon,
-  SparklesIcon,
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
   SunIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { ArrowRightIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
+import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import caroleLogoSymbol from "../../assets/logos/carole-CT-logo.svg";
+import blogAbstractEditorial from "../../assets/blog/blog-abstract-editorial.svg";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { useHaptics } from "../interactions/HapticContext";
 import { useTheme, type ThemePreference } from "../theme/ThemeContext";
-import { toServiceViewModel } from "../../cms/adapters";
-import { useCmsCollection } from "../../cms/cmsContent";
-import type { CmsService } from "../../cms/types";
+import { toBlogPostViewModel, toServiceViewModel } from "../../cms/adapters";
+import { cmsImageUrl, useCmsCollection } from "../../cms/cmsContent";
+import { isPublishedPost, type CmsBlogPost, type CmsImage, type CmsService } from "../../cms/types";
 
 type ServicePreview = {
   slug: string;
@@ -40,8 +36,33 @@ type ServicePreview = {
   bullets: string[];
 };
 
+type MenuHighlight = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  readingTime: string;
+  featured?: boolean;
+  coverImage?: CmsImage;
+};
+
+const EMPTY_BLOG_POSTS: CmsBlogPost[] = [];
+
 type DropdownPhase = "closed" | "open" | "closing";
 type MobileAccordion = "services" | "carnet" | null;
+type ServiceMenuKey = "editorial" | "audit" | "communication" | "content" | "identity" | "other";
+
+const getServiceMenuKey = (slug: string, index: number): ServiceMenuKey => {
+  const normalizedSlug = slug.toLowerCase();
+
+  if (normalizedSlug.includes("audit")) return "audit";
+  if (normalizedSlug.includes("identite") || normalizedSlug.includes("visual-identity")) return "identity";
+  if (normalizedSlug.includes("communication")) return "communication";
+  if (normalizedSlug.includes("creation") || normalizedSlug.includes("content-creation")) return "content";
+  if (normalizedSlug.includes("strategie") || normalizedSlug.includes("editorial-strategy")) return "editorial";
+
+  return (["editorial", "communication", "content", "audit", "identity"] as const)[index] ?? "other";
+};
 
 const themeOptions: Array<{
   value: ThemePreference;
@@ -283,14 +304,17 @@ export default function Navbar() {
   const [isForcedOpen, setIsForcedOpen] = useState(false);
   const logoRef = useRef<HTMLAnchorElement>(null);
   const logoMenuRef = useRef<HTMLDivElement>(null);
+  const servicesTriggerRef = useRef<HTMLButtonElement>(null);
   const servicesMenuRef = useRef<HTMLLIElement>(null);
   const carnetMenuRef = useRef<HTMLLIElement>(null);
+  const desktopDropdownCloseTimeoutRef = useRef<number | null>(null);
   const lastScrollYRef = useRef(0);
   const { t, i18n } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const { enabled: hapticsEnabled, toggleEnabled: toggleHaptics } = useHaptics();
   const location = useLocation();
   const { data: cmsServices, usingCms: usingCmsServices } = useCmsCollection<CmsService>("service", []);
+  const { data: cmsBlogPosts, usingCms: usingCmsBlogPosts } = useCmsCollection<CmsBlogPost>("blogPost", EMPTY_BLOG_POSTS);
   const locale = i18n.language;
   const services = useMemo(() => {
     if (usingCmsServices) {
@@ -298,8 +322,85 @@ export default function Navbar() {
     }
     return t("services.items", { returnObjects: true }) as ServicePreview[];
   }, [cmsServices, usingCmsServices, locale, t]);
-  const serviceIcons = [DocumentTextIcon, MegaphoneIcon, PencilSquareIcon, ChartBarIcon];
+  const legacyBlogPosts = useMemo(
+    () => t("blog.posts", { returnObjects: true }) as MenuHighlight[],
+    [t],
+  );
+  const menuHighlights = useMemo(
+    () => usingCmsBlogPosts
+      ? cmsBlogPosts.filter(isPublishedPost).map((post) => toBlogPostViewModel(post, locale))
+      : legacyBlogPosts,
+    [cmsBlogPosts, legacyBlogPosts, locale, usingCmsBlogPosts],
+  );
+  const menuHighlight = menuHighlights.find((post) => post.featured) ?? menuHighlights[0];
+  const menuHighlightImage = cmsImageUrl(menuHighlight?.coverImage) || blogAbstractEditorial;
+  const menuHighlightIsCaseStudy = menuHighlight?.category.toLowerCase().includes("case")
+    || menuHighlight?.category.toLowerCase().includes("étude");
+  const serviceMenuGroups = useMemo(() => {
+    const normalizedServices = services.map((service, index) => ({
+      ...service,
+      menuKey: getServiceMenuKey(service.slug, index),
+      menuIndex: index + 1,
+    }));
+    const groups: Array<{
+      key: string;
+      label: string;
+      serviceKeys: ServiceMenuKey[];
+    }> = [
+      {
+        key: "strategy",
+        label: t("nav.serviceCategoryStrategy"),
+        serviceKeys: ["editorial", "audit"],
+      },
+      {
+        key: "content",
+        label: t("nav.serviceCategoryContent"),
+        serviceKeys: ["communication", "content"],
+      },
+      {
+        key: "brand",
+        label: t("nav.serviceCategoryBrand"),
+        serviceKeys: ["identity"],
+      },
+      {
+        key: "other",
+        label: t("nav.serviceCategoryOther"),
+        serviceKeys: ["other"],
+      },
+    ];
+
+    return groups
+      .map((group) => ({
+        ...group,
+        services: normalizedServices.filter((service) => group.serviceKeys.includes(service.menuKey)),
+      }))
+      .filter((group) => group.services.length > 0);
+  }, [services, t]);
   const logoDropdownPhase = useDropdownTransition(isLogoMenuOpen);
+
+  const cancelDesktopDropdownClose = () => {
+    if (desktopDropdownCloseTimeoutRef.current === null) return;
+
+    window.clearTimeout(desktopDropdownCloseTimeoutRef.current);
+    desktopDropdownCloseTimeoutRef.current = null;
+  };
+
+  const scheduleDesktopDropdownClose = () => {
+    cancelDesktopDropdownClose();
+    desktopDropdownCloseTimeoutRef.current = window.setTimeout(() => {
+      setIsServicesOpen(false);
+      setIsCarnetOpen(false);
+      setHoveredNavId(null);
+      desktopDropdownCloseTimeoutRef.current = null;
+    }, 120);
+  };
+  const primaryDropdownLayoutTransition = shouldReduceMotion
+    ? { duration: 0 }
+    : { duration: 0.155, ease: [0.23, 1, 0.32, 1] as const };
+  const primaryDropdownOpacityTransition = {
+    duration: shouldReduceMotion ? 0.08 : 0.09,
+    ease: [0.23, 1, 0.32, 1] as const,
+  };
 
   const navLinks = [
     { id: "home", name: t("nav.home"), href: "#home" },
@@ -328,6 +429,8 @@ export default function Navbar() {
         setIsForcedOpen(false);
         setIsMobileMenuOpen(false);
         setOpenMobileAccordion(null);
+        setIsServicesOpen(false);
+        setIsCarnetOpen(false);
       }
 
       lastScrollYRef.current = currentY;
@@ -336,6 +439,12 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isForcedOpen]);
+
+  useEffect(() => () => {
+    if (desktopDropdownCloseTimeoutRef.current !== null) {
+      window.clearTimeout(desktopDropdownCloseTimeoutRef.current);
+    }
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -362,6 +471,27 @@ export default function Navbar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (!isServicesOpen) return undefined;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setIsServicesOpen(false);
+      setHoveredNavId(null);
+      servicesTriggerRef.current?.focus();
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isServicesOpen]);
+
+  useEffect(() => {
+    setIsServicesOpen(false);
+    setIsCarnetOpen(false);
+    setIsMobileMenuOpen(false);
+    setOpenMobileAccordion(null);
+  }, [location.pathname]);
 
 
   const scrollToSection = (
@@ -487,6 +617,7 @@ export default function Navbar() {
           </div>
         ) : null}
 
+        <LayoutGroup id="portfolio-primary-nav-dropdowns">
         <ul className="relative hidden items-center gap-0 lg:flex">
           {navLinks.map((link) => {
             const isActive = link.href.startsWith("#")
@@ -516,17 +647,12 @@ export default function Navbar() {
                   ref={servicesMenuRef}
                   className="relative"
                   onMouseEnter={() => {
+                    cancelDesktopDropdownClose();
                     setHoveredNavId(link.id);
                     setIsServicesOpen(true);
+                    setIsCarnetOpen(false);
                   }}
-                  onMouseLeave={() => {
-                    setHoveredNavId(null);
-                    setIsServicesOpen(false);
-                  }}
-                  onFocusCapture={() => {
-                    setHoveredNavId(link.id);
-                    setIsServicesOpen(true);
-                  }}
+                  onMouseLeave={scheduleDesktopDropdownClose}
                   onBlurCapture={(event) => {
                     if (!event.currentTarget.contains(event.relatedTarget as Node)) {
                       setHoveredNavId(null);
@@ -534,12 +660,17 @@ export default function Navbar() {
                     }
                   }}
                 >
-                  <Link
-                    to={link.href}
+                  <button
+                    ref={servicesTriggerRef}
+                    type="button"
+                    id="services-menu-trigger"
                     aria-expanded={isServicesOpen}
-                    onClick={() => {
-                      setIsServicesOpen(false);
-                      setHoveredNavId(null);
+                    aria-controls="services-mega-menu"
+                    onClick={(event) => {
+                      cancelDesktopDropdownClose();
+                      setIsCarnetOpen(false);
+                      setIsServicesOpen((current) => event.detail === 0 ? !current : true);
+                      setHoveredNavId(link.id);
                     }}
                     className={linkClass}
                   >
@@ -550,74 +681,129 @@ export default function Navbar() {
                         isServicesOpen ? "rotate-180" : ""
                       }`}
                     />
-                  </Link>
+                  </button>
                   <AnimatePresence>
                     {isServicesOpen ? (
                       <div className="absolute left-1/2 top-full z-[75] w-max -translate-x-1/2 pt-4">
                         <motion.div
-                          layoutId="portfolio-services-menu"
-                          initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: 8, scale: 0.98 }}
-                          transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                          className="w-[min(900px,calc(100vw-3rem))] overflow-hidden rounded-2xl border border-[#e5e2e1]/80 bg-white p-4 shadow-[0_24px_72px_rgba(28,27,27,0.14)] dark:border-white/10 dark:bg-[#171312]"
+                          id="services-mega-menu"
+                          role="region"
+                          aria-labelledby="services-menu-trigger"
+                          layout
+                          layoutId="portfolio-primary-dropdown"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{
+                            layout: primaryDropdownLayoutTransition,
+                            opacity: primaryDropdownOpacityTransition,
+                          }}
+                          style={{ transformOrigin: "top center" }}
+                          onMouseEnter={cancelDesktopDropdownClose}
+                          className="w-[min(1080px,calc(100vw-3rem))] overflow-hidden rounded-[22px] border border-border-subtle bg-surface-panel p-4 text-text-primary shadow-[0_28px_90px_rgba(28,27,27,0.16)] dark:shadow-[0_28px_90px_rgba(0,0,0,0.34)]"
                       >
-                        <div className="flex w-full gap-8 overflow-hidden">
-                          <div className="w-[520px] shrink-0">
-                            <h3 className="mb-4 px-2 text-[12px] font-semibold uppercase tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">
-                              {t("nav.services")}
-                            </h3>
-                            <ul className="grid grid-cols-2 gap-x-5 gap-y-4">
-                          {services.map((service, index) => {
-                            const ServiceIcon = serviceIcons[index % serviceIcons.length];
-
-                            return (
-                                    <li key={service.slug}>
-                                      <Link
-                                key={service.slug}
-                                to={`/services/${service.slug}`}
-                                onClick={() => setIsServicesOpen(false)}
-                                        className="group flex items-start gap-3 rounded-xl p-2 text-left text-[#5b4137] transition-colors duration-300 hover:bg-[#fcf9f8] hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
-                              >
-                                        <span className="flex size-9 shrink-0 items-center justify-center rounded-md border border-[#854d63]/20 bg-[#2f2f32] text-white transition-colors duration-300 group-hover:border-[#854d63] group-hover:bg-[#854d63] dark:border-[#f0adc4]/30 dark:bg-[#24201f] dark:group-hover:bg-[#f0adc4] dark:group-hover:text-[#171312]">
-                                   <ServiceIcon className="size-[18px]" />
-                                </span>
-                                        <span className="min-w-0 flex-1 leading-5">
-                                          <span className="block text-wrap text-[14px] font-semibold text-[#1c1b1b] dark:text-[#f8f1ec]">
-                                    {service.title} <span className="italic text-[#854d63] dark:text-[#f0adc4]">{service.accent}</span>
-                                  </span>
-                                          <span className="mt-1 block max-w-[190px] text-[12px] text-[#6d625d] transition-colors duration-300 group-hover:text-[#1c1b1b] dark:text-[#cdb9ae] dark:group-hover:text-[#f8f1ec]">
-                                    {service.menuDescription}
-                                  </span>
-                                </span>
-                              </Link>
-                                    </li>
-                            );
-                          })}
-                            </ul>
-                        </div>
-                        <Link
-                          to="/blog/cas-client-coworking-cotonou"
-                          onClick={() => setIsServicesOpen(false)}
-                            className="group flex min-h-[230px] w-[280px] shrink-0 flex-col justify-between rounded-xl border border-[#e5e2e1]/70 bg-[#f7f6f4] p-5 text-[#1c1b1b] transition-colors duration-300 hover:bg-[#f3ecec] dark:border-white/10 dark:bg-[#211a19] dark:text-[#f8f1ec] dark:hover:bg-[#29201f]"
+                        <motion.div
+                          layout="position"
+                          transition={{ layout: primaryDropdownLayoutTransition }}
+                          className="grid min-h-[280px] grid-cols-[minmax(0,1fr)_272px] gap-5"
                         >
-                          <span className="flex items-start justify-between gap-6">
-                              <span className="text-[12px] font-semibold uppercase leading-5 tracking-[2px] text-[#854d63] dark:text-[#f0adc4]">
-                              {t("nav.caseStudies")}
-                            </span>
-                            <ArrowUpRightIcon className="size-5 text-[#6d625d] transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#854d63] dark:text-[#cdb9ae] dark:group-hover:text-[#f0adc4]" />
-                          </span>
-                          <span>
-                            <span className="block max-w-[420px] text-[22px] font-semibold leading-[1.18] tracking-[-0.01em] text-[#1c1b1b] dark:text-[#f8f1ec]">
-                              {t("nav.caseStudyTitle")}
-                            </span>
-                            <span className="mt-4 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[2px] text-[#6d625d] dark:text-[#cdb9ae]">
-                              <BriefcaseIcon className="size-4" />
-                              {t("nav.caseStudyMeta")}
-                            </span>
-                          </span>
-                        </Link>
-                      </div>
+                          <div className="flex min-w-0 flex-col py-1">
+                            <div className="flex items-center justify-between gap-5 border-b border-border-subtle pb-4">
+                              <h3 className="text-[12px] font-semibold uppercase tracking-[2.4px] text-text-accent">
+                                {t("nav.ourServices")}
+                              </h3>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  disabled
+                                  className="inline-flex h-10 cursor-not-allowed items-center gap-2 rounded-full border border-border-accent/35 bg-surface-accent-muted px-3.5 text-[11px] font-semibold text-text-accent"
+                                >
+                                  <CalculatorIcon className="size-4" />
+                                  {t("nav.projectEstimator")}
+                                  <span
+                                    className="rounded-full bg-surface-panel px-2 py-0.5 text-[9px] uppercase tracking-[1px] text-text-secondary"
+                                  >
+                                    {t("nav.comingSoon")}
+                                  </span>
+                                </button>
+                                <Link
+                                  to="/services"
+                                  onClick={() => setIsServicesOpen(false)}
+                                  className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-full border border-border-subtle px-3.5 text-[11px] font-semibold text-text-primary transition hover:border-border-accent hover:text-text-accent"
+                                >
+                                  {t("nav.allServices")}
+                                </Link>
+                              </div>
+                            </div>
+                            <div className="grid flex-1 grid-cols-3 gap-6 pt-5">
+                              {serviceMenuGroups.map((group) => (
+                                <section key={group.key} aria-labelledby={`service-group-${group.key}`}>
+                                  <h4
+                                    id={`service-group-${group.key}`}
+                                    className="text-[11px] font-medium uppercase tracking-[1.8px] text-text-muted"
+                                  >
+                                    {group.label}
+                                  </h4>
+                                  <ul className="mt-3 grid gap-1.5">
+                                    {group.services.map((service) => (
+                                      <li key={service.slug}>
+                                        <Link
+                                          to={`/services/${service.slug}`}
+                                          onClick={() => setIsServicesOpen(false)}
+                                          className="group flex gap-3 rounded-xl px-2 py-2.5 transition hover:bg-surface-page-muted"
+                                        >
+                                          <span className="mt-0.5 text-[10px] font-semibold tracking-[1px] text-text-accent">
+                                            {String(service.menuIndex).padStart(2, "0")}
+                                          </span>
+                                          <span className="min-w-0">
+                                            <span className="block text-[14px] font-semibold leading-5 text-text-primary group-hover:text-text-accent">
+                                              {service.title} {service.accent}
+                                            </span>
+                                            <span className="mt-0.5 block text-[11px] leading-4 text-text-secondary">
+                                              {t(`nav.serviceDescription${service.menuKey[0].toUpperCase()}${service.menuKey.slice(1)}`)}
+                                            </span>
+                                          </span>
+                                        </Link>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </section>
+                              ))}
+                            </div>
+                          </div>
+                          {menuHighlight ? (
+                            <aside className="flex min-h-[280px] flex-col border-l border-border-subtle pl-5" aria-label={t("nav.highlight")}>
+                              <div className="flex items-center justify-between gap-3">
+                                <span className="text-[11px] font-semibold uppercase tracking-[1.8px] text-text-muted">
+                                  {t("nav.highlight")}
+                                </span>
+                                <span className="text-[10px] text-text-accent">{menuHighlight.category}</span>
+                              </div>
+                              <div className="mt-3 flex h-[112px] items-center justify-center overflow-hidden rounded-xl bg-surface-accent-muted p-3">
+                                <img
+                                  src={menuHighlightImage}
+                                  alt=""
+                                  aria-hidden="true"
+                                  className="h-full w-full rounded-lg object-cover"
+                                />
+                              </div>
+                              <h4 className="mt-3 line-clamp-2 text-[17px] font-semibold leading-[1.25] text-text-primary">
+                                {menuHighlight.title}
+                              </h4>
+                              <p className="mt-2 line-clamp-2 text-[11px] leading-4 text-text-secondary">
+                                {menuHighlight.excerpt}
+                              </p>
+                              <Link
+                                to={`/blog/${menuHighlight.slug}`}
+                                onClick={() => setIsServicesOpen(false)}
+                                className="group mt-auto inline-flex items-center gap-2 pt-3 text-[11px] font-semibold text-text-accent transition hover:text-text-primary"
+                              >
+                                {t(menuHighlightIsCaseStudy ? "nav.readCaseStudy" : "nav.readArticle")}
+                                <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-1" />
+                              </Link>
+                            </aside>
+                          ) : null}
+                      </motion.div>
                         </motion.div>
                       </div>
                     ) : null}
@@ -633,16 +819,17 @@ export default function Navbar() {
                   ref={carnetMenuRef}
                   className="relative"
                   onMouseEnter={() => {
+                    cancelDesktopDropdownClose();
                     setHoveredNavId(link.id);
                     setIsCarnetOpen(true);
+                    setIsServicesOpen(false);
                   }}
-                  onMouseLeave={() => {
-                    setHoveredNavId(null);
-                    setIsCarnetOpen(false);
-                  }}
+                  onMouseLeave={scheduleDesktopDropdownClose}
                   onFocusCapture={() => {
+                    cancelDesktopDropdownClose();
                     setHoveredNavId(link.id);
                     setIsCarnetOpen(true);
+                    setIsServicesOpen(false);
                   }}
                   onBlurCapture={(event) => {
                     if (!event.currentTarget.contains(event.relatedTarget as Node)) {
@@ -656,6 +843,8 @@ export default function Navbar() {
                     aria-expanded={isCarnetOpen}
                     onClick={(event) => {
                       event.preventDefault();
+                      cancelDesktopDropdownClose();
+                      setIsServicesOpen(false);
                       setHoveredNavId(link.id);
                       setIsCarnetOpen((current) => !current);
                     }}
@@ -673,28 +862,41 @@ export default function Navbar() {
                     {isCarnetOpen ? (
                       <div className="absolute left-1/2 top-full z-[75] w-max -translate-x-1/2 pt-4">
                         <motion.div
-                          layoutId="portfolio-carnet-menu"
-                          initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: 8, scale: 0.98 }}
-                          transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                          className="w-80 overflow-hidden rounded-2xl border border-[#e5e2e1]/80 bg-white p-3 shadow-[0_24px_72px_rgba(28,27,27,0.14)] dark:border-white/10 dark:bg-[#171312]"
+                          layout
+                          layoutId="portfolio-primary-dropdown"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{
+                            layout: primaryDropdownLayoutTransition,
+                            opacity: primaryDropdownOpacityTransition,
+                          }}
+                          style={{ transformOrigin: "top center" }}
+                          onMouseEnter={cancelDesktopDropdownClose}
+                          className="w-[392px] overflow-hidden rounded-[22px] border border-border-subtle bg-surface-panel p-4 text-text-primary shadow-[0_28px_90px_rgba(28,27,27,0.16)] dark:shadow-[0_28px_90px_rgba(0,0,0,0.34)]"
                         >
-                          <ul className="flex flex-col gap-1">
+                          <motion.div
+                            layout="position"
+                            transition={{ layout: primaryDropdownLayoutTransition }}
+                          >
+                            <h3 className="border-b border-border-subtle pb-4 text-[12px] font-semibold uppercase tracking-[2.4px] text-text-accent">
+                              {t("nav.carnet")}
+                            </h3>
+                            <ul className="mt-3 flex flex-col gap-1">
                             <li>
                               <Link
                                 to="/carnet/outils-inspirations"
                                 onClick={() => setIsCarnetOpen(false)}
-                                className="group flex items-start gap-3 rounded-xl p-3 text-left text-[#5b4137] transition-colors duration-300 hover:bg-[#fcf9f8] hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
+                                className="group flex items-start gap-3 rounded-xl px-2 py-3 text-left transition-colors duration-300 hover:bg-surface-page-muted"
                               >
-                                <span className="flex size-9 shrink-0 items-center justify-center rounded-md border border-[#854d63]/20 bg-[#2f2f32] text-white transition-colors duration-300 group-hover:border-[#854d63] group-hover:bg-[#854d63] dark:border-[#f0adc4]/30 dark:bg-[#24201f] dark:group-hover:bg-[#f0adc4] dark:group-hover:text-[#171312]">
-                                  <SparklesIcon className="size-[18px]" />
+                                <span className="mt-0.5 text-[10px] font-semibold tracking-[1px] text-text-accent">
+                                  01
                                 </span>
-                                <span className="leading-5">
-                                  <span className="block text-[14px] font-semibold text-[#1c1b1b] dark:text-[#f8f1ec]">
+                                <span className="min-w-0 leading-5">
+                                  <span className="block text-[14px] font-semibold text-text-primary group-hover:text-text-accent">
                                     {t("nav.toolsAndInspirations")}
                                   </span>
-                                  <span className="mt-1 block text-[11px] text-[#6d625d] transition-colors duration-300 group-hover:text-[#1c1b1b] dark:text-[#cdb9ae] dark:group-hover:text-[#f8f1ec]">
+                                  <span className="mt-0.5 block text-[11px] leading-4 text-text-secondary">
                                     {i18n.language === "fr" ? "Plateformes, groupes & veille créative" : "Platforms, groups & creative research"}
                                   </span>
                                 </span>
@@ -704,22 +906,23 @@ export default function Navbar() {
                               <Link
                                 to="/carnet/lectures-references"
                                 onClick={() => setIsCarnetOpen(false)}
-                                className="group flex items-start gap-3 rounded-xl p-3 text-left text-[#5b4137] transition-colors duration-300 hover:bg-[#fcf9f8] hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
+                                className="group flex items-start gap-3 rounded-xl px-2 py-3 text-left transition-colors duration-300 hover:bg-surface-page-muted"
                               >
-                                <span className="flex size-9 shrink-0 items-center justify-center rounded-md border border-[#854d63]/20 bg-[#2f2f32] text-white transition-colors duration-300 group-hover:border-[#854d63] group-hover:bg-[#854d63] dark:border-[#f0adc4]/30 dark:bg-[#24201f] dark:group-hover:bg-[#f0adc4] dark:group-hover:text-[#171312]">
-                                  <BookOpenIcon className="size-[18px]" />
+                                <span className="mt-0.5 text-[10px] font-semibold tracking-[1px] text-text-accent">
+                                  02
                                 </span>
-                                <span className="leading-5">
-                                  <span className="block text-[14px] font-semibold text-[#1c1b1b] dark:text-[#f8f1ec]">
+                                <span className="min-w-0 leading-5">
+                                  <span className="block text-[14px] font-semibold text-text-primary group-hover:text-text-accent">
                                     {t("nav.readingsAndReferences")}
                                   </span>
-                                  <span className="mt-1 block text-[11px] text-[#6d625d] transition-colors duration-300 group-hover:text-[#1c1b1b] dark:text-[#cdb9ae] dark:group-hover:text-[#f8f1ec]">
+                                  <span className="mt-0.5 block text-[11px] leading-4 text-text-secondary">
                                     {i18n.language === "fr" ? "Livres, articles & newsletters" : "Books, articles & newsletters"}
                                   </span>
                                 </span>
                               </Link>
                             </li>
-                          </ul>
+                            </ul>
+                          </motion.div>
                         </motion.div>
                       </div>
                     ) : null}
@@ -766,6 +969,7 @@ export default function Navbar() {
             );
           })}
         </ul>
+        </LayoutGroup>
 
         <div className="hidden items-center gap-3 lg:flex">
           <ThemeSwitcher />
@@ -823,6 +1027,7 @@ export default function Navbar() {
                         onClick={() => setOpenMobileAccordion((current) => (current === "services" ? null : "services"))}
                         className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-[12px] font-semibold uppercase tracking-[1.6px] text-[#854d63] transition hover:text-[#6a364b] dark:text-[#f0adc4] dark:hover:text-[#f8f1ec]"
                         aria-expanded={isAccordionOpen}
+                        aria-controls="mobile-services-panel"
                       >
                         <span>{link.name}</span>
                         <ChevronDownIcon className={`size-4 transition-transform duration-300 ${isAccordionOpen ? "rotate-180" : ""}`} />
@@ -831,13 +1036,14 @@ export default function Navbar() {
                         {isAccordionOpen ? (
                           <motion.div
                             key="mobile-services"
+                            id="mobile-services-panel"
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
                             transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
                             className="overflow-hidden"
                           >
-                            <div className="grid gap-1 px-5 pb-4">
+                            <div className="grid gap-4 px-5 pb-5">
                               <Link
                                 to="/services"
                                 onClick={() => {
@@ -846,31 +1052,51 @@ export default function Navbar() {
                                 }}
                                   className="rounded-md py-2 text-[14px] font-semibold leading-5 text-[#854d63] dark:text-[#f0adc4]"
                               >
-                                {i18n.language === "fr" ? "Tous les services" : "All services"}
+                                {t("nav.allServices")}
                               </Link>
-                              {services.map((service) => (
-                                <Link
-                                  key={service.slug}
-                                  to={`/services/${service.slug}`}
-                                  onClick={() => {
-                                    setIsMobileMenuOpen(false);
-                                    setOpenMobileAccordion(null);
-                                  }}
-                                  className="rounded-md py-2 text-[14px] font-medium leading-5 text-[#5b4137] dark:text-[#dbc9c0]"
-                                >
-                                  {service.title} <span className="italic text-[#854d63] dark:text-[#f0adc4]">{service.accent}</span>
-                                </Link>
+                              <button
+                                type="button"
+                                disabled
+                                className="flex cursor-not-allowed items-center gap-3 rounded-lg border border-border-accent/30 bg-surface-accent-muted px-3 py-3 text-left text-text-accent"
+                              >
+                                <CalculatorIcon className="size-5 shrink-0" />
+                                <span className="min-w-0 flex-1 text-[13px] font-semibold">{t("nav.projectEstimator")}</span>
+                                <span className="text-[9px] font-semibold uppercase tracking-[1px] text-text-secondary">{t("nav.comingSoon")}</span>
+                              </button>
+                              {serviceMenuGroups.map((group) => (
+                                <section key={group.key}>
+                                  <h4 className="text-[10px] font-semibold uppercase tracking-[1.6px] text-[#99857c] dark:text-[#aa9b94]">
+                                    {group.label}
+                                  </h4>
+                                  <div className="mt-1.5 grid gap-0.5">
+                                    {group.services.map((service) => (
+                                      <Link
+                                        key={service.slug}
+                                        to={`/services/${service.slug}`}
+                                        onClick={() => {
+                                          setIsMobileMenuOpen(false);
+                                          setOpenMobileAccordion(null);
+                                        }}
+                                        className="rounded-md py-2 text-[14px] font-medium leading-5 text-[#5b4137] dark:text-[#dbc9c0]"
+                                      >
+                                        {service.title} {service.accent}
+                                      </Link>
+                                    ))}
+                                  </div>
+                                </section>
                               ))}
-                              <Link
-                                to="/blog/cas-client-coworking-cotonou"
+                              {menuHighlight ? (
+                                <Link
+                                to={`/blog/${menuHighlight.slug}`}
                                 onClick={() => {
                                   setIsMobileMenuOpen(false);
                                   setOpenMobileAccordion(null);
                                 }}
                                 className="mt-2 rounded-md border border-[#854d63]/15 bg-white/70 px-3 py-3 text-[13px] font-semibold leading-5 text-[#854d63] dark:border-[#f0adc4]/20 dark:bg-white/5 dark:text-[#f0adc4]"
                               >
-                                {t("nav.caseStudies")} · {t("nav.caseStudyMeta")}
+                                {t("nav.highlight")} · {menuHighlight.title}
                               </Link>
+                              ) : null}
                             </div>
                           </motion.div>
                         ) : null}
