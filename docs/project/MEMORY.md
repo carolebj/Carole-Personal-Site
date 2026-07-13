@@ -157,6 +157,11 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
   - blog placeholder route at `/blog`
   - Carnet routes at `/carnet/ressources` (ToolsInspirations) and `/carnet/lectures` (ReadingsReferences)
 - Current design decisions:
+  - a site-wide copywriting and UX-writing pass is planned across public pages
+    and blog articles, starting with the About page. Challenge information
+    hierarchy, repetition, paragraph length, CTA clarity, microcopy and FR/EN
+    parity; preserve verified facts, review proposals before publication, and
+    apply validated wording through the CMS-authoritative content workflow
   - keep the globally reduced scale validated on a 13-inch MacBook: lower nav height, smaller max content width, lower hero title/image caps, tighter buttons, and reduced section padding
   - use the Figma-derived hero/about portraits and exported decorative arc
   - use local Liberation Serif Italic for manifesto accent text
