@@ -16,6 +16,12 @@ Last reviewed: 2026-07-13 WAT
 - `vercel.json` rewrites all routes to `/index.html` so React Router deep links can load correctly on Vercel.
 - Vercel project `carole-personal-site` belongs to **Carole’s Team**. The canonical public domain is `https://www.carolebj.com`, with `https://carolebj.com` redirected to it; public documentation and links must use the canonical domain rather than a technical `.vercel.app` alias.
 - Vercel GitHub integration is connected to `carolebj/Carole-Personal-Site`.
+- Because the private project uses Vercel Hobby, production releases must end
+  with a commit created by Carole's GitHub account, which owns the linked
+  Vercel team. Contributors push a dedicated branch and open a pull request;
+  after review, Carole merges it into `main` with **Create a merge commit**.
+  Do not push contributor-authored release commits directly to `main`, because
+  Vercel blocks private-repository deployments from non-team commit authors.
 - Current production points to the `main` deployment. Use the branch deployment listed by Vercel for `dev` reviews instead of persisting a generated preview URL in documentation.
 - Vercel Authentication is disabled for the project; both production and `dev` preview URLs are publicly reachable without login.
 - The Supabase Free project was restored from an inactivity pause on 2026-07-11. Production runs a secured daily Vercel Cron keepalive (`/api/supabase-keepalive`, 06:17 UTC) that performs three minimal public CMS reads; `CRON_SECRET` must remain configured only on Vercel Production.
