@@ -17,7 +17,7 @@ Ces identifiants correspondent au compte **Supabase > Authentication > Users** u
 
 ## Configuration Vercel
 
-Dans **Vercel > carole-portfolio > Settings > Environment Variables**, ajouter
+Dans **Vercel > Carole’s Team > carole-personal-site > Settings > Environment Variables**, ajouter
 les deux variables publiques suivantes aux environnements **Preview** et
 **Production** :
 
@@ -32,11 +32,16 @@ variables `CMS_SEED_EMAIL` et `CMS_SEED_PASSWORD` restent uniquement dans
 `.env.local` et ne doivent jamais être ajoutées à Vercel.
 
 Les variables `VITE_*` sont intégrées au build Vite : après leur ajout ou leur
-modification, redéployer la branche concernée. L'alias de la branche `dev` est :
+modification, redéployer la branche concernée. L'URL publique canonique du
+dashboard est :
 
 ```text
-https://carole-portfolio-git-dev-stevens-projects-db687a83.vercel.app/dashboard
+https://www.carolebj.com/dashboard
 ```
+
+Pour une vérification sur `dev`, utiliser l'URL du dernier déploiement de cette
+branche affichée par Vercel. Ne pas conserver une URL de preview générée comme
+référence durable dans la documentation.
 
 L'ancienne route `/admin` redirige vers `/dashboard`.
 

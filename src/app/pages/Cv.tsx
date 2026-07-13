@@ -57,7 +57,7 @@ export default function Cv() {
         value: localized(cmsContacts?.location, locale),
       },
       {
-        label: fallbackContacts[3]?.label ?? "Portfolio",
+        label: fallbackContacts[3]?.label ?? "Behance",
         value: localized(cmsContacts?.portfolioLabel, locale),
         href: cmsContacts?.portfolioUrl,
       },

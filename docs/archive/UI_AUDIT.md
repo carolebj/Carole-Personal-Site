@@ -1,7 +1,7 @@
 # UI Audit — checklist cohérence interface (site public)
 
-> Document de travail pour la passe qualité UI **avant** les priorités CMS de
-> `NEXT_STEPS.md`. Scope : site public (`src/app/`) — pas le dashboard admin.
+> Document de travail archivé pour la passe qualité UI réalisée avant les
+> priorités CMS de l'époque. Scope : site public (`src/app/`) — pas le dashboard admin.
 >
 > Dernière revue : 2026-06-10. Skills de référence : Web Interface Guidelines,
 > UI/UX Pro Max, make-interfaces-feel-better, fixing-motion-performance,
@@ -331,15 +331,15 @@ Avant de considérer la passe UI terminée :
 - [ ] Test manuel : iPhone 375px, desktop 1280px, dark mode, reduced motion
 - [ ] `npm run typecheck` + `npm run build` passent
 - [ ] `MEMORY.md` mis à jour (tokens, radius, offsets, décision carnet)
-- [ ] Reprendre `NEXT_STEPS.md` priorités CMS
+- [x] Reporter les priorités CMS restantes dans le suivi opérationnel
 
 ---
 
-## Ordre suggéré avec NEXT_STEPS
+## Ordre suggéré à l'époque
 
 | Ordre | Travail | Pourquoi |
 |-------|---------|----------|
 | 1 | Vagues A + B (ce document) | Bloquants UX + fondations motion avant nouveau contenu CMS |
 | 2 | Vague C (tokens + composants) | Les nouveaux champs CMS (titres Home, About) utiliseront les bons patterns |
-| 3 | NEXT_STEPS P1–P4 | Contenu éditable branché sur UI déjà cohérente |
+| 3 | Priorités CMS P1–P4 | Contenu éditable branché sur UI déjà cohérente |
 | 4 | Vague D | Polish et dette — peut être parallélisé avec P3/P4 |

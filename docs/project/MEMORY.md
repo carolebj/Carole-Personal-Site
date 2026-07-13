@@ -2,9 +2,9 @@
 
 ## Purpose
 
-This file is the project-level memory for the Carole Portfolio repo. Keep it short, current, and useful for future agents working on the site.
+This file is the project-level memory for the Carole Personal Site repo. Keep it short, current, and useful for future agents working on the site.
 
-Last reviewed: 2026-07-12 WAT
+Last reviewed: 2026-07-13 WAT
 
 ## Current Branch Workflow
 
@@ -16,10 +16,9 @@ Last reviewed: 2026-07-12 WAT
 - Vercel should keep `main` as the production branch and use `dev` as the review/preview branch until Carole validates the redesign.
 - Vercel build settings: framework `Vite`, build command `npm run build`, output directory `dist`.
 - `vercel.json` rewrites all routes to `/index.html` so React Router deep links can load correctly on Vercel.
-- Vercel project `carole-portfolio` exists under `stevens-projects-db687a83`; the canonical public domain is `https://www.carolebj.com`, with `https://carolebj.com` redirected to it. The `carole-portfolio.vercel.app` alias remains technical only.
-- Vercel GitHub integration is connected to `mrstev3n/Carole-Portfolio-version-1.0`.
-- Git author email is now `stevenkejjad@gmail.com`; this fixed Vercel's commit-author validation.
-- Current production alias points to the `main` deployment; current `dev` branch preview is `https://carole-portfolio-git-dev-stevens-projects-db687a83.vercel.app`.
+- Vercel project `carole-personal-site` belongs to **Carole’s Team**. The canonical public domain is `https://www.carolebj.com`, with `https://carolebj.com` redirected to it; public documentation and links must use the canonical domain rather than a technical `.vercel.app` alias.
+- Vercel GitHub integration is connected to `carolebj/Carole-Personal-Site`.
+- Current production points to the `main` deployment. Use the branch deployment listed by Vercel for `dev` reviews instead of persisting a generated preview URL in documentation.
 - Vercel Authentication is disabled for the project; both production and `dev` preview URLs are publicly reachable without login.
 - The Supabase Free project was restored from an inactivity pause on 2026-07-11. Production runs a secured daily Vercel Cron keepalive (`/api/supabase-keepalive`, 06:17 UTC) that performs three minimal public CMS reads; `CRON_SECRET` must remain configured only on Vercel Production.
 - Vercel must define `VITE_SUPABASE_URL` and
@@ -121,9 +120,7 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
 - **Content parity fixes**: Footer reads `siteSettings` flat social fields + CMS services; Home uses CMS hero portrait and about image; Readings uses CMS book cover URLs. `CmsSiteSettings` typed with `instagram` / `linkedin`.
 - **Admin UI**: collection rows `items-start`, editor toolbar wraps, localized list delete button alignment.
 
-### Remaining optional work (2026-06-10)
-
-Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
+### Completed CMS foundation work (2026-06-10)
 
 - ~~Home section headings via CMS~~ — `homePage.servicesSection`, `testimonialsSection`, `contactSection` (2026-06-10)
 - ~~About page + CV header via CMS~~ — `aboutPage`, `cvPage` singletons (2026-06-10)
@@ -234,6 +231,13 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
   Contact-form notifications use a branded HTML email based on the validated
   warm editorial proposal: segmented color strip, CT monogram, serif subject,
   sender identity card, plum reply button and compact transactional footer.
+- Gmail uses two signatures for both `caroletonoukouen@gmail.com` and
+  `contact@carolebj.com`: `Carole 01`, the full branded signature for new
+  messages, and `Carole — Réponses`, a two-line compact signature for replies
+  and forwards. The compact variant lives at
+  `public/email-signature/replies.html`; Carole's serif name links to
+  `https://www.carolebj.com` without an underline, followed by her role and a
+  slim salmon accent rule.
   `api/contact-email.js` owns this template, escapes every visitor-controlled
   value, and `api/contact.js` retains a plain-text fallback plus `reply_to`.
 
@@ -254,6 +258,15 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
 - Design tokens: `src/styles/tokens.css` (primitives, semantics, dark-mode); `src/styles/global.css` (base styles).
 - **UI design system (2026-06-10)** — public pages use semantic Tailwind tokens (`bg-surface-page`, `text-text-accent`, etc.) from `tokens.css`. Shared layout: `src/app/components/layout/publicPage.ts` (`PAGE_MAIN` = `pt-28 md:pt-36`). Shared components: `SectionEyebrow`, `PageHero`, `ContactForm`. Border-radius rule: cards `rounded-lg`, primary CTAs `rounded-full`, inputs `rounded-md` (contact page panels may use `rounded-xl`). Carnet pages share tokens but keep muted eyebrows (`text-text-muted`).
 
+## Operational Task Tracking
+
+- TickTick is the source of truth for actionable work. Use the
+  `Carole - Personal site` list in the `Work` folder.
+- `docs/project/NEXT_STEPS.md` was retired on 2026-07-13 after its remaining
+  actionable items were reconciled with TickTick. Do not recreate a competing
+  repository todo file; keep durable decisions here and operational tasks in
+  TickTick.
+
 ## Repo Organization & Security (2026-06-10)
 
 - **Guidance docs moved under `docs/`.** Entry point stays `AGENTS.md` at repo
@@ -261,7 +274,7 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
   router. Layout:
   - `docs/GUIDELINE.md`, `docs/SECURITY.md`
   - `docs/workflows/AGENT_DEV.md`
-  - `docs/project/MEMORY.md`, `docs/project/NEXT_STEPS.md`
+  - `docs/project/MEMORY.md`
   - `README.md` and `ATTRIBUTIONS.md` stay at root.
 - **Security model documented in `docs/SECURITY.md`** (secret locations, no
   secret behind a `VITE_` prefix, rotation, incident runbook). Git history is
@@ -270,6 +283,7 @@ Suivi détaillé dans **`docs/project/NEXT_STEPS.md`** (priorités 1–4) :
   hook (`scripts/git-hooks/`, scanner `scripts/check-secrets.mjs`). Install once
   per clone with `npm run security:install-hooks`. Blocks commits containing
   secrets or `.env*` files (except `.env.example`).
+
 - **`/api/translate` is now authenticated**: it requires a valid Supabase
   session (`Authorization: Bearer <access_token>`) before calling the
   translation service; CORS allows the `Authorization` header

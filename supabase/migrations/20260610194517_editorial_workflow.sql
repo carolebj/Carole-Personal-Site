@@ -1,4 +1,4 @@
--- Editorial workflow migration for the Carole Portfolio CMS.
+-- Editorial workflow migration for the Carole Personal Site CMS.
 -- Before applying: npm run cms:export
 
 alter table public.cms_documents

@@ -517,7 +517,7 @@ const fr = {
       { label: "Email", value: "caroletonoukouen@gmail.com", href: "mailto:caroletonoukouen@gmail.com" },
       { label: "Téléphone", value: "+229 01 95 93 44 54", href: "tel:+2290195934454" },
       { label: "Localisation", value: "Cotonou, Bénin" },
-      { label: "Portfolio", value: "Behance.net", href: "https://www.behance.net/caroletonoukouen" },
+      { label: "Behance", value: "Behance.net", href: "https://www.behance.net/caroletonoukouen" },
     ],
     sidebar: [
       {
@@ -651,7 +651,7 @@ const fr = {
     headline: "Les services prennent forme",
     tagline: "Une page plus claire arrive bientôt. En attendant, vous pouvez revenir à l'accueil ou me contacter directement.",
     description:
-      "Les pages détaillées des services sont en préparation. En attendant, vous pouvez parcourir le reste du portfolio ou me contacter pour en discuter.",
+      "Les pages détaillées des services sont en préparation. En attendant, vous pouvez parcourir le reste du site ou me contacter pour en discuter.",
     note: "Cette section sera bientôt disponible avec une présentation complète de chaque offre.",
     seoTitle: "Services — en cours de construction | Carole Tonoukouen",
     backHome: "Retour à l'accueil",

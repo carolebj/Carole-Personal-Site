@@ -1,4 +1,4 @@
--- Carole Portfolio CMS — current Supabase schema.
+-- Carole Personal Site CMS — current Supabase schema.
 -- For an existing project, export first (`npm run cms:export`) then run:
 -- supabase/migrations/20260610194517_editorial_workflow.sql
 

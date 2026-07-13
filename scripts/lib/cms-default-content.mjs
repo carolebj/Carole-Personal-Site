@@ -207,11 +207,11 @@ export function buildCvPageContent() {
   const email = fr.cv.contacts.find((item) => item.label === "Email");
   const phone = fr.cv.contacts.find((item) => item.label === "Téléphone");
   const location = fr.cv.contacts.find((item) => item.label === "Localisation");
-  const portfolio = fr.cv.contacts.find((item) => item.label === "Portfolio");
+  const portfolio = fr.cv.contacts.find((item) => item.label === "Behance");
   const emailEn = en.cv.contacts.find((item) => item.label === "Email");
   const phoneEn = en.cv.contacts.find((item) => item.label === "Phone");
   const locationEn = en.cv.contacts.find((item) => item.label === "Location");
-  const portfolioEn = en.cv.contacts.find((item) => item.label === "Portfolio");
+  const portfolioEn = en.cv.contacts.find((item) => item.label === "Behance");
 
   return {
     id: "cvPage",
@@ -232,8 +232,8 @@ export function buildCvPageContent() {
 
 export function buildSiteSettingsContent() {
   const siteDescription = L(
-    "Portfolio de Carole Tonoukouen, chargée de communication digitale : stratégie éditoriale, contenus, campagnes et visibilité de marque.",
-    "Portfolio of Carole Tonoukouen, digital communications officer: editorial strategy, content, campaigns, and brand visibility.",
+    "Site personnel de Carole Tonoukouen, chargée de communication digitale : stratégie éditoriale, contenus, campagnes et visibilité de marque.",
+    "Personal website of Carole Tonoukouen, digital communications officer: editorial strategy, content, campaigns, and brand visibility.",
   );
 
   return {
