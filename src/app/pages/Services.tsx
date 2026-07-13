@@ -5,7 +5,7 @@ import {
   SparklesIcon,
 } from "@heroicons/react/24/outline";
 import { motion, useReducedMotion } from "motion/react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState, type MouseEvent } from "react";
 import { Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { toServiceViewModel } from "../../cms/adapters";
@@ -53,9 +53,61 @@ export default function Services() {
   const featureService = services.find((service) => service.featured) ?? firstService;
   const featureIsDesign = featureService ? isDesignService(featureService) : false;
   const regularServices = services;
+  const [activeServiceSlug, setActiveServiceSlug] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (services.length === 0) {
+      setActiveServiceSlug(null);
+      return undefined;
+    }
+
+    let frameId: number | undefined;
+
+    const updateActiveService = () => {
+      const activationOffset = window.matchMedia("(min-width: 768px)").matches ? 160 : 112;
+      let nextActiveSlug = services[0].slug;
+
+      for (const service of services) {
+        const serviceElement = document.getElementById(service.slug);
+        if (!serviceElement || serviceElement.getBoundingClientRect().top > activationOffset) break;
+        nextActiveSlug = service.slug;
+      }
+
+      setActiveServiceSlug((current) => (current === nextActiveSlug ? current : nextActiveSlug));
+      frameId = undefined;
+    };
+
+    const scheduleActiveServiceUpdate = () => {
+      if (frameId !== undefined) return;
+      frameId = window.requestAnimationFrame(updateActiveService);
+    };
+
+    updateActiveService();
+    window.addEventListener("scroll", scheduleActiveServiceUpdate, { passive: true });
+    window.addEventListener("resize", scheduleActiveServiceUpdate);
+
+    return () => {
+      window.removeEventListener("scroll", scheduleActiveServiceUpdate);
+      window.removeEventListener("resize", scheduleActiveServiceUpdate);
+      if (frameId !== undefined) window.cancelAnimationFrame(frameId);
+    };
+  }, [services]);
+
+  const handleServiceMapClick = (event: MouseEvent<HTMLAnchorElement>, slug: string) => {
+    event.preventDefault();
+    const target = document.getElementById(slug);
+    if (!target) return;
+
+    setActiveServiceSlug(slug);
+    void navigate(`#${slug}`, { preventScrollReset: true });
+    target.scrollIntoView({
+      behavior: shouldReduceMotion ? "auto" : "smooth",
+      block: "start",
+    });
+  };
 
   return (
-    <main className={`${PAGE_MAIN} overflow-hidden bg-surface-page pb-24`}>
+    <main className={`${PAGE_MAIN} overflow-x-clip bg-surface-page pb-24`}>
       <motion.section
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
@@ -143,32 +195,31 @@ export default function Services() {
       ) : null}
 
       <section className="mx-auto mt-18 grid max-w-[1180px] gap-8 px-5 sm:px-8 lg:grid-cols-[16rem_1fr] lg:px-0">
-        <div className="lg:sticky lg:top-28 lg:self-start">
+        <nav
+          aria-label={t("services.serviceMap")}
+          className="min-w-0 lg:sticky lg:top-28 lg:self-start"
+        >
           <p className="text-[12px] font-semibold uppercase tracking-[3px] text-text-accent">
             {t("services.serviceMap")}
           </p>
-          <div className="mt-5 hidden border-l border-border-accent-muted pl-5 lg:grid lg:gap-3">
+          <div className="mt-4 flex gap-2 overflow-x-auto pb-2 lg:mt-5 lg:grid lg:gap-1 lg:overflow-visible lg:border-l lg:border-border-accent-muted lg:pb-0 lg:pl-5">
             {services.map((service, index) => (
               <a
                 key={service.slug}
                 href={`#${service.slug}`}
-                onClick={(event) => {
-                  event.preventDefault();
-                  const target = document.getElementById(service.slug);
-                  if (!target) return;
-                  void navigate(`#${service.slug}`, { preventScrollReset: true });
-                  target.scrollIntoView({
-                    behavior: shouldReduceMotion ? "auto" : "smooth",
-                    block: "start",
-                  });
-                }}
-                className="text-[13px] leading-5 text-text-secondary transition hover:text-text-accent"
+                onClick={(event) => handleServiceMapClick(event, service.slug)}
+                aria-current={activeServiceSlug === service.slug ? "location" : undefined}
+                className={`shrink-0 rounded-full border px-4 py-2 text-[12px] leading-5 transition lg:rounded-none lg:border-0 lg:border-l-2 lg:px-4 lg:py-2 lg:text-[13px] ${
+                  activeServiceSlug === service.slug
+                    ? "border-border-accent bg-surface-panel font-semibold text-text-accent lg:-ml-[21px] lg:border-l-border-accent lg:bg-transparent lg:pl-9"
+                    : "border-border-subtle bg-surface-panel/60 text-text-secondary hover:border-border-accent hover:text-text-accent lg:-ml-[21px] lg:border-l-transparent lg:bg-transparent lg:pl-9"
+                }`}
               >
                 {serviceNumbers[index] ?? String(index + 1).padStart(2, "0")} {service.title} {service.accent}
               </a>
             ))}
           </div>
-        </div>
+        </nav>
 
         <div className="grid gap-4">
           {regularServices.map((service, index) => {

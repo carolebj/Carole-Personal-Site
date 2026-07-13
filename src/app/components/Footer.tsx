@@ -17,8 +17,11 @@ const languages: { code: Lang; flag: string }[] = [
   { code: "fr", flag: "FR" },
   { code: "en", flag: "EN" },
 ];
-const FOOTER_REVEAL_DELAY_MS = 900;
-const FOOTER_REVEAL_FAST_DELAY_MS = 1200;
+const FOOTER_REVEAL_DELAY_MS = 1100;
+const FOOTER_REVEAL_DEEP_DELAY_MS = 1500;
+const FOOTER_REVEAL_PEEK_PX = 56;
+const FOOTER_REVEAL_INTENT_THRESHOLD = 260;
+const FOOTER_REVEAL_INTENT_RESET_MS = 420;
 const SHADER_LONG_PRESS_MS = 320;
 const CAROLE_BEHANCE_URL = "https://www.behance.net/caroletonoukouen";
 const CAROLE_LINKEDIN_URL = "https://www.linkedin.com/in/caroletonoukouen/";
@@ -436,6 +439,10 @@ export default function Footer() {
   const returnTimeoutRef = useRef<number | undefined>(undefined);
   const returnAnimationRef = useRef<AnimationPlaybackControls | null>(null);
   const scheduleReturnRef = useRef<(delay?: number) => void>(() => undefined);
+  const revealIntentRef = useRef(0);
+  const revealIntentResetRef = useRef<number | undefined>(undefined);
+  const revealUnlockedUntilRef = useRef(0);
+  const lastTouchYRef = useRef<number | null>(null);
   const longPressTimeoutRef = useRef<number | undefined>(undefined);
   const isShaderPressingRef = useRef(false);
   const isReturningRef = useRef(false);
@@ -460,25 +467,41 @@ export default function Footer() {
         })) ?? [];
 
     if (cmsLinks.length > 0) {
-      const linksWithoutBehance = cmsLinks.filter(
-        (link) => !link.label.toLowerCase().includes("behance"),
-      );
+      const linkedinLink = cmsLinks.find((link) =>
+        link.label.toLowerCase().includes("linkedin"),
+      ) ?? {
+        label: t("footer.linkedin"),
+        href: siteData?.linkedin || CAROLE_LINKEDIN_URL,
+        external: true,
+      };
+      const behanceLink = cmsLinks.find((link) =>
+        link.label.toLowerCase().includes("behance"),
+      ) ?? {
+        label: t("footer.behance"),
+        href: siteData?.behance || CAROLE_BEHANCE_URL,
+        external: true,
+      };
+      const otherLinks = cmsLinks.filter((link) => {
+        const label = link.label.toLowerCase();
+        return !label.includes("linkedin") && !label.includes("behance");
+      });
       return [
-        { label: t("footer.behance"), href: CAROLE_BEHANCE_URL, external: true },
-        ...linksWithoutBehance,
+        linkedinLink,
+        behanceLink,
+        ...otherLinks,
         contactLink,
       ];
     }
 
     const flatLinks: SocialLink[] = [
       {
-        label: t("footer.behance"),
-        href: siteData?.behance || CAROLE_BEHANCE_URL,
+        label: t("footer.linkedin"),
+        href: siteData?.linkedin || CAROLE_LINKEDIN_URL,
         external: true,
       },
       {
-        label: t("footer.linkedin"),
-        href: siteData?.linkedin || CAROLE_LINKEDIN_URL,
+        label: t("footer.behance"),
+        href: siteData?.behance || CAROLE_BEHANCE_URL,
         external: true,
       },
     ].filter((link): link is SocialLink => link !== null);
@@ -531,12 +554,11 @@ export default function Footer() {
 
       returnAnimationRef.current = animate(window.scrollY, restY, {
         type: "spring",
-        stiffness: 920,
-        damping: 20,
-        mass: 0.24,
-        velocity: -1250,
-        restDelta: 0.22,
-        restSpeed: 18,
+        stiffness: 210,
+        damping: 30,
+        mass: 0.85,
+        restDelta: 0.35,
+        restSpeed: 8,
         onUpdate: (latest) => window.scrollTo(0, latest),
         onComplete: () => {
           isReturningRef.current = false;
@@ -562,25 +584,72 @@ export default function Footer() {
       const restY = getFooterRestY();
       if (restY !== null && window.scrollY > restY + 2) {
         const revealDepth = window.scrollY - restY;
-        scheduleReturn(revealDepth > window.innerHeight * 0.18 ? FOOTER_REVEAL_FAST_DELAY_MS : FOOTER_REVEAL_DELAY_MS);
+        scheduleReturn(revealDepth > window.innerHeight * 0.18 ? FOOTER_REVEAL_DEEP_DELAY_MS : FOOTER_REVEAL_DELAY_MS);
       }
     };
 
     const handleWheelIntent = (event: WheelEvent) => {
+      if (isReturningRef.current) {
+        returnAnimationRef.current?.stop();
+        isReturningRef.current = false;
+      }
+
       const restY = getFooterRestY();
-      if (restY !== null && window.scrollY > restY + 2) {
+      if (restY === null) {
+        return;
+      }
+      const wheelDeltaY = event.deltaY * (
+        event.deltaMode === WheelEvent.DOM_DELTA_LINE
+          ? 16
+          : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+            ? window.innerHeight
+            : 1
+      );
+
+      if (
+        wheelDeltaY > 0 &&
+        window.scrollY >= restY - 2 &&
+        window.scrollY <= restY + FOOTER_REVEAL_PEEK_PX + 2 &&
+        performance.now() >= revealUnlockedUntilRef.current
+      ) {
+        event.preventDefault();
+        revealIntentRef.current += Math.min(wheelDeltaY, 100);
+        window.clearTimeout(revealIntentResetRef.current);
+
+        if (revealIntentRef.current >= FOOTER_REVEAL_INTENT_THRESHOLD) {
+          revealIntentRef.current = 0;
+          revealUnlockedUntilRef.current = performance.now() + 700;
+          window.scrollTo(0, restY + FOOTER_REVEAL_PEEK_PX);
+        } else {
+          const revealProgress =
+            revealIntentRef.current / FOOTER_REVEAL_INTENT_THRESHOLD;
+          window.scrollTo(0, restY + FOOTER_REVEAL_PEEK_PX * revealProgress);
+          revealIntentResetRef.current = window.setTimeout(() => {
+            revealIntentRef.current = 0;
+            scheduleReturn(FOOTER_REVEAL_DELAY_MS);
+          }, FOOTER_REVEAL_INTENT_RESET_MS);
+        }
+        return;
+      }
+
+      if (window.scrollY > restY + 2) {
         if (isShaderPressingRef.current) {
           window.clearTimeout(returnTimeoutRef.current);
           return;
         }
 
-        if (event.deltaY < 0) {
+        if (wheelDeltaY < 0) {
+          event.preventDefault();
           window.clearTimeout(returnTimeoutRef.current);
           returnToFooter();
           return;
         }
 
-        scheduleReturn(event.deltaY > 28 ? FOOTER_REVEAL_FAST_DELAY_MS : FOOTER_REVEAL_DELAY_MS);
+        scheduleReturn(
+          wheelDeltaY > 28
+            ? FOOTER_REVEAL_DEEP_DELAY_MS
+            : FOOTER_REVEAL_DELAY_MS,
+        );
         return;
       }
     };
@@ -593,20 +662,66 @@ export default function Footer() {
       }
     };
 
-    const handleTouchEnd = () => scheduleReturn(FOOTER_REVEAL_DELAY_MS);
+    const handleTouchStart = (event: TouchEvent) => {
+      lastTouchYRef.current = event.touches[0]?.clientY ?? null;
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      const currentY = event.touches[0]?.clientY;
+      const previousY = lastTouchYRef.current;
+      lastTouchYRef.current = currentY ?? null;
+      if (currentY === undefined || previousY === null) {
+        return;
+      }
+
+      const deltaY = previousY - currentY;
+      const restY = getFooterRestY();
+      if (
+        deltaY > 0 &&
+        restY !== null &&
+        window.scrollY >= restY - 2 &&
+        window.scrollY <= restY + FOOTER_REVEAL_PEEK_PX + 2 &&
+        performance.now() >= revealUnlockedUntilRef.current
+      ) {
+        event.preventDefault();
+        revealIntentRef.current += Math.min(deltaY, 80);
+        const revealProgress = Math.min(
+          1,
+          revealIntentRef.current / FOOTER_REVEAL_INTENT_THRESHOLD,
+        );
+        window.scrollTo(0, restY + FOOTER_REVEAL_PEEK_PX * revealProgress);
+
+        if (revealProgress >= 1) {
+          revealIntentRef.current = 0;
+          revealUnlockedUntilRef.current = performance.now() + 900;
+        }
+        return;
+      }
+
+      cancelReturn();
+    };
+
+    const handleTouchEnd = () => {
+      lastTouchYRef.current = null;
+      revealIntentRef.current = 0;
+      scheduleReturn(FOOTER_REVEAL_DELAY_MS);
+    };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("wheel", handleWheelIntent, { passive: true });
-    window.addEventListener("touchmove", cancelReturn, { passive: true });
+    window.addEventListener("wheel", handleWheelIntent, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
     window.addEventListener("touchend", handleTouchEnd, { passive: true });
 
     return () => {
       window.clearTimeout(returnTimeoutRef.current);
+      window.clearTimeout(revealIntentResetRef.current);
       returnAnimationRef.current?.stop();
       scheduleReturnRef.current = () => undefined;
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("wheel", handleWheelIntent);
-      window.removeEventListener("touchmove", cancelReturn);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
     };
   }, [shouldReduceMotion]);
@@ -660,7 +775,7 @@ export default function Footer() {
     window.clearTimeout(longPressTimeoutRef.current);
     setIsShaderHovered(false);
     setIsShaderAccelerated(false);
-    scheduleReturnRef.current(FOOTER_REVEAL_FAST_DELAY_MS);
+    scheduleReturnRef.current(FOOTER_REVEAL_DEEP_DELAY_MS);
   };
 
   return (
