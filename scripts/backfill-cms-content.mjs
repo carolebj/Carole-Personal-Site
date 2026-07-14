@@ -307,7 +307,7 @@ const media = [
   ["testimonial", "cynthia-s", ["portrait"], "src/assets/testimonials/testimonial-cynthia.svg", L("Portrait illustré de Cynthia", "Illustrated portrait of Cynthia")],
   ["testimonial", "julian-f", ["portrait"], "src/assets/testimonials/testimonial-julian.svg", L("Portrait illustré de Julian", "Illustrated portrait of Julian")],
   ["testimonial", "uzoma-obidike", ["portrait"], "src/assets/testimonials/testimonial-uzoma.svg", L("Portrait illustré d'Uzoma", "Illustrated portrait of Uzoma")],
-  ["siteSettings", "siteSettings", ["ogImage"], "src/assets/og-carolet.png", L("Carole Tonoukouen — Chargée de communication digitale", "Carole Tonoukouen — Digital communications officer")],
+  ["siteSettings", "siteSettings", ["ogImage"], "public/carole-tonoukouen-social-preview.png", L("Carole Tonoukouen — Chargée de communication digitale", "Carole Tonoukouen — Digital communications officer")],
 ];
 const selectedMedia = only
   ? media.filter(([type, docId]) => `${type}/${docId}` === only)

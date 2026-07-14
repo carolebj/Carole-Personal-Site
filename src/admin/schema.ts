@@ -538,7 +538,7 @@ export const contentTypes: ContentType[] = [
         placeholder: "https://www.carolebj.com",
         validation: "url",
       },
-      { name: "ogImage", label: "Image de partage (Open Graph)", type: "image" },
+      { name: "ogImage", label: "Image de prévisualisation des liens", type: "image" },
       {
         name: "seoPages",
         label: "SEO par page",

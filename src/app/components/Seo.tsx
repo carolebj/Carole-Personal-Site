@@ -31,7 +31,10 @@ function setCanonical(url: string) {
 }
 
 function setOptionalMeta(name: string, content: string | undefined, attribute: "name" | "property" = "name") {
-  if (!content) return;
+  if (!content) {
+    document.head.querySelector<HTMLMetaElement>(`meta[${attribute}="${name}"]`)?.remove();
+    return;
+  }
   setMeta(name, content, attribute);
 }
 
@@ -74,14 +77,22 @@ export default function Seo() {
     setMeta("description", meta.description);
     setMeta("og:type", meta.ogType, "property");
     setMeta("og:site_name", meta.siteName, "property");
+    setMeta("og:locale", meta.lang === "fr" ? "fr_FR" : "en_US", "property");
+    setMeta("og:locale:alternate", meta.lang === "fr" ? "en_US" : "fr_FR", "property");
     setMeta("og:title", meta.title, "property");
     setMeta("og:description", meta.description, "property");
     setMeta("og:url", meta.canonicalUrl, "property");
     setOptionalMeta("og:image", meta.ogImage, "property");
+    setOptionalMeta("og:image:secure_url", meta.ogImage, "property");
+    setOptionalMeta("og:image:type", meta.ogImageType, "property");
+    setOptionalMeta("og:image:width", meta.ogImageWidth, "property");
+    setOptionalMeta("og:image:height", meta.ogImageHeight, "property");
+    setOptionalMeta("og:image:alt", meta.ogImageAlt, "property");
     setMeta("twitter:card", meta.ogImage ? "summary_large_image" : "summary");
     setMeta("twitter:title", meta.title);
     setMeta("twitter:description", meta.description);
     setOptionalMeta("twitter:image", meta.ogImage);
+    setOptionalMeta("twitter:image:alt", meta.ogImageAlt);
     setCanonical(meta.canonicalUrl);
 
     let script = document.getElementById("portfolio-structured-data") as HTMLScriptElement | null;
