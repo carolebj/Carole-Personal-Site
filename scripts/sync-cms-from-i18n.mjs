@@ -35,6 +35,15 @@ function isSelected(type, docId) {
   return !only || `${type}/${docId}` === only;
 }
 
+function removeDeprecatedFields(type, data) {
+  const cleaned = structuredClone(data);
+  if (type === "aboutPage") {
+    delete cleaned.work;
+    delete cleaned.approach;
+  }
+  return cleaned;
+}
+
 function findCollectionRow(rows, canonical, matchKey) {
   const key = canonicalKey(canonical, matchKey);
   const byKey = rows.find(
@@ -93,7 +102,7 @@ for (const [type, buildContent] of Object.entries(i18nSingletons)) {
     continue;
   }
 
-  const merged = syncTextFromCanonical(row.data, canonical);
+  const merged = removeDeprecatedFields(type, syncTextFromCanonical(row.data, canonical));
   if (cmsDataEqual(merged, row.data)) continue;
 
   changes.push(`${type}/${docId}`);
