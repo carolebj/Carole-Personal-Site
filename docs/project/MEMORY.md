@@ -185,10 +185,13 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
     while the final CTA separately explains what to share to begin the exchange
   - the About page copywriting pass was validated and published on 2026-07-14.
     Its CMS model now uses `support` for the single “Comment je vous accompagne”
-    block; the former `work` and `approach` JSON fields may remain in historical
-    documents but are no longer exposed by the schema or public renderer. Track
-    every remaining public-page copywriting pass as its own top-level TickTick
-    task rather than as a subtask of About
+    block. The former `work` and `approach` fields are removed from the active
+    working document and public snapshot during targeted synchronization; CMS
+    revisions may retain them as intentional editorial history. Track every
+    remaining public-page copywriting pass as its own top-level TickTick task
+    rather than as a subtask of About. Plan a separate site-wide cleanup to
+    identify unused fields, orphaned content and CMS data no longer consumed by
+    the public or dashboard applications
   - keep the globally reduced scale validated on a 13-inch MacBook: lower nav height, smaller max content width, lower hero title/image caps, tighter buttons, and reduced section padding
   - use the Figma-derived hero/about portraits and exported decorative arc
   - use local Liberation Serif Italic for manifesto accent text
