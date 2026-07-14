@@ -4,7 +4,7 @@
 
 This file is the project-level memory for the Carole Personal Site repo. Keep it short, current, and useful for future agents working on the site.
 
-Last reviewed: 2026-07-13 WAT
+Last reviewed: 2026-07-14 WAT
 
 ## Current Branch Workflow
 
@@ -18,12 +18,15 @@ Last reviewed: 2026-07-13 WAT
 - `vercel.json` rewrites all routes to `/index.html` so React Router deep links can load correctly on Vercel.
 - Vercel project `carole-personal-site` belongs to **Carole’s Team**. The canonical public domain is `https://www.carolebj.com`, with `https://carolebj.com` redirected to it; public documentation and links must use the canonical domain rather than a technical `.vercel.app` alias.
 - Vercel GitHub integration is connected to `carolebj/Carole-Personal-Site`.
-- Because the private project uses Vercel Hobby, production releases must end
-  with a commit created by Carole's GitHub account, which owns the linked
-  Vercel team. Contributors push a dedicated branch and open a pull request;
-  after review, Carole merges it into `main` with **Create a merge commit**.
-  Do not push contributor-authored release commits directly to `main`, because
-  Vercel blocks private-repository deployments from non-team commit authors.
+- When the GitHub repository is private, the Vercel Hobby workflow requires
+  production releases to end with a commit created by Carole's GitHub account,
+  which owns the linked Vercel team. This rule is currently suspended because
+  the repository was made public on 2026-07-14. While it remains public,
+  contributor-authored branch pushes and pull requests may use Vercel's free
+  public-repository collaboration path; confirm this with the first deployment
+  created after the visibility change. If the repository becomes private
+  again, contributors must return to a dedicated branch and Carole must merge
+  into `main` with **Create a merge commit** so the release ends with her commit.
 - Current production points to the `main` deployment. Use the branch deployment listed by Vercel for `dev` reviews instead of persisting a generated preview URL in documentation.
 - Vercel Authentication is disabled for the project; both production and `dev` preview URLs are publicly reachable without login.
 - The Supabase Free project was restored from an inactivity pause on 2026-07-11. Production runs a secured daily Vercel Cron keepalive (`/api/supabase-keepalive`, 06:17 UTC) that performs three minimal public CMS reads; `CRON_SECRET` must remain configured only on Vercel Production.
@@ -170,7 +173,22 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
     and blog articles, starting with the About page. Challenge information
     hierarchy, repetition, paragraph length, CTA clarity, microcopy and FR/EN
     parity; preserve verified facts, review proposals before publication, and
-    apply validated wording through the CMS-authoritative content workflow
+    apply validated wording through the CMS-authoritative content workflow.
+    Favor a fluid, pleasant reading rhythm over aggressive compression, use
+    logical connectors when they genuinely advance the thought, and avoid
+    disruptive colon-led turns in public-facing body copy. On the About page,
+    describe the professional posture and quality of the collaboration without
+    exposing a detailed methodology or turning the page into a service list.
+    Before validation, reread the entire page as one continuous text so that
+    adjacent sections do not recycle the same promises or vocabulary. The
+    closing transition may welcome readers whose needs are still taking shape,
+    while the final CTA separately explains what to share to begin the exchange
+  - the About page copywriting pass was validated and published on 2026-07-14.
+    Its CMS model now uses `support` for the single “Comment je vous accompagne”
+    block; the former `work` and `approach` JSON fields may remain in historical
+    documents but are no longer exposed by the schema or public renderer. Track
+    every remaining public-page copywriting pass as its own top-level TickTick
+    task rather than as a subtask of About
   - keep the globally reduced scale validated on a 13-inch MacBook: lower nav height, smaller max content width, lower hero title/image caps, tighter buttons, and reduced section padding
   - use the Figma-derived hero/about portraits and exported decorative arc
   - use local Liberation Serif Italic for manifesto accent text
@@ -208,6 +226,9 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
 
 - The About page keeps its image field CMS-authoritative and uses the bundled
   `src/assets/carole-about-portrait.avif` portrait as the local fallback.
+- `npm run cms:sync-i18n -- --only=<type>/<docId>` previews one CMS document;
+  adding `--apply` saves and publishes only that target. Use the targeted form
+  for page-by-page copy changes so unrelated editorial documents are preserved.
 - The published `siteSettings` document uses Carole's Behance profile
   (`https://www.behance.net/caroletonoukouen`) and no longer carries the legacy
   Instagram placeholder. Its LinkedIn URL is
