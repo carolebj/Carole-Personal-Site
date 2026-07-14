@@ -141,7 +141,7 @@ export default function About() {
               </p>
             </div>
 
-            <figure className="mx-auto w-full max-w-[220px] md:col-start-2 md:row-span-2 md:row-start-1 md:mx-0 md:max-w-none">
+            <figure className="mx-auto w-full max-w-[220px] md:col-start-2 md:row-start-1 md:mx-0 md:max-w-none">
               <div className="overflow-hidden rounded-lg border border-border-subtle bg-surface-page">
                 <img
                   src={portraitSrc}
@@ -151,7 +151,7 @@ export default function About() {
               </div>
             </figure>
 
-            <div className="md:col-start-1 md:row-start-2">
+            <div className="md:col-span-2">
               <ProseBlock paragraphs={content.identity.paragraphs} />
             </div>
           </div>
