@@ -635,52 +635,43 @@ const fr = {
     hero: {
       title: "À propos",
       subtitle:
-        "Qui je suis, ce que je fais concrètement et la manière dont j'accompagne les marques et les projets.",
+        "Je vous présente ici mon parcours, le regard que je porte sur mon métier et la façon dont j'aime collaborer.",
     },
     imageAlt: "Portrait de Carole Tonoukouen",
     identity: {
       label: "Qui je suis",
       greeting: "Enchantée, moi c'est Carole Tonoukouen.",
-      role: "Chargée de communication digitale, coordination éditoriale et rédaction",
+      role: "Chargée de communication digitale, spécialisée en coordination éditoriale et en rédaction",
       paragraphs: [
-        "Je suis basée à Cotonou et j'accompagne des entreprises, des organisations et des porteurs de projets qui souhaitent clarifier leur message, structurer leurs contenus et renforcer leur visibilité en ligne, sans se noyer dans la cadence des réseaux.",
-        "Après plusieurs expériences concrètes en coordination éditoriale et en gestion de plateformes, j'ai choisi de me spécialiser dans l'accompagnement de marques qui veulent passer d'une communication réactive au jour le jour à un rythme éditorial planifié et porteur de sens.",
-        "Je crois qu'une présence digitale réussie ne repose pas sur la quantité de publications, mais sur la pertinence, la structure et la régularité. Mon rôle consiste donc à prendre en charge le travail en amont, notamment les calendriers, la rédaction et la coordination visuelle, afin que chaque prise de parole renforce la confiance avec votre public.",
+        "Je suis basée à Cotonou et je travaille avec des entreprises, des organisations et des porteurs de projets qui souhaitent mieux organiser leur prise de parole et développer une présence en ligne fidèle à leur identité, sans se laisser emporter par le rythme des réseaux sociaux.",
+        "Mes expériences en coordination éditoriale et en gestion de plateformes m'ont progressivement conduite à travailler auprès de marques qui veulent sortir d'une prise de parole réactive, menée au jour le jour, pour construire un rythme éditorial plus réfléchi et porteur de sens.",
+        "Au fil du temps, une conviction s'est imposée. Une marque ne construit pas une relation durable avec son public en publiant davantage, mais en choisissant des messages justes, constants et ancrés dans sa réalité.",
       ],
     },
-    work: {
-      label: "Ce que je fais",
+    support: {
+      label: "Comment je vous accompagne",
       paragraphs: [
-        "Concrètement, j'interviens sur la stratégie éditoriale, la communication digitale et la création de contenus. Je vous aide à définir une ligne claire, des piliers de sujets et un positionnement lisible sur vos canaux, puis à tenir ce cap dans le temps.",
-        "Je rédige, je pilote les calendriers et je coordonne les supports visuels. J'aligne par ailleurs chaque publication sur vos objectifs. Que ce soit pour LinkedIn, un blog, des campagnes ponctuelles ou une présence institutionnelle, l'objectif reste le même : moins de dispersion et plus de cohérence.",
-        "Selon les projets, je peux aussi assurer le community management, la traduction FR/EN, le reporting et le suivi des performances, toujours dans une logique d'organisation et de clarté plutôt que de volume pour le volume.",
+        "Pour moi, une collaboration commence par une écoute attentive. Il s'agit de comprendre ce qui caractérise votre marque, la manière dont elle s'exprime et ce que vous souhaitez faire évoluer, sans lui imposer une voix qui ne lui ressemble pas.",
+        "Je tiens également à ce que les échanges restent simples et que chacun sache où l'on va. Les choix sont expliqués, les priorités restent visibles et les décisions se prennent avec vous, dans un dialogue direct.",
+        "Chaque situation appelle une réponse différente. Je ne m'appuie donc pas sur une formule toute faite. Je préfère un cadre assez solide pour avancer sereinement et assez souple pour évoluer avec vos besoins.",
       ],
     },
     value: {
-      label: "Ce que vous y gagnez",
+      label: "Ce que cela change pour vous",
       paragraphs: [
-        "Travailler avec moi, c'est d'abord gagner en lisibilité. Votre message devient plus net et plus accessible, sans perdre pour autant votre personnalité ni votre voix.",
-        "Vous bénéficiez également d'une rigueur opérationnelle : des systèmes éditoriaux plus simples à tenir, une cadence réaliste et des formats qui se répondent. La stratégie précède par ailleurs la création, de sorte que chaque canal et chaque format répondent à un objectif et à une audience identifiés.",
-        "En fin de parcours, vous déléguez une part importante de la charge mentale liée à la communication, tout en conservant la main sur les orientations qui comptent vraiment pour vous.",
-      ],
-    },
-    approach: {
-      label: "Mon approche",
-      paragraphs: [
-        "Je commence toujours par lire votre contexte, c'est-à-dire comprendre votre marque, vos objectifs et vos publics, puis auditer ce qui existe déjà afin de repérer les écarts de message.",
-        "Ensuite, nous cadrons ensemble la ligne éditoriale, les piliers de contenu et la cadence de publication. Ce n'est qu'après ce socle que j'entame le déploiement : rédaction, visuels, scripts courts et calendriers prêts à publier.",
-        "Le suivi fait enfin partie du processus. J'analyse les retours, j'ajuste les angles et j'identifie les thèmes qui génèrent le plus d'échanges. L'accompagnement reste ainsi simple, lisible et tenable sur la durée.",
+        "Vous gagnez une présence plus harmonieuse, dans laquelle les contenus se répondent et rendent votre message plus facile à reconnaître. Votre public comprend clairement ce qui vous distingue, tandis que les personnes impliquées disposent de repères communs.",
+        "Vous allégez aussi la charge quotidienne liée à votre communication. Au lieu de repartir de zéro à chaque prise de parole, vous avancez avec un fil conducteur qui facilite les choix et aide à maintenir le cap dans le temps.",
       ],
     },
     closing: {
       paragraphs: [
-        "Si vous cherchez quelqu'un pour structurer votre communication, tenir le fil éditorial et vous faire gagner du temps sans alourdir le dispositif, je serais ravie d'en discuter avec vous.",
+        "Que votre besoin soit déjà bien défini ou encore en cours de réflexion, je serai ravie d'en discuter avec vous.",
       ],
     },
     ctaBand: {
-      title: "Parlons de votre communication",
+      title: "Échangeons autour de votre projet",
       subtitle:
-        "Expliquez-moi votre contexte, vos canaux et vos priorités. Nous identifierons ensemble la forme d'accompagnement la plus adaptée à votre situation.",
+        "Parlez-moi de votre contexte, de vos priorités et de ce que vous avez en tête. Nous verrons ensemble quelle forme de collaboration répond le mieux à votre situation.",
       ctaPrimary: "Me contacter",
       ctaSecondary: "Voir mes services",
     },

@@ -178,9 +178,8 @@ export type CmsAboutPage = {
     greeting?: LocalizedValue;
     role?: LocalizedValue;
   };
-  work?: CmsProseBlock;
+  support?: CmsProseBlock;
   value?: CmsProseBlock;
-  approach?: CmsProseBlock;
   closing?: {
     paragraphs?: LocalizedValue[];
   };
