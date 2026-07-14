@@ -43,6 +43,7 @@ Dashboard initialization and agent verification (credentials in `.env.local` —
 npm run cms:seed      # initialisation additive : ajoute uniquement les contenus absents
 npm run cms:sync-i18n # aperçu : texte CMS aligné sur i18n (fr.tsx/en.tsx → cms-default-content)
 npm run cms:sync-i18n -- --apply # resync tout le contenu éditorial + dépublie les entrées hors i18n
+npm run cms:sync-i18n -- --only=aboutPage/aboutPage # cible un document sans toucher aux autres
 npm run cms:backfill  # simulation : complète uniquement les valeurs vides
 npm run cms:backfill -- --apply # complète, versionne et republie sans écraser
 npm run cms:export    # sauvegarde JSON locale avant migration/maintenance

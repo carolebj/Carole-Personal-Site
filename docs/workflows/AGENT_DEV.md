@@ -85,6 +85,8 @@ Variantes :
 
 ```bash
 npm run cms:seed                              # initialisation additive, n'écrase rien
+npm run cms:sync-i18n -- --only=aboutPage/aboutPage # aperçu ciblé d'un document
+npm run cms:sync-i18n -- --only=aboutPage/aboutPage --apply # synchronise et publie ce document uniquement
 npm run cms:backfill                          # simule les compléments de champs vides
 npm run cms:backfill -- --apply               # complète + publie sans écraser
 npm run cms:export                            # export JSON avant migration/maintenance
