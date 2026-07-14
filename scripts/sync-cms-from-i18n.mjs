@@ -4,6 +4,7 @@
  * Usage :
  *   npm run cms:sync-i18n              # aperçu
  *   npm run cms:sync-i18n -- --apply   # enregistre + publie
+ *   npm run cms:sync-i18n -- --only=aboutPage/aboutPage
  */
 
 import { createClient } from "@supabase/supabase-js";
@@ -19,6 +20,7 @@ const key = process.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? process.env.VITE_SUPABA
 const email = process.env.CMS_SEED_EMAIL;
 const password = process.env.CMS_SEED_PASSWORD;
 const apply = process.argv.includes("--apply");
+const only = process.argv.find((arg) => arg.startsWith("--only="))?.slice("--only=".length) ?? null;
 
 if (!url || !key || !email || !password) {
   console.error("Configuration Supabase ou identifiants CMS manquants dans .env.local.");
@@ -27,6 +29,10 @@ if (!url || !key || !email || !password) {
 
 function canonicalKey(doc, matchKey) {
   return doc[matchKey] ?? doc.slug ?? null;
+}
+
+function isSelected(type, docId) {
+  return !only || `${type}/${docId}` === only;
 }
 
 function findCollectionRow(rows, canonical, matchKey) {
@@ -71,6 +77,7 @@ const depublished = [];
 
 for (const [type, buildContent] of Object.entries(i18nSingletons)) {
   const docId = type;
+  if (!isSelected(type, docId)) continue;
   const canonical = buildContent();
 
   const { data: row, error } = await sb
@@ -96,6 +103,7 @@ for (const [type, buildContent] of Object.entries(i18nSingletons)) {
 }
 
 for (const [type, config] of Object.entries(i18nCollections)) {
+  if (only && !only.startsWith(`${type}/`)) continue;
   const canonicalDocs = config.build();
   const matchKey = config.matchKey;
 
@@ -116,6 +124,7 @@ for (const [type, config] of Object.entries(i18nCollections)) {
     const key = canonicalKey(canonical, matchKey);
     const row = findCollectionRow(rows ?? [], canonical, matchKey);
     const docId = row?.doc_id ?? key;
+    if (!isSelected(type, docId)) continue;
     const slug = canonical.slug ?? null;
     const { id: _stableId, ...payload } = canonical;
 
@@ -134,7 +143,7 @@ for (const [type, config] of Object.entries(i18nCollections)) {
     usedDocIds.add(docId);
   }
 
-  if (!i18nOrphanDepublishTypes.has(type)) continue;
+  if (only || !i18nOrphanDepublishTypes.has(type)) continue;
 
   for (const row of rows ?? []) {
     const rowKey = row.slug ?? row.data?.slug ?? row.doc_id;
