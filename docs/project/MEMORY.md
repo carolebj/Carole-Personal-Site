@@ -212,8 +212,10 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
 - The About page keeps its image field CMS-authoritative and uses the bundled
   `src/assets/carole-about-portrait.avif` portrait as the local fallback.
 - The published `siteSettings` document uses `https://www.carolebj.com` as
-  its canonical `siteUrl` and the 1200×630 `og-carolet.png` asset stored in
-  Supabase as its default Open Graph and Twitter sharing image.
+  its canonical `siteUrl`. The cross-platform link preview uses the optimized
+  1200×630 `public/carole-tonoukouen-social-preview.png` asset as its default
+  Open Graph image and X Card image (`twitter:*` remains the technical metadata
+  namespace used by X).
 - `npm run cms:sync-i18n -- --only=<type>/<docId>` previews one CMS document;
   adding `--apply` saves and publishes only that target. Use the targeted form
   for page-by-page copy changes so unrelated editorial documents are preserved.

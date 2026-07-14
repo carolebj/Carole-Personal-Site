@@ -6,6 +6,7 @@ import type { SeoOverride } from "./SeoOverrideContext";
 
 const DEFAULT_SITE_NAME = "Carole Tonoukouen";
 const DEFAULT_SITE_URL = "https://www.carolebj.com";
+const DEFAULT_SOCIAL_IMAGE = "/carole-tonoukouen-social-preview.png";
 
 export function resolveSiteUrl(settings: CmsSiteSettings | null | undefined) {
   const fromCms = settings?.siteUrl?.trim();
@@ -61,7 +62,15 @@ export function resolveSeoMeta({
 
   const canonicalUrl = `${siteUrl}${pathname === "/" ? "/" : pathname}`;
   const ogImage =
-    toAbsoluteUrl(override?.image, siteUrl) ?? toAbsoluteUrl(cmsImageUrl(settings?.ogImage), siteUrl);
+    toAbsoluteUrl(override?.image, siteUrl) ??
+    toAbsoluteUrl(cmsImageUrl(settings?.ogImage), siteUrl) ??
+    toAbsoluteUrl(DEFAULT_SOCIAL_IMAGE, siteUrl);
+  const ogImageAlt =
+    override?.title ??
+    (lang === "fr"
+      ? "Carole Tonoukouen, chargée de communication digitale"
+      : "Carole Tonoukouen, digital communications officer");
+  const usesDefaultSocialImage = ogImage?.endsWith("/carole-tonoukouen-social-preview.png") ?? false;
 
   return {
     lang,
@@ -71,6 +80,10 @@ export function resolveSeoMeta({
     siteUrl,
     canonicalUrl,
     ogImage,
+    ogImageAlt,
+    ogImageType: usesDefaultSocialImage ? "image/png" : undefined,
+    ogImageWidth: usesDefaultSocialImage ? "1200" : undefined,
+    ogImageHeight: usesDefaultSocialImage ? "630" : undefined,
     ogType: override?.ogType ?? "website",
     pageKey: pageKey as SeoPageKey | null,
   };
