@@ -36,9 +36,8 @@ export function toAboutPageViewModel(
     hero: { title: string; subtitle: string };
     imageAlt: string;
     identity: { label: string; greeting: string; role: string; paragraphs: string[] };
-    work: { label: string; paragraphs: string[] };
+    support: { label: string; paragraphs: string[] };
     value: { label: string; paragraphs: string[] };
-    approach: { label: string; paragraphs: string[] };
     closing: { paragraphs: string[] };
     ctaBand: { title: string; subtitle: string; ctaPrimary: string; ctaSecondary: string };
   },
@@ -57,9 +56,8 @@ export function toAboutPageViewModel(
       role: localized(cms?.identity?.role, locale),
       paragraphs: localizedListItems(cms?.identity?.paragraphs, locale),
     },
-    work: cmsProseBlock(cms?.work, locale, usingCms, fallback.work),
+    support: cmsProseBlock(cms?.support, locale, usingCms, fallback.support),
     value: cmsProseBlock(cms?.value, locale, usingCms, fallback.value),
-    approach: cmsProseBlock(cms?.approach, locale, usingCms, fallback.approach),
     closing: {
       paragraphs: localizedListItems(cms?.closing?.paragraphs, locale),
     },

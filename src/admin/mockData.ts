@@ -67,8 +67,8 @@ export const seedContent = {
     hero: {
       title: L("À propos", "About"),
       subtitle: L(
-        "Qui je suis, ce que je fais concrètement et la manière dont j'accompagne les marques et les projets.",
-        "Who I am, what I do in practice, and how I support brands and projects.",
+        "Je vous présente ici mon parcours, le regard que je porte sur mon métier et la façon dont j'aime collaborer.",
+        "Here, I share my background, the perspective I bring to my work, and the way I like to collaborate.",
       ),
     },
     image: null,
@@ -77,34 +77,66 @@ export const seedContent = {
       label: L("Qui je suis", "Who I am"),
       greeting: L("Enchantée, moi c'est Carole Tonoukouen.", "Lovely to meet you. I'm Carole Tonoukouen."),
       role: L(
-        "Chargée de communication digitale, coordination éditoriale et rédaction",
-        "Digital communications officer, editorial coordination, and writing",
+        "Chargée de communication digitale, spécialisée en coordination éditoriale et en rédaction",
+        "Digital communications officer specializing in editorial coordination and writing",
       ),
       paragraphs: [
         L(
-          "Je suis basée à Cotonou et j'accompagne des entreprises, des organisations et des porteurs de projets.",
-          "I'm based in Cotonou and I support businesses, organizations, and project owners.",
+          "Je suis basée à Cotonou et je travaille avec des entreprises, des organisations et des porteurs de projets qui souhaitent mieux organiser leur prise de parole et développer une présence en ligne fidèle à leur identité, sans se laisser emporter par le rythme des réseaux sociaux.",
+          "I'm based in Cotonou and work with businesses, organizations, and project owners who want to organize their messaging more effectively and build an online presence that feels true to who they are, without being swept up in the constant pace of social media.",
+        ),
+        L(
+          "Mes expériences en coordination éditoriale et en gestion de plateformes m'ont progressivement conduite à travailler auprès de marques qui veulent sortir d'une prise de parole réactive, menée au jour le jour, pour construire un rythme éditorial plus réfléchi et porteur de sens.",
+          "My experience in editorial coordination and platform management gradually led me to work with brands that want to move away from reactive, day-to-day messaging and build a more thoughtful editorial rhythm with a clear sense of purpose.",
+        ),
+        L(
+          "Au fil du temps, une conviction s'est imposée. Une marque ne construit pas une relation durable avec son public en publiant davantage, mais en choisissant des messages justes, constants et ancrés dans sa réalité.",
+          "Over time, one belief has become central to my work. A brand does not build a lasting relationship with its audience by publishing more, but by choosing messages that are relevant, consistent, and grounded in its reality.",
         ),
       ],
     },
-    work: {
-      label: L("Ce que je fais", "What I do"),
-      paragraphs: [L("Stratégie éditoriale, communication digitale et création de contenus.", "")],
+    support: {
+      label: L("Comment je vous accompagne", "How I support you"),
+      paragraphs: [
+        L(
+          "Pour moi, une collaboration commence par une écoute attentive. Il s'agit de comprendre ce qui caractérise votre marque, la manière dont elle s'exprime et ce que vous souhaitez faire évoluer, sans lui imposer une voix qui ne lui ressemble pas.",
+          "For me, every collaboration begins with careful listening. It means understanding what defines your brand, how it expresses itself, and what you want to develop, without imposing a voice that does not feel like your own.",
+        ),
+        L(
+          "Je tiens également à ce que les échanges restent simples et que chacun sache où l'on va. Les choix sont expliqués, les priorités restent visibles et les décisions se prennent avec vous, dans un dialogue direct.",
+          "I also believe the conversation should remain straightforward and the direction easy to follow. Choices are explained, priorities remain visible, and decisions are made with you through direct, open dialogue.",
+        ),
+        L(
+          "Chaque situation appelle une réponse différente. Je ne m'appuie donc pas sur une formule toute faite. Je préfère un cadre assez solide pour avancer sereinement et assez souple pour évoluer avec vos besoins.",
+          "Every situation calls for a different response. That is why I do not rely on a ready-made formula. I prefer a framework that is solid enough to move forward with confidence and flexible enough to evolve with your needs.",
+        ),
+      ],
     },
     value: {
-      label: L("Ce que vous y gagnez", "What you gain"),
-      paragraphs: [L("Plus de lisibilité et une rigueur opérationnelle.", "")],
-    },
-    approach: {
-      label: L("Mon approche", "My approach"),
-      paragraphs: [L("Contexte, cadrage, déploiement puis suivi.", "")],
+      label: L("Ce que cela change pour vous", "What this changes for you"),
+      paragraphs: [
+        L(
+          "Vous gagnez une présence plus harmonieuse, dans laquelle les contenus se répondent et rendent votre message plus facile à reconnaître. Votre public comprend clairement ce qui vous distingue, tandis que les personnes impliquées disposent de repères communs.",
+          "You gain a more harmonious presence, where individual pieces of content support one another and make your message easier to recognize. Your audience can clearly understand what sets you apart, while the people involved share a common set of reference points.",
+        ),
+        L(
+          "Vous allégez aussi la charge quotidienne liée à votre communication. Au lieu de repartir de zéro à chaque prise de parole, vous avancez avec un fil conducteur qui facilite les choix et aide à maintenir le cap dans le temps.",
+          "You also reduce the day-to-day weight of communication. Instead of starting from scratch every time you need to speak, you move forward with a guiding thread that makes decisions easier and helps you stay on course over time.",
+        ),
+      ],
     },
     closing: {
-      paragraphs: [L("Je serais ravie d'en discuter avec vous.", "")],
+      paragraphs: [L(
+        "Que votre besoin soit déjà bien défini ou encore en cours de réflexion, je serai ravie d'en discuter avec vous.",
+        "Whether your needs are already clearly defined or still taking shape, I'd be happy to discuss them with you.",
+      )],
     },
     ctaBand: {
-      title: L("Parlons de votre communication", "Let's talk about your communication"),
-      subtitle: L("Expliquez-moi votre contexte, vos canaux et vos priorités.", ""),
+      title: L("Échangeons autour de votre projet", "Let's talk about your project"),
+      subtitle: L(
+        "Parlez-moi de votre contexte, de vos priorités et de ce que vous avez en tête. Nous verrons ensemble quelle forme de collaboration répond le mieux à votre situation.",
+        "Tell me about your context, priorities, and what you have in mind. Together, we can identify the type of collaboration that best fits your situation.",
+      ),
       ctaPrimary: L("Me contacter", "Contact me"),
       ctaSecondary: L("Voir mes services", "View my services"),
     },

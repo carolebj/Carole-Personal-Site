@@ -27,9 +27,8 @@ type AboutPageContent = {
     role: string;
     paragraphs: string[];
   };
-  work: ProseSection;
+  support: ProseSection;
   value: ProseSection;
-  approach: ProseSection;
   closing: {
     paragraphs: string[];
   };
@@ -162,9 +161,9 @@ export default function About() {
           {...fadeUpInView}
           className={`mt-8 md:mt-10 ${aboutPanelSection}`}
         >
-          <SectionEyebrow>{content.work.label}</SectionEyebrow>
+          <SectionEyebrow>{content.support.label}</SectionEyebrow>
           <div className="mt-8">
-            <ProseBlock paragraphs={content.work.paragraphs} />
+            <ProseBlock paragraphs={content.support.paragraphs} />
           </div>
         </motion.section>
 
@@ -175,16 +174,6 @@ export default function About() {
           <SectionEyebrow>{content.value.label}</SectionEyebrow>
           <div className="mt-8">
             <ProseBlock paragraphs={content.value.paragraphs} />
-          </div>
-        </motion.section>
-
-        <motion.section
-          {...fadeUpInView}
-          className={`mt-8 md:mt-10 ${aboutPanelSection}`}
-        >
-          <SectionEyebrow>{content.approach.label}</SectionEyebrow>
-          <div className="mt-8">
-            <ProseBlock paragraphs={content.approach.paragraphs} />
           </div>
         </motion.section>
 

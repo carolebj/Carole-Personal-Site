@@ -188,9 +188,8 @@ export function buildAboutPageContent() {
       role: L(fr.aboutPage.identity.role, en.aboutPage.identity.role),
       paragraphs: localizedList(fr.aboutPage.identity.paragraphs, en.aboutPage.identity.paragraphs),
     },
-    work: prose(fr.aboutPage.work, en.aboutPage.work),
+    support: prose(fr.aboutPage.support, en.aboutPage.support),
     value: prose(fr.aboutPage.value, en.aboutPage.value),
-    approach: prose(fr.aboutPage.approach, en.aboutPage.approach),
     closing: {
       paragraphs: localizedList(fr.aboutPage.closing.paragraphs, en.aboutPage.closing.paragraphs),
     },

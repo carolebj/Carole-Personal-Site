@@ -218,9 +218,8 @@ export const contentTypes: ContentType[] = [
           { name: "paragraphs", label: "Paragraphes", type: "localizedList" },
         ],
       },
-      proseBlock("work", "Ce que je fais"),
-      proseBlock("value", "Ce que vous y gagnez"),
-      proseBlock("approach", "Mon approche"),
+      proseBlock("support", "Comment je vous accompagne"),
+      proseBlock("value", "Ce que cela change pour vous"),
       {
         name: "closing",
         label: "Conclusion",

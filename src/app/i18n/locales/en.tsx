@@ -700,52 +700,43 @@ const en = {
     hero: {
       title: "About",
       subtitle:
-        "Who I am, what I do in practice, and how I support brands and projects.",
+        "Here, I share my background, the perspective I bring to my work, and the way I like to collaborate.",
     },
     imageAlt: "Portrait of Carole Tonoukouen",
     identity: {
       label: "Who I am",
       greeting: "Lovely to meet you. I'm Carole Tonoukouen.",
-      role: "Digital communications officer, editorial coordination, and writing",
+      role: "Digital communications officer specializing in editorial coordination and writing",
       paragraphs: [
-        "I'm based in Cotonou and I support businesses, organizations, and project owners who want to clarify their message, structure their content, and strengthen their online visibility, without drowning in the pace of social media.",
-        "After several hands-on experiences in editorial coordination and platform management, I chose to specialize in supporting brands that want to move from reactive day-to-day communication to a planned, meaningful editorial cadence.",
-        "I believe a strong digital presence relies on relevance, structure, and consistency rather than posting volume. My role is therefore to handle the groundwork, including calendars, writing, and visual coordination, so that every public message builds trust with your audience.",
+        "I'm based in Cotonou and work with businesses, organizations, and project owners who want to organize their messaging more effectively and build an online presence that feels true to who they are, without being swept up in the constant pace of social media.",
+        "My experience in editorial coordination and platform management gradually led me to work with brands that want to move away from reactive, day-to-day messaging and build a more thoughtful editorial rhythm with a clear sense of purpose.",
+        "Over time, one belief has become central to my work. A brand does not build a lasting relationship with its audience by publishing more, but by choosing messages that are relevant, consistent, and grounded in its reality.",
       ],
     },
-    work: {
-      label: "What I do",
+    support: {
+      label: "How I support you",
       paragraphs: [
-        "In practice, I work across editorial strategy, digital communication, and content creation. I help you define a clear line, content pillars, and readable positioning across your channels, then hold that direction over time.",
-        "I write, steer calendars, and coordinate visual assets. I also align each publication with your goals. Whether it's LinkedIn, a blog, one-off campaigns, or an institutional presence, the aim remains the same: less scatter and more coherence.",
-        "Depending on the project, I can also handle community management, FR/EN translation, reporting, and performance follow-up, always with organization and clarity in mind rather than volume for volume's sake.",
+        "For me, every collaboration begins with careful listening. It means understanding what defines your brand, how it expresses itself, and what you want to develop, without imposing a voice that does not feel like your own.",
+        "I also believe the conversation should remain straightforward and the direction easy to follow. Choices are explained, priorities remain visible, and decisions are made with you through direct, open dialogue.",
+        "Every situation calls for a different response. That is why I do not rely on a ready-made formula. I prefer a framework that is solid enough to move forward with confidence and flexible enough to evolve with your needs.",
       ],
     },
     value: {
-      label: "What you gain",
+      label: "What this changes for you",
       paragraphs: [
-        "Working with me means gaining readability first. Your message becomes sharper and more accessible, without losing your personality or voice.",
-        "You also benefit from operational rigor: editorial systems that are easier to maintain, a realistic cadence, and formats that echo each other. Strategy comes before creation, so every channel and every format serves a clear objective and a defined audience.",
-        "In the end, you delegate a significant share of the mental load tied to communication while keeping control over the directions that matter to you.",
-      ],
-    },
-    approach: {
-      label: "My approach",
-      paragraphs: [
-        "I always start by reading your context, which means understanding your brand, your goals, and your audiences, then auditing what already exists in order to spot message gaps.",
-        "Next, we frame things together: editorial line, content pillars, and publishing cadence. Only after that foundation do I move into deployment, including writing, visuals, short scripts, and ready-to-publish calendars.",
-        "Follow-up is finally part of the process. I analyze feedback, adjust angles, and identify topics that spark the most conversation. The support therefore stays simple, readable, and sustainable over time.",
+        "You gain a more harmonious presence, where individual pieces of content support one another and make your message easier to recognize. Your audience can clearly understand what sets you apart, while the people involved share a common set of reference points.",
+        "You also reduce the day-to-day weight of communication. Instead of starting from scratch every time you need to speak, you move forward with a guiding thread that makes decisions easier and helps you stay on course over time.",
       ],
     },
     closing: {
       paragraphs: [
-        "If you're looking for someone to structure your communication, hold the editorial thread, and save you time without weighing down the setup, I would be glad to discuss it with you.",
+        "Whether your needs are already clearly defined or still taking shape, I'd be happy to discuss them with you.",
       ],
     },
     ctaBand: {
-      title: "Let's talk about your communication",
+      title: "Let's talk about your project",
       subtitle:
-        "Tell me about your context, channels, and priorities. Together, we will identify the most suitable support format for your situation.",
+        "Tell me about your context, priorities, and what you have in mind. Together, we can identify the type of collaboration that best fits your situation.",
       ctaPrimary: "Contact me",
       ctaSecondary: "View my services",
     },
