@@ -1,13 +1,31 @@
+/* Hallmark · genre: editorial · tone: warm and pedagogical · anchor: plum · macrostructure: Narrative Workflow · theme: Linen adapted */
 @custom-variant dark (&:is(.dark *));
 
 :root {
   --font-size: 16px;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-micro: 120ms;
+  --duration-short: 200ms;
+  --duration-long: 400ms;
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
 
   /* transitions-dev — copy this :root block into your project once.
      Every transition snippet reads from these semantic names. */
   /* Card resize */
   --resize-dur: 300ms;
   --resize-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Service bento hover layout */
+  --service-bento-hover-dur: 180ms;
+  --service-bento-hover-ease: cubic-bezier(0.23, 1, 0.32, 1);
   /* Number pop-in */
   --digit-dur: 500ms;
   --digit-distance: 8px;

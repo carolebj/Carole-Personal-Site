@@ -17,8 +17,8 @@ const languages: { code: Lang; flag: string }[] = [
   { code: "fr", flag: "FR" },
   { code: "en", flag: "EN" },
 ];
-const FOOTER_REVEAL_DELAY_MS = 1100;
-const FOOTER_REVEAL_DEEP_DELAY_MS = 1500;
+const FOOTER_REVEAL_DELAY_MS = 650;
+const FOOTER_REVEAL_DEEP_DELAY_MS = 900;
 const FOOTER_REVEAL_PEEK_PX = 56;
 const FOOTER_REVEAL_INTENT_THRESHOLD = 260;
 const FOOTER_REVEAL_INTENT_RESET_MS = 420;
@@ -554,11 +554,11 @@ export default function Footer() {
 
       returnAnimationRef.current = animate(window.scrollY, restY, {
         type: "spring",
-        stiffness: 210,
-        damping: 30,
-        mass: 0.85,
+        stiffness: 270,
+        damping: 36,
+        mass: 0.72,
         restDelta: 0.35,
-        restSpeed: 8,
+        restSpeed: 10,
         onUpdate: (latest) => window.scrollTo(0, latest),
         onComplete: () => {
           isReturningRef.current = false;

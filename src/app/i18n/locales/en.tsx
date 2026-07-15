@@ -74,6 +74,7 @@ const en = {
     titleAccent: "I'm Carole",
     p1: "I help businesses, organizations, and projects clarify their message, organize their content, and strengthen their digital visibility.",
     p2: "I support editorial coordination, writing, visual production follow-up, and communication actions. Together, we turn your ideas, key moments, and priorities into clear public-facing messages.",
+    cta: "Discover my story",
     imageAlt: "Portrait of Carole Tonoukouen",
     traits: [
       { label: "Writer" },

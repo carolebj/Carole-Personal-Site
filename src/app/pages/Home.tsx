@@ -1,7 +1,12 @@
-import { ChevronLeftIcon, ChevronRightIcon, EnvelopeIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon, EnvelopeIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { ContactForm } from "../components/ContactForm";
 import { SectionEyebrow } from "../components/SectionEyebrow";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import {
+  layoutWithLines,
+  prepareWithSegments,
+  type PreparedTextWithSegments,
+} from "@chenglou/pretext";
 import {
   useCallback,
   useEffect,
@@ -64,6 +69,20 @@ type VisualTuning = {
 
 type VisualTuningKey = keyof VisualTuning;
 
+type ServiceBentoTuning = {
+  spans: number[];
+  order: number[];
+  hoverFocus: boolean;
+  hoverSpan: number;
+  compactSpan: number;
+  hoverLift: number;
+  transitionMs: number;
+  minHeight: number;
+  gap: number;
+};
+
+type ServiceBentoNumberKey = Exclude<keyof ServiceBentoTuning, "spans" | "order" | "hoverFocus">;
+
 type TestimonialMediaFit = {
   scale: number;
   x: number;
@@ -78,19 +97,53 @@ type PanelPosition = {
 };
 
 const VISUAL_TUNING_STORAGE_KEY = "carole-visual-tuning";
+const SERVICE_BENTO_TUNING_STORAGE_KEY = "carole-service-bento-tuning-v2";
+const SERVICE_BENTO_TUNING_PANEL_POSITION_KEY = "carole-service-bento-tuning-panel-position";
 const TESTIMONIAL_TUNING_STORAGE_KEY = "carole-testimonial-media-tuning";
 const TESTIMONIAL_TUNING_PANEL_POSITION_KEY = "carole-testimonial-media-tuning-panel-position";
 const SHOW_VISUAL_TUNING_PANEL = false;
+const SHOW_SERVICE_BENTO_TUNING_PANEL = false;
 const SHOW_TESTIMONIAL_TUNING_PANEL = false;
 const DEFAULT_VISUAL_TUNING: VisualTuning = {
   heroScale: 1.24,
   heroY: -10,
   heroObjectY: 100,
 };
+const DEFAULT_SERVICE_BENTO_TUNING: ServiceBentoTuning = {
+  spans: [6, 6, 3, 5, 4],
+  order: [0, 1, 2, 3, 4],
+  hoverFocus: false,
+  hoverSpan: 8,
+  compactSpan: 4,
+  hoverLift: 4,
+  transitionMs: 420,
+  minHeight: 272,
+  gap: 16,
+};
+const SERVICE_BENTO_HOVER_SPANS: Record<number, number[]> = {
+  0: [8, 4, 4, 4, 4],
+  1: [4, 8, 4, 4, 4],
+  2: [6, 6, 6, 3, 3],
+  3: [6, 6, 3, 6, 3],
+  4: [6, 6, 3, 3, 6],
+};
+const SERVICE_BENTO_ROWS = [
+  [0, 1],
+  [2, 3, 4],
+] as const;
+const SERVICE_BENTO_DESKTOP_BREAKPOINT = 1024;
+const SERVICE_CARD_DESKTOP_PADDING_X = 56;
+const SERVICE_DESCRIPTION_FONT = '400 14px "Inter"';
+const SERVICE_DESCRIPTION_LINE_HEIGHT = 24;
+const serviceDescriptionPretextCache = new Map<string, PreparedTextWithSegments>();
 const DEFAULT_TESTIMONIAL_MEDIA_FIT: TestimonialMediaFit = {
   scale: 1,
   x: 50,
   y: 50,
+};
+const DEFAULT_SERVICE_BENTO_TUNING_PANEL_POSITION: PanelPosition = {
+  x: 16,
+  y: 160,
 };
 const DEFAULT_TESTIMONIAL_TUNING_PANEL_POSITION: PanelPosition = {
   x: 16,
@@ -494,6 +547,178 @@ function readStoredVisualTuning() {
   }
 }
 
+function clampNumber(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function clampServiceSpan(value: number) {
+  return Math.round(clampNumber(value, 2, 12));
+}
+
+function normalizeServiceBentoTuning(value: Partial<ServiceBentoTuning>, serviceCount: number): ServiceBentoTuning {
+  const fallbackSpans = DEFAULT_SERVICE_BENTO_TUNING.spans;
+  const nextSpans = Array.from({ length: serviceCount }, (_, index) => {
+    const valueSpan = value.spans?.[index] ?? fallbackSpans[index % fallbackSpans.length] ?? 6;
+    return clampServiceSpan(valueSpan);
+  });
+  const fallbackOrder = Array.from({ length: serviceCount }, (_, index) => index);
+  const validStoredOrder = value.order?.filter(
+    (item, index, order) => Number.isInteger(item) && item >= 0 && item < serviceCount && order.indexOf(item) === index
+  );
+  const nextOrder = [
+    ...(validStoredOrder ?? []),
+    ...fallbackOrder.filter((item) => !(validStoredOrder ?? []).includes(item)),
+  ].slice(0, serviceCount);
+
+  return {
+    spans: nextSpans,
+    order: nextOrder,
+    hoverFocus: typeof value.hoverFocus === "boolean" ? value.hoverFocus : DEFAULT_SERVICE_BENTO_TUNING.hoverFocus,
+    hoverSpan: clampServiceSpan(value.hoverSpan ?? DEFAULT_SERVICE_BENTO_TUNING.hoverSpan),
+    compactSpan: clampServiceSpan(value.compactSpan ?? DEFAULT_SERVICE_BENTO_TUNING.compactSpan),
+    hoverLift: clampNumber(value.hoverLift ?? DEFAULT_SERVICE_BENTO_TUNING.hoverLift, 0, 16),
+    transitionMs: Math.round(clampNumber(value.transitionMs ?? DEFAULT_SERVICE_BENTO_TUNING.transitionMs, 80, 900)),
+    minHeight: Math.round(clampNumber(value.minHeight ?? DEFAULT_SERVICE_BENTO_TUNING.minHeight, 180, 420)),
+    gap: Math.round(clampNumber(value.gap ?? DEFAULT_SERVICE_BENTO_TUNING.gap, 12, 40)),
+  };
+}
+
+function readStoredServiceBentoTuning(serviceCount: number) {
+  if (typeof window === "undefined") {
+    return normalizeServiceBentoTuning(DEFAULT_SERVICE_BENTO_TUNING, serviceCount);
+  }
+
+  try {
+    const stored = window.localStorage.getItem(SERVICE_BENTO_TUNING_STORAGE_KEY);
+    if (!stored) {
+      return normalizeServiceBentoTuning(DEFAULT_SERVICE_BENTO_TUNING, serviceCount);
+    }
+
+    return normalizeServiceBentoTuning(JSON.parse(stored) as Partial<ServiceBentoTuning>, serviceCount);
+  } catch {
+    return normalizeServiceBentoTuning(DEFAULT_SERVICE_BENTO_TUNING, serviceCount);
+  }
+}
+
+function buildServiceBentoPreset(serviceCount: number, rows: number): ServiceBentoTuning {
+  const presetSpansByRows: Record<number, number[]> = {
+    1: [2, 2, 3, 2, 3],
+    2: [7, 5, 4, 4, 4],
+    3: [7, 5, 5, 7, 12],
+    4: [12, 6, 6, 12, 12],
+  };
+
+  return normalizeServiceBentoTuning(
+    {
+      ...DEFAULT_SERVICE_BENTO_TUNING,
+      spans: presetSpansByRows[rows] ?? DEFAULT_SERVICE_BENTO_TUNING.spans,
+      order: Array.from({ length: serviceCount }, (_, index) => index),
+    },
+    serviceCount
+  );
+}
+
+function shuffleNumbers(values: number[]) {
+  return values
+    .map((value) => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+}
+
+function randomizeServiceBentoTuning(current: ServiceBentoTuning, serviceCount: number): ServiceBentoTuning {
+  const targetRows = Math.ceil(Math.random() * 4);
+  const base = buildServiceBentoPreset(serviceCount, targetRows);
+  const randomizedSpans = base.spans.map((span) => clampServiceSpan(span + Math.round(Math.random() * 4 - 2)));
+
+  return normalizeServiceBentoTuning(
+    {
+      ...current,
+      spans: randomizedSpans,
+      order: shuffleNumbers(Array.from({ length: serviceCount }, (_, index) => index)),
+    },
+    serviceCount
+  );
+}
+
+const findServiceBentoRow = (serviceIndex: number) =>
+  SERVICE_BENTO_ROWS.find((row) => (row as readonly number[]).includes(serviceIndex));
+
+function shouldApplyServiceBentoHoverToRow(
+  row: readonly number[],
+  focusedServiceIndex: number | null,
+  baseSpans: number[]
+) {
+  if (focusedServiceIndex === null) {
+    return false;
+  }
+
+  const hoverSpans = SERVICE_BENTO_HOVER_SPANS[focusedServiceIndex];
+
+  if (!hoverSpans) {
+    return false;
+  }
+
+  return row.some((serviceIndex) => {
+    const baseSpan = baseSpans[serviceIndex] ?? 6;
+    return (hoverSpans[serviceIndex] ?? baseSpan) !== baseSpan;
+  });
+}
+
+function getServiceBentoContentWidth({
+  containerWidth,
+  gap,
+  row,
+  serviceIndex,
+  spans,
+}: {
+  containerWidth: number;
+  gap: number;
+  row: readonly number[];
+  serviceIndex: number;
+  spans: number[];
+}) {
+  const visibleRow = row.filter((index) => typeof spans[index] === "number");
+  const rowSpanTotal = visibleRow.reduce((total, index) => total + (spans[index] ?? 1), 0);
+  const serviceSpan = spans[serviceIndex] ?? 1;
+  const availableWidth = containerWidth - gap * Math.max(visibleRow.length - 1, 0);
+
+  if (availableWidth <= 0 || rowSpanTotal <= 0) {
+    return 0;
+  }
+
+  return Math.max(0, (availableWidth * serviceSpan) / rowSpanTotal - SERVICE_CARD_DESKTOP_PADDING_X);
+}
+
+function layoutServiceDescriptionLines(text: string, maxWidth: number) {
+  const normalizedWidth = Math.floor(maxWidth);
+
+  if (!text || normalizedWidth < 160) {
+    return [text];
+  }
+
+  try {
+    const cacheKey = `${SERVICE_DESCRIPTION_FONT}|${text}`;
+    let prepared = serviceDescriptionPretextCache.get(cacheKey);
+
+    if (!prepared) {
+      prepared = prepareWithSegments(text, SERVICE_DESCRIPTION_FONT, {
+        letterSpacing: 0,
+        whiteSpace: "normal",
+        wordBreak: "normal",
+      });
+      serviceDescriptionPretextCache.set(cacheKey, prepared);
+    }
+
+    const lines = layoutWithLines(prepared, normalizedWidth, SERVICE_DESCRIPTION_LINE_HEIGHT).lines
+      .map((line) => line.text.trim())
+      .filter(Boolean);
+
+    return lines.length > 0 ? lines : [text];
+  } catch {
+    return [text];
+  }
+}
+
 const testimonialMediaTuningControls: Array<{
   key: TestimonialMediaFitKey;
   label: string;
@@ -505,6 +730,297 @@ const testimonialMediaTuningControls: Array<{
   { key: "x", label: "X", min: 0, max: 100, step: 1 },
   { key: "y", label: "Y", min: 0, max: 100, step: 1 },
 ];
+
+const serviceBentoTuningControls: Array<{
+  key: ServiceBentoNumberKey;
+  label: string;
+  min: number;
+  max: number;
+  step: number;
+}> = [
+  { key: "hoverSpan", label: "Focused span", min: 2, max: 12, step: 1 },
+  { key: "compactSpan", label: "Other spans", min: 2, max: 12, step: 1 },
+  { key: "hoverLift", label: "Hover lift", min: 0, max: 16, step: 1 },
+  { key: "transitionMs", label: "Transition", min: 80, max: 900, step: 20 },
+  { key: "minHeight", label: "Card height", min: 180, max: 420, step: 4 },
+  { key: "gap", label: "Grid gap", min: 12, max: 40, step: 1 },
+];
+
+function ServiceBentoTuningPanel({
+  serviceLabels,
+  tuning,
+  onSpanChange,
+  onNumberChange,
+  onHoverFocusChange,
+  onMoveService,
+  onPreset,
+  onRandomize,
+  onReset,
+}: {
+  serviceLabels: string[];
+  tuning: ServiceBentoTuning;
+  onSpanChange: (index: number, value: number) => void;
+  onNumberChange: (key: ServiceBentoNumberKey, value: number) => void;
+  onHoverFocusChange: (value: boolean) => void;
+  onMoveService: (index: number, direction: -1 | 1) => void;
+  onPreset: (rows: number) => void;
+  onRandomize: () => void;
+  onReset: () => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [panelPosition, setPanelPosition] = useState(DEFAULT_SERVICE_BENTO_TUNING_PANEL_POSITION);
+  const [dragOffset, setDragOffset] = useState<PanelPosition | null>(null);
+  const dragOffsetRef = useRef<PanelPosition | null>(null);
+  const exportedValues = JSON.stringify(tuning, null, 2);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      const stored = window.localStorage.getItem(SERVICE_BENTO_TUNING_PANEL_POSITION_KEY);
+      if (!stored) {
+        return;
+      }
+
+      const parsed = JSON.parse(stored) as Partial<PanelPosition>;
+      if (typeof parsed.x === "number" && typeof parsed.y === "number") {
+        setPanelPosition({
+          x: Math.max(8, Math.min(parsed.x, window.innerWidth - 380)),
+          y: Math.max(8, Math.min(parsed.y, window.innerHeight - 420)),
+        });
+      }
+    } catch {
+      setPanelPosition(DEFAULT_SERVICE_BENTO_TUNING_PANEL_POSITION);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    window.localStorage.setItem(SERVICE_BENTO_TUNING_PANEL_POSITION_KEY, JSON.stringify(panelPosition));
+  }, [panelPosition]);
+
+  const movePanelToClientPosition = (clientX: number, clientY: number) => {
+    const currentDragOffset = dragOffsetRef.current ?? dragOffset;
+    if (!currentDragOffset || typeof window === "undefined") {
+      return;
+    }
+
+    setPanelPosition({
+      x: Math.max(8, Math.min(clientX - currentDragOffset.x, window.innerWidth - 380)),
+      y: Math.max(8, Math.min(clientY - currentDragOffset.y, window.innerHeight - 420)),
+    });
+  };
+
+  const handleDragStart = (event: ReactPointerEvent<HTMLDivElement>) => {
+    event.currentTarget.setPointerCapture(event.pointerId);
+    const nextDragOffset = {
+      x: event.clientX - panelPosition.x,
+      y: event.clientY - panelPosition.y,
+    };
+    dragOffsetRef.current = nextDragOffset;
+    setDragOffset(nextDragOffset);
+  };
+
+  const handleDragMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    movePanelToClientPosition(event.clientX, event.clientY);
+  };
+
+  const handleDragEnd = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    dragOffsetRef.current = null;
+    setDragOffset(null);
+  };
+
+  const handleMouseDragStart = (event: ReactMouseEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const nextDragOffset = {
+      x: event.clientX - panelPosition.x,
+      y: event.clientY - panelPosition.y,
+    };
+    dragOffsetRef.current = nextDragOffset;
+    setDragOffset(nextDragOffset);
+  };
+
+  useEffect(() => {
+    if (!dragOffset) {
+      return;
+    }
+
+    const handleWindowMouseMove = (event: MouseEvent) => {
+      movePanelToClientPosition(event.clientX, event.clientY);
+    };
+
+    const handleWindowMouseUp = () => {
+      dragOffsetRef.current = null;
+      setDragOffset(null);
+    };
+
+    window.addEventListener("mousemove", handleWindowMouseMove);
+    window.addEventListener("mouseup", handleWindowMouseUp);
+
+    return () => {
+      window.removeEventListener("mousemove", handleWindowMouseMove);
+      window.removeEventListener("mouseup", handleWindowMouseUp);
+    };
+  }, [dragOffset]);
+
+  return (
+    <div
+      className={`fixed z-[80] font-sans text-text-primary print:hidden ${isOpen ? "" : "bottom-4 right-4"}`}
+      style={isOpen ? { left: panelPosition.x, top: panelPosition.y } : undefined}
+    >
+      {isOpen ? (
+        <div className="max-h-[calc(100vh-2rem)] w-[min(23rem,calc(100vw-2rem))] overflow-y-auto rounded-lg border border-border-accent/40 bg-white/95 p-4 shadow-[0_24px_80px_rgba(28,27,27,0.16)] backdrop-blur">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div
+              className="min-w-0 flex-1 cursor-move select-none touch-none"
+              onPointerDown={handleDragStart}
+              onPointerMove={handleDragMove}
+              onPointerUp={handleDragEnd}
+              onPointerCancel={handleDragEnd}
+              onMouseDown={handleMouseDragStart}
+            >
+              <p className="text-xs font-semibold uppercase tracking-[2px] text-text-accent">Bento tuning</p>
+              <p className="mt-1 text-xs text-text-secondary">Drag this panel, tune the grid, copy the values.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              className="rounded-full border border-border-subtle px-3 py-1 text-xs font-semibold uppercase tracking-[1px]"
+            >
+              Close
+            </button>
+          </div>
+
+          <div className="rounded-lg border border-border-subtle/80 p-3">
+            <label className="flex items-center justify-between gap-4 text-xs font-semibold uppercase tracking-[1px]">
+              Hover focus
+              <input
+                type="checkbox"
+                checked={tuning.hoverFocus}
+                onChange={(event) => onHoverFocusChange(event.target.checked)}
+                className="size-4 accent-[#854d63]"
+              />
+            </label>
+          </div>
+
+          <div className="mt-3 grid grid-cols-4 gap-2">
+            {[1, 2, 3, 4].map((rows) => (
+              <button
+                key={rows}
+                type="button"
+                onClick={() => onPreset(rows)}
+                className="rounded-full border border-border-subtle px-2 py-2 text-[11px] font-semibold uppercase tracking-[0.8px]"
+              >
+                {rows} row{rows > 1 ? "s" : ""}
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={onRandomize}
+            className="mt-2 w-full rounded-full bg-[#854d63] px-3 py-2 text-xs font-semibold uppercase tracking-[1px] text-white"
+          >
+            Randomize
+          </button>
+
+          <div className="mt-4 space-y-3">
+            {tuning.order.map((serviceIndex, position) => (
+              <div key={`${serviceLabels[serviceIndex]}-${serviceIndex}`} className="rounded-lg border border-border-subtle/70 p-3">
+                <div className="mb-2 flex items-center justify-between gap-2 text-xs font-medium">
+                  <span className="min-w-0 truncate">
+                    {position + 1}. {serviceLabels[serviceIndex]}
+                  </span>
+                  <span className="shrink-0 tabular-nums text-text-accent">{tuning.spans[serviceIndex] ?? 6}/12</span>
+                </div>
+                <input
+                  type="range"
+                  min={2}
+                  max={12}
+                  step={1}
+                  value={tuning.spans[serviceIndex] ?? 6}
+                  onChange={(event) => onSpanChange(serviceIndex, Number(event.target.value))}
+                  className="w-full accent-[#854d63]"
+                />
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => onMoveService(serviceIndex, -1)}
+                    disabled={position === 0}
+                    className="rounded-full border border-border-subtle px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.8px] disabled:cursor-not-allowed disabled:opacity-35"
+                  >
+                    Up
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onMoveService(serviceIndex, 1)}
+                    disabled={position === tuning.order.length - 1}
+                    className="rounded-full border border-border-subtle px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.8px] disabled:cursor-not-allowed disabled:opacity-35"
+                  >
+                    Down
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-5 space-y-3 border-t border-border-subtle/80 pt-4">
+            {serviceBentoTuningControls.map((control) => (
+              <label key={control.key} className="block">
+                <span className="mb-1 flex items-center justify-between text-xs font-medium">
+                  <span>{control.label}</span>
+                  <span className="tabular-nums text-text-accent">{tuning[control.key]}</span>
+                </span>
+                <input
+                  type="range"
+                  min={control.min}
+                  max={control.max}
+                  step={control.step}
+                  value={tuning[control.key]}
+                  onChange={(event) => onNumberChange(control.key, Number(event.target.value))}
+                  className="w-full accent-[#854d63]"
+                />
+              </label>
+            ))}
+          </div>
+
+          <div className="mt-4 flex gap-2">
+            <button
+              type="button"
+              onClick={() => void navigator.clipboard?.writeText(exportedValues)}
+              className="flex-1 rounded-full bg-[#1c1b1b] px-3 py-2 text-xs font-semibold uppercase tracking-[1px] text-white"
+            >
+              Copy values
+            </button>
+            <button
+              type="button"
+              onClick={onReset}
+              className="rounded-full border border-border-subtle px-3 py-2 text-xs font-semibold uppercase tracking-[1px]"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          className="rounded-full bg-[#854d63] px-4 py-3 text-xs font-semibold uppercase tracking-[1px] text-white shadow-[0_16px_44px_rgba(133,77,99,0.3)]"
+        >
+          Bento tune
+        </button>
+      )}
+    </div>
+  );
+}
 
 function TestimonialMediaTuningPanel({
   testimonialName,
@@ -911,14 +1427,66 @@ export default function Home() {
     [testimonials, useCmsTestimonials]
   );
   const [visualTuning, setVisualTuning] = useState(DEFAULT_VISUAL_TUNING);
+  const [serviceBentoTuning, setServiceBentoTuning] = useState(() =>
+    readStoredServiceBentoTuning(5)
+  );
   const [aboutVideoCanPlayThrough, setAboutVideoCanPlayThrough] = useState(false);
   const [aboutVideoPlaying, setAboutVideoPlaying] = useState(false);
+  const [focusedServiceIndex, setFocusedServiceIndex] = useState<number | null>(null);
+  const [settledServiceFocusIndex, setSettledServiceFocusIndex] = useState<number | null>(null);
+  const serviceBentoRef = useRef<HTMLDivElement>(null);
+  const [serviceBentoWidth, setServiceBentoWidth] = useState(0);
+  const [serviceFontsReady, setServiceFontsReady] = useState(false);
   const isDev = import.meta.env.DEV;
   const enableAboutVideo = !reduceMotion;
   const showAboutVideo = enableAboutVideo && aboutVideoCanPlayThrough && aboutVideoPlaying;
 
   useEffect(() => {
     setVisualTuning(readStoredVisualTuning());
+  }, []);
+
+  useEffect(() => {
+    setServiceBentoTuning((current) => normalizeServiceBentoTuning(current, services.length));
+  }, [services.length]);
+
+  useEffect(() => {
+    if (typeof document === "undefined" || !("fonts" in document)) {
+      setServiceFontsReady(true);
+      return;
+    }
+
+    let isMounted = true;
+
+    document.fonts.ready.then(() => {
+      if (!isMounted) {
+        return;
+      }
+
+      serviceDescriptionPretextCache.clear();
+      setServiceFontsReady(true);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof ResizeObserver === "undefined" || !serviceBentoRef.current) {
+      return;
+    }
+
+    const element = serviceBentoRef.current;
+    const updateWidth = () => setServiceBentoWidth(Math.round(element.getBoundingClientRect().width));
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      setServiceBentoWidth(Math.round(entry.contentRect.width));
+    });
+
+    updateWidth();
+    observer.observe(element);
+
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
@@ -938,9 +1506,148 @@ export default function Home() {
     window.localStorage.setItem(VISUAL_TUNING_STORAGE_KEY, JSON.stringify(visualTuning));
   }, [isDev, visualTuning]);
 
+  useEffect(() => {
+    if (!isDev || typeof window === "undefined") {
+      return;
+    }
+
+    window.localStorage.setItem(SERVICE_BENTO_TUNING_STORAGE_KEY, JSON.stringify(serviceBentoTuning));
+  }, [isDev, serviceBentoTuning]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || reduceMotion) {
+      setSettledServiceFocusIndex(focusedServiceIndex);
+      return;
+    }
+
+    setSettledServiceFocusIndex(null);
+    const timeout = window.setTimeout(
+      () => setSettledServiceFocusIndex(focusedServiceIndex),
+      serviceBentoTuning.transitionMs
+    );
+
+    return () => window.clearTimeout(timeout);
+  }, [focusedServiceIndex, reduceMotion, serviceBentoTuning.transitionMs]);
+
   const handleVisualTuningChange = (key: VisualTuningKey, value: number) => {
     setVisualTuning((current) => ({ ...current, [key]: value }));
   };
+
+  const handleServiceBentoSpanChange = (index: number, value: number) => {
+    setServiceBentoTuning((current) => ({
+      ...current,
+      spans: current.spans.map((span, spanIndex) => (spanIndex === index ? clampServiceSpan(value) : span)),
+    }));
+  };
+
+  const handleServiceBentoNumberChange = (key: ServiceBentoNumberKey, value: number) => {
+    setServiceBentoTuning((current) => normalizeServiceBentoTuning({ ...current, [key]: value }, services.length));
+  };
+
+  const handleServiceBentoMove = (index: number, direction: -1 | 1) => {
+    setServiceBentoTuning((current) => {
+      const currentPosition = current.order.indexOf(index);
+      const nextPosition = currentPosition + direction;
+      if (currentPosition < 0 || nextPosition < 0 || nextPosition >= current.order.length) {
+        return current;
+      }
+
+      const nextOrder = [...current.order];
+      [nextOrder[currentPosition], nextOrder[nextPosition]] = [nextOrder[nextPosition], nextOrder[currentPosition]];
+      return normalizeServiceBentoTuning({ ...current, order: nextOrder }, services.length);
+    });
+  };
+
+  const handleServiceBentoPreset = (rows: number) => {
+    setServiceBentoTuning((current) => ({
+      ...buildServiceBentoPreset(services.length, rows),
+      order: current.order,
+      hoverFocus: current.hoverFocus,
+      hoverSpan: current.hoverSpan,
+      compactSpan: current.compactSpan,
+      hoverLift: current.hoverLift,
+      transitionMs: current.transitionMs,
+      minHeight: current.minHeight,
+      gap: current.gap,
+    }));
+  };
+
+  const handleServiceBentoRandomize = () => {
+    setServiceBentoTuning((current) => randomizeServiceBentoTuning(current, services.length));
+  };
+
+  const handleServiceBentoReset = () => {
+    setServiceBentoTuning(normalizeServiceBentoTuning(DEFAULT_SERVICE_BENTO_TUNING, services.length));
+  };
+
+  const activeServiceBentoSpans = useMemo(
+    () =>
+      services.map((_, index) => {
+        const row = findServiceBentoRow(index);
+        const rowShouldApplyHover = row
+          ? shouldApplyServiceBentoHoverToRow(row, focusedServiceIndex, serviceBentoTuning.spans)
+          : false;
+        const hoverSpan =
+          rowShouldApplyHover && focusedServiceIndex !== null
+            ? SERVICE_BENTO_HOVER_SPANS[focusedServiceIndex]?.[index]
+            : undefined;
+        return hoverSpan ?? serviceBentoTuning.spans[index] ?? 6;
+      }),
+    [focusedServiceIndex, serviceBentoTuning.spans, services]
+  );
+
+  const serviceDescriptionLines = useMemo(() => {
+    if (!serviceFontsReady || serviceBentoWidth < SERVICE_BENTO_DESKTOP_BREAKPOINT) {
+      return services.map((service) => [service.description]);
+    }
+
+    return services.map((service, index) => {
+      const row = findServiceBentoRow(index);
+
+      if (!row) {
+        return [service.description];
+      }
+
+      const visibleRow = row.filter((serviceIndex) => serviceIndex < services.length);
+      const rowShouldApplyHover = shouldApplyServiceBentoHoverToRow(
+        visibleRow,
+        focusedServiceIndex,
+        serviceBentoTuning.spans
+      );
+      const activeWidth = getServiceBentoContentWidth({
+        containerWidth: serviceBentoWidth,
+        gap: serviceBentoTuning.gap,
+        row: visibleRow,
+        serviceIndex: index,
+        spans: activeServiceBentoSpans,
+      });
+      const restWidth = getServiceBentoContentWidth({
+        containerWidth: serviceBentoWidth,
+        gap: serviceBentoTuning.gap,
+        row: visibleRow,
+        serviceIndex: index,
+        spans: serviceBentoTuning.spans,
+      });
+      const isSettledLayout =
+        !rowShouldApplyHover ||
+        focusedServiceIndex === null ||
+        settledServiceFocusIndex === focusedServiceIndex;
+      const textWidth = isSettledLayout
+        ? activeWidth
+        : Math.min(activeWidth || restWidth, restWidth || activeWidth);
+
+      return layoutServiceDescriptionLines(service.description, textWidth);
+    });
+  }, [
+    activeServiceBentoSpans,
+    focusedServiceIndex,
+    settledServiceFocusIndex,
+    serviceBentoTuning.gap,
+    serviceBentoTuning.spans,
+    serviceBentoWidth,
+    serviceFontsReady,
+    services,
+  ]);
 
   return (
     <div className="overflow-hidden bg-surface-page text-text-primary dark:bg-surface-page dark:text-text-primary">
@@ -1185,6 +1892,13 @@ export default function Home() {
                   : <><p>{t("about.p1")}</p><p>{t("about.p2")}</p></>;
               })()}
             </div>
+            <Link
+              to="/about"
+              className="group mt-5 inline-flex items-center text-[13px] font-semibold uppercase tracking-[1.8px] text-text-accent transition hover:text-[#6a364b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#854d63] dark:text-text-accent dark:hover:text-[#f8d7e3]"
+            >
+              {t("about.cta")}
+              <ArrowRightIcon className="ml-2 size-4 transition group-hover:translate-x-1" />
+            </Link>
             <div className="mt-6 grid grid-cols-1 gap-4 border-t border-border-subtle/80 pt-8 dark:border-white/10 min-[420px]:grid-cols-3 sm:flex sm:flex-wrap sm:gap-7">
               {traits.map((trait, index) => {
                 const icon = traitIcons[index] ?? documentEditIcon;
@@ -1221,30 +1935,91 @@ export default function Home() {
             </h2>
             <p className="mt-4 text-base leading-7 text-text-secondary dark:text-[#ded7d2] sm:text-[18px]">{servicesSubtitle}</p>
           </div>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:gap-6">
-            {services.map((service, index) => {
-              const icon = serviceIcons[index] ?? brandFlagIcon;
-              const accent = homeServiceAccents[index] ?? homeServiceAccents[0];
+          <div
+            ref={serviceBentoRef}
+            className="flex flex-col"
+            style={{
+              "--service-bento-hover-dur": reduceMotion ? "0ms" : `${serviceBentoTuning.transitionMs}ms`,
+              "--service-bento-hover-ease": "cubic-bezier(0.22, 1, 0.36, 1)",
+              gap: `${serviceBentoTuning.gap}px`,
+            } as CSSProperties}
+          >
+            {SERVICE_BENTO_ROWS.map((row, rowIndex) => {
+              const rowServices = row.filter((serviceIndex) => services[serviceIndex]);
               return (
-                <Link
-                  to={`/services/${service.slug}`}
-                  key={`${service.title}-${service.accent}`}
-                  className="t-resize group relative overflow-hidden rounded-lg border border-border-accent/25 bg-white p-6 text-left no-underline shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(28,27,27,0.08)] dark:border-[#d8a4c7]/16 dark:bg-surface-panel dark:hover:border-[#d8a4c7]/28 dark:hover:shadow-[0_18px_42px_rgba(0,0,0,0.24)] sm:p-7"
+                <div
+                  key={`service-bento-row-${rowIndex}`}
+                  className="service-bento-row grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-none"
+                  style={{
+                    "--service-bento-columns": rowServices
+                      .map((serviceIndex) => `${activeServiceBentoSpans[serviceIndex] ?? 6}fr`)
+                      .join(" "),
+                    gap: `${serviceBentoTuning.gap}px`,
+                  } as CSSProperties}
                 >
-                  <div className={`absolute right-0 top-0 size-28 -translate-y-24 translate-x-24 rounded-bl-full ${accent.corner} opacity-0 transition duration-500 ease-out group-hover:-translate-y-9 group-hover:translate-x-9 group-hover:opacity-100`} />
-                  <span className={`relative flex size-11 items-center justify-center rounded-full ${accent.icon}`}>
-                    <InlineIcon src={icon} className={`size-5 ${accent.glyph}`} />
-                  </span>
-                  <h3 className="relative mt-6 font-serif text-[24px] leading-7 text-text-primary dark:text-text-primary">
-                    {service.title}
-                    <br />
-                    <span className={`italic ${accent.title}`}>{service.accent}</span>
-                  </h3>
-                  <p className="relative mt-4 max-w-2xl text-sm leading-6 text-text-secondary dark:text-[#ded7d2]">{service.description}</p>
-                </Link>
+                  {rowServices.map((index) => {
+                    const service = services[index];
+                    const icon = (serviceIcons as readonly string[])[index] ?? brandFlagIcon;
+                    const accent = homeServiceAccents[index] ?? homeServiceAccents[0];
+                    const isFocusedService = focusedServiceIndex === index;
+                    const descriptionLines = serviceDescriptionLines[index] ?? [service.description];
+                    return (
+                      <Link
+                        to={`/services/${service.slug}`}
+                        key={`${service.title}-${service.accent}`}
+                        onMouseEnter={() => setFocusedServiceIndex(index)}
+                        onMouseLeave={() => setFocusedServiceIndex(null)}
+                        onFocus={() => setFocusedServiceIndex(index)}
+                        onBlur={() => setFocusedServiceIndex(null)}
+                        className="group relative block h-full overflow-hidden rounded-lg border border-border-accent/25 bg-white p-6 text-left no-underline shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition-[transform,box-shadow,border-color] hover:shadow-[0_18px_42px_rgba(28,27,27,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#854d63] dark:border-[#d8a4c7]/16 dark:bg-surface-panel dark:hover:border-[#d8a4c7]/28 dark:hover:shadow-[0_18px_42px_rgba(0,0,0,0.24)] sm:p-7"
+                        style={{
+                          minHeight: `${serviceBentoTuning.minHeight}px`,
+                          transitionDuration: "var(--service-bento-hover-dur)",
+                          transitionTimingFunction: "var(--service-bento-hover-ease)",
+                          transform:
+                            !reduceMotion && focusedServiceIndex !== null && isFocusedService
+                              ? `translateY(-${serviceBentoTuning.hoverLift}px)`
+                              : undefined,
+                        }}
+                      >
+                        <div className={`absolute right-0 top-0 size-28 -translate-y-24 translate-x-24 rounded-bl-full ${accent.corner} opacity-0 transition duration-500 ease-out group-hover:-translate-y-9 group-hover:translate-x-9 group-hover:opacity-100`} />
+                        <span className={`relative flex size-11 items-center justify-center rounded-full ${accent.icon}`}>
+                          <InlineIcon src={icon} className={`size-5 ${accent.glyph}`} />
+                        </span>
+                        <h3 className="relative mt-6 font-serif text-[24px] leading-7 text-text-primary dark:text-text-primary">
+                          {service.title}
+                          <br />
+                          <span className={`italic ${accent.title}`}>{service.accent}</span>
+                        </h3>
+                        <p className="relative mt-4 max-w-2xl text-sm leading-6 text-text-secondary dark:text-[#ded7d2]">
+                          {descriptionLines.length > 1
+                            ? descriptionLines.map((line, lineIndex) => (
+                                <span key={`${line}-${lineIndex}`} className="block whitespace-nowrap">
+                                  {line}
+                                </span>
+                              ))
+                            : service.description}
+                        </p>
+                      </Link>
+                    );
+                  })}
+                </div>
               );
             })}
           </div>
+          {isDev && SHOW_SERVICE_BENTO_TUNING_PANEL ? (
+            <ServiceBentoTuningPanel
+              serviceLabels={services.map((service) => `${service.title} ${service.accent}`)}
+              tuning={serviceBentoTuning}
+              onSpanChange={handleServiceBentoSpanChange}
+              onNumberChange={handleServiceBentoNumberChange}
+              onHoverFocusChange={(value) => setServiceBentoTuning((current) => ({ ...current, hoverFocus: value }))}
+              onMoveService={handleServiceBentoMove}
+              onPreset={handleServiceBentoPreset}
+              onRandomize={handleServiceBentoRandomize}
+              onReset={handleServiceBentoReset}
+            />
+          ) : null}
         </div>
       </motion.section>
 
