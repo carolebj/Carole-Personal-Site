@@ -24,6 +24,10 @@ secondes et utilisée à ton insu. La règle est donc :
 | --- | --- | --- | --- |
 | `VITE_SUPABASE_URL` | Publique | Var d'env build (`VITE_`) | Oui (normal) |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Publique (protégée par RLS) | Var d'env build (`VITE_`) | Oui (normal) |
+| `SUPABASE_URL` | Publique, usage serveur | Variables chiffrées Vercel Preview + Production | Non |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Critique** (contourne la RLS) | Variables chiffrées Vercel Preview + Production | Non |
+| `ESTIMATOR_HASH_PEPPER` | **Élevée** (HMAC anti-corrélation) | Variables chiffrées Vercel Preview + Production | Non |
+| `BRIEF_VERIFICATION_SECRET` | **Élevée** (codes de vérification des Briefs) | Variables chiffrées Vercel Preview + Production | Non |
 | `CRON_SECRET` | Secrète | Vercel Production uniquement | Non |
 | `RESEND_API_KEY` | Élevée | Variables chiffrées Vercel Preview + Production | Non |
 | `RESEND_INBOUND_API_KEY` | **Élevée** (accès complet Resend) | Variables chiffrées Vercel Preview + Production | Non |
@@ -116,7 +120,43 @@ dépense si l'endpoint est abusé. À configurer impérativement :
   Optionnel : `TRANSLATE_ALLOWED_ORIGIN` pour restreindre l'origine CORS.
 - Les politiques RLS Supabase sont permissives pour « authenticated »
   mais exigent désormais une session réelle (`auth.uid() is not null`). Le rôle
-  anonyme ne peut lire que `cms_public_documents` et n'a aucun droit d'écriture.
+  anonyme ne peut lire que `cms_public_documents` et les définitions publiées
+  des templates de Brief client ; il n'a aucun droit d'écriture sur ces tables.
+- Les contacts, estimations, modèles tarifaires, taux, instances de Brief client,
+  consentements et journaux de suppression de l'estimateur ne sont accessibles
+  directement ni à `anon` ni à `authenticated`. Les endpoints serveur utilisent
+  `SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY`, valident les entrées puis
+  appellent les fonctions SQL accordées au seul rôle `service_role`. Les seules
+  données publiques de ce domaine sont les définitions publiées des templates
+  de Brief client. La clé service role ne doit jamais porter le préfixe `VITE_`.
+- `ESTIMATOR_HASH_PEPPER` est un secret aléatoire distinct d'au moins 32 octets.
+  Les endpoints de l'estimateur l'utilisent pour produire les HMAC des clés
+  d'idempotence et scopes de limitation ; ils ne réutilisent jamais la clé
+  `service_role` comme pepper et ne stockent pas d'adresse IP en clair.
+- `BRIEF_VERIFICATION_SECRET` est un second secret aléatoire distinct d'au moins
+  32 octets. `/api/client-brief` l'utilise pour hacher les codes à usage unique
+  et les scopes de limitation ; ni le code ni le secret ne sont renvoyés ou
+  stockés en clair. Les PDF sont produits côté serveur dans le bucket privé
+  `brief-exports` puis servis par URL signée pour 15 jours.
+- Un code de téléchargement est consommé atomiquement par RPC. La charge du
+  Brief reste au maximum dix minutes dans le challenge et n'est persistée comme
+  instance finalisée qu'après vérification. Les soumissions utilisent une clé
+  d'idempotence et des limites distinctes par adresse et origine.
+- Le bucket privé `brief-assets` n'accepte plus d'écriture anonyme directe. Le
+  navigateur reçoit du serveur un jeton signé à portée étroite pour chaque
+  fichier, puis le serveur vérifie les objets retenus avant export ou soumission.
+- Les actions « télécharger », « soumettre à Carole » et « accepter des e-mails
+  commerciaux » sont indépendantes. Le consentement commercial est facultatif,
+  non précoché et enregistré comme événement versionné. L'upsert des contacts
+  déduplique l'adresse normalisée, mais chaque Brief et chaque export restent
+  des événements séparés.
+- Le cron quotidien `/api/estimator-retention`, protégé par `CRON_SECRET`,
+  appelle les RPC de purge par lots bornés. Il supprime les estimations arrivées
+  à J+15 et journalise la suppression ; le même passage traite les exports de
+  Brief client selon leur propre date d'expiration, les challenges expirés, les
+  dossiers abandonnés et leurs pièces jointes privées, ainsi que les compteurs
+  de limitation de débit devenus inutiles. Les suppressions Storage sont
+  physiques et suivies individuellement dans le journal de nettoyage.
 - Le bucket `media` est public pour servir les images sans URL signée. Le
   listing reste réservé au compte authentifié afin que le script de nettoyage
   puisse identifier les médias orphelins.

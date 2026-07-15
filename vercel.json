@@ -27,6 +27,10 @@
     {
       "path": "/api/supabase-keepalive",
       "schedule": "17 6 * * *"
+    },
+    {
+      "path": "/api/estimator-retention",
+      "schedule": "47 2 * * *"
     }
   ],
   "rewrites": [
