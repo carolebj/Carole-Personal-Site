@@ -292,9 +292,9 @@ const en = {
     items: [
       {
         quote:
-          "I finally attract the right people into my inbox. In just a few weeks, I converted a prospect into a long-term client thanks to a LinkedIn post. Thank you, Carole, for structuring my presence.",
-        name: "Uzoma Obidike",
-        role: "Founder, She Leads",
+          "I worked with Carole on several projects and especially appreciated her creativity and ability to quickly understand her clients’ needs. I recommend her support without hesitation.",
+        name: "Bachiratou ISSIAKO TOURE",
+        role: "CEO, Wegal Space",
       },
       {
         quote:

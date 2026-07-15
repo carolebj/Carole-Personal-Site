@@ -49,6 +49,13 @@ const BLOG_COVER_IMAGES = {
 };
 
 const TESTIMONIAL_PORTRAITS = {
+  "bachiratou-issiako-toure": {
+    url: "",
+    alt: L(
+      "Portrait professionnel de Bachiratou ISSIAKO TOURE",
+      "Professional portrait of Bachiratou ISSIAKO TOURE",
+    ),
+  },
   "uzoma-obidike": {
     url: "https://images.unsplash.com/photo-1590650153855-d9e808231d41?auto=format&fit=crop&w=1200&q=80",
     alt: L("Portrait professionnel d'Uzoma Obidike", "Professional portrait of Uzoma Obidike"),

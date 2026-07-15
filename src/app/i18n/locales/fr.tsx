@@ -292,9 +292,9 @@ const fr = {
     items: [
       {
         quote:
-          "J'attire enfin les bonnes personnes dans ma messagerie ! En quelques semaines, j'ai converti un prospect en client long terme grâce à un post LinkedIn. Merci Carole d'avoir structuré ma présence.",
-        name: "Uzoma Obidike",
-        role: "Fondatrice, She Leads",
+          "J’ai collaboré avec Carole sur plusieurs projets et j’ai particulièrement apprécié sa créativité et sa capacité à comprendre rapidement les besoins de ses clients. Je recommande son accompagnement sans hésitation.",
+        name: "Bachiratou ISSIAKO TOURE",
+        role: "Directrice générale, Wegal Space",
       },
       {
         quote:

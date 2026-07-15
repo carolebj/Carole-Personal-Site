@@ -230,13 +230,19 @@ export const seedContent = {
   ],
   testimonial: [
     {
-      id: "testimonial-cynthia",
-      name: "Cynthia",
-      role: L("Fondatrice, marque de cosmétiques", ""),
-      quote: L("Carole a transformé notre présence en ligne en quelques mois.", ""),
+      id: "bachiratou-issiako-toure",
+      name: "Bachiratou ISSIAKO TOURE",
+      role: L("Directrice générale, Wegal Space", "CEO, Wegal Space"),
+      quote: L(
+        "J’ai collaboré avec Carole sur plusieurs projets et j’ai particulièrement apprécié sa créativité et sa capacité à comprendre rapidement les besoins de ses clients. Je recommande son accompagnement sans hésitation.",
+        "I worked with Carole on several projects and especially appreciated her creativity and ability to quickly understand her clients’ needs. I recommend her support without hesitation.",
+      ),
       portrait: {
-        url: "https://images.unsplash.com/photo-1590649880765-91b1956b8276?auto=format&fit=crop&w=1200&q=80",
-        alt: L("Portrait professionnel de Cynthia", ""),
+        url: "",
+        alt: L(
+          "Portrait professionnel de Bachiratou ISSIAKO TOURE",
+          "Professional portrait of Bachiratou ISSIAKO TOURE",
+        ),
       },
     },
     {

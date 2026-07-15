@@ -304,6 +304,7 @@ const media = [
   ["aboutPage", "aboutPage", ["image"], "src/assets/carole-about-portrait.avif", L("Portrait de Carole Tonoukouen", "Portrait of Carole Tonoukouen")],
   ["blogPost", "construire-une-ligne-editoriale", ["coverImage"], "src/assets/blog/blog-abstract-editorial.svg", L("Composition abstraite sur la stratégie éditoriale", "Abstract composition about editorial strategy")],
   ["blogPost", "calendrier-editorial-2026", ["coverImage"], "src/assets/blog/blog-abstract-content.svg", L("Composition abstraite sur le calendrier éditorial", "Abstract composition about editorial planning")],
+  ["testimonial", "bachiratou-issiako-toure", ["portrait"], "src/assets/testimonials/testimonial-bachiratou-issiako-toure.webp", L("Portrait professionnel de Bachiratou ISSIAKO TOURE", "Professional portrait of Bachiratou ISSIAKO TOURE")],
   ["testimonial", "cynthia-s", ["portrait"], "src/assets/testimonials/testimonial-cynthia.svg", L("Portrait illustré de Cynthia", "Illustrated portrait of Cynthia")],
   ["testimonial", "julian-f", ["portrait"], "src/assets/testimonials/testimonial-julian.svg", L("Portrait illustré de Julian", "Illustrated portrait of Julian")],
   ["testimonial", "uzoma-obidike", ["portrait"], "src/assets/testimonials/testimonial-uzoma.svg", L("Portrait illustré d'Uzoma", "Illustrated portrait of Uzoma")],
