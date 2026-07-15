@@ -17,6 +17,16 @@ const BLOG_PUBLISHED_AT = {
   "auditer-sa-presence-digitale": "2026-05-03",
 };
 
+const TESTIMONIAL_PORTRAITS = {
+  "bachiratou-issiako-toure": {
+    url: "",
+    alt: L(
+      "Portrait professionnel de Bachiratou ISSIAKO TOURE",
+      "Professional portrait of Bachiratou ISSIAKO TOURE",
+    ),
+  },
+};
+
 const CARNET_SLUG_BY_LINK = {
   "https://ledepot.co/": "le-depot",
   "https://socialmediaroom.africa/": "social-media-room",
@@ -286,12 +296,13 @@ export function buildServices() {
 export function buildTestimonials() {
   return fr.testimonials.items.map((item, index) => {
     const enItem = en.testimonials.items[index];
+    const id = testimonialDocId(item.name);
     return {
-      id: testimonialDocId(item.name),
+      id,
       name: item.name,
       role: L(item.role, enItem.role),
       quote: L(item.quote, enItem.quote),
-      portrait: null,
+      portrait: TESTIMONIAL_PORTRAITS[id] ?? null,
     };
   });
 }

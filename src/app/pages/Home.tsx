@@ -2,7 +2,16 @@ import { ChevronLeftIcon, ChevronRightIcon, EnvelopeIcon, SparklesIcon } from "@
 import { ContactForm } from "../components/ContactForm";
 import { SectionEyebrow } from "../components/SectionEyebrow";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { toServiceViewModel, toTestimonialViewModel } from "../../cms/adapters";
@@ -16,6 +25,7 @@ import brandFlagIcon from "../../assets/icons/brand-flag.svg?raw";
 import coffeeCupIcon from "../../assets/icons/coffee-cup.svg?raw";
 import decorativeArc from "../../assets/icons/decorative-arc.svg";
 import documentEditIcon from "../../assets/icons/document-edit.svg?raw";
+import testimonialBachiratouImage from "../../assets/testimonials/testimonial-bachiratou-issiako-toure.webp";
 import { homeServiceAccents, serviceIcons } from "../components/serviceStyle";
 import testimonialCynthiaImage from "../../assets/testimonials/testimonial-cynthia.svg";
 import testimonialJulianImage from "../../assets/testimonials/testimonial-julian.svg";
@@ -37,6 +47,7 @@ type Testimonial = {
   name: string;
   role: string;
   portrait?: CmsTestimonial["portrait"];
+  mediaFit?: TestimonialMediaFit;
 };
 
 type CircularTestimonial = Testimonial & {
@@ -56,12 +67,37 @@ type VisualTuning = {
 
 type VisualTuningKey = keyof VisualTuning;
 
+type TestimonialMediaFit = {
+  scale: number;
+  x: number;
+  y: number;
+};
+
+type TestimonialMediaFitKey = keyof TestimonialMediaFit;
+
+type PanelPosition = {
+  x: number;
+  y: number;
+};
+
 const VISUAL_TUNING_STORAGE_KEY = "carole-visual-tuning";
+const TESTIMONIAL_TUNING_STORAGE_KEY = "carole-testimonial-media-tuning";
+const TESTIMONIAL_TUNING_PANEL_POSITION_KEY = "carole-testimonial-media-tuning-panel-position";
 const SHOW_VISUAL_TUNING_PANEL = false;
+const SHOW_TESTIMONIAL_TUNING_PANEL = false;
 const DEFAULT_VISUAL_TUNING: VisualTuning = {
   heroScale: 1.24,
   heroY: -10,
   heroObjectY: 100,
+};
+const DEFAULT_TESTIMONIAL_MEDIA_FIT: TestimonialMediaFit = {
+  scale: 1,
+  x: 50,
+  y: 50,
+};
+const DEFAULT_TESTIMONIAL_TUNING_PANEL_POSITION: PanelPosition = {
+  x: 16,
+  y: 160,
 };
 
 const visualTuningControls: Array<{
@@ -82,12 +118,18 @@ const traitAccents = [
   { icon: "bg-[#ffdcbd]", glyph: "text-[#8a5100]" },
   { icon: "bg-[#ffdbcf]", glyph: "text-[#a83900]" },
 ];
-const testimonialImages = [testimonialUzomaImage, testimonialCynthiaImage, testimonialJulianImage];
+const testimonialBachiratouFallback = testimonialBachiratouImage;
+const testimonialImages = [testimonialBachiratouFallback, testimonialCynthiaImage, testimonialJulianImage];
 
 const testimonialPortraitByName: Record<string, string> = {
+  "Bachiratou ISSIAKO TOURE": testimonialBachiratouFallback,
   "Uzoma Obidike": testimonialUzomaImage,
   "Cynthia S.": testimonialCynthiaImage,
   "Julian F.": testimonialJulianImage,
+};
+
+const testimonialMediaFitByName: Record<string, TestimonialMediaFit> = {
+  "Bachiratou ISSIAKO TOURE": { scale: 1.21, x: 50, y: 45 },
 };
 
 function InlineIcon({ src, className }: InlineIconProps) {
@@ -121,19 +163,27 @@ function CircularTestimonials({
   testimonials,
   previousLabel,
   nextLabel,
+  isDev,
 }: {
   testimonials: CircularTestimonial[];
   previousLabel: string;
   nextLabel: string;
+  isDev: boolean;
 }) {
   const reduceMotion = useReducedMotion() ?? false;
   const [activeIndex, setActiveIndex] = useState(0);
   const [hoveredControl, setHoveredControl] = useState<"previous" | "next" | null>(null);
   const [containerWidth, setContainerWidth] = useState(520);
+  const [isAutoplayPaused, setIsAutoplayPaused] = useState(false);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const autoplayIntervalRef = useRef<ReturnType<typeof window.setInterval> | null>(null);
+  const [testimonialMediaTuning, setTestimonialMediaTuning] = useState<Record<string, TestimonialMediaFit>>({});
   const testimonialsLength = testimonials.length;
   const activeTestimonial = testimonials[activeIndex];
+  const activeMediaFit =
+    testimonialMediaTuning[activeTestimonial.name] ??
+    activeTestimonial.mediaFit ??
+    DEFAULT_TESTIMONIAL_MEDIA_FIT;
 
   const stopAutoplay = useCallback(() => {
     if (autoplayIntervalRef.current) {
@@ -166,12 +216,42 @@ function CircularTestimonials({
   }, []);
 
   useEffect(() => {
+    if (isAutoplayPaused) {
+      stopAutoplay();
+      return stopAutoplay;
+    }
+
     autoplayIntervalRef.current = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % testimonialsLength);
     }, 5200);
 
     return stopAutoplay;
-  }, [stopAutoplay, testimonialsLength]);
+  }, [isAutoplayPaused, stopAutoplay, testimonialsLength]);
+
+  useEffect(() => {
+    if (!isDev || typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      const stored = window.localStorage.getItem(TESTIMONIAL_TUNING_STORAGE_KEY);
+      if (!stored) {
+        return;
+      }
+
+      setTestimonialMediaTuning(JSON.parse(stored) as Record<string, TestimonialMediaFit>);
+    } catch {
+      setTestimonialMediaTuning({});
+    }
+  }, [isDev]);
+
+  useEffect(() => {
+    if (!isDev || typeof window === "undefined") {
+      return;
+    }
+
+    window.localStorage.setItem(TESTIMONIAL_TUNING_STORAGE_KEY, JSON.stringify(testimonialMediaTuning));
+  }, [isDev, testimonialMediaTuning]);
 
   useEffect(() => {
     const handleKeydown = (event: KeyboardEvent) => {
@@ -239,6 +319,33 @@ function CircularTestimonials({
     };
   };
 
+  const getMediaStyle = (testimonial: CircularTestimonial): CSSProperties => {
+    const fit = testimonialMediaTuning[testimonial.name] ?? testimonial.mediaFit ?? DEFAULT_TESTIMONIAL_MEDIA_FIT;
+    return {
+      objectPosition: `${fit.x}% ${fit.y}%`,
+      transform: `scale(${fit.scale})`,
+      transformOrigin: `${fit.x}% ${fit.y}%`,
+    };
+  };
+
+  const handleMediaTuningChange = (key: TestimonialMediaFitKey, value: number) => {
+    setTestimonialMediaTuning((current) => ({
+      ...current,
+      [activeTestimonial.name]: {
+        ...activeMediaFit,
+        [key]: value,
+      },
+    }));
+  };
+
+  const resetActiveMediaTuning = () => {
+    setTestimonialMediaTuning((current) => {
+      const next = { ...current };
+      delete next[activeTestimonial.name];
+      return next;
+    });
+  };
+
   return (
     <div className="mx-auto grid max-w-[1050px] items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
       <div
@@ -262,6 +369,7 @@ function CircularTestimonials({
               src={testimonial.src}
               alt={testimonial.name}
               className="h-full w-full object-cover"
+              style={getMediaStyle(testimonial)}
             />
             <span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(28,27,27,0)_46%,rgba(28,27,27,0.48)_100%)]" />
             <span className="absolute bottom-4 left-4 right-4 text-left">
@@ -348,6 +456,17 @@ function CircularTestimonials({
           </div>
         </div>
       </div>
+      {isDev && SHOW_TESTIMONIAL_TUNING_PANEL ? (
+        <TestimonialMediaTuningPanel
+          testimonialName={activeTestimonial.name}
+          tuning={activeMediaFit}
+          isAutoplayPaused={isAutoplayPaused}
+          onOpen={() => setIsAutoplayPaused(true)}
+          onToggleAutoplay={() => setIsAutoplayPaused((current) => !current)}
+          onChange={handleMediaTuningChange}
+          onReset={resetActiveMediaTuning}
+        />
+      ) : null}
     </div>
   );
 }
@@ -370,6 +489,229 @@ function readStoredVisualTuning() {
   } catch {
     return DEFAULT_VISUAL_TUNING;
   }
+}
+
+const testimonialMediaTuningControls: Array<{
+  key: TestimonialMediaFitKey;
+  label: string;
+  min: number;
+  max: number;
+  step: number;
+}> = [
+  { key: "scale", label: "Zoom", min: 1, max: 1.6, step: 0.01 },
+  { key: "x", label: "X", min: 0, max: 100, step: 1 },
+  { key: "y", label: "Y", min: 0, max: 100, step: 1 },
+];
+
+function TestimonialMediaTuningPanel({
+  testimonialName,
+  tuning,
+  isAutoplayPaused,
+  onOpen,
+  onToggleAutoplay,
+  onChange,
+  onReset,
+}: {
+  testimonialName: string;
+  tuning: TestimonialMediaFit;
+  isAutoplayPaused: boolean;
+  onOpen: () => void;
+  onToggleAutoplay: () => void;
+  onChange: (key: TestimonialMediaFitKey, value: number) => void;
+  onReset: () => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [panelPosition, setPanelPosition] = useState(DEFAULT_TESTIMONIAL_TUNING_PANEL_POSITION);
+  const [dragOffset, setDragOffset] = useState<PanelPosition | null>(null);
+  const dragOffsetRef = useRef<PanelPosition | null>(null);
+  const exportedValues = JSON.stringify({ [testimonialName]: tuning }, null, 2);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      const stored = window.localStorage.getItem(TESTIMONIAL_TUNING_PANEL_POSITION_KEY);
+      if (!stored) {
+        return;
+      }
+
+      const parsed = JSON.parse(stored) as Partial<PanelPosition>;
+      if (typeof parsed.x === "number" && typeof parsed.y === "number") {
+        setPanelPosition({
+          x: Math.max(8, Math.min(parsed.x, window.innerWidth - 340)),
+          y: Math.max(8, Math.min(parsed.y, window.innerHeight - 340)),
+        });
+      }
+    } catch {
+      setPanelPosition(DEFAULT_TESTIMONIAL_TUNING_PANEL_POSITION);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    window.localStorage.setItem(TESTIMONIAL_TUNING_PANEL_POSITION_KEY, JSON.stringify(panelPosition));
+  }, [panelPosition]);
+
+  const handleDragStart = (event: ReactPointerEvent<HTMLDivElement>) => {
+    event.currentTarget.setPointerCapture(event.pointerId);
+    const nextDragOffset = {
+      x: event.clientX - panelPosition.x,
+      y: event.clientY - panelPosition.y,
+    };
+    dragOffsetRef.current = nextDragOffset;
+    setDragOffset(nextDragOffset);
+  };
+
+  const handleDragMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    movePanelToClientPosition(event.clientX, event.clientY);
+  };
+
+  const movePanelToClientPosition = (clientX: number, clientY: number) => {
+    const currentDragOffset = dragOffsetRef.current ?? dragOffset;
+    if (!currentDragOffset || typeof window === "undefined") {
+      return;
+    }
+
+    setPanelPosition({
+      x: Math.max(8, Math.min(clientX - currentDragOffset.x, window.innerWidth - 340)),
+      y: Math.max(8, Math.min(clientY - currentDragOffset.y, window.innerHeight - 340)),
+    });
+  };
+
+  const handleDragEnd = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    dragOffsetRef.current = null;
+    setDragOffset(null);
+  };
+
+  const handleMouseDragStart = (event: ReactMouseEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const nextDragOffset = {
+      x: event.clientX - panelPosition.x,
+      y: event.clientY - panelPosition.y,
+    };
+    dragOffsetRef.current = nextDragOffset;
+    setDragOffset(nextDragOffset);
+  };
+
+  useEffect(() => {
+    if (!dragOffset) {
+      return;
+    }
+
+    const handleWindowMouseMove = (event: MouseEvent) => {
+      movePanelToClientPosition(event.clientX, event.clientY);
+    };
+
+    const handleWindowMouseUp = () => {
+      dragOffsetRef.current = null;
+      setDragOffset(null);
+    };
+
+    window.addEventListener("mousemove", handleWindowMouseMove);
+    window.addEventListener("mouseup", handleWindowMouseUp);
+
+    return () => {
+      window.removeEventListener("mousemove", handleWindowMouseMove);
+      window.removeEventListener("mouseup", handleWindowMouseUp);
+    };
+  }, [dragOffset]);
+
+  return (
+    <div
+      className={`fixed z-[80] font-sans text-text-primary print:hidden ${isOpen ? "" : "bottom-4 left-4"}`}
+      style={isOpen ? { left: panelPosition.x, top: panelPosition.y } : undefined}
+    >
+      {isOpen ? (
+        <div
+          data-testid="testimonial-media-tuning-panel"
+          className="w-[min(20rem,calc(100vw-2rem))] rounded-lg border border-border-accent/40 bg-white/95 p-4 shadow-[0_24px_80px_rgba(28,27,27,0.16)] backdrop-blur"
+        >
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div
+              data-testid="testimonial-media-tuning-drag-handle"
+              className="min-w-0 flex-1 cursor-move select-none touch-none"
+              onPointerDown={handleDragStart}
+              onPointerMove={handleDragMove}
+              onPointerUp={handleDragEnd}
+              onPointerCancel={handleDragEnd}
+              onMouseDown={handleMouseDragStart}
+            >
+              <p className="text-xs font-semibold uppercase tracking-[2px] text-text-accent">Portrait tuning</p>
+              <p className="mt-1 truncate text-xs text-text-secondary">{testimonialName}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              className="rounded-full border border-border-subtle px-3 py-1 text-xs font-semibold uppercase tracking-[1px]"
+            >
+              Close
+            </button>
+          </div>
+          <div className="space-y-3">
+            {testimonialMediaTuningControls.map((control) => (
+              <label key={control.key} className="block">
+                <span className="mb-1 flex items-center justify-between text-xs font-medium">
+                  <span>{control.label}</span>
+                  <span className="tabular-nums text-text-accent">{tuning[control.key]}</span>
+                </span>
+                <input
+                  type="range"
+                  min={control.min}
+                  max={control.max}
+                  step={control.step}
+                  value={tuning[control.key]}
+                  onChange={(event) => onChange(control.key, Number(event.target.value))}
+                  className="w-full accent-[#854d63]"
+                />
+              </label>
+            ))}
+          </div>
+          <div className="mt-4 flex gap-2">
+            <button
+              type="button"
+              onClick={() => void navigator.clipboard?.writeText(exportedValues)}
+              className="flex-1 rounded-full bg-[#1c1b1b] px-3 py-2 text-xs font-semibold uppercase tracking-[1px] text-white"
+            >
+              Copy values
+            </button>
+            <button
+              type="button"
+              onClick={onReset}
+              className="rounded-full border border-border-subtle px-3 py-2 text-xs font-semibold uppercase tracking-[1px]"
+            >
+              Reset
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={onToggleAutoplay}
+            className="mt-2 w-full rounded-full border border-border-subtle px-3 py-2 text-xs font-semibold uppercase tracking-[1px]"
+          >
+            {isAutoplayPaused ? "Paused" : "Running"}
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => {
+            onOpen();
+            setIsOpen(true);
+          }}
+          className="rounded-full bg-[#1c1b1b] px-4 py-3 text-xs font-semibold uppercase tracking-[1px] text-white shadow-[0_16px_44px_rgba(28,27,27,0.24)]"
+        >
+          Portrait tune
+        </button>
+      )}
+    </div>
+  );
 }
 
 function VisualTuningPanel({
@@ -557,7 +899,11 @@ export default function Home() {
             testimonialPortraitByName[testimonial.name] ??
             testimonialImages[index]
           : testimonialImages[index] ?? testimonialImages[0];
-        return { ...testimonial, src: imgSrc ?? testimonialImages[0] };
+        return {
+          ...testimonial,
+          mediaFit: testimonialMediaFitByName[testimonial.name] ?? DEFAULT_TESTIMONIAL_MEDIA_FIT,
+          src: imgSrc ?? testimonialImages[0],
+        };
       }),
     [testimonials, useCmsTestimonials]
   );
@@ -918,6 +1264,7 @@ export default function Home() {
           testimonials={circularTestimonials}
           previousLabel={t("testimonials.previous")}
           nextLabel={t("testimonials.next")}
+          isDev={isDev}
         />
       </motion.section>
 
