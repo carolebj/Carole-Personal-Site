@@ -4,7 +4,7 @@
 
 This file is the project-level memory for the Carole Personal Site repo. Keep it short, current, and useful for future agents working on the site.
 
-Last reviewed: 2026-07-14 WAT
+Last reviewed: 2026-07-15 WAT
 
 ## Current Branch Workflow
 
@@ -161,7 +161,9 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
   - about/presentation
   - services bento grid
   - service detail routes at `/services/:slug`
-  - design brief wizard at `/services/brief-design` for graphisme / logo / visual identity intake
+  - five service-specific Client Brief composers at
+    `/services/:slug/brief-client`; the historical `/services/brief-design`
+    redirects to the Visual Identity Client Brief
   - testimonials
   - contact/get-in-touch form section
   - CV route at `/cv` with Carole's education, skills, achievements, languages, and communications experience
@@ -197,7 +199,11 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
   - use local Liberation Serif Italic for manifesto accent text
   - keep hero and manifesto backgrounds visually continuous, with the about section on white
   - show service card color corners on hover only
-  - keep motion subtle: light section entry fades, service hover lifts, and hero visual levitation only
+  - keep motion purposeful: light section entry fades, service hover lifts, and
+    hero visual levitation remain subtle. In the estimator, a short progressive
+    blur with three sparse glints is reserved for the calculation reveal; it is
+    not a reusable decorative sparkle pattern. Client Brief section transitions
+    clarify progress and always respect `prefers-reduced-motion`
   - the desktop header collapses on downward scroll into a centered logo pill, returns on upward scroll or when the pill is clicked
   - testimonials use a three-card carousel with the centered card as the active state
   - blog article links use continuity/view transitions from list cards to article pages
@@ -207,7 +213,72 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
   - Reading references use editorial object metaphors by type: newsletters render as ring-bound ruled notebooks, while cited content renders as taped sticky notes with a folded corner
   - the footer reveal should behave like a temporary pull-beyond-footer moment with a gentle colorful wave shader
   - subtle audio haptics are enabled by default and can be toggled from the logo right-click menu
-  - the design brief wizard is a direct meeting/intake tool: adaptive French questions, local browser persistence, review-before-submit, Supabase submission (`design_brief_submissions`), private `brief-assets` storage, and an authenticated dashboard view under "Briefs design"
+  - the former design brief is now the Visual Identity Client Brief. Its legacy
+    `design_brief_submissions` remain readable, while the five new bilingual
+    Client Briefs use adaptive service-specific questions, local persistence,
+    review-before-submit, signed private asset uploads and the unified
+    authenticated dashboard view “Briefs clients”
+  - the project estimator is a complete single-service-at-a-time product,
+    delivered through successive implementation lots rather than a reduced
+    first version. A direct path retains exactly one chosen service; the guided
+    path uses three accessible diagnostic questions to recommend one primary
+    service and names other relevant needs only as separate future estimates.
+    XOF is
+    the canonical pricing currency and default display; EUR uses the fixed
+    BCEAO parity and USD uses a dated BCEAO reference rate. Every generated
+    estimate is stored separately for 15 days, while contacts are deduplicated
+    by normalized email. The estimate is visible without email. Each service has
+    its own pre-existing, versioned Client Brief template; estimator answers only
+    prefill semantically compatible fields. The existing Design Brief becomes
+    the Client Brief for Visual Identity. Email is required only when a completed
+    Client Brief is downloaded, while submission to Carole and commercial
+    consent remain separate actions. After the estimate, the user may optionally
+    open the one associated Client Brief; compatible fields are prefilled but the
+    brief also remains independently accessible from its service page. The
+    Visual Identity Brief must preserve the former Design Brief's illustrated
+    logo families, eyedropper palette, inspiration links/uploads and adaptive
+    educational questions inside the newer private PDF/submission workflow. A
+    development/Preview-only demo FAB provides isolated fictional scenarios for
+    the estimator and every Client Brief without writing server data. Durable
+    product scope and acceptance criteria live in
+    `docs/project/ESTIMATEUR_PROJET_SPEC.md`; the five template structures live
+    in `docs/project/BRIEFS_CLIENTS_SPEC.md`. The additive private schema lives
+    in `supabase/migrations/20260715193000_estimator_data_architecture.sql` and
+    the operational email/PDF workflow in
+    `supabase/migrations/20260715233000_client_brief_workflow.sql`; cleanup and
+    integrity hardening live in `20260716001000_client_brief_retention_cleanup.sql`
+    and `20260716013000_client_brief_integrity.sql`. Five deep,
+    service-specific bilingual definitions live in
+    `shared/client-brief-contract.js`; only their persistence/rendering engine
+    is shared. Users can defer an unknown answer and resume locally, but must
+    complete required fields and confirm estimator-prefilled values before
+    download or submission. Downloads use a 10-minute email code and a private
+    15-day signed PDF; submission and optional commercial consent are separate
+    actions. All four migrations are applied to the linked Supabase project and
+    the five FR plus five EN version-2 templates are published. Future template
+    changes must increment the immutable version and use
+    `npm run briefs:publish -- --apply`. The data architecture documented in
+    `docs/project/ESTIMATOR_DATA_ARCHITECTURE.md` keeps estimator
+    writes and private reads are server/service-role only, published Brief
+    template definitions are the sole browser-readable data, and estimate
+    purges logged after the exact 15-day retention window. Production activation
+    still requires the server Brief secrets in Carole's Vercel project; the
+    currently authenticated local Vercel account cannot access Carole's Team,
+    so the repository must not be relinked to a different project as a shortcut
+  - the estimator pricing catalog is active under
+    `2026-07-15-benin-calibration`. It uses XOF bases and explicit service rules,
+    a Benin/startup-small/local/one-language/normal-delay baseline, a 5,000 XOF
+    conservative rounding policy, and no automatic tax until Carole's fiscal
+    regime is confirmed. `organizationScale` and `clientLocation` capture real
+    governance and coordination load. The optional budget range never changes
+    the price and is not compared with the estimate in the public result. The CLOGIS reference
+    scenario is 435,000–805,000 XOF at fair value, while the historical 200,000
+    XOF compromise remains an exceptional commercial discount rather than a
+    reusable tariff. Calibration sources, inclusions and revision rules live in
+    `docs/project/PRICING_CALIBRATION.md`, and publication is deliberately
+    gated by `npm run estimator:pricing:publish -- --apply`: unresolved pricing
+    decisions block the command, and one service-role-only transaction RPC
+    publishes the model and its three exchange-rate snapshots atomically
   - CLOGIS was split into its own project on 2026-06-28: `/Users/mrsteven/Documents/GitHub/CLOGIS`. The brief originally came through Carole's design brief flow, but project follow-up, memory, sources, and deliverables should now live in the CLOGIS project.
   - services redesign first pass (2026-06-21): `/services` uses an editorial
     offer-map layout, prioritizes the visual identity offer when present, and
@@ -215,7 +286,7 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
     deliverables, audience, applications, and next-service navigation.
   - new service: `identite-visuelle` / Visual Identity covers logo, brand
     guidelines, art direction, and digital brand assets. It is the bridge to
-    `/services/brief-design`. It was added to i18n fallback and seeded
+    `/services/identite-visuelle/brief-client`. It was added to i18n fallback and seeded
     additively into Supabase without overwriting existing content.
   - blog/testimonials content pass (2026-06-21): public testimonials use real
     portrait photography instead of illustrated placeholders; blog articles use
@@ -282,6 +353,36 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
   value, and `api/contact.js` retains a plain-text fallback plus `reply_to`.
 
 - Keep routing in `src/app/routes.tsx` → `Layout` for public pages; `/dashboard/*` is outside `Layout`.
+- `/estimer-mon-projet` reste dans le routeur public mais utilise son propre
+  `EstimatorShell` : barre compacte avec retour au site, aucun menu public
+  complet, et pied de page minimal. L'estimateur traite un service par parcours.
+  Sous 1280 px, son récapitulatif est un tiroir droit qui s'ouvre au premier
+  affichage ; son bouton reste en bas à droite et le bouton de démonstration,
+  réservé au contrôle interne, se place au-dessus.
+- Le passage au résultat de l'estimateur est précédé d'un interstitiel plein
+  écran d'au moins 3,6 secondes : flou progressif, trois éclats discrets et
+  quatre phases lisibles, avec une version statique pour
+  `prefers-reduced-motion`. Les réponses demandant une étude manuelle sont
+  nommées et renvoient directement à la question concernée. Les pannes de calcul
+  utilisent des états publics distincts et actionnables (aperçu local,
+  connexion, calibration, limite de fréquence, entrée invalide ou sauvegarde).
+- Les cinq Briefs clients utilisent des contrats métier distincts en version 3.
+  Chaque question porte une aide contextuelle directement sous son titre ; ne
+  pas réintroduire d'aide générique ni d'encart séparé « pourquoi cette réponse
+  compte ». Un préremplissage n'est affiché que si le Brief est ouvert depuis
+  l'estimation source encore cohérente ; son indicateur n'est jamais une case à
+  cocher et disparaît dès la première modification. Le report d'une réponse
+  grise et désactive le champ sous l'état « À remplir plus tard ».
+- Les dix définitions de contrats v3 (cinq services × FR/EN) sont publiées dans
+  le projet Supabase `carole personal site`. `npm run briefs:publish -- --apply`
+  est le chemin de publication idempotent. Sa clé serveur vit exclusivement
+  dans `.env.local`, ignoré par Git et protégé avec le mode `0600`.
+- Le Brief Identité visuelle conserve les composants riches du Brief design :
+  références de logos de marques connues, choix de couleurs, inspirations,
+  livrables et applications sous forme de choix guidés, ainsi que les besoins
+  en photographie, banques d'images et autres ressources visuelles. Les démos
+  des cinq Briefs racontent des projets clients cohérents et ne doivent jamais
+  utiliser de réponses génériques ou de faux exemples techniques.
 - User-facing copy stays in `src/app/i18n/locales/fr.tsx` and `src/app/i18n/locales/en.tsx` as fallback. As dashboard content grows, i18n values become increasingly redundant — do not add new copy to i18n if it will be managed from the dashboard.
 - Responsive breakpoints: mobile `<768px`, tablet `768px-1023px`, desktop `>=1024px`.
 - SEO metadata: `src/app/components/Seo.tsx`.
