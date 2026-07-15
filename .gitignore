@@ -160,3 +160,7 @@ dist-studio/
 
 # Local screenshots and Playwright output
 output/
+
+# Local agent diagnostics and workspace hooks
+.hallmark/
+/hooks/validate-schema.py
