@@ -25,6 +25,8 @@
     font-size: var(--text-2xl);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
+    min-width: 0;
+    overflow-wrap: anywhere;
     text-wrap: balance;
   }
 
@@ -32,6 +34,8 @@
     font-size: var(--text-xl);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
+    min-width: 0;
+    overflow-wrap: anywhere;
     text-wrap: balance;
   }
 
@@ -101,6 +105,19 @@
   .portfolio-nav-link:hover,
   .portfolio-nav-link.is-active {
     transform: translateY(-1px);
+  }
+
+  @media (min-width: 1024px) {
+    .service-bento-row {
+      grid-template-columns: var(--service-bento-columns);
+      transition: grid-template-columns 320ms cubic-bezier(0.77, 0, 0.175, 1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .service-bento-row {
+      transition: none;
+    }
   }
 
   .t-resize {
@@ -372,4 +389,5 @@
   .dark .public-media-outline {
     outline-color: rgba(255, 255, 255, 0.1);
   }
+
 }
