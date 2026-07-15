@@ -1,0 +1,35 @@
+export type LocalizedBriefText = { fr: string; en: string };
+export type ClientBriefValue = string | string[];
+export type ClientBriefField = {
+  key: string;
+  type: "text" | "textarea" | "single" | "multi" | "scale" | "color-list" | "date" | "url";
+  label: LocalizedBriefText;
+  guidance: LocalizedBriefText;
+  required: boolean;
+  options?: { value: string; label: LocalizedBriefText }[];
+  maxLength?: number;
+  maxSelections?: number;
+  prefill?: string;
+  why?: LocalizedBriefText;
+  dependsOn?: { field: string; equals?: string; notEquals?: string; includes?: string; includesAny?: string[]; oneOf?: string[] };
+};
+export type ClientBriefTemplate = {
+  serviceKey: ClientBriefServiceKey;
+  slug: string;
+  version: number;
+  title: LocalizedBriefText;
+  shortTitle: LocalizedBriefText;
+  intro: LocalizedBriefText;
+  sections: { key: string; title: LocalizedBriefText; description: LocalizedBriefText; fields: ClientBriefField[] }[];
+};
+export type ClientBriefServiceKey = "editorial-strategy" | "digital-communication" | "content-creation" | "audit-advice" | "visual-identity";
+export const CLIENT_BRIEF_SCHEMA_VERSION: number;
+export const CLIENT_BRIEF_SERVICE_KEYS: readonly ClientBriefServiceKey[];
+export const CLIENT_BRIEF_TEMPLATES: Readonly<Record<ClientBriefServiceKey, ClientBriefTemplate>>;
+export const CLIENT_BRIEF_SLUG_TO_SERVICE: Readonly<Record<string, ClientBriefServiceKey>>;
+export function getClientBriefTemplate(serviceKey: string): ClientBriefTemplate | null;
+export function getClientBriefTemplateBySlug(slug: string): ClientBriefTemplate | null;
+export function isClientBriefFieldVisible(field: ClientBriefField, answers: Record<string, ClientBriefValue>): boolean;
+export function isClientBriefFieldValueValid(field: ClientBriefField, value: unknown): boolean;
+export function validateClientBriefAnswers(template: ClientBriefTemplate, answers: Record<string, ClientBriefValue>): { valid: boolean; errors: Record<string, string> };
+export function buildClientBriefPrefill(template: ClientBriefTemplate, estimatorDraft: unknown): { answers: Record<string, ClientBriefValue>; provenance: Record<string, { source: string; confirmed: boolean; modified: boolean }> };
