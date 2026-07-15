@@ -170,7 +170,7 @@ function Sidebar({
                         {label === SERVICES_SECTION ? (
                           <li>
                             <button onClick={onBriefs} className={cn("flex min-h-9 w-full items-center gap-2.5 rounded-md py-1.5 pl-9 pr-2 text-left text-sm", viewKind === "briefs" ? "bg-surface-accent-muted font-medium text-text-accent" : "text-text-secondary hover:bg-surface-page-muted")}>
-                              <DocumentTextIcon className="size-4" /> Briefs design
+                              <DocumentTextIcon className="size-4" /> Briefs clients
                             </button>
                           </li>
                         ) : null}

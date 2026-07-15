@@ -126,7 +126,7 @@ function BriefList({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-text-accent">Demandes client</p>
-          <h1 className="mt-2 font-serif text-3xl text-text-primary">Briefs design soumis</h1>
+          <h1 className="mt-2 font-serif text-3xl text-text-primary">Briefs clients soumis</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-text-muted">
             Consultez les soumissions une par une. Cliquez sur une ligne pour ouvrir le détail complet.
           </p>
@@ -244,7 +244,7 @@ function BriefDetail({
       <div className="sticky top-0 z-10 -mx-5 mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-border-subtle bg-surface-page/95 px-5 py-3 backdrop-blur sm:-mx-6 sm:px-6">
         <button type="button" onClick={onBack} className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary">
           <ArrowLeftIcon className="size-4" />
-          Briefs design
+          Briefs clients
         </button>
         <div className="flex flex-wrap justify-end gap-2">
           {submission.status === "new" ? (

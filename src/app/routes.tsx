@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import Layout from "./Layout";
 import ErrorPage from "./components/ErrorPage";
 import RouteErrorBoundary from "./components/RouteErrorBoundary";
@@ -10,8 +10,9 @@ import {
   loadBlogPage,
   loadContactPage,
   loadCvPage,
-  loadDesignBriefPage,
+  loadClientBriefPage,
   loadNotFoundPage,
+  loadProjectEstimatorPage,
   loadReadingsReferencesPage,
   loadServiceDetailPage,
   loadToolsInspirationsPage,
@@ -77,13 +78,23 @@ export const router = createBrowserRouter([
         ErrorBoundary: RouteErrorBoundary,
       },
       {
+        path: "estimer-mon-projet",
+        lazy: async () => ({ Component: (await loadProjectEstimatorPage()).default }),
+        ErrorBoundary: RouteErrorBoundary,
+      },
+      {
         path: "services",
         Component: Services,
         ErrorBoundary: RouteErrorBoundary,
       },
       {
         path: "services/brief-design",
-        lazy: async () => ({ Component: (await loadDesignBriefPage()).default }),
+        Component: () => <Navigate to="/services/identite-visuelle/brief-client" replace />,
+        ErrorBoundary: RouteErrorBoundary,
+      },
+      {
+        path: "services/:slug/brief-client",
+        lazy: async () => ({ Component: (await loadClientBriefPage()).default }),
         ErrorBoundary: RouteErrorBoundary,
       },
       {

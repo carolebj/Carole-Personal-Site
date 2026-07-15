@@ -29,6 +29,7 @@ const WORKING_TABLE = "cms_documents";
 const REVISIONS_TABLE = "cms_revisions";
 const BUCKET = "media";
 const DESIGN_BRIEF_TABLE = "design_brief_submissions";
+const CLIENT_BRIEF_TABLE = "brief_submissions";
 const DESIGN_BRIEF_SELECT = "id, status, client_name, contact_name, contact_email, project_type, answers, logo_styles, color_palette, inspiration_links, asset_paths, created_at, reviewed_at, processed_at, archived_at";
 
 export type AuthUser = { id?: string; email: string };
@@ -49,6 +50,7 @@ export type DesignBriefSubmission = {
   reviewedAt?: string | null;
   processedAt?: string | null;
   archivedAt?: string | null;
+  source: "design-brief" | "client-brief";
 };
 
 export type Revision = {
@@ -94,6 +96,24 @@ type DesignBriefRow = {
   processed_at?: string | null;
   archived_at?: string | null;
 };
+
+type ClientBriefRow = {
+  id: string;
+  status: DesignBriefSubmission["status"];
+  payload: {
+    service_key?: string;
+    name?: string;
+    email?: string;
+    answers?: Record<string, unknown>;
+    asset_paths?: string[];
+  };
+  submitted_at: string;
+  reviewed_at?: string | null;
+  processed_at?: string | null;
+  archived_at?: string | null;
+};
+
+const clientBriefIds = new Set<string>();
 
 const singletonNames = new Set(
   contentTypes.filter((type) => type.kind === "singleton").map((type) => type.name),
@@ -143,6 +163,29 @@ function rowToDesignBrief(row: DesignBriefRow): DesignBriefSubmission {
     reviewedAt: row.reviewed_at,
     processedAt: row.processed_at,
     archivedAt: row.archived_at,
+    source: "design-brief",
+  };
+}
+
+function rowToClientBrief(row: ClientBriefRow): DesignBriefSubmission {
+  const answers = row.payload?.answers ?? {};
+  return {
+    id: row.id,
+    status: row.status,
+    clientName: typeof answers.projectName === "string" ? answers.projectName : null,
+    contactName: row.payload?.name ?? null,
+    contactEmail: row.payload?.email ?? null,
+    projectType: row.payload?.service_key ?? null,
+    answers,
+    logoStyles: Array.isArray(answers.logoStyles) ? answers.logoStyles.filter((value): value is string => typeof value === "string") : [],
+    colorPalette: Array.isArray(answers.colorPalette) ? answers.colorPalette.filter((value): value is string => typeof value === "string") : [],
+    inspirationLinks: typeof answers.visualReferences === "string" ? answers.visualReferences.split(/\s+/).filter((value) => /^https?:\/\//.test(value)) : [],
+    assetPaths: row.payload?.asset_paths ?? [],
+    createdAt: row.submitted_at,
+    reviewedAt: row.reviewed_at,
+    processedAt: row.processed_at,
+    archivedAt: row.archived_at,
+    source: "client-brief",
   };
 }
 
@@ -259,13 +302,19 @@ export async function fetchDesignBriefSubmissions(): Promise<DesignBriefSubmissi
   const sb = getSupabase();
   if (!sb) return [];
 
-  const { data, error } = await sb
-    .from(DESIGN_BRIEF_TABLE)
-    .select(DESIGN_BRIEF_SELECT)
-    .order("created_at", { ascending: false });
-
-  if (error) throw new Error(error.message);
-  return ((data ?? []) as DesignBriefRow[]).map(rowToDesignBrief);
+  const [legacyResult, clientResult] = await Promise.all([
+    sb.from(DESIGN_BRIEF_TABLE).select(DESIGN_BRIEF_SELECT).order("created_at", { ascending: false }),
+    sb.from(CLIENT_BRIEF_TABLE).select("id,status,payload,submitted_at,reviewed_at,processed_at,archived_at").order("submitted_at", { ascending: false }),
+  ]);
+  if (legacyResult.error) throw new Error(legacyResult.error.message);
+  if (clientResult.error) throw new Error(clientResult.error.message);
+  const clientRows = (clientResult.data ?? []) as ClientBriefRow[];
+  clientBriefIds.clear();
+  clientRows.forEach((row) => clientBriefIds.add(row.id));
+  return [
+    ...((legacyResult.data ?? []) as DesignBriefRow[]).map(rowToDesignBrief),
+    ...clientRows.map(rowToClientBrief),
+  ].sort((left, right) => Date.parse(right.createdAt) - Date.parse(left.createdAt));
 }
 
 export async function markDesignBriefReviewed(id: string): Promise<DesignBriefSubmission> {
@@ -288,13 +337,12 @@ export async function updateDesignBriefStatus(
   }
   if (status === "archived") patch.archived_at = now;
 
-  const { data, error } = await sb
-    .from(DESIGN_BRIEF_TABLE)
-    .update(patch)
-    .eq("id", id)
-    .select(DESIGN_BRIEF_SELECT)
-    .single();
-
+  if (clientBriefIds.has(id)) {
+    const { data, error } = await sb.from(CLIENT_BRIEF_TABLE).update(patch).eq("id", id).select("id,status,payload,submitted_at,reviewed_at,processed_at,archived_at").single();
+    if (error) throw new Error(error.message);
+    return rowToClientBrief(data as ClientBriefRow);
+  }
+  const { data, error } = await sb.from(DESIGN_BRIEF_TABLE).update(patch).eq("id", id).select(DESIGN_BRIEF_SELECT).single();
   if (error) throw new Error(error.message);
   return rowToDesignBrief(data as DesignBriefRow);
 }

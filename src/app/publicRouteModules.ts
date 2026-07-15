@@ -5,7 +5,8 @@ export const loadToolsInspirationsPage = () => import("./pages/ToolsInspirations
 export const loadReadingsReferencesPage = () => import("./pages/ReadingsReferences");
 export const loadCvPage = () => import("./pages/Cv");
 export const loadContactPage = () => import("./pages/Contact");
-export const loadDesignBriefPage = () => import("./pages/DesignBrief");
+export const loadClientBriefPage = () => import("./pages/ClientBrief");
+export const loadProjectEstimatorPage = () => import("./pages/ProjectEstimator");
 export const loadServiceDetailPage = () => import("./pages/ServiceDetail");
 export const loadNotFoundPage = () => import("./components/NotFoundPage");
 
@@ -17,6 +18,8 @@ const lightweightPublicRoutes = [
   loadReadingsReferencesPage,
   loadCvPage,
   loadContactPage,
+  loadProjectEstimatorPage,
+  loadClientBriefPage,
   loadServiceDetailPage,
 ];
 

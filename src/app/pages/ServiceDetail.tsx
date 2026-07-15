@@ -3,7 +3,6 @@ import {
   ArrowRightIcon,
   CheckCircleIcon,
   ClipboardDocumentCheckIcon,
-  PaintBrushIcon,
 } from "@heroicons/react/24/outline";
 import { motion } from "motion/react";
 import type React from "react";
@@ -44,10 +43,6 @@ const slugAliases: Record<string, string> = {
   "design-graphique": "identite-visuelle",
 };
 
-function isDesignService(service: ServiceDetail) {
-  return ["identite-visuelle", "visual-identity"].includes(service.slug);
-}
-
 function AnimatedDigits({ value }: { value: string }) {
   return (
     <span className="t-digit-group is-animating tabular-nums" aria-label={value}>
@@ -76,7 +71,6 @@ export default function ServiceDetail() {
   }, [cmsServices, usingCmsServices, locale, t]);
   const normalizedSlug = slug ? slugAliases[slug] ?? slug : "";
   const service = services.find((item) => item.slug === normalizedSlug) ?? services[0];
-  const detailIsDesign = service ? isDesignService(service) : false;
   const seoOverride = useMemo(
     () =>
       service
@@ -112,6 +106,7 @@ export default function ServiceDetail() {
   const targetAudience = service.targetAudience ?? [];
   const concreteApplications = service.concreteApplications?.length ? service.concreteApplications : [service.projectDescription];
   const nextService = services[(services.findIndex((item) => item.slug === service.slug) + 1) % services.length];
+  const briefUrl = `/services/${service.slug}/brief-client`;
 
   return (
     <main className={`${PAGE_MAIN} overflow-hidden bg-surface-page pb-24`}>
@@ -159,20 +154,18 @@ export default function ServiceDetail() {
             </p>
             <div className="mt-7 flex flex-col gap-3">
               <Link
-                to={detailIsDesign ? "/services/brief-design" : "/contact"}
+                to={briefUrl}
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-action-strong px-6 text-[12px] font-semibold uppercase tracking-[1.2px] text-text-on-strong transition hover:-translate-y-0.5 hover:bg-action-strong-hover active:translate-y-0"
               >
-                {detailIsDesign ? t("services.designBriefCta") : t("serviceDetail.cta")}
+                {locale.startsWith("en") ? "Compose my Client Brief" : "Composer mon Brief client"}
                 <ArrowRightIcon className="size-4" />
               </Link>
-              {detailIsDesign ? (
-                <Link
-                  to="/contact"
-                  className="inline-flex h-11 items-center justify-center rounded-full border border-border-accent-muted px-5 text-[12px] font-semibold uppercase tracking-[1.2px] text-text-accent transition hover:bg-surface-accent-muted"
-                >
-                  {t("serviceDetail.cta")}
-                </Link>
-              ) : null}
+              <Link
+                to="/contact"
+                className="inline-flex h-11 items-center justify-center rounded-full border border-border-accent-muted px-5 text-[12px] font-semibold uppercase tracking-[1.2px] text-text-accent transition hover:bg-surface-accent-muted"
+              >
+                {t("serviceDetail.cta")}
+              </Link>
             </div>
           </aside>
         </div>
@@ -273,27 +266,40 @@ export default function ServiceDetail() {
               </article>
             ) : null}
 
-            {detailIsDesign ? (
-              <article className="rounded-lg border border-border-accent bg-[#fff3f6] p-7 dark:border-white/10 dark:bg-white/6 md:p-8">
+            <article className="rounded-lg border border-border-accent bg-[#fff3f6] p-7 dark:border-white/10 dark:bg-white/6 md:p-8">
                 <div className="flex items-center gap-3">
-                  <PaintBrushIcon className="size-5 text-text-accent" />
+                  <ClipboardDocumentCheckIcon className="size-5 text-text-accent" />
                   <p className="text-[12px] font-semibold uppercase tracking-[2px] text-text-accent">
-                    {t("services.designBridgeEyebrow")}
+                    {locale.startsWith("en") ? "FRAME YOUR PROJECT" : "CADREZ VOTRE PROJET"}
                   </p>
                 </div>
                 <p className="mt-5 text-[16px] leading-8 text-text-secondary">
-                  {t("services.designBridgeDescription")}
+                  {locale.startsWith("en")
+                    ? "Build a detailed, reusable document to clarify your need before a meeting or a request for a firm quote."
+                    : "Composez un document détaillé et réutilisable pour clarifier votre besoin avant une réunion ou une demande de devis ferme."}
                 </p>
                 <Link
-                  to="/services/brief-design"
+                  to={briefUrl}
                   className="mt-6 inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[1.2px] text-text-accent transition hover:text-text-primary"
                 >
-                  {t("services.designBriefCta")}
+                  {locale.startsWith("en") ? "Compose my Client Brief" : "Composer mon Brief client"}
                   <ArrowRightIcon className="size-4" />
                 </Link>
               </article>
-            ) : null}
           </div>
+        </div>
+      </section>
+
+      <section className="mx-auto mt-16 max-w-[1180px] px-5 sm:px-8 lg:px-0">
+        <div className="grid gap-6 rounded-xl bg-[#3f2731] p-7 text-white md:grid-cols-[1fr_auto] md:items-center md:p-10">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[2.4px] text-[#e8b2c4]">{locale.startsWith("en") ? "BEFORE THE MEETING" : "AVANT LA RÉUNION"}</p>
+            <h2 className="mt-4 max-w-[720px] font-serif text-[36px] leading-[1.08] md:text-[44px]">{locale.startsWith("en") ? "Turn your ideas into an actionable project brief." : "Transformez vos idées en un projet réellement cadré."}</h2>
+            <p className="mt-4 max-w-[720px] text-[14px] leading-7 text-white/70">{locale.startsWith("en") ? "Download the document for your own use or submit it directly to Carole. No commitment." : "Téléchargez le document pour votre usage ou soumettez-le directement à Carole. Sans engagement."}</p>
+          </div>
+          <Link to={briefUrl} className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-7 text-[12px] font-semibold uppercase tracking-[1.2px] text-[#3f2731] transition hover:-translate-y-0.5">
+            {locale.startsWith("en") ? "Start my brief" : "Commencer mon brief"}<ArrowRightIcon className="size-4" />
+          </Link>
         </div>
       </section>
 

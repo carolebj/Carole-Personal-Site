@@ -713,19 +713,14 @@ export default function Navbar() {
                                 {t("nav.ourServices")}
                               </h3>
                               <div className="flex items-center gap-2">
-                                <button
-                                  type="button"
-                                  disabled
-                                  className="inline-flex h-10 cursor-not-allowed items-center gap-2 rounded-full border border-border-accent/35 bg-surface-accent-muted px-3.5 text-[11px] font-semibold text-text-accent"
+                                <Link
+                                  to="/estimer-mon-projet"
+                                  onClick={() => setIsServicesOpen(false)}
+                                  className="inline-flex h-10 items-center gap-2 rounded-full border border-border-accent/35 bg-surface-accent-muted px-3.5 text-[11px] font-semibold text-text-accent transition hover:border-border-accent hover:bg-surface-accent"
                                 >
                                   <CalculatorIcon className="size-4" />
                                   {t("nav.projectEstimator")}
-                                  <span
-                                    className="rounded-full bg-surface-panel px-2 py-0.5 text-[9px] uppercase tracking-[1px] text-text-secondary"
-                                  >
-                                    {t("nav.comingSoon")}
-                                  </span>
-                                </button>
+                                </Link>
                                 <Link
                                   to="/services"
                                   onClick={() => setIsServicesOpen(false)}
@@ -1054,15 +1049,18 @@ export default function Navbar() {
                               >
                                 {t("nav.allServices")}
                               </Link>
-                              <button
-                                type="button"
-                                disabled
-                                className="flex cursor-not-allowed items-center gap-3 rounded-lg border border-border-accent/30 bg-surface-accent-muted px-3 py-3 text-left text-text-accent"
+                              <Link
+                                to="/estimer-mon-projet"
+                                onClick={() => {
+                                  setIsMobileMenuOpen(false);
+                                  setOpenMobileAccordion(null);
+                                }}
+                                className="flex items-center gap-3 rounded-lg border border-border-accent/30 bg-surface-accent-muted px-3 py-3 text-left text-text-accent transition hover:bg-surface-accent"
                               >
                                 <CalculatorIcon className="size-5 shrink-0" />
                                 <span className="min-w-0 flex-1 text-[13px] font-semibold">{t("nav.projectEstimator")}</span>
-                                <span className="text-[9px] font-semibold uppercase tracking-[1px] text-text-secondary">{t("nav.comingSoon")}</span>
-                              </button>
+                                <ArrowRightIcon className="size-4 shrink-0" />
+                              </Link>
                               {serviceMenuGroups.map((group) => (
                                 <section key={group.key}>
                                   <h4 className="text-[10px] font-semibold uppercase tracking-[1.6px] text-[#99857c] dark:text-[#aa9b94]">
