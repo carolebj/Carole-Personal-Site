@@ -50,11 +50,11 @@ const en = {
 
   hero: {
     eyebrow: "Digital communications officer",
-    titleStart: "Build digital communication",
-    titleAccent: "clear & engaging",
-    titleEnd: "for your brand.",
+    titleStart: "Digital communication that’s",
+    titleAccent: "clear & engaging.",
+    titleEnd: "",
     description:
-      "I help coordinate your content, campaigns, and visibility actions so your communication becomes clearer, more consistent, and easier to activate.",
+      "I bring structure to your content, campaigns, and visibility efforts, so your brand moves forward with clarity and purpose.",
     primaryCta: "Let's talk",
     secondaryCta: "My services",
     badgeTop: "Digital",
@@ -72,8 +72,9 @@ const en = {
   about: {
     titleTop: "Lovely to meet you,",
     titleAccent: "I'm Carole",
-    p1: "I help businesses, organizations, and projects clarify their message, organize their content, and strengthen their digital visibility.",
-    p2: "I support editorial coordination, writing, visual production follow-up, and communication actions. Together, we turn your ideas, key moments, and priorities into clear public-facing messages.",
+    p1: "I help brands bring more structure to the way they communicate—without losing what makes them distinctive.",
+    p2: "I combine editorial coordination, writing, and production oversight with a collaborative approach built on listening, clarity, and open dialogue.",
+    cta: "Discover my approach",
     imageAlt: "Portrait of Carole Tonoukouen",
     traits: [
       { label: "Writer" },
