@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, ChevronRightIcon, EnvelopeIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon, EnvelopeIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { ContactForm } from "../components/ContactForm";
 import { SectionEyebrow } from "../components/SectionEyebrow";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
@@ -1186,6 +1186,13 @@ export default function Home() {
                   : <><p>{t("about.p1")}</p><p>{t("about.p2")}</p></>;
               })()}
             </div>
+            <Link
+              to="/about"
+              className="group mt-5 inline-flex items-center text-[13px] font-semibold uppercase tracking-[1.8px] text-text-accent transition hover:text-[#6a364b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#854d63] dark:text-text-accent dark:hover:text-[#f8d7e3]"
+            >
+              {t("about.cta")}
+              <ArrowRightIcon className="ml-2 size-4 transition group-hover:translate-x-1" />
+            </Link>
             <div className="mt-6 grid grid-cols-1 gap-4 border-t border-border-subtle/80 pt-8 dark:border-white/10 min-[420px]:grid-cols-3 sm:flex sm:flex-wrap sm:gap-7">
               {traits.map((trait, index) => {
                 const icon = traitIcons[index] ?? documentEditIcon;
