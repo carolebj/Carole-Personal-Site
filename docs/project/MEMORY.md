@@ -4,7 +4,7 @@
 
 This file is the project-level memory for the Carole Personal Site repo. Keep it short, current, and useful for future agents working on the site.
 
-Last reviewed: 2026-07-15 WAT
+Last reviewed: 2026-07-16 WAT
 
 ## Current Branch Workflow
 
@@ -194,6 +194,17 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
     rather than as a subtask of About. Plan a separate site-wide cleanup to
     identify unused fields, orphaned content and CMS data no longer consumed by
     the public or dashboard applications
+  - the homepage hero and About teaser copy were validated on 2026-07-16. The
+    hero reads “Une communication digitale claire & engageante.” and explains
+    that Carole coordinates content, campaigns and visibility actions to move
+    the brand forward with a clear direction. The About teaser emphasizes her
+    role in organizing a brand's voice while preserving its singularity, with
+    the CTA “Découvrir mon approche”. Keep `homePage/homePage` synchronized with
+    the FR/EN i18n fallback so CMS hydration never replaces the selected copy
+    after first render. English copy must be transcreated rather than translated
+    literally: preserve the idea, benefit and confidence level while using
+    idiomatic English. The validated English hero begins “Digital communication
+    that’s clear & engaging.” and the teaser CTA is “Discover my approach”
   - keep the globally reduced scale validated on a 13-inch MacBook: lower nav height, smaller max content width, lower hero title/image caps, tighter buttons, and reduced section padding
   - use the Figma-derived hero/about portraits and exported decorative arc
   - use local Liberation Serif Italic for manifesto accent text

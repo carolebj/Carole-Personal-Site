@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Propositions de textes — Page d’accueil</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #211d1c;
+        --body: #5f4a42;
+        --muted: #846f67;
+        --plum: #8b4e66;
+        --plum-deep: #69384c;
+        --rose: #fae8ee;
+        --peach: #fff0e6;
+        --paper: #fffcfa;
+        --line: #eadfda;
+        --white: #ffffff;
+        --shadow: 0 22px 70px rgba(79, 48, 43, 0.09);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at 8% 0%, rgba(255, 217, 228, 0.62), transparent 30rem),
+          linear-gradient(160deg, #fffafa 0%, var(--paper) 55%, #fff8f4 100%);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.65;
+      }
+
+      main {
+        width: min(1180px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: 72px 0 96px;
+      }
+
+      .eyebrow {
+        margin: 0 0 18px;
+        color: var(--plum);
+        font-size: 12px;
+        font-weight: 750;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+
+      h1, h2, h3, p { margin-top: 0; }
+
+      h1, h2 {
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 400;
+        letter-spacing: -0.025em;
+      }
+
+      h1 {
+        max-width: 850px;
+        margin-bottom: 22px;
+        font-size: clamp(42px, 6vw, 76px);
+        line-height: 0.98;
+      }
+
+      h2 {
+        margin-bottom: 14px;
+        font-size: clamp(30px, 4vw, 48px);
+        line-height: 1.08;
+      }
+
+      h3 {
+        margin-bottom: 10px;
+        font-size: 18px;
+        line-height: 1.35;
+      }
+
+      .intro {
+        max-width: 780px;
+        margin-bottom: 34px;
+        color: var(--body);
+        font-size: 18px;
+      }
+
+      .notice {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        max-width: 920px;
+        padding: 18px 20px;
+        border: 1px solid rgba(139, 78, 102, 0.2);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.76);
+        color: var(--body);
+      }
+
+      .notice-mark {
+        display: grid;
+        width: 28px;
+        height: 28px;
+        flex: 0 0 auto;
+        place-items: center;
+        border-radius: 999px;
+        background: var(--rose);
+        color: var(--plum);
+        font-weight: 800;
+      }
+
+      section { margin-top: 74px; }
+
+      .section-intro {
+        max-width: 760px;
+        margin-bottom: 28px;
+        color: var(--body);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .proposal-stack {
+        display: grid;
+        gap: 30px;
+      }
+
+      article {
+        position: relative;
+        padding: 28px;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.82);
+        box-shadow: 0 12px 40px rgba(79, 48, 43, 0.05);
+      }
+
+      article.recommended {
+        border-color: rgba(139, 78, 102, 0.44);
+        background: linear-gradient(155deg, #fff 0%, #fff7fa 100%);
+        box-shadow: var(--shadow);
+      }
+
+      .hero-card {
+        padding: 14px;
+        overflow: hidden;
+      }
+
+      .hero-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 8px 10px 18px;
+      }
+
+      .hero-card-head .tag { margin: 0; }
+
+      .direction-label {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .preview-shell {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background:
+          radial-gradient(circle at 82% 24%, rgba(255, 217, 228, 0.62), transparent 22rem),
+          linear-gradient(160deg, #fffafa 0%, #fcf9f8 100%);
+      }
+
+      .mock-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 58px;
+        padding: 0 28px;
+        border-bottom: 1px solid rgba(234, 223, 218, 0.86);
+        background: rgba(255, 255, 255, 0.72);
+      }
+
+      .mock-logo {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 20px;
+        font-style: italic;
+      }
+
+      .mock-links {
+        display: flex;
+        gap: 18px;
+        color: var(--muted);
+        font-size: 9px;
+        font-weight: 750;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+
+      .hero-preview {
+        display: grid;
+        min-height: 410px;
+        grid-template-columns: minmax(0, 1.08fr) minmax(260px, 0.92fr);
+        align-items: center;
+        gap: 36px;
+        padding: 44px 54px;
+      }
+
+      .hero-kicker {
+        margin-bottom: 16px;
+        color: var(--plum);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .hero-title {
+        max-width: 590px;
+        margin-bottom: 22px;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(39px, 5vw, 63px);
+        line-height: 0.98;
+        letter-spacing: -0.035em;
+      }
+
+      .hero-title em {
+        color: var(--plum);
+        font-weight: 400;
+      }
+
+      .hero-description {
+        max-width: 540px;
+        margin-bottom: 26px;
+        color: var(--body);
+        font-size: 15px;
+        line-height: 1.75;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .mock-button {
+        display: inline-flex;
+        min-height: 42px;
+        align-items: center;
+        justify-content: center;
+        padding: 0 21px;
+        border: 1px solid rgba(33, 29, 28, 0.18);
+        border-radius: 999px;
+        color: var(--ink);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .mock-button.primary {
+        border-color: var(--ink);
+        background: var(--ink);
+        color: white;
+      }
+
+      .portrait-placeholder {
+        position: relative;
+        display: grid;
+        width: min(100%, 360px);
+        aspect-ratio: 0.92;
+        place-items: center;
+        justify-self: center;
+      }
+
+      .portrait-placeholder::before,
+      .portrait-placeholder::after {
+        position: absolute;
+        content: "";
+        border-radius: 46% 54% 49% 51% / 42% 42% 58% 58%;
+      }
+
+      .portrait-placeholder::before {
+        inset: 2% 4%;
+        border: 1px solid rgba(139, 78, 102, 0.2);
+        background: rgba(250, 232, 238, 0.72);
+        transform: rotate(4deg);
+      }
+
+      .portrait-placeholder::after {
+        inset: 10% 13%;
+        background: linear-gradient(145deg, #ffc4dc, #ffb35d);
+        transform: rotate(-2deg);
+      }
+
+      .portrait-icon {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        width: 58%;
+        aspect-ratio: 1;
+        place-items: center;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.58);
+        color: var(--plum-deep);
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 18px;
+        text-align: center;
+      }
+
+      .preview-notes {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 28px;
+        padding: 24px 18px 14px;
+      }
+
+      .preview-notes h3 { margin-bottom: 7px; }
+      .preview-notes p { margin-bottom: 0; color: var(--body); font-size: 14px; }
+      .preview-notes ul { margin-top: 0; }
+
+      .about-card { padding: 14px; }
+
+      .about-preview {
+        display: grid;
+        grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.28fr);
+        gap: 42px;
+        align-items: center;
+        min-height: 360px;
+        padding: 42px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: white;
+      }
+
+      .about-image-placeholder {
+        display: grid;
+        width: min(100%, 290px);
+        aspect-ratio: 0.92;
+        place-items: center;
+        justify-self: center;
+        border: 18px solid var(--peach);
+        border-radius: 48% 48% 44% 44% / 38% 38% 55% 55%;
+        background: linear-gradient(150deg, #ffc7de, #ffacb5);
+        color: var(--plum-deep);
+        font-family: Georgia, "Times New Roman", serif;
+        text-align: center;
+      }
+
+      .about-title {
+        margin-bottom: 22px;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(35px, 4.2vw, 54px);
+        line-height: 1;
+        letter-spacing: -0.03em;
+      }
+
+      .about-title em { color: var(--plum); font-weight: 400; }
+      .about-copy { max-width: 660px; color: var(--body); font-size: 15px; }
+      .about-copy p { margin-bottom: 12px; }
+
+      .tag {
+        display: inline-flex;
+        margin-bottom: 20px;
+        padding: 7px 11px;
+        border-radius: 999px;
+        background: var(--peach);
+        color: #8a532a;
+        font-size: 11px;
+        font-weight: 750;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .recommended .tag {
+        background: var(--rose);
+        color: var(--plum-deep);
+      }
+
+      .copy-label {
+        margin: 24px 0 6px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 750;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .headline {
+        margin-bottom: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(28px, 2.9vw, 39px);
+        line-height: 1.08;
+        letter-spacing: -0.025em;
+      }
+
+      .headline em {
+        color: var(--plum);
+        font-weight: 400;
+      }
+
+      .body-copy {
+        color: var(--body);
+        font-size: 15px;
+      }
+
+      .cta {
+        display: inline-flex;
+        margin-top: 4px;
+        padding-bottom: 3px;
+        border-bottom: 1px solid rgba(139, 78, 102, 0.45);
+        color: var(--plum);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+
+      ul {
+        margin: 20px 0 0;
+        padding-left: 20px;
+        color: var(--body);
+        font-size: 14px;
+      }
+
+      li + li { margin-top: 8px; }
+
+      .combination-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .combination {
+        padding: 22px;
+        border-radius: 20px;
+        background: var(--ink);
+        color: #fff8f5;
+      }
+
+      .combination:nth-child(2) { background: var(--plum-deep); }
+      .combination:nth-child(3) { background: #9b6348; }
+
+      .combination h3 { color: white; }
+      .combination p { margin-bottom: 0; color: rgba(255, 255, 255, 0.78); }
+
+      .decision {
+        padding: 30px;
+        border-radius: 24px;
+        background: linear-gradient(135deg, var(--rose), var(--peach));
+      }
+
+      .decision-fields {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px 28px;
+        margin-top: 22px;
+      }
+
+      .field {
+        min-height: 48px;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(105, 56, 76, 0.28);
+        color: var(--plum-deep);
+        font-weight: 700;
+      }
+
+      footer {
+        margin-top: 36px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 900px) {
+        .grid, .combination-grid { grid-template-columns: 1fr; }
+        article { padding: 24px; }
+        .hero-card { padding: 12px; }
+        .hero-preview { grid-template-columns: 1fr 0.8fr; padding: 38px 34px; }
+        .about-card { padding: 12px; }
+        .about-preview { grid-template-columns: 0.65fr 1.35fr; gap: 28px; padding: 34px; }
+        .mock-links { display: none; }
+      }
+
+      @media (max-width: 600px) {
+        main { width: min(100% - 28px, 1180px); padding-top: 44px; }
+        .decision-fields { grid-template-columns: 1fr; }
+        .hero-preview { grid-template-columns: 1fr; padding: 32px 24px; }
+        .hero-title { font-size: 42px; }
+        .portrait-placeholder { width: min(78%, 280px); }
+        .preview-notes { grid-template-columns: 1fr; }
+        .about-preview { grid-template-columns: 1fr; padding: 28px 24px; }
+        .about-image-placeholder { width: min(72%, 250px); }
+        .direction-label { display: none; }
+      }
+
+      @media print {
+        body { background: white; }
+        main { width: 100%; padding: 24px; }
+        article, .notice { box-shadow: none; break-inside: avoid; }
+        .grid, .combination-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">Support de décision · Page d’accueil</p>
+        <h1>Des textes plus courts, sans perdre l’essentiel.</h1>
+        <p class="intro">
+          Trois directions pour alléger le hero et mieux introduire Carole avant la page À propos.
+          Chaque proposition cherche un équilibre différent entre clarté, personnalité et précision.
+        </p>
+        <div class="notice">
+          <span class="notice-mark">i</span>
+          <div>
+            <strong>La direction retenue est désormais identifiée.</strong><br />
+            Le hero A et la présentation A avec le CTA « Découvrir mon approche » seront déclinés
+            en anglais, vérifiés aux principaux breakpoints puis synchronisés dans le CMS.
+          </div>
+        </div>
+      </header>
+
+      <section>
+        <p class="eyebrow">01 · Hero</p>
+        <h2>Raccourcir le message principal</h2>
+        <p class="section-intro">
+          Le texte doit rester immédiatement compréhensible tout en occupant moins de lignes et en
+          laissant davantage respirer le portrait.
+        </p>
+
+        <div class="proposal-stack">
+          <article class="hero-card recommended">
+            <div class="hero-card-head">
+              <span class="tag">A · Retenue</span>
+              <span class="direction-label">Claire et équilibrée</span>
+            </div>
+            <div class="preview-shell">
+              <div class="mock-nav">
+                <span class="mock-logo">Carole T.</span>
+                <span class="mock-links"><span>Accueil</span><span>À propos</span><span>Services</span><span>Carnet</span></span>
+              </div>
+              <div class="hero-preview">
+                <div>
+                  <p class="hero-kicker">Chargée de communication digitale</p>
+                  <p class="hero-title">Une communication digitale<br /><em>claire & engageante.</em></p>
+                  <p class="hero-description">Je coordonne vos contenus, vos campagnes et vos actions de visibilité pour faire avancer votre marque avec un cap clair.</p>
+                  <div class="hero-actions"><span class="mock-button primary">Discutons-en</span><span class="mock-button">Mes services</span></div>
+                </div>
+                <div class="portrait-placeholder"><span class="portrait-icon">Portrait<br />de Carole</span></div>
+              </div>
+            </div>
+            <div class="preview-notes">
+              <div><h3>Pourquoi elle fonctionne</h3><p>Elle conserve les qualités recherchées tout en supprimant la construction longue « Construire… pour votre marque ».</p></div>
+              <ul><li>Message précis et immédiatement lisible.</li><li>Meilleure respiration autour du portrait.</li><li>Équilibre entre bénéfice et métier.</li></ul>
+            </div>
+          </article>
+
+          <article class="hero-card">
+            <div class="hero-card-head">
+              <span class="tag">B · Orientée résultat</span>
+              <span class="direction-label">Plus dynamique</span>
+            </div>
+            <div class="preview-shell">
+              <div class="mock-nav"><span class="mock-logo">Carole T.</span><span class="mock-links"><span>Accueil</span><span>À propos</span><span>Services</span><span>Carnet</span></span></div>
+              <div class="hero-preview">
+                <div>
+                  <p class="hero-kicker">Chargée de communication digitale</p>
+                  <p class="hero-title">Donner plus de clarté et d’élan<br /><em>à votre communication digitale.</em></p>
+                  <p class="hero-description">Contenus, campagnes, visibilité : je vous aide à les coordonner pour que chaque action serve une direction commune.</p>
+                  <div class="hero-actions"><span class="mock-button primary">Discutons-en</span><span class="mock-button">Mes services</span></div>
+                </div>
+                <div class="portrait-placeholder"><span class="portrait-icon">Portrait<br />de Carole</span></div>
+              </div>
+            </div>
+            <div class="preview-notes">
+              <div><h3>Pourquoi elle fonctionne</h3><p>Elle place le bénéfice client au premier plan et donne au hero une impulsion plus active.</p></div>
+              <ul><li>Tonalité accessible et concrète.</li><li>La coordination reste clairement visible.</li><li>Le mot « engageante » disparaît.</li></ul>
+            </div>
+          </article>
+
+          <article class="hero-card">
+            <div class="hero-card-head">
+              <span class="tag">C · Éditoriale</span>
+              <span class="direction-label">Plus singulière</span>
+            </div>
+            <div class="preview-shell">
+              <div class="mock-nav"><span class="mock-logo">Carole T.</span><span class="mock-links"><span>Accueil</span><span>À propos</span><span>Services</span><span>Carnet</span></span></div>
+              <div class="hero-preview">
+                <div>
+                  <p class="hero-kicker">Chargée de communication digitale</p>
+                  <p class="hero-title">Des idées mieux orchestrées.<br /><em>Une marque plus claire.</em></p>
+                  <p class="hero-description">Je transforme vos priorités en contenus, campagnes et prises de parole qui avancent dans la même direction.</p>
+                  <div class="hero-actions"><span class="mock-button primary">Discutons-en</span><span class="mock-button">Mes services</span></div>
+                </div>
+                <div class="portrait-placeholder"><span class="portrait-icon">Portrait<br />de Carole</span></div>
+              </div>
+            </div>
+            <div class="preview-notes">
+              <div><h3>Pourquoi elle fonctionne</h3><p>Le contraste entre les deux phrases crée un impact plus mémorable et une composition très nette.</p></div>
+              <ul><li>Rythme visuel fort.</li><li>Coordination exprimée sans jargon.</li><li>Champ digital moins explicite.</li></ul>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">02 · Présentation</p>
+        <h2>Donner envie de mieux connaître Carole</h2>
+        <p class="section-intro">
+          Le titre « Enchantée, moi c’est Carole » peut rester. Il est chaleureux et personnel. Les
+          variantes portent sur les paragraphes et sur un bouton plus juste que « Découvrir mon parcours ».
+        </p>
+
+        <div class="proposal-stack">
+          <article class="about-card recommended">
+            <div class="hero-card-head"><span class="tag">A · Retenue</span><span class="direction-label">Posture et collaboration</span></div>
+            <div class="about-preview">
+              <div class="about-image-placeholder">Portrait<br />de Carole</div>
+              <div><p class="about-title">Enchantée,<br /><em>moi c’est Carole</em></p><div class="about-copy"><p>J’accompagne les marques qui veulent mieux organiser leur prise de parole sans perdre ce qui les rend singulières.</p><p>Mon rôle mêle coordination éditoriale, rédaction et suivi de production, avec une façon de travailler fondée sur l’écoute, la clarté et le dialogue.</p></div><span class="cta">Découvrir mon approche →</span></div>
+            </div>
+            <div class="preview-notes"><div><h3>Une transition fidèle à la page À propos</h3><p>La proposition présente la posture de Carole sans refaire la liste détaillée des services.</p></div><ul><li>Chaleureuse sans être trop personnelle.</li><li>Le CTA couvre identité, convictions et collaboration.</li></ul></div>
+          </article>
+
+          <article class="about-card">
+            <div class="hero-card-head"><span class="tag">B · Professionnelle</span><span class="direction-label">Concise et factuelle</span></div>
+            <div class="about-preview">
+              <div class="about-image-placeholder">Portrait<br />de Carole</div>
+              <div><p class="about-title">Enchantée,<br /><em>moi c’est Carole</em></p><div class="about-copy"><p>Je suis Carole, chargée de communication digitale basée à Cotonou.</p><p>J’aide les marques à structurer leurs messages et leurs contenus avec une approche attentive, claire et adaptée à leur réalité.</p></div><span class="cta">Découvrir mon approche →</span></div>
+            </div>
+            <div class="preview-notes"><div><h3>Une introduction rapide</h3><p>Elle donne l’identité, le métier et la localisation avant de laisser le reste à la page À propos.</p></div><ul><li>Très lisible et professionnelle.</li><li>Dimension personnelle moins présente.</li></ul></div>
+          </article>
+
+          <article class="about-card">
+            <div class="hero-card-head"><span class="tag">C · Personnelle</span><span class="direction-label">Plus éditoriale</span></div>
+            <div class="about-preview">
+              <div class="about-image-placeholder">Portrait<br />de Carole</div>
+              <div><p class="about-title">Enchantée,<br /><em>moi c’est Carole</em></p><div class="about-copy"><p>J’aime aider les marques à trouver une manière plus claire, plus juste et plus cohérente de prendre la parole.</p><p>Derrière chaque collaboration, je cherche le bon équilibre entre les idées, l’organisation et la réalité du projet.</p></div><span class="cta">En savoir plus sur moi →</span></div>
+            </div>
+            <div class="preview-notes"><div><h3>Une voix plus sensible</h3><p>La formulation met davantage en avant la personnalité et crée une transition narrative.</p></div><ul><li>Plus singulière et chaleureuse.</li><li>Moins précise sur les tâches prises en charge.</li></ul></div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">03 · Combinaisons</p>
+        <h2>Trois directions cohérentes</h2>
+        <div class="combination-grid">
+          <div class="combination">
+            <h3>Choix 1 · Le plus équilibré</h3>
+            <p>Hero A + Présentation A + « Découvrir mon approche » — retenu</p>
+          </div>
+          <div class="combination">
+            <h3>Choix 2 · Le plus orienté client</h3>
+            <p>Hero B + Présentation B + « Découvrir mon approche »</p>
+          </div>
+          <div class="combination">
+            <h3>Choix 3 · Le plus éditorial</h3>
+            <p>Hero C + Présentation C + « En savoir plus sur moi »</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="decision">
+        <p class="eyebrow">Votre décision</p>
+        <h2>Vous pouvez choisir une combinaison ou mélanger les pistes.</h2>
+        <div class="decision-fields">
+          <div class="field">Hero retenu : A, sans « cohérente »</div>
+          <div class="field">Présentation retenue : A</div>
+          <div class="field">CTA retenu : Découvrir mon approche</div>
+          <div class="field">Statut : prêt pour synchronisation</div>
+        </div>
+      </section>
+
+      <footer>
+        Dernière révision : 16 juillet 2026 · Direction validée
+      </footer>
+    </main>
+  </body>
+</html>
