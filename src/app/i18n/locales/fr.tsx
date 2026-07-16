@@ -50,11 +50,11 @@ const fr = {
 
   hero: {
     eyebrow: "Chargée de communication digitale",
-    titleStart: "Construire une communication digitale",
-    titleAccent: "claire & engageante",
-    titleEnd: "pour votre marque.",
+    titleStart: "Une communication digitale",
+    titleAccent: "claire & engageante.",
+    titleEnd: "",
     description:
-      "Je vous accompagne dans la coordination de vos contenus, de vos campagnes et de vos actions de visibilité pour renforcer votre communication avec clarté.",
+      "Je coordonne vos contenus, vos campagnes et vos actions de visibilité pour faire avancer votre marque avec un cap clair.",
     primaryCta: "Discutons-en",
     secondaryCta: "Mes services",
     badgeTop: "Communication",
@@ -72,9 +72,9 @@ const fr = {
   about: {
     titleTop: "Enchantée,",
     titleAccent: "moi c'est Carole",
-    p1: "J'aide les entreprises, organisations et projets à clarifier leur message, organiser leurs contenus et renforcer leur visibilité digitale.",
-    p2: "Je prends en charge la coordination éditoriale, la rédaction, le suivi des supports visuels et les actions de communication. Vous et moi collaborerons pour transformer vos idées, vos temps forts et vos priorités en prises de parole claires.",
-    cta: "Découvrir mon parcours",
+    p1: "J'accompagne les marques qui veulent mieux organiser leur prise de parole sans perdre ce qui les rend singulières.",
+    p2: "Mon rôle mêle coordination éditoriale, rédaction et suivi de production, avec une façon de travailler fondée sur l'écoute, la clarté et le dialogue.",
+    cta: "Découvrir mon approche",
     imageAlt: "Portrait de Carole Tonoukouen",
     traits: [
       { label: "Rédactrice" },

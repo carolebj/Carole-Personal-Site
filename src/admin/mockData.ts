@@ -10,12 +10,12 @@ export const seedContent = {
     id: "homePage",
     hero: {
       eyebrow: L("Chargée de communication digitale", "Digital communications officer"),
-      title: L("Construire une communication digitale", "Build digital communication"),
-      accent: L("claire & engageante", "clear & engaging"),
-      titleEnd: L("pour votre marque.", "for your brand."),
+      title: L("Une communication digitale", "Digital communication that’s"),
+      accent: L("claire & engageante.", "clear & engaging."),
+      titleEnd: L("", ""),
       description: L(
-        "Je vous accompagne dans la coordination de vos contenus, de vos campagnes et de vos actions de visibilité pour renforcer votre communication avec clarté.",
-        "I help coordinate your content, campaigns, and visibility actions so your communication becomes clearer, more consistent, and easier to activate.",
+        "Je coordonne vos contenus, vos campagnes et vos actions de visibilité pour faire avancer votre marque avec un cap clair.",
+        "I bring structure to your content, campaigns, and visibility efforts, so your brand moves forward with clarity and purpose.",
       ),
       primaryCta: L("Discutons-en", "Let's talk"),
       secondaryCta: L("Mes services", "My services"),
@@ -33,8 +33,8 @@ export const seedContent = {
       title: L("Enchantée,", "Lovely to meet you,"),
       accent: L("moi c'est Carole", "I'm Carole"),
       body: L(
-        "J'aide les entreprises, organisations et projets à clarifier leur message, organiser leurs contenus et renforcer leur visibilité digitale.\n\nJe prends en charge la coordination éditoriale, la rédaction, le suivi des supports visuels et les actions de communication. Vous et moi collaborerons pour transformer vos idées, vos temps forts et vos priorités en prises de parole claires.",
-        "I help businesses, organizations, and projects clarify their message, organize their content, and strengthen their digital visibility.\n\nI support editorial coordination, writing, visual production follow-up, and communication actions. Together, we turn your ideas, key moments, and priorities into clear public-facing messages.",
+        "J'accompagne les marques qui veulent mieux organiser leur prise de parole sans perdre ce qui les rend singulières.\n\nMon rôle mêle coordination éditoriale, rédaction et suivi de production, avec une façon de travailler fondée sur l'écoute, la clarté et le dialogue.",
+        "I help brands bring more structure to the way they communicate—without losing what makes them distinctive.\n\nI combine editorial coordination, writing, and production oversight with a collaborative approach built on listening, clarity, and open dialogue.",
       ),
       image: null,
     },

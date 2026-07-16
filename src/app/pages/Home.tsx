@@ -1341,6 +1341,7 @@ export default function Home() {
     ? localized(aboutData?.image?.alt, locale)
     : t("about.imageAlt");
 
+  const heroEyebrow = usingCms ? localized(heroData?.eyebrow, locale) : t("hero.eyebrow");
   const heroTitle = usingCms ? localized(heroData?.title, locale) : t("hero.titleStart");
   const heroAccent = usingCms ? localized(heroData?.accent, locale) : t("hero.titleAccent");
   const heroTitleEnd = usingCms ? localized(heroData?.titleEnd, locale) : t("hero.titleEnd");
@@ -1660,6 +1661,9 @@ export default function Home() {
             transition={{ duration: 0.55, ease: "easeOut" }}
             className="max-w-[672px]"
           >
+            {heroEyebrow && (
+              <SectionEyebrow className="mb-5 tracking-[3px]">{heroEyebrow}</SectionEyebrow>
+            )}
             <h1 className="max-w-[672px] font-serif text-[40px] leading-[44px] text-text-primary dark:text-text-primary sm:text-[48px] sm:leading-[52px] lg:text-[56px] lg:leading-[60px] 2xl:text-[64px] 2xl:leading-[68px]">
               {usingCms && heroAccentIndex >= 0 ? (
                 <>
