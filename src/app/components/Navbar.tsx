@@ -390,9 +390,22 @@ export default function Navbar() {
     desktopDropdownCloseTimeoutRef.current = window.setTimeout(() => {
       setIsServicesOpen(false);
       setIsCarnetOpen(false);
-      setHoveredNavId(null);
+      setHoveredNavId((current) =>
+        current === "services" || current === "carnet" ? null : current,
+      );
       desktopDropdownCloseTimeoutRef.current = null;
     }, 120);
+  };
+
+  const activateDesktopNavLink = (id: string) => {
+    cancelDesktopDropdownClose();
+    setIsServicesOpen(false);
+    setIsCarnetOpen(false);
+    setHoveredNavId(id);
+  };
+
+  const clearDesktopNavLink = (id: string) => {
+    setHoveredNavId((current) => (current === id ? null : current));
   };
   const primaryDropdownLayoutTransition = shouldReduceMotion
     ? { duration: 0 }
@@ -931,8 +944,8 @@ export default function Navbar() {
                 <li
                   key={link.href}
                   className="relative"
-                  onMouseEnter={() => setHoveredNavId(link.id)}
-                  onMouseLeave={() => setHoveredNavId(null)}
+                  onMouseEnter={() => activateDesktopNavLink(link.id)}
+                  onMouseLeave={() => clearDesktopNavLink(link.id)}
                 >
                   <Link
                     to={link.href}
@@ -949,8 +962,8 @@ export default function Navbar() {
               <li
                 key={link.href}
                 className="relative"
-                onMouseEnter={() => setHoveredNavId(link.id)}
-                onMouseLeave={() => setHoveredNavId(null)}
+                onMouseEnter={() => activateDesktopNavLink(link.id)}
+                onMouseLeave={() => clearDesktopNavLink(link.id)}
               >
               <a
                 href={link.href}
