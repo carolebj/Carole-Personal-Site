@@ -4,7 +4,7 @@
 
 This file is the project-level memory for the Carole Personal Site repo. Keep it short, current, and useful for future agents working on the site.
 
-Last reviewed: 2026-07-14 WAT
+Last reviewed: 2026-07-17 WAT
 
 ## Current Branch Workflow
 
@@ -123,7 +123,7 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
   la suppression définitive efface aussi l'historique. Les écritures invalident
   le cache du lecteur public.
 - **Empty collections**: `useCmsCollection` sets `usingCms: true` when Supabase fetch succeeds even if `[]` — prevents i18n resurrection after deleting all items.
-- **Content parity fixes**: Footer reads `siteSettings` flat social fields + CMS services; Home uses CMS hero portrait and about image; Readings uses CMS book cover URLs. `CmsSiteSettings` typed with `instagram` / `linkedin`.
+- **Content parity fixes**: Footer reads `siteSettings` flat social fields + CMS services; Home uses the local optimized hero portrait and about image on the public page; Readings uses CMS book cover URLs. `CmsSiteSettings` typed with `instagram` / `linkedin`.
 - **Admin UI**: collection rows `items-start`, editor toolbar wraps, localized list delete button alignment.
 
 ### Completed CMS foundation work (2026-06-10)
@@ -189,6 +189,49 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
     rather than as a subtask of About. Plan a separate site-wide cleanup to
     identify unused fields, orphaned content and CMS data no longer consumed by
     the public or dashboard applications
+  - the homepage hero and About teaser were realigned with Figma node `94:2` on
+    2026-07-17. The hero reads “Construire une communication claire &
+    engageante.” and explains that Carole coordinates content, campaigns and
+    visibility actions so the brand speaks with one clear voice. The About
+    teaser emphasizes her role in organizing a brand's voice while preserving
+    its singularity, with the CTA “Découvrir mon approche”. Its visual uses the
+    local `carole-about-static.png` poster and `carole-about-motion.mp4` motion
+    asset, plus rectangular rounded graphic forms rather than blob masks. The
+    dev-only Visual tuning panel on the home page controls hero radius/crop and
+    hero image width/height/zoom/position, plus about media crop,
+    image/video-specific dimensions, mask width/height, radius, inset and
+    rotation. It has a draggable header handle and persists its panel position
+    in localStorage so it can be moved away from the visual being tuned; copy
+    its values before baking final positioning into code. The about motion asset
+    treats the static image only as a loading/error fallback: once the video can
+    render, the video becomes the primary media and stays visible while paused
+    or playing. On first stable viewport entry, wait briefly, play the video
+    once, then reset it to the first frame and pause. On hover/focus, play from
+    the first frame; if hover persists, restart when it ends; on exit, finish the
+    current run and pause again. Both fallback image and video share the same
+    subtle color filter. The hero portrait uses optimized theme-specific assets:
+    `carole-home-portrait-light.webp` for light mode and
+    `carole-home-portrait-dark.webp` for dark mode, both with their background
+    already included, so the hero image frame should not add its own yellow
+    background. Current baked visual tuning uses hero scale `1.24`, hero X `3`,
+    hero Y `11`, about media scale `1.11`, about mask width `92`, and about
+    video width `92.5`.
+    Keep `homePage/homePage` synchronized with the FR/EN i18n fallback so CMS
+    hydration never replaces the selected copy after first render. English copy
+    must be transcreated rather than translated literally: preserve the idea,
+    benefit and confidence level while using idiomatic English. The hero badge
+    reads “Carole Tonoukouen / Faiseuse de waouh” in French and “Carole
+    Tonoukouen / Making wow happen” in English; hovering the badge shows a hint
+    inviting a long click/tap, then holding the badge fills a subtle progress
+    layer and triggers full-screen confetti plus the lightweight
+    `waouh-anime.mp3` Easter egg when audio haptics are enabled. Keyboard users
+    can trigger the same Easter egg explicitly with Enter or Space. The current
+    English hero begins “Build communication that’s clear & engaging.” and the
+    teaser CTA is “Discover my approach”
+  - the hero “wow” MP3 is primed silently on the first real pointer/key
+    activation so the delayed hover Easter egg can play after browser audio
+    unlock. If there has been no user activation yet, browsers may still block
+    sound; keep the confetti as the guaranteed visual fallback
   - keep the globally reduced scale validated on a 13-inch MacBook: lower nav height, smaller max content width, lower hero title/image caps, tighter buttons, and reduced section padding
   - use the Figma-derived hero/about portraits and exported decorative arc
   - use local Liberation Serif Italic for manifesto accent text
@@ -196,7 +239,10 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
   - show service card color corners on hover only
   - keep motion subtle: light section entry fades, service hover lifts, and hero visual levitation only
   - the desktop header collapses on downward scroll into a centered logo pill, returns on upward scroll or when the pill is clicked
-  - testimonials use a three-card carousel with the centered card as the active state
+  - testimonials use a three-card carousel with the centered card as the active
+    state. The carousel is an intentionally silent haptic zone: keep
+    `data-haptic-silent` on its root so hover/click sounds do not fire on cards,
+    arrows or pagination dots
   - blog article links use continuity/view transitions from list cards to article pages
   - Carnet pages use a minimal document-like layout with search and interactive resource cards
   - Carnet resource cards keep imagery dominant at rest, anchor their title block 24px from the bottom, and reveal the “À propos” panel with a controlled slide/blur on hover or focus; touch layouts keep the description visible, and the entire card opens the external resource
@@ -305,6 +351,9 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
   hook (`scripts/git-hooks/`, scanner `scripts/check-secrets.mjs`). Install once
   per clone with `npm run security:install-hooks`. Blocks commits containing
   secrets or `.env*` files (except `.env.example`).
+- **Patch hook guardrail**: keep `hooks/validate-schema.py` present and
+  executable. It is currently a documented no-op used by local patch tooling;
+  add real schema checks there only if patch-time validation becomes necessary.
 
 - **`/api/translate` is now authenticated**: it requires a valid Supabase
   session (`Authorization: Bearer <access_token>`) before calling the
