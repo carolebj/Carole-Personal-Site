@@ -25,6 +25,8 @@
     font-size: var(--text-2xl);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
+    min-width: 0;
+    overflow-wrap: anywhere;
     text-wrap: balance;
   }
 
@@ -32,6 +34,8 @@
     font-size: var(--text-xl);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
+    min-width: 0;
+    overflow-wrap: anywhere;
     text-wrap: balance;
   }
 
@@ -101,6 +105,20 @@
   .portfolio-nav-link:hover,
   .portfolio-nav-link.is-active {
     transform: translateY(-1px);
+  }
+
+  @media (min-width: 1024px) {
+    .service-bento-row {
+      grid-template-columns: var(--service-bento-columns);
+      transition: grid-template-columns var(--service-bento-hover-dur) var(--service-bento-hover-ease);
+      will-change: grid-template-columns;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .service-bento-row {
+      transition: none;
+    }
   }
 
   .t-resize {

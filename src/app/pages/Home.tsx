@@ -2623,7 +2623,7 @@ export default function Home() {
                 <img
                   src={aboutImageSrc}
                   alt={aboutImageAlt}
-                  loading="lazy"
+                  loading="eager"
                   decoding="async"
                   className="public-media-outline h-full w-full object-cover [clip-path:inset(0.75%)]"
                   style={ABOUT_MEDIA_COLOR_STYLE}
@@ -2639,7 +2639,7 @@ export default function Home() {
                     ref={aboutVideoRef}
                     muted
                     playsInline
-                    preload="auto"
+                    preload="metadata"
                     poster={aboutImageSrc}
                     className="h-full w-full object-cover [clip-path:inset(0.75%)]"
                     style={ABOUT_MEDIA_COLOR_STYLE}
