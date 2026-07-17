@@ -2749,7 +2749,7 @@ export default function Home() {
                   {rowServices.map((index) => {
                     const service = services[index];
                     const icon = (serviceIcons as readonly string[])[index] ?? brandFlagIcon;
-                    const accent = homeServiceAccents[index] ?? homeServiceAccents[0];
+                    const accent = (homeServiceAccents as readonly (typeof homeServiceAccents)[number][])[index] ?? homeServiceAccents[0];
                     const isFocusedService = focusedServiceIndex === index;
                     const descriptionLines = serviceDescriptionLines[index] ?? [service.description];
                     return (
