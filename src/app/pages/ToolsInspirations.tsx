@@ -149,6 +149,14 @@ const resourceImages: Record<string, string> = {
   "Women Techmakers Abomey-Calavi": womenTechmakersImage,
 };
 
+const SOCIAL_MEDIA_CATEGORY = "Social media";
+const SOCIAL_MEDIA_FEATURED_TITLES = ["Social Media Room", "Calendrier du CM 229"];
+
+function socialMediaSortIndex(item: ResourceItem) {
+  const index = SOCIAL_MEDIA_FEATURED_TITLES.indexOf(item.title);
+  return index === -1 ? SOCIAL_MEDIA_FEATURED_TITLES.length : index;
+}
+
 const motionProps = (index: number) => ({
   initial: { opacity: 0, y: 12 } as const,
   animate: { opacity: 1, y: 0 } as const,
@@ -321,6 +329,9 @@ export default function ToolsInspirations() {
     return content.items.filter((item) => {
       const matchesType =
         activeTypeFilter === allTypesLabel || item.type === activeTypeFilter;
+      const matchesCuratedSocialMedia =
+        activeCategoryFilter !== SOCIAL_MEDIA_CATEGORY ||
+        SOCIAL_MEDIA_FEATURED_TITLES.includes(item.title);
       const matchesCategory =
         activeCategoryFilter === allCategoriesLabel ||
         item.categories.includes(activeCategoryFilter);
@@ -329,7 +340,12 @@ export default function ToolsInspirations() {
         `${item.title} ${item.type} ${item.categories.join(" ")} ${item.desc}`
           .toLowerCase()
           .includes(query);
-      return matchesType && matchesCategory && matchesSearch;
+      return matchesType && matchesCuratedSocialMedia && matchesCategory && matchesSearch;
+    }).sort((a, b) => {
+      if (activeCategoryFilter !== SOCIAL_MEDIA_CATEGORY) {
+        return 0;
+      }
+      return socialMediaSortIndex(a) - socialMediaSortIndex(b);
     });
   }, [
     activeCategoryFilter,
