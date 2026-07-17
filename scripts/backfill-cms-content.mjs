@@ -296,8 +296,8 @@ const newDocumentPositions = {
 };
 
 const media = [
-  ["homePage", "homePage", ["hero", "portrait"], "src/assets/carole-redesign-portrait.webp", L("Portrait de Carole Tonoukouen", "Portrait of Carole Tonoukouen")],
-  ["homePage", "homePage", ["about", "image"], "src/assets/carole-shape-static.png", L("Carole Tonoukouen", "Carole Tonoukouen")],
+  ["homePage", "homePage", ["hero", "portrait"], "src/assets/carole-home-portrait-light.webp", L("Portrait de Carole Tonoukouen", "Portrait of Carole Tonoukouen")],
+  ["homePage", "homePage", ["about", "image"], "src/assets/carole-about-static.png", L("Portrait de Carole Tonoukouen", "Portrait of Carole Tonoukouen")],
   ["aboutPage", "aboutPage", ["image"], "src/assets/carole-about-portrait.avif", L("Portrait de Carole Tonoukouen", "Portrait of Carole Tonoukouen")],
   ["blogPost", "construire-une-ligne-editoriale", ["coverImage"], "src/assets/blog/blog-abstract-editorial.svg", L("Composition abstraite sur la stratégie éditoriale", "Abstract composition about editorial strategy")],
   ["blogPost", "calendrier-editorial-2026", ["coverImage"], "src/assets/blog/blog-abstract-content.svg", L("Composition abstraite sur le calendrier éditorial", "Abstract composition about editorial planning")],
