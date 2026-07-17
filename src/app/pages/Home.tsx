@@ -154,7 +154,7 @@ const HERO_BADGE_WOW_HOLD_MS = 3200;
 const HERO_BADGE_WOW_VOLUME = 0.61;
 const HERO_BADGE_WOW_COOLDOWN_MS = 4200;
 const HERO_BADGE_CONFETTI_COLORS = ["#854d63", "#f9b3cc", "#fbaa51", "#ffd9e4", "#1c1b1b"];
-const ABOUT_INTRO_PLAY_DELAY_MS = 520;
+const ABOUT_INTRO_PLAY_DELAY_MS = 1600;
 const ABOUT_IDLE_REPLAY_MS = 12000;
 const ABOUT_MEDIA_COLOR_STYLE: CSSProperties = {
   filter: "brightness(0.985) contrast(1.045) saturate(0.96)",
@@ -1758,6 +1758,7 @@ export default function Home() {
   const [wowConfetti, setWowConfetti] = useState<WowConfettiPiece[]>([]);
   const [focusedServiceIndex, setFocusedServiceIndex] = useState<number | null>(null);
   const [settledServiceFocusIndex, setSettledServiceFocusIndex] = useState<number | null>(null);
+  const [shouldAnimateSectionEntrances, setShouldAnimateSectionEntrances] = useState(false);
   const aboutVisualRef = useRef<HTMLDivElement>(null);
   const aboutVideoRef = useRef<HTMLVideoElement>(null);
   const wowAudioRef = useRef<HTMLAudioElement>(null);
@@ -1791,6 +1792,15 @@ export default function Home() {
   };
   const aboutPeachRotate = isAboutVisualHovering ? visualTuning.aboutLineRotate : visualTuning.aboutPeachRotate;
   const aboutLineRotate = isAboutVisualHovering ? visualTuning.aboutPeachRotate : visualTuning.aboutLineRotate;
+  const sectionRevealProps = (amount: number) =>
+    shouldAnimateSectionEntrances && !reduceMotion
+      ? {
+          initial: { opacity: 0, y: 24 },
+          whileInView: { opacity: 1, y: 0 },
+          viewport: { once: true, amount },
+          transition: { duration: 0.5, ease: "easeOut" as const },
+        }
+      : {};
 
   const playAboutVideo = useCallback(
     (mode: AboutVideoMode, options: { restart: boolean }) => {
@@ -1864,6 +1874,15 @@ export default function Home() {
 
   useEffect(() => {
     setVisualTuning(readStoredVisualTuning());
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const restoredScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    setShouldAnimateSectionEntrances(restoredScrollY < 80 && !window.location.hash);
   }, []);
 
   useEffect(() => {
@@ -2059,8 +2078,22 @@ export default function Home() {
         aboutIsInViewRef.current = true;
 
         if (aboutHasLeftViewRef.current && aboutIntroPlayedRef.current) {
-          aboutHasLeftViewRef.current = false;
-          playAboutVideo("intro", { restart: !isMediaVideoInProgress(aboutVideoRef.current) });
+          if (aboutIntroTimeoutRef.current !== null) {
+            return;
+          }
+
+          if (isMediaVideoInProgress(aboutVideoRef.current)) {
+            aboutHasLeftViewRef.current = false;
+            return;
+          }
+
+          setAboutVideoMode("idle");
+          aboutIntroTimeoutRef.current = window.setTimeout(() => {
+            aboutIntroTimeoutRef.current = null;
+            aboutHasLeftViewRef.current = false;
+            aboutIntroPlayedRef.current = true;
+            playAboutVideo("intro", { restart: true });
+          }, ABOUT_INTRO_PLAY_DELAY_MS);
           return;
         }
 
@@ -2631,10 +2664,7 @@ export default function Home() {
 
       <motion.section
         id="manifesto"
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.35 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        {...sectionRevealProps(0.35)}
         className="relative bg-surface-page px-5 py-16 dark:bg-surface-page sm:px-8 lg:py-24"
       >
         <div className="relative mx-auto max-w-[48rem] text-center">
@@ -2666,10 +2696,7 @@ export default function Home() {
 
       <motion.section
         id="about"
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.25 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        {...sectionRevealProps(0.25)}
         className="bg-white px-5 pb-16 pt-24 dark:bg-[#181312] sm:px-8 lg:px-[min(8vw,112px)] lg:pb-24 lg:pt-32"
       >
         <div className="mx-auto grid max-w-[1152px] items-center gap-24 lg:grid-cols-[minmax(0,350px)_minmax(0,1fr)] lg:gap-28 xl:grid-cols-[minmax(0,368px)_minmax(0,1fr)]">
@@ -2802,10 +2829,7 @@ export default function Home() {
 
       <motion.section
         id="services"
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        {...sectionRevealProps(0.2)}
         className="bg-[#f6f3f2]/80 px-5 py-16 dark:bg-[#1f1716] sm:px-8 lg:py-24"
       >
         <div className="mx-auto max-w-[1200px]">
@@ -2906,10 +2930,7 @@ export default function Home() {
 
       <motion.section
         id="testimonials"
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        {...sectionRevealProps(0.2)}
         className="bg-white px-5 py-16 dark:bg-surface-page sm:px-8 lg:px-8 lg:py-24"
       >
         <div className="mx-auto mb-10 max-w-[40rem] text-center">
@@ -2929,10 +2950,7 @@ export default function Home() {
 
       <motion.section
         id="contact"
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        {...sectionRevealProps(0.2)}
         className="bg-surface-page px-5 py-16 dark:bg-[#1a1413] sm:px-8 lg:py-24"
       >
         <div className="mx-auto grid max-w-[1120px] gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
