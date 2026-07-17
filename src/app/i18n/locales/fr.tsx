@@ -50,15 +50,16 @@ const fr = {
 
   hero: {
     eyebrow: "Chargée de communication digitale",
-    titleStart: "Une communication digitale",
+    titleStart: "Construire une communication",
     titleAccent: "claire & engageante.",
     titleEnd: "",
     description:
-      "Je coordonne vos contenus, vos campagnes et vos actions de visibilité pour faire avancer votre marque avec un cap clair.",
+      "Je coordonne vos contenus, vos campagnes et vos actions de visibilité pour que votre marque parle d'une seule voix.",
     primaryCta: "Discutons-en",
     secondaryCta: "Mes services",
-    badgeTop: "Communication",
-    badgeBottom: "Digitale",
+    badgeTop: "Carole Tonoukouen",
+    badgeBottom: "Faiseuse de waouh",
+    wowHint: "Clique longuement pour déclencher le waouh.",
     imageAlt: "Portrait de Carole Tonoukouen",
   },
 

@@ -50,15 +50,16 @@ const en = {
 
   hero: {
     eyebrow: "Digital communications officer",
-    titleStart: "Digital communication that’s",
+    titleStart: "Build communication that’s",
     titleAccent: "clear & engaging.",
     titleEnd: "",
     description:
-      "I bring structure to your content, campaigns, and visibility efforts, so your brand moves forward with clarity and purpose.",
+      "I coordinate your content, campaigns, and visibility efforts so your brand speaks with one clear voice.",
     primaryCta: "Let's talk",
     secondaryCta: "My services",
-    badgeTop: "Digital",
-    badgeBottom: "Communication",
+    badgeTop: "Carole Tonoukouen",
+    badgeBottom: "Making wow happen",
+    wowHint: "Press and hold to trigger the wow.",
     imageAlt: "Portrait of Carole Tonoukouen",
   },
 
