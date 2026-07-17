@@ -155,6 +155,7 @@ const HERO_BADGE_WOW_VOLUME = 0.61;
 const HERO_BADGE_WOW_COOLDOWN_MS = 4200;
 const HERO_BADGE_CONFETTI_COLORS = ["#854d63", "#f9b3cc", "#fbaa51", "#ffd9e4", "#1c1b1b"];
 const ABOUT_INTRO_PLAY_DELAY_MS = 520;
+const ABOUT_IDLE_REPLAY_MS = 12000;
 const ABOUT_MEDIA_COLOR_STYLE: CSSProperties = {
   filter: "brightness(0.985) contrast(1.045) saturate(0.96)",
 };
@@ -302,6 +303,17 @@ const testimonialPortraitByName: Record<string, string> = {
 const testimonialMediaFitByName: Record<string, TestimonialMediaFit> = {
   "Bachiratou ISSIAKO TOURE": { scale: 1.21, x: 50, y: 45 },
 };
+
+function isMediaVideoInProgress(video: HTMLVideoElement | null) {
+  return Boolean(
+    video &&
+    !video.paused &&
+    !video.ended &&
+    Number.isFinite(video.duration) &&
+    video.currentTime > 0.08 &&
+    video.duration - video.currentTime > 0.08
+  );
+}
 
 function InlineIcon({ src, className }: InlineIconProps) {
   return (
@@ -1755,6 +1767,9 @@ export default function Home() {
   const wowAudioPrimedRef = useRef(false);
   const aboutIntroPlayedRef = useRef(false);
   const aboutIntroTimeoutRef = useRef<number | null>(null);
+  const aboutIdleReplayTimeoutRef = useRef<number | null>(null);
+  const aboutIsInViewRef = useRef(false);
+  const aboutHasLeftViewRef = useRef(false);
   const aboutIsHoveringRef = useRef(false);
   const serviceBentoRef = useRef<HTMLDivElement>(null);
   const [serviceBentoWidth, setServiceBentoWidth] = useState(0);
@@ -1784,6 +1799,11 @@ export default function Home() {
         return;
       }
 
+      if (aboutIdleReplayTimeoutRef.current !== null) {
+        window.clearTimeout(aboutIdleReplayTimeoutRef.current);
+        aboutIdleReplayTimeoutRef.current = null;
+      }
+
       setAboutVideoMode(mode);
       video.loop = false;
 
@@ -1805,6 +1825,43 @@ export default function Home() {
     [aboutPreviewMode, enableAboutVideo]
   );
 
+  const scheduleAboutIdleReplay = useCallback(() => {
+    if (
+      typeof window === "undefined" ||
+      !enableAboutVideo ||
+      aboutPreviewMode !== "auto" ||
+      aboutIsHoveringRef.current ||
+      !aboutIsInViewRef.current
+    ) {
+      return;
+    }
+
+    if (aboutIdleReplayTimeoutRef.current !== null) {
+      window.clearTimeout(aboutIdleReplayTimeoutRef.current);
+    }
+
+    aboutIdleReplayTimeoutRef.current = window.setTimeout(() => {
+      aboutIdleReplayTimeoutRef.current = null;
+
+      if (
+        !aboutIsInViewRef.current ||
+        aboutIsHoveringRef.current ||
+        aboutPreviewMode !== "auto"
+      ) {
+        return;
+      }
+
+      const video = aboutVideoRef.current;
+      if (isMediaVideoInProgress(video)) {
+        scheduleAboutIdleReplay();
+        return;
+      }
+
+      aboutIntroPlayedRef.current = true;
+      playAboutVideo("intro", { restart: true });
+    }, ABOUT_IDLE_REPLAY_MS);
+  }, [aboutPreviewMode, enableAboutVideo, playAboutVideo]);
+
   useEffect(() => {
     setVisualTuning(readStoredVisualTuning());
   }, []);
@@ -1821,6 +1878,10 @@ export default function Home() {
 
       if (aboutIntroTimeoutRef.current !== null) {
         window.clearTimeout(aboutIntroTimeoutRef.current);
+      }
+
+      if (aboutIdleReplayTimeoutRef.current !== null) {
+        window.clearTimeout(aboutIdleReplayTimeoutRef.current);
       }
     };
   }, []);
@@ -1934,6 +1995,10 @@ export default function Home() {
     }
 
     if (aboutPreviewMode === "video") {
+      if (aboutIdleReplayTimeoutRef.current !== null) {
+        window.clearTimeout(aboutIdleReplayTimeoutRef.current);
+        aboutIdleReplayTimeoutRef.current = null;
+      }
       setAboutVideoReady(true);
       setAboutVideoMode("idle");
       video.loop = false;
@@ -1947,6 +2012,10 @@ export default function Home() {
     }
 
     if (aboutPreviewMode === "image" || reduceMotion) {
+      if (aboutIdleReplayTimeoutRef.current !== null) {
+        window.clearTimeout(aboutIdleReplayTimeoutRef.current);
+        aboutIdleReplayTimeoutRef.current = null;
+      }
       video.pause();
       video.loop = false;
       setAboutVideoReady(false);
@@ -1972,14 +2041,35 @@ export default function Home() {
         const entry = entries[0];
 
         if (!entry?.isIntersecting) {
+          aboutIsInViewRef.current = false;
+          aboutHasLeftViewRef.current = aboutIntroPlayedRef.current;
+
           if (aboutIntroTimeoutRef.current !== null) {
             window.clearTimeout(aboutIntroTimeoutRef.current);
             aboutIntroTimeoutRef.current = null;
           }
+
+          if (aboutIdleReplayTimeoutRef.current !== null) {
+            window.clearTimeout(aboutIdleReplayTimeoutRef.current);
+            aboutIdleReplayTimeoutRef.current = null;
+          }
           return;
         }
 
-        if (aboutIntroPlayedRef.current || aboutIntroTimeoutRef.current !== null) {
+        aboutIsInViewRef.current = true;
+
+        if (aboutHasLeftViewRef.current && aboutIntroPlayedRef.current) {
+          aboutHasLeftViewRef.current = false;
+          playAboutVideo("intro", { restart: !isMediaVideoInProgress(aboutVideoRef.current) });
+          return;
+        }
+
+        if (aboutIntroPlayedRef.current) {
+          scheduleAboutIdleReplay();
+          return;
+        }
+
+        if (aboutIntroTimeoutRef.current !== null) {
           return;
         }
 
@@ -2002,7 +2092,7 @@ export default function Home() {
       }
       observer.disconnect();
     };
-  }, [aboutPreviewMode, enableAboutVideo, playAboutVideo]);
+  }, [aboutPreviewMode, enableAboutVideo, playAboutVideo, scheduleAboutIdleReplay]);
 
   useEffect(() => {
     if (!isDev || typeof window === "undefined") {
@@ -2042,17 +2132,17 @@ export default function Home() {
       window.clearTimeout(aboutIntroTimeoutRef.current);
       aboutIntroTimeoutRef.current = null;
     }
+
+    if (aboutIdleReplayTimeoutRef.current !== null) {
+      window.clearTimeout(aboutIdleReplayTimeoutRef.current);
+      aboutIdleReplayTimeoutRef.current = null;
+    }
+
     aboutIntroPlayedRef.current = true;
     aboutIsHoveringRef.current = true;
 
     const video = aboutVideoRef.current;
-    const isVideoInProgress =
-      video !== null &&
-      !video.paused &&
-      !video.ended &&
-      Number.isFinite(video.duration) &&
-      video.currentTime > 0.08 &&
-      video.duration - video.currentTime > 0.08;
+    const isVideoInProgress = isMediaVideoInProgress(video);
 
     playAboutVideo("hover", { restart: !isVideoInProgress });
   };
@@ -2080,6 +2170,7 @@ export default function Home() {
         // Some browsers can reject seeking immediately after ended.
       }
       setAboutVideoMode("idle");
+      scheduleAboutIdleReplay();
     }
   };
 
@@ -2101,6 +2192,7 @@ export default function Home() {
     }
 
     setAboutVideoMode("idle");
+    scheduleAboutIdleReplay();
   };
 
   const clearHeroBadgeHold = () => {
