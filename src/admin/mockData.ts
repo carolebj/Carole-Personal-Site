@@ -10,12 +10,12 @@ export const seedContent = {
     id: "homePage",
     hero: {
       eyebrow: L("Chargée de communication digitale", "Digital communications officer"),
-      title: L("Une communication digitale", "Digital communication that’s"),
+      title: L("Construire une communication", "Build communication that’s"),
       accent: L("claire & engageante.", "clear & engaging."),
       titleEnd: L("", ""),
       description: L(
-        "Je coordonne vos contenus, vos campagnes et vos actions de visibilité pour faire avancer votre marque avec un cap clair.",
-        "I bring structure to your content, campaigns, and visibility efforts, so your brand moves forward with clarity and purpose.",
+        "Je coordonne vos contenus, vos campagnes et vos actions de visibilité pour que votre marque parle d'une seule voix.",
+        "I coordinate your content, campaigns, and visibility efforts so your brand speaks with one clear voice.",
       ),
       primaryCta: L("Discutons-en", "Let's talk"),
       secondaryCta: L("Mes services", "My services"),
