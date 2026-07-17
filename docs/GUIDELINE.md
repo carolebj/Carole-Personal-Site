@@ -222,7 +222,7 @@ Styles and assets:
 - `src/styles/global.css`
 - `src/styles/fonts.css`
 - `src/assets/`
-- `src/assets/carole-redesign-*.webp`: portraits Figma (hero, about) ; `carole-shape-static.png` + `caole-shape-motion-g.mp4` pour la section about
+- `src/assets/carole-home-portrait-light.webp` + `src/assets/carole-home-portrait-dark.webp` : portraits hero optimisés avec fond intégré pour thèmes clair/sombre ; `carole-about-static.png` + `carole-about-motion.mp4` pour le teaser about de la home
 - `src/assets/resources/` + miroir `public/cms/resources/` : visuels carnet (seed Supabase + URLs statiques dashboard)
 
 Project guidance (all under `docs/`, entry point `AGENTS.md` at repo root):
