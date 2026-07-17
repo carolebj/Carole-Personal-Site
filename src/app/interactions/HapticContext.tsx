@@ -4,12 +4,14 @@ type HapticContextValue = {
   enabled: boolean;
   setEnabled: (enabled: boolean) => void;
   toggleEnabled: () => void;
+  unlockAudio: () => Promise<boolean>;
   play: (kind?: "hover" | "click") => void;
 };
 
 const STORAGE_KEY = "portfolio-haptics";
 const HOVER_GAIN = 0.024;
 const CLICK_GAIN = 0.046;
+const SILENT_ZONE_SELECTOR = "[data-haptic-silent]";
 const HapticContext = createContext<HapticContextValue | null>(null);
 
 function readStoredPreference() {
@@ -27,19 +29,17 @@ export function HapticProvider({ children }: { children: ReactNode }) {
   const audioContextRef = useRef<AudioContext | null>(null);
   const lastHoverRef = useRef<EventTarget | null>(null);
 
-  const play = (kind: "hover" | "click" = "hover") => {
-    if (!enabled || typeof window === "undefined") return;
-
+  const getAudioContext = () => {
     const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextConstructor) return;
+    if (!AudioContextConstructor) return null;
 
     const context = audioContextRef.current ?? new AudioContextConstructor();
     audioContextRef.current = context;
 
-    if (context.state === "suspended") {
-      void context.resume();
-    }
+    return context;
+  };
 
+  const playTone = (context: AudioContext, kind: "hover" | "click") => {
     const now = context.currentTime;
     const oscillator = context.createOscillator();
     const gain = context.createGain();
@@ -58,6 +58,37 @@ export function HapticProvider({ children }: { children: ReactNode }) {
     oscillator.stop(now + 0.1);
   };
 
+  const resumeAudioContext = async () => {
+    if (typeof window === "undefined") return null;
+
+    const context = getAudioContext();
+    if (!context) return null;
+
+    if (context.state === "suspended") {
+      try {
+        await context.resume();
+      } catch {
+        return null;
+      }
+    }
+
+    return context.state === "running" ? context : null;
+  };
+
+  const unlockAudio = async () => {
+    if (!enabled) return false;
+    return (await resumeAudioContext()) !== null;
+  };
+
+  const play = (kind: "hover" | "click" = "hover") => {
+    if (!enabled || typeof window === "undefined") return;
+
+    void resumeAudioContext().then((context) => {
+      if (!context) return;
+      playTone(context, kind);
+    });
+  };
+
   const setEnabled = (nextEnabled: boolean) => {
     setEnabledState(nextEnabled);
     try {
@@ -69,8 +100,12 @@ export function HapticProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const selector = "a, button, input, textarea, [role='button'], [data-haptic]";
+    const isInSilentZone = (target: EventTarget | null) =>
+      target instanceof Element && Boolean(target.closest(SILENT_ZONE_SELECTOR));
 
     const handlePointerOver = (event: PointerEvent) => {
+      if (isInSilentZone(event.target)) return;
+
       const target = event.target instanceof Element ? event.target.closest(selector) : null;
       if (!target || target === lastHoverRef.current) return;
 
@@ -79,15 +114,25 @@ export function HapticProvider({ children }: { children: ReactNode }) {
     };
 
     const handleClick = (event: MouseEvent) => {
+      if (isInSilentZone(event.target)) return;
+
       const target = event.target instanceof Element ? event.target.closest(selector) : null;
       if (!target) return;
 
       play("click");
     };
 
+    const handleActivation = () => {
+      void unlockAudio();
+    };
+
+    document.addEventListener("pointerdown", handleActivation, { passive: true });
+    document.addEventListener("keydown", handleActivation);
     document.addEventListener("pointerover", handlePointerOver, { passive: true });
     document.addEventListener("click", handleClick, { passive: true });
     return () => {
+      document.removeEventListener("pointerdown", handleActivation);
+      document.removeEventListener("keydown", handleActivation);
       document.removeEventListener("pointerover", handlePointerOver);
       document.removeEventListener("click", handleClick);
     };
@@ -98,6 +143,7 @@ export function HapticProvider({ children }: { children: ReactNode }) {
       enabled,
       setEnabled,
       toggleEnabled: () => setEnabled(!enabled),
+      unlockAudio,
       play,
     }),
     [enabled]
