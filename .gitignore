@@ -160,3 +160,7 @@ dist-studio/
 
 # Local screenshots and Playwright output
 output/
+
+# Local design workspaces retained outside version control
+/labs/carole-bento-lab/
+/plans/
