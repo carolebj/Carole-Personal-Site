@@ -161,7 +161,7 @@ function ThemeSwitcher({
                   aria-checked={isActive}
                   aria-label={t(`nav.${labelKey}`)}
                   onClick={() => chooseTheme(value)}
-                  className={`relative flex size-11 items-center justify-center rounded-full transition ${
+                  className={`relative flex size-12 items-center justify-center rounded-full transition ${
                     isActive
                       ? "text-[#854d63] dark:text-[#f0adc4]"
                       : "text-[#6d625d] hover:text-[#854d63] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
@@ -226,7 +226,7 @@ function ThemeSwitcher({
                       aria-checked={isActive}
                       aria-label={t(`nav.${labelKey}`)}
                       onClick={() => chooseTheme(value)}
-                      className={`relative flex size-11 items-center justify-center rounded-full transition ${
+                      className={`relative flex size-12 items-center justify-center rounded-full transition ${
                         isActive
                           ? "text-[#854d63] dark:text-[#f0adc4]"
                           : "text-[#8d7b72] hover:text-[#854d63] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
@@ -569,7 +569,7 @@ export default function Navbar() {
           to="/"
           onClick={() => window.scrollTo({ top: 0, behavior: shouldReduceMotion ? "auto" : "smooth" })}
           onContextMenu={handleLogoContextMenu}
-          className="flex items-center gap-2 text-[#1c1b1b] dark:text-[#f8f1ec]"
+          className="flex min-h-12 min-w-12 items-center gap-2 text-[#1c1b1b] dark:text-[#f8f1ec]"
           aria-label="Carole Tonoukouen"
         >
           <img
@@ -639,7 +639,7 @@ export default function Navbar() {
                 ? location.pathname === "/"
                 : location.pathname.startsWith(link.href);
             const isHighlighted = hoveredNavId === link.id || isActive || (link.hasMenu && isServicesOpen) || (link.hasCarnetMenu && isCarnetOpen);
-            const linkClass = `portfolio-nav-link group relative z-10 inline-flex h-10 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-[13px] font-semibold capitalize leading-4 tracking-[1.4px] transition-colors duration-300 xl:px-4 xl:tracking-[1.8px] ${
+            const linkClass = `portfolio-nav-link group relative z-10 inline-flex h-12 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-[13px] font-semibold capitalize leading-4 tracking-[1.4px] transition-colors duration-300 xl:px-4 xl:tracking-[1.8px] ${
               isHighlighted
                 ? "text-[#854d63] dark:text-[#f0adc4]"
                 : "text-[#5b4137] dark:text-[#dbc9c0]"
@@ -729,7 +729,7 @@ export default function Navbar() {
                                 <Link
                                   to="/estimer-mon-projet"
                                   onClick={() => setIsServicesOpen(false)}
-                                  className="inline-flex h-10 items-center gap-2 rounded-full border border-border-accent/35 bg-surface-accent-muted px-3.5 text-[11px] font-semibold text-text-accent transition hover:border-border-accent hover:bg-surface-accent"
+                                  className="inline-flex h-12 items-center gap-2 rounded-full border border-border-accent/35 bg-surface-accent-muted px-3.5 text-[11px] font-semibold text-text-accent transition hover:border-border-accent hover:bg-surface-accent"
                                 >
                                   <CalculatorIcon className="size-4" />
                                   {t("nav.projectEstimator")}
@@ -737,7 +737,7 @@ export default function Navbar() {
                                 <Link
                                   to="/services"
                                   onClick={() => setIsServicesOpen(false)}
-                                  className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-full border border-border-subtle px-3.5 text-[11px] font-semibold text-text-primary transition hover:border-border-accent hover:text-text-accent"
+                                  className="inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-full border border-border-subtle px-3.5 text-[11px] font-semibold text-text-primary transition hover:border-border-accent hover:text-text-accent"
                                 >
                                   {t("nav.allServices")}
                                 </Link>
@@ -992,7 +992,7 @@ export default function Navbar() {
         <button
           type="button"
           aria-label={t("nav.menu")}
-          className="flex size-11 items-center justify-center rounded-full border border-[#e5e2e1] text-[#1c1b1b] dark:border-white/15 dark:text-[#f8f1ec] lg:hidden"
+          className="flex size-12 items-center justify-center rounded-full border border-[#e5e2e1] text-[#1c1b1b] dark:border-white/15 dark:text-[#f8f1ec] lg:hidden"
           onClick={() => {
             setIsMobileMenuOpen((current) => {
               if (current) {
@@ -1197,7 +1197,7 @@ export default function Navbar() {
               <Link
                 to="/contact"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="mt-2 inline-flex h-10 items-center justify-center whitespace-nowrap rounded-full bg-[#854d63] px-5 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-white dark:bg-[#d79caf] dark:text-[#1c1415]"
+                className="mt-2 inline-flex h-12 items-center justify-center whitespace-nowrap rounded-full bg-[#854d63] px-5 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-white dark:bg-[#d79caf] dark:text-[#1c1415]"
               >
                 {t("nav.contact")}
               </Link>

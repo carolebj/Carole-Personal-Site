@@ -69,7 +69,7 @@ function FooterLink({
   children: ReactNode;
 }) {
   const className =
-    "flex min-h-10 items-center break-words text-[15px] leading-7 text-[#5b4137] transition-colors hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:text-[#f0adc4]";
+    "flex min-h-12 items-center break-words text-[15px] leading-7 text-[#5b4137] transition-colors hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:text-[#f0adc4]";
 
   if (to) {
     return (
@@ -105,7 +105,7 @@ function SocialRow({
   label: string;
 }) {
   const className =
-    "group flex min-h-10 min-w-0 items-center gap-3 text-[15px] leading-7 text-[#5b4137] transition-colors hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:text-[#f0adc4]";
+    "group flex min-h-12 min-w-0 items-center gap-3 text-[15px] leading-7 text-[#5b4137] transition-colors hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:text-[#f0adc4]";
 
   const content = (
     <>
@@ -803,7 +803,7 @@ export default function Footer() {
                     key={language.code}
                     type="button"
                     onClick={() => setLang(language.code)}
-                    className={`inline-flex h-10 min-w-0 items-center justify-center gap-2 rounded-full border px-4 text-[11px] font-semibold uppercase tracking-[1.5px] transition sm:min-w-[8.25rem] ${
+                    className={`inline-flex h-12 min-w-0 items-center justify-center gap-2 rounded-full border px-4 text-[11px] font-semibold uppercase tracking-[1.5px] transition sm:min-w-[8.25rem] ${
                       lang === language.code
                         ? "border-[#854d63]/45 bg-[#ffd9e4]/70 text-[#854d63] dark:border-[#f0adc4]/50 dark:bg-[#854d63]/30 dark:text-[#f0adc4]"
                         : "border-[#e5e2e1] bg-transparent text-[#5b4137] hover:border-[#854d63]/35 hover:text-[#854d63] dark:border-white/14 dark:text-[#cdb9ae] dark:hover:border-[#f0adc4]/40 dark:hover:text-[#f0adc4]"
@@ -903,7 +903,7 @@ export default function Footer() {
             <button
               type="button"
               onClick={scrollToTop}
-              className="inline-flex min-h-10 items-center gap-2 text-[11px] font-semibold uppercase tracking-[2.5px] text-[#5b4137] transition-colors hover:text-[#854d63] active:scale-[0.96] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
+              className="inline-flex min-h-12 items-center gap-2 text-[11px] font-semibold uppercase tracking-[2.5px] text-[#5b4137] transition-colors hover:text-[#854d63] active:scale-[0.96] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
             >
               {t("footer.backToTop")}
               <ArrowUpIcon className="size-4" />

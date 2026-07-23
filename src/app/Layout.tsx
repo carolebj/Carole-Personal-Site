@@ -40,7 +40,9 @@ export default function Layout() {
               </EstimatorShell>
             ) : (
               <>
-                <Navbar />
+                <header>
+                  <Navbar />
+                </header>
                 <main>
                   <Outlet />
                 </main>
