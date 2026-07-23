@@ -4,7 +4,7 @@
 
 This file is the project-level memory for the Carole Personal Site repo. Keep it short, current, and useful for future agents working on the site.
 
-Last reviewed: 2026-07-17 WAT
+Last reviewed: 2026-07-23 WAT
 
 ## Current Branch Workflow
 
@@ -208,8 +208,16 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
     or playing. On first stable viewport entry, wait briefly, play the video
     once, then reset it to the first frame and pause. On hover/focus, play from
     the first frame; if hover persists, restart when it ends; on exit, finish the
-    current run and pause again. Both fallback image and video share the same
-    subtle color filter. The hero portrait uses optimized theme-specific assets:
+    current run and pause again. The motion asset is encoded as broadly
+    compatible H.264/AVC rather than HEVC so Chrome on Linux can decode it. Keep
+    its native `720 × 900` resolution: lower-bandwidth presets at `288 × 360` or
+    `384 × 480` visibly degrade the image-like rendering on high-density
+    displays. The file is about 6.2 MB; `preload="metadata"` and the static image
+    fallback preserve the initial experience while it becomes playable.
+    Reduced-motion mode suppresses automatic and hover playback but keeps the
+    video available through an explicit play control. Both fallback image and
+    video share the same subtle color filter.
+    The hero portrait uses optimized theme-specific assets:
     `carole-home-portrait-light.webp` for light mode and
     `carole-home-portrait-dark.webp` for dark mode, both with their background
     already included, so the hero image frame should not add its own yellow
@@ -322,7 +330,7 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
 - `dev` and `main` share the same Supabase CMS. Testimonials can be held back on production with the build-time flag `VITE_ENABLE_CMS_TESTIMONIALS=false`; previews and local development default to CMS testimonials when the flag is absent or `true`.
 - Lightweight public route chunks are preloaded during the browser's first idle period, hashed `/assets/*` files use immutable one-year caching on Vercel, and public CMS reads enter a 30-second cooldown after a network failure instead of retrying on every page mount.
 - Hover hit areas must remain geometrically stable: animate imagery or inner content, not the clickable card container itself, to prevent edge-triggered enter/leave vibration.
-- The Cal.com booking widget is isolated in `src/app/components/CalMeetingEmbed.tsx` and lazy-loaded. It targets `meetcarole/rendez-vous`: 45-minute meetings, hourly starts, Monday-Friday 20:00-22:00, Saturday 10:00-12:00 and 15:00-22:00, Sunday unavailable, in `Africa/Porto-Novo`. The event always requires manual confirmation, explains the 24-hour review window, and requires cancellation reasons from both host and attendee.
+- The Cal.com booking widget is isolated in `src/app/components/CalMeetingEmbed.tsx` and lazy-loaded. It targets `meetcarole/rendez-vous`: 45-minute meetings, hourly starts, Monday-Friday 20:00-22:00, Saturday 10:00-12:00 and 15:00-22:00, Sunday unavailable, in `Africa/Porto-Novo`. The event always requires manual confirmation, explains the 24-hour review window, and requires cancellation reasons from both host and attendee. The contact page gives the inline embed a wide desktop container so Cal.com can show the calendar and time slots side by side; after a successful booking signal, the local component shows a short acknowledgement and remounts the embed so visitors return to the calendar instead of staying on Cal.com's submitted-booking detail view.
 - Design tokens: `src/styles/tokens.css` (primitives, semantics, dark-mode); `src/styles/global.css` (base styles).
 - **UI design system (2026-06-10)** — public pages use semantic Tailwind tokens (`bg-surface-page`, `text-text-accent`, etc.) from `tokens.css`. Shared layout: `src/app/components/layout/publicPage.ts` (`PAGE_MAIN` = `pt-28 md:pt-36`). Shared components: `SectionEyebrow`, `PageHero`, `ContactForm`. Border-radius rule: cards `rounded-lg`, primary CTAs `rounded-full`, inputs `rounded-md` (contact page panels may use `rounded-xl`). Carnet pages share tokens but keep muted eyebrows (`text-text-muted`).
 
