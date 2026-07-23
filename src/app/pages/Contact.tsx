@@ -130,10 +130,10 @@ export default function Contact() {
               data-page-id="2"
               data-open={mode === "meeting" ? "true" : "false"}
             >
-              <div className="mx-auto w-full max-w-[780px] py-1 sm:py-2">
+              <div className="mx-auto w-full max-w-[1100px] py-1 sm:py-2">
                 <Suspense
                   fallback={
-                    <div className="mx-auto min-h-[680px] w-full max-w-[760px] rounded-2xl border border-border-subtle/80 bg-white dark:border-white/10 dark:bg-surface-panel" />
+                    <div className="mx-auto min-h-[760px] w-full max-w-[1080px] rounded-2xl border border-border-subtle/80 bg-white dark:border-white/10 dark:bg-surface-panel" />
                   }
                 >
                   <CalMeetingEmbed />

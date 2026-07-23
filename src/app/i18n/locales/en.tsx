@@ -637,6 +637,8 @@ const en = {
     meetingDescription: "Choose the time that works for you so we can talk through your request directly.",
     meetingCta: "Book a call",
     calendarTitle: "Appointment calendar with Carole",
+    bookingSubmittedTitle: "Appointment request sent.",
+    bookingSubmittedDescription: "The calendar is available again. Carole will confirm or suggest an adjustment after reviewing the request.",
   },
 
   serviceDetail: {
