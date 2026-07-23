@@ -573,6 +573,8 @@ const fr = {
     meetingDescription: "Choisissez directement le créneau qui vous convient pour que nous puissions échanger.",
     meetingCta: "Réserver un rendez-vous",
     calendarTitle: "Calendrier de rendez-vous avec Carole",
+    bookingSubmittedTitle: "Demande de rendez-vous envoyée.",
+    bookingSubmittedDescription: "Le calendrier est de nouveau disponible. Carole confirmera ou proposera un ajustement après examen de la demande.",
   },
 
   serviceDetail: {
