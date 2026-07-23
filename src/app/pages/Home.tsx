@@ -1,4 +1,4 @@
-import { ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon, EnvelopeIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon, EnvelopeIcon, PlayIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { ContactForm } from "../components/ContactForm";
 import { SectionEyebrow } from "../components/SectionEyebrow";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
@@ -1776,7 +1776,8 @@ export default function Home() {
   const [serviceBentoWidth, setServiceBentoWidth] = useState(0);
   const [serviceFontsReady, setServiceFontsReady] = useState(false);
   const isDev = import.meta.env.DEV;
-  const enableAboutVideo = aboutPreviewMode === "video" || !reduceMotion;
+  const enableAboutVideo = aboutPreviewMode !== "image";
+  const allowAboutVideoAutoplay = aboutPreviewMode === "video" || !reduceMotion;
   const showAboutVideo =
     aboutPreviewMode === "video"
       ? true
@@ -1805,7 +1806,7 @@ export default function Home() {
   const playAboutVideo = useCallback(
     (mode: AboutVideoMode, options: { restart: boolean }) => {
       const video = aboutVideoRef.current;
-      if (!video || !enableAboutVideo || aboutPreviewMode === "image") {
+      if (!video || !enableAboutVideo) {
         return;
       }
 
@@ -1832,13 +1833,13 @@ export default function Home() {
         }
       );
     },
-    [aboutPreviewMode, enableAboutVideo]
+    [enableAboutVideo]
   );
 
   const scheduleAboutIdleReplay = useCallback(() => {
     if (
       typeof window === "undefined" ||
-      !enableAboutVideo ||
+      !allowAboutVideoAutoplay ||
       aboutPreviewMode !== "auto" ||
       aboutIsHoveringRef.current ||
       !aboutIsInViewRef.current
@@ -1870,7 +1871,7 @@ export default function Home() {
       aboutIntroPlayedRef.current = true;
       playAboutVideo("intro", { restart: true });
     }, ABOUT_IDLE_REPLAY_MS);
-  }, [aboutPreviewMode, enableAboutVideo, playAboutVideo]);
+  }, [aboutPreviewMode, allowAboutVideoAutoplay, playAboutVideo]);
 
   useEffect(() => {
     setVisualTuning(readStoredVisualTuning());
@@ -2049,7 +2050,7 @@ export default function Home() {
       typeof window === "undefined" ||
       typeof IntersectionObserver === "undefined" ||
       !element ||
-      !enableAboutVideo ||
+      !allowAboutVideoAutoplay ||
       aboutPreviewMode !== "auto"
     ) {
       return;
@@ -2125,7 +2126,7 @@ export default function Home() {
       }
       observer.disconnect();
     };
-  }, [aboutPreviewMode, enableAboutVideo, playAboutVideo, scheduleAboutIdleReplay]);
+  }, [aboutPreviewMode, allowAboutVideoAutoplay, playAboutVideo, scheduleAboutIdleReplay]);
 
   useEffect(() => {
     if (!isDev || typeof window === "undefined") {
@@ -2157,7 +2158,7 @@ export default function Home() {
   const handleAboutPointerEnter = () => {
     setIsAboutVisualHovering(true);
 
-    if (!enableAboutVideo || aboutPreviewMode !== "auto") {
+    if (!allowAboutVideoAutoplay || aboutPreviewMode !== "auto") {
       return;
     }
 
@@ -2178,6 +2179,11 @@ export default function Home() {
     const isVideoInProgress = isMediaVideoInProgress(video);
 
     playAboutVideo("hover", { restart: !isVideoInProgress });
+  };
+
+  const handleAboutManualPlay = () => {
+    aboutIntroPlayedRef.current = true;
+    playAboutVideo("hover", { restart: true });
   };
 
   const handleAboutPointerLeave = () => {
@@ -2773,6 +2779,16 @@ export default function Home() {
                     <source src={aboutShapeVideoMp4} type="video/mp4" />
                   </video>
                 </div>
+              ) : null}
+              {reduceMotion && aboutPreviewMode === "auto" && aboutVideoMode === "idle" ? (
+                <button
+                  type="button"
+                  onClick={handleAboutManualPlay}
+                  className="absolute bottom-4 right-4 z-20 inline-flex size-11 items-center justify-center rounded-full border border-white/70 bg-white/92 text-[#1c1b1b] shadow-[0_8px_24px_rgba(28,27,27,0.18)] backdrop-blur-sm transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#854d63] dark:border-white/15 dark:bg-[#201817]/92 dark:text-[#f8f1ec]"
+                  aria-label={locale === "fr" ? "Lire l’animation" : "Play animation"}
+                >
+                  <PlayIcon className="ml-0.5 size-5" aria-hidden="true" />
+                </button>
               ) : null}
             </div>
           </div>

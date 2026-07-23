@@ -1,5 +1,5 @@
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
-import { motion, useMotionTemplate, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { useMemo, useRef } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -61,24 +61,20 @@ function IlluminatedParagraph({ children }: { children: string }) {
   const shouldReduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: paragraphRef,
-    offset: ["start 82%", "end 42%"],
+    offset: ["start 90%", "start 35%"],
   });
-  const textOpacity = useTransform(scrollYProgress, [0, 0.22, 1], [0.42, 0.64, 1]);
-  const textBrightness = useTransform(scrollYProgress, [0, 1], [0.82, 1]);
-  const textBlur = useTransform(scrollYProgress, [0, 0.35, 1], [0.32, 0.08, 0]);
-  const textFilter = useMotionTemplate`brightness(${textBrightness}) blur(${textBlur}px)`;
+  const textOpacity = useTransform(scrollYProgress, [0, 0.15, 0.72, 1], [0.3, 0.3, 0.78, 1]);
 
   return (
     <motion.p
       ref={paragraphRef}
-      className="text-[16px] leading-[1.85] text-text-secondary md:text-[17px]"
+      className="text-[16px] leading-[1.85] text-text-primary md:text-[17px]"
       style={
         shouldReduceMotion
           ? undefined
           : {
               opacity: textOpacity,
-              filter: textFilter,
-              willChange: "opacity, filter",
+              willChange: "opacity",
             }
       }
     >
