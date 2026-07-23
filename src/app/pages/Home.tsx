@@ -629,7 +629,7 @@ function CircularTestimonials({
                 }}
                 aria-current={index === activeIndex ? "true" : undefined}
                 aria-label={`${testimonial.name} (${index + 1}/${testimonialsLength})`}
-                className="flex min-h-11 min-w-11 items-center justify-center rounded-full"
+                className="flex min-h-12 min-w-12 items-center justify-center rounded-full"
               >
                 <span
                   className={`block rounded-full transition-[width,background-color] duration-300 ${
@@ -2519,13 +2519,13 @@ export default function Home() {
             <div className="mt-8 grid w-full max-w-[25rem] grid-cols-1 gap-3 min-[460px]:flex min-[460px]:max-w-none min-[460px]:flex-wrap">
               <Link
                 to="/contact"
-                className="inline-flex h-10 min-w-0 items-center justify-center whitespace-nowrap rounded-full bg-[#1c1b1b] px-6 text-center text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#fcf9f8] shadow-[0_14px_32px_rgba(28,27,27,0.13)] transition hover:bg-[#854d63] dark:bg-[#f8f1ec] dark:text-[#1c1415] dark:hover:bg-[#f0adc4] min-[460px]:min-w-[144px] md:h-[52px] md:min-w-[176px] md:px-8 md:tracking-[1px]"
+                className="inline-flex h-12 min-w-0 items-center justify-center whitespace-nowrap rounded-full bg-[#1c1b1b] px-6 text-center text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-[#fcf9f8] shadow-[0_14px_32px_rgba(28,27,27,0.13)] transition hover:bg-[#854d63] dark:bg-[#f8f1ec] dark:text-[#1c1415] dark:hover:bg-[#f0adc4] min-[460px]:min-w-[144px] md:h-[52px] md:min-w-[176px] md:px-8 md:tracking-[1px]"
               >
                 {usingCms ? localized(heroData?.primaryCta, locale) : t("hero.primaryCta")}
               </Link>
               <Link
                 to="/services"
-                className="inline-flex h-10 min-w-0 items-center justify-center whitespace-nowrap rounded-full border border-[#1c1b1b]/20 px-6 text-center text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-text-primary transition hover:border-[#854d63] hover:bg-[#ffd9e4]/44 hover:text-text-accent dark:border-white/20 dark:text-text-primary dark:hover:border-[#f0adc4] dark:hover:bg-[#854d63]/30 dark:hover:text-[#f0adc4] min-[460px]:min-w-[144px] md:h-[52px] md:min-w-[172px] md:px-8 md:tracking-[1px]"
+                className="inline-flex h-12 min-w-0 items-center justify-center whitespace-nowrap rounded-full border border-[#1c1b1b]/20 px-6 text-center text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-text-primary transition hover:border-[#854d63] hover:bg-[#ffd9e4]/44 hover:text-text-accent dark:border-white/20 dark:text-text-primary dark:hover:border-[#f0adc4] dark:hover:bg-[#854d63]/30 dark:hover:text-[#f0adc4] min-[460px]:min-w-[144px] md:h-[52px] md:min-w-[172px] md:px-8 md:tracking-[1px]"
               >
                 {usingCms ? localized(heroData?.secondaryCta, locale) : t("hero.secondaryCta")}
               </Link>
@@ -2784,7 +2784,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={handleAboutManualPlay}
-                  className="absolute bottom-4 right-4 z-20 inline-flex size-11 items-center justify-center rounded-full border border-white/70 bg-white/92 text-[#1c1b1b] shadow-[0_8px_24px_rgba(28,27,27,0.18)] backdrop-blur-sm transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#854d63] dark:border-white/15 dark:bg-[#201817]/92 dark:text-[#f8f1ec]"
+                  className="absolute bottom-4 right-4 z-20 inline-flex size-12 items-center justify-center rounded-full border border-white/70 bg-white/92 text-[#1c1b1b] shadow-[0_8px_24px_rgba(28,27,27,0.18)] backdrop-blur-sm transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#854d63] dark:border-white/15 dark:bg-[#201817]/92 dark:text-[#f8f1ec]"
                   aria-label={locale === "fr" ? "Lire l’animation" : "Play animation"}
                 >
                   <PlayIcon className="ml-0.5 size-5" aria-hidden="true" />
@@ -2818,7 +2818,7 @@ export default function Home() {
             </div>
             <Link
               to="/about"
-              className="group mt-5 inline-flex items-center text-[13px] font-semibold uppercase tracking-[1.8px] text-text-accent transition hover:text-[#6a364b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#854d63] dark:text-text-accent dark:hover:text-[#f8d7e3]"
+              className="group mt-5 inline-flex min-h-12 items-center text-[13px] font-semibold uppercase tracking-[1.8px] text-text-accent transition hover:text-[#6a364b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#854d63] dark:text-text-accent dark:hover:text-[#f8d7e3]"
             >
               {t("about.cta")}
               <ArrowRightIcon className="ml-2 size-4 transition group-hover:translate-x-1" />
@@ -2981,7 +2981,7 @@ export default function Home() {
             </p>
             <Link
               to="/contact?mode=meeting"
-              className="mt-7 inline-flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[2px] text-text-accent transition hover:text-[#6a364b] dark:text-text-accent dark:hover:text-[#f8d7e3]"
+              className="mt-7 inline-flex min-h-12 items-center gap-3 text-[13px] font-semibold uppercase tracking-[2px] text-text-accent transition hover:text-[#6a364b] dark:text-text-accent dark:hover:text-[#f8d7e3]"
             >
               <EnvelopeIcon className="size-5" />
               {contactMeetingLink}
