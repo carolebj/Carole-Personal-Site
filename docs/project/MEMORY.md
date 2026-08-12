@@ -4,7 +4,7 @@
 
 This file is the project-level memory for the Carole Personal Site repo. Keep it short, current, and useful for future agents working on the site.
 
-Last reviewed: 2026-07-23 WAT
+Last reviewed: 2026-08-12 WAT
 
 ## Current Branch Workflow
 
@@ -439,8 +439,10 @@ The `resource` and `community` types are **distinct** — no "type" selector fie
   utiliser de réponses génériques ou de faux exemples techniques.
 - User-facing copy stays in `src/app/i18n/locales/fr.tsx` and `src/app/i18n/locales/en.tsx` as fallback. As dashboard content grows, i18n values become increasingly redundant — do not add new copy to i18n if it will be managed from the dashboard.
 - Responsive breakpoints: mobile `<768px`, tablet `768px-1023px`, desktop `>=1024px`.
-- SEO metadata: `src/app/components/Seo.tsx`.
-- Public crawler files: `public/robots.txt`, `public/sitemap.xml`, `public/llms.txt`.
+- SEO metadata: `src/app/components/Seo.tsx` (supports `robots` via `SeoOverride`).
+- Public crawler files: `public/robots.txt` (`Disallow: /dashboard`), `public/sitemap.xml`, `public/llms.txt` (aligned to public routes).
+- Soft-404 guard: invalid blog/service slugs resolve via `src/app/routing/resolveBySlug.ts` and render `NotFoundView` with `noindex,nofollow`. SEO overrides are path-scoped in `SeoOverrideContext` (`useLayoutEffect` + clear only for the current pathname) so title/description/`robots` stay stable for wildcard and unknown blog/service slugs. This is a client UI state; the SPA host still returns HTTP 200 unless the edge is configured separately.
+- Dashboard fail-closed: production builds without `VITE_SUPABASE_*` refuse the demo login unless `VITE_ALLOW_DASHBOARD_DEMO=true` (Preview/local only). Admin shell sets `noindex,nofollow`.
 - Language selection: detected from browser, persisted in `localStorage` under `portfolio-lang`.
 - Theme: `src/app/theme/ThemeContext.tsx`, follows `prefers-color-scheme`, persists under `portfolio-theme`.
 - Haptics: `src/app/interactions/HapticContext.tsx`, persists under `portfolio-haptics`.
