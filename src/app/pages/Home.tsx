@@ -1,5 +1,6 @@
-import { ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon, EnvelopeIcon, PlayIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon, EnvelopeIcon, PlayIcon } from "@heroicons/react/24/outline";
 import { ContactForm } from "../components/ContactForm";
+import { EditorialAsteriskIcon } from "../components/icons/EditorialAsteriskIcon";
 import { SectionEyebrow } from "../components/SectionEyebrow";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
@@ -2655,7 +2656,7 @@ export default function Home() {
                 ) : null}
               </AnimatePresence>
               <span className="relative z-10 flex size-10 items-center justify-center rounded-full bg-[#ffd9e4] text-[#854d63]">
-                <SparklesIcon className="size-4" />
+                <EditorialAsteriskIcon className="size-4" />
               </span>
               <p className="relative z-10 font-serif text-[16px] leading-4 text-text-primary dark:text-text-primary">
                 {t("hero.badgeTop")}
