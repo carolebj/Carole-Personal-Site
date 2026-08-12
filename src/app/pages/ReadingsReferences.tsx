@@ -75,7 +75,7 @@ function BookCard({ item, index }: { item: ReadingItem; index: number }) {
         <h2 className="mt-1.5 font-serif text-[24px] leading-8 tracking-[-0.02em] text-text-primary dark:text-text-primary">
           {item.title}
         </h2>
-        <p className="mt-0.5 text-[13px] text-[#a09c98] dark:text-text-muted/60">
+        <p className="mt-0.5 text-[13px] text-text-muted dark:text-text-muted">
           {item.date}
         </p>
         <p className="mt-2.5 text-[14px] leading-6 text-text-secondary dark:text-text-secondary">
@@ -85,6 +85,7 @@ function BookCard({ item, index }: { item: ReadingItem; index: number }) {
           href={item.link}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label={t("carnetPage.discoverBookLabel", { title: item.title })}
           className="mt-3 inline-flex w-fit items-center gap-1.5 whitespace-nowrap rounded-md bg-[#22201f] px-3.5 py-1.5 text-[12px] font-semibold uppercase tracking-[1px] text-white transition-[transform,background-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-[#8f4f68] hover:shadow-[0_8px_18px_rgba(143,79,104,0.18)] active:translate-y-0 active:scale-[0.97] dark:bg-[#f8f1ec] dark:text-[#171312] dark:hover:bg-[#8f4f68] dark:hover:text-white"
         >
           {t("carnetPage.discoverBook")}
@@ -119,7 +120,7 @@ function ReferenceCard({
         animate={{ opacity: 1, y: 0 }}
         whileHover={{ y: -3, rotate: -0.25 }}
         transition={{ duration: 0.42, delay: index * 0.07, ease: [0.16, 1, 0.3, 1] }}
-        className="relative min-h-[18rem] overflow-hidden rounded-r-lg border border-[#d8cfc4] bg-[#fbfaf6] py-7 pl-16 pr-7 text-left text-text-primary shadow-[0_16px_35px_rgba(69,52,42,0.10)] dark:border-white/10 dark:bg-[#211d1b] dark:text-text-primary"
+        className="relative min-h-[18rem] overflow-hidden rounded-r-lg border border-[#d8cfc4] bg-[#fbfaf6] py-7 pl-16 pr-7 text-left text-text-primary shadow-[0_16px_35px_rgba(69,52,42,0.10)] dark:border-white/20 dark:bg-[#26201e] dark:text-text-primary dark:shadow-[0_16px_35px_rgba(0,0,0,0.35)]"
       >
         <div className="absolute inset-y-0 left-0 w-9 border-r border-[#5e463b]/25 bg-[#8f4f68] shadow-[inset_-5px_0_10px_rgba(67,34,47,0.18)] dark:bg-[#6e3d50]" />
         <div className="absolute inset-y-0 left-[1.65rem] flex flex-col justify-around py-4" aria-hidden="true">
@@ -243,7 +244,7 @@ export default function ReadingsReferences() {
         ];
 
   return (
-    <main className={PAGE_MAIN_SPACIOUS}>
+    <div className={PAGE_MAIN_SPACIOUS}>
       <section className="mx-auto max-w-[960px] text-center">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -335,6 +336,6 @@ export default function ReadingsReferences() {
           </div>
         )}
       </section>
-    </main>
+    </div>
   );
 }

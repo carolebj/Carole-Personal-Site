@@ -1,5 +1,8 @@
 /** Shared layout classes for public pages (fixed nav clearance + shell). */
 
+/** Stable id for the single document landmark owned by `Layout`. */
+export const MAIN_CONTENT_ID = "main-content";
+
 /** Standard page shell below the fixed header — `pt-28 md:pt-36`. */
 export const PAGE_MAIN =
   "min-h-[70vh] bg-surface-page px-5 pb-20 pt-28 text-text-primary sm:px-8 md:pt-36 lg:px-8";

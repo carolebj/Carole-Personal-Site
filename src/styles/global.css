@@ -85,15 +85,11 @@
   }
 
   .public-input:focus {
-    border-color: #854d63;
+    border-color: var(--text-accent);
   }
 
   .public-input:focus-visible {
     box-shadow: 0 0 0 2px var(--focus-ring);
-  }
-
-  .dark .public-input:focus {
-    border-color: #f0adc4;
   }
 
   .portfolio-nav-link {

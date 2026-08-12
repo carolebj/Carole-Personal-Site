@@ -93,6 +93,7 @@ export default function Seo() {
     setMeta("twitter:description", meta.description);
     setOptionalMeta("twitter:image", meta.ogImage);
     setOptionalMeta("twitter:image:alt", meta.ogImageAlt);
+    setOptionalMeta("robots", meta.robots);
     setCanonical(meta.canonicalUrl);
 
     let script = document.getElementById("portfolio-structured-data") as HTMLScriptElement | null;

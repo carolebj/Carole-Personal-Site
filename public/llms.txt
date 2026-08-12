@@ -1,17 +1,24 @@
 # Carole Tonoukouen Personal Site
 
-Site personnel de Carole Tonoukouen, communicante narrative, plume editoriale et consultante en strategie de contenu.
+Site personnel de Carole Tonoukouen, chargee de communication digitale :
+strategie editoriale, contenus, campagnes et visibilite de marque.
 
 ## Pages principales
 
 - [Accueil](https://www.carolebj.com/)
 - [A propos](https://www.carolebj.com/about)
 - [Services](https://www.carolebj.com/services)
-- [Carnet](https://www.carolebj.com/blog)
+- [Blog](https://www.carolebj.com/blog)
+- [Outils & inspirations](https://www.carolebj.com/carnet/outils-inspirations)
+- [Lectures & references](https://www.carolebj.com/carnet/lectures-references)
+- [CV](https://www.carolebj.com/cv)
+- [Estimer mon projet](https://www.carolebj.com/estimer-mon-projet)
 - [Contact](https://www.carolebj.com/contact)
 
 ## Domaines
 
 - Strategie editoriale et positionnement narratif
+- Communication digitale et campagnes
 - Ghostwriting, contenus longs et prises de parole
-- Accompagnement de marques personnelles, entrepreneures et equipes
+- Audit de presence en ligne et conseil
+- Identite visuelle et accompagnement de marques personnelles

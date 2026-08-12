@@ -84,7 +84,7 @@ export default function Cv() {
   const experiences = usingCms && cvData ? cvData.experiences : (t("cv.experiences", { returnObjects: true }) as CvExperience[]);
 
   return (
-    <main className={PAGE_MAIN}>
+    <div className={PAGE_MAIN}>
       <section className="mx-auto max-w-[1120px]">
         <div className="rounded-[28px] border border-border-subtle/80 bg-surface-panel p-6 shadow-[0_24px_80px_rgba(28,27,27,0.08)] dark:border-white/10 sm:p-8 lg:p-10">
           <div className="border-b border-text-primary/20 pb-7 dark:border-white/15">
@@ -185,6 +185,6 @@ export default function Cv() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

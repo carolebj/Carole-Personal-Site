@@ -35,12 +35,39 @@ import {
   type DesignBriefSubmission,
   type Revision,
 } from "./data";
+import { isDashboardMisconfigured } from "../lib/supabase";
 import LoginScreen from "./LoginScreen";
 import { CollectionList, DocumentEditor, TrashView, docTitle } from "./views";
 import { LoadingShell, ToastStack, useToasts } from "./feedback";
 import DesignBriefSubmissions from "./DesignBriefSubmissions";
 
 const Overview = lazy(() => import("./Overview"));
+
+const ADMIN_ROBOTS = "noindex, nofollow";
+
+function useAdminNoIndex() {
+  useEffect(() => {
+    const previousTitle = document.title;
+    document.title = "Dashboard | Carole Tonoukouen";
+
+    let robots = document.head.querySelector<HTMLMetaElement>('meta[name="robots"]');
+    const createdRobots = !robots;
+    if (!robots) {
+      robots = document.createElement("meta");
+      robots.setAttribute("name", "robots");
+      document.head.appendChild(robots);
+    }
+    const previousRobots = robots.content;
+    robots.content = ADMIN_ROBOTS;
+
+    return () => {
+      document.title = previousTitle;
+      if (!robots) return;
+      if (createdRobots) robots.remove();
+      else robots.content = previousRobots;
+    };
+  }, []);
+}
 
 type View =
   | { kind: "home" }
@@ -198,6 +225,7 @@ function FullScreenMessage({ children }: { children: React.ReactNode }) {
 }
 
 export default function AdminApp() {
+  useAdminNoIndex();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
   const [content, setContent] = useState<ContentStore | null>(null);
@@ -331,6 +359,21 @@ export default function AdminApp() {
     setView({ kind: "briefs" });
     loadBriefSubmissions();
   });
+
+  if (isDashboardMisconfigured()) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-surface-page p-6">
+        <div className="max-w-lg rounded-xl border border-destructive/30 bg-surface-panel p-6 text-center">
+          <h1 className="font-serif text-2xl text-text-primary">Configuration Supabase manquante</h1>
+          <p className="mt-3 text-sm text-text-secondary">
+            Le dashboard de production exige <code className="text-xs">VITE_SUPABASE_URL</code> et{" "}
+            <code className="text-xs">VITE_SUPABASE_PUBLISHABLE_KEY</code>. Le mode démo n’est disponible
+            qu’en développement local ou avec <code className="text-xs">VITE_ALLOW_DASHBOARD_DEMO=true</code>.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (!authChecked) return <FullScreenMessage>Chargement…</FullScreenMessage>;
   if (!user) {

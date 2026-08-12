@@ -1,4 +1,8 @@
 const en = {
+  a11y: {
+    skipToContent: "Skip to main content",
+  },
+
   nav: {
     home: "Home",
     services: "Services",
@@ -305,6 +309,13 @@ const en = {
     success: "Thank you, your message has been sent to Carole.",
     sendError: "Your message could not be sent. Please try again in a moment.",
     meetingLink: "Or choose to book a call",
+    errors: {
+      nameRequired: "Please enter your name.",
+      emailRequired: "Please enter your email address.",
+      emailInvalid: "The email address is not valid.",
+      messageRequired: "Please write your message.",
+      formSummary: "Some fields need your attention. Review the messages below.",
+    },
   },
 
   blog: {
@@ -318,6 +329,7 @@ const en = {
     latestEyebrow: "Latest notes",
     latestTitle: "Read now",
     readArticle: "Read article",
+    readArticleLabel: "Read article: {{title}}",
     backToBlog: "Back to blog",
     takeawaysTitle: "Key takeaways",
     allCategories: "All",
@@ -698,7 +710,8 @@ const en = {
       { title: "Calendrier du CM 229", type: "Resource", categories: ["Monitoring & inspiration", "Social media"], desc: "A local editorial tool updated every year with key dates, campaign inspiration, and practical advice from digital professionals in Benin.", link: "https://calendrierducm.bj/" },
       { title: "Women Techmakers Abomey-Calavi", type: "Community", categories: ["Women & digital"], desc: "A community for women passionate about programming technologies, with capacity-building sessions, networking, and inspiration around emerging tech.", link: "https://www.linkedin.com/company/women-techmakers-abomey-calavi/" }
     ],
-    discoverBook: "Discover",
+    discoverBook: "View on Google Books",
+    discoverBookLabel: "View {{title}} on Google Books (opens in new tab)",
     readingsTitle: "Readings & references",
     readingsSection1Desc: "Reference reads that sharpen the eye, structure ideas, and feed the practice.",
     readingsSection2Desc: "Newsletters and short-form pieces kept as useful watch notes to revisit.",

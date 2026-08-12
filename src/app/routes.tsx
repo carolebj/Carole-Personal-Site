@@ -24,7 +24,11 @@ function RouteHydrateFallback() {
       aria-live="polite"
       className="flex min-h-dvh items-center justify-center bg-surface-page px-6 text-sm text-text-muted"
     >
-      Chargement…
+      <span lang="fr">Chargement…</span>
+      <span aria-hidden="true" className="mx-2 text-border-subtle">
+        /
+      </span>
+      <span lang="en">Loading…</span>
     </div>
   );
 }

@@ -85,6 +85,7 @@ export function resolveSeoMeta({
     ogImageWidth: usesDefaultSocialImage ? "1200" : undefined,
     ogImageHeight: usesDefaultSocialImage ? "630" : undefined,
     ogType: override?.ogType ?? "website",
+    robots: override?.robots,
     pageKey: pageKey as SeoPageKey | null,
   };
 }

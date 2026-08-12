@@ -1,3 +1,33 @@
+export function getContactFieldError(
+  element: HTMLInputElement | HTMLTextAreaElement,
+  translate: (key: string) => string,
+): string {
+  const { validity, name, type } = element;
+
+  if (validity.valueMissing) {
+    if (name === "name") return translate("contactSection.errors.nameRequired");
+    if (name === "email") return translate("contactSection.errors.emailRequired");
+    if (name === "message") return translate("contactSection.errors.messageRequired");
+    return translate("contactSection.errors.nameRequired");
+  }
+
+  if ((validity.typeMismatch || validity.badInput) && type === "email") {
+    return translate("contactSection.errors.emailInvalid");
+  }
+
+  if (name === "email") {
+    return translate("contactSection.errors.emailInvalid");
+  }
+  if (name === "message") {
+    return translate("contactSection.errors.messageRequired");
+  }
+  if (name === "name") {
+    return translate("contactSection.errors.nameRequired");
+  }
+
+  return translate("contactSection.errors.messageRequired");
+}
+
 export function getTransitionDurationMs(name: string, fallback: number) {
   if (typeof window === "undefined") {
     return fallback;
