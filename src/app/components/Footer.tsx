@@ -3,7 +3,7 @@ import {
   CheckIcon,
   EnvelopeIcon,
 } from "@heroicons/react/24/outline";
-import { motion, useReducedMotion } from "motion/react";
+import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "motion/react";
 import { useEffect, useMemo, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
@@ -18,6 +18,9 @@ const languages: { code: Lang; flag: string }[] = [
   { code: "en", flag: "EN" },
 ];
 const SHADER_LONG_PRESS_MS = 320;
+const FOOTER_PULL_THRESHOLD = 96;
+const FOOTER_PULL_MAX_INTENT = 720;
+const FOOTER_PULL_RELEASE_MS = 120;
 const CAROLE_BEHANCE_URL = "https://www.behance.net/caroletonoukouen";
 const CAROLE_LINKEDIN_URL = "https://www.linkedin.com/in/caroletonoukouen/";
 
@@ -434,27 +437,118 @@ export default function Footer() {
   const year = new Date().getFullYear();
   const shaderSectionRef = useRef<HTMLElement>(null);
   const longPressTimeoutRef = useRef<number | undefined>(undefined);
+  const pullReleaseTimeoutRef = useRef<number | undefined>(undefined);
+  const pullDeactivateTimeoutRef = useRef<number | undefined>(undefined);
+  const pullIntentRef = useRef(0);
+  const lastTouchYRef = useRef<number | null>(null);
+  const pullProgress = useMotionValue(0);
+  const pullSpring = useSpring(pullProgress, {
+    stiffness: 360,
+    damping: 32,
+    mass: 0.68,
+    restDelta: 0.002,
+    restSpeed: 0.01,
+  });
+  const pullY = useTransform(pullSpring, [0, 1], ["100%", "0%"]);
   const [isShaderHovered, setIsShaderHovered] = useState(false);
   const [isShaderAccelerated, setIsShaderAccelerated] = useState(false);
-  const [shaderInView, setShaderInView] = useState(false);
+  const [isPullActive, setIsPullActive] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
-  // Passive reveal only: never capture wheel/touch or force scroll position.
+  // Recreate the elastic pull-beyond-footer moment without taking over scroll:
+  // listeners stay passive and only move this local decorative panel.
   useEffect(() => {
-    const section = shaderSectionRef.current;
-    if (!section) {
+    if (shouldReduceMotion) {
+      pullProgress.set(0);
+      setIsPullActive(false);
       return;
     }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setShaderInView(Boolean(entry?.isIntersecting));
-      },
-      { threshold: 0.22, rootMargin: "0px 0px -8% 0px" },
-    );
-    observer.observe(section);
-    return () => observer.disconnect();
-  }, []);
+    const isAtDocumentEnd = () =>
+      window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
+
+    const releasePull = () => {
+      window.clearTimeout(pullReleaseTimeoutRef.current);
+      window.clearTimeout(pullDeactivateTimeoutRef.current);
+      pullIntentRef.current = 0;
+      pullProgress.set(0);
+      pullDeactivateTimeoutRef.current = window.setTimeout(() => {
+        setIsPullActive(false);
+      }, 420);
+    };
+
+    const scheduleRelease = () => {
+      window.clearTimeout(pullReleaseTimeoutRef.current);
+      pullReleaseTimeoutRef.current = window.setTimeout(releasePull, FOOTER_PULL_RELEASE_MS);
+    };
+
+    const applyPullIntent = (deltaY: number) => {
+      if (deltaY <= 0 || !isAtDocumentEnd()) {
+        releasePull();
+        return;
+      }
+
+      window.clearTimeout(pullDeactivateTimeoutRef.current);
+      pullIntentRef.current = Math.min(
+        FOOTER_PULL_MAX_INTENT,
+        pullIntentRef.current + Math.min(deltaY, 120),
+      );
+      const normalized = Math.max(
+        0,
+        (pullIntentRef.current - FOOTER_PULL_THRESHOLD) /
+          (FOOTER_PULL_MAX_INTENT - FOOTER_PULL_THRESHOLD),
+      );
+      const resistedProgress = Math.pow(normalized, 0.72);
+      if (resistedProgress > 0) {
+        setIsPullActive(true);
+        pullProgress.set(resistedProgress);
+      }
+      scheduleRelease();
+    };
+
+    const handleWheel = (event: WheelEvent) => {
+      const modeMultiplier =
+        event.deltaMode === WheelEvent.DOM_DELTA_LINE
+          ? 16
+          : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+            ? window.innerHeight
+            : 1;
+      applyPullIntent(event.deltaY * modeMultiplier);
+    };
+
+    const handleTouchStart = (event: TouchEvent) => {
+      lastTouchYRef.current = event.touches[0]?.clientY ?? null;
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      const currentY = event.touches[0]?.clientY;
+      const previousY = lastTouchYRef.current;
+      lastTouchYRef.current = currentY ?? null;
+      if (currentY === undefined || previousY === null) return;
+      applyPullIntent(previousY - currentY);
+    };
+
+    const handleTouchEnd = () => {
+      lastTouchYRef.current = null;
+      releasePull();
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: true });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", handleTouchEnd, { passive: true });
+
+    return () => {
+      window.clearTimeout(pullReleaseTimeoutRef.current);
+      window.clearTimeout(pullDeactivateTimeoutRef.current);
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
+      window.removeEventListener("touchcancel", handleTouchEnd);
+    };
+  }, [pullProgress, shouldReduceMotion]);
 
   const socialLinks = useMemo((): SocialLink[] => {
     const contactLink: SocialLink = {
@@ -700,10 +794,13 @@ export default function Footer() {
         </div>
       </footer>
 
-      <section
+      <motion.section
         ref={shaderSectionRef}
         aria-hidden="true"
-        className="relative h-[clamp(16rem,32vh,22rem)] overflow-hidden border-t border-border-accent-muted"
+        style={{ y: pullY }}
+        className={`fixed inset-x-0 bottom-0 z-30 h-[clamp(16rem,32vh,22rem)] overflow-hidden border-t border-border-accent-muted shadow-[0_-24px_70px_rgba(58,42,35,0.16)] ${
+          isPullActive ? "pointer-events-auto" : "pointer-events-none"
+        }`}
         onPointerEnter={(event) => {
           setIsShaderHovered(true);
           handleShaderPointerMove(event);
@@ -752,14 +849,7 @@ export default function Footer() {
           <motion.div
             className="relative mx-auto w-full max-w-[1680px]"
             initial={false}
-            animate={
-              shouldReduceMotion
-                ? { opacity: 1, y: 0 }
-                : {
-                    opacity: shaderInView ? 1 : 0.42,
-                    y: shaderInView ? 0 : 14,
-                  }
-            }
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           >
             <svg
@@ -795,7 +885,7 @@ export default function Footer() {
         >
           {t("footer.holdToAccelerate")}
         </motion.div>
-      </section>
+      </motion.section>
     </div>
   );
 }
