@@ -3,7 +3,7 @@ import {
   CheckIcon,
   EnvelopeIcon,
 } from "@heroicons/react/24/outline";
-import { animate, motion, useReducedMotion, type AnimationPlaybackControls } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useMemo, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
@@ -17,11 +17,6 @@ const languages: { code: Lang; flag: string }[] = [
   { code: "fr", flag: "FR" },
   { code: "en", flag: "EN" },
 ];
-const FOOTER_REVEAL_DELAY_MS = 650;
-const FOOTER_REVEAL_DEEP_DELAY_MS = 900;
-const FOOTER_REVEAL_PEEK_PX = 56;
-const FOOTER_REVEAL_INTENT_THRESHOLD = 260;
-const FOOTER_REVEAL_INTENT_RESET_MS = 420;
 const SHADER_LONG_PRESS_MS = 320;
 const CAROLE_BEHANCE_URL = "https://www.behance.net/caroletonoukouen";
 const CAROLE_LINKEDIN_URL = "https://www.linkedin.com/in/caroletonoukouen/";
@@ -38,6 +33,9 @@ type SocialLink = {
   external: boolean;
 };
 
+const FOOTER_FOCUS_RING =
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--surface-page)]";
+
 function FooterColumn({
   title,
   children,
@@ -49,7 +47,7 @@ function FooterColumn({
 }) {
   return (
     <div className={`min-w-0 ${className}`.trim()}>
-      <h2 className="border-b border-[#e5e2e1]/90 pb-3 text-[11px] font-semibold uppercase tracking-[3px] text-[#1c1b1b] dark:border-white/12 dark:text-[#f8f1ec]">
+      <h2 className="border-b border-border-subtle pb-3 text-[11px] font-semibold uppercase tracking-[3px] text-text-primary">
         {title}
       </h2>
       <div className="mt-5">{children}</div>
@@ -69,7 +67,7 @@ function FooterLink({
   children: ReactNode;
 }) {
   const className =
-    "flex min-h-12 items-center break-words text-[15px] leading-7 text-[#5b4137] transition-colors hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:text-[#f0adc4]";
+    `flex min-h-12 items-center break-words text-[15px] leading-7 text-text-secondary transition-colors hover:text-text-accent ${FOOTER_FOCUS_RING}`;
 
   if (to) {
     return (
@@ -105,11 +103,11 @@ function SocialRow({
   label: string;
 }) {
   const className =
-    "group flex min-h-12 min-w-0 items-center gap-3 text-[15px] leading-7 text-[#5b4137] transition-colors hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:text-[#f0adc4]";
+    `group flex min-h-12 min-w-0 items-center gap-3 text-[15px] leading-7 text-text-secondary transition-colors hover:text-text-accent ${FOOTER_FOCUS_RING}`;
 
   const content = (
     <>
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-[#854d63]/25 bg-[#ffd9e4]/35 text-[#854d63] transition group-hover:border-[#854d63]/45 group-hover:bg-[#ffd9e4]/55 dark:border-[#f0adc4]/30 dark:bg-[#854d63]/22 dark:text-[#f0adc4]">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border-accent-muted bg-surface-accent-muted text-text-accent transition group-hover:border-border-accent group-hover:bg-surface-accent">
         {icon}
       </span>
       <span className="min-w-0 break-words">{label}</span>
@@ -434,21 +432,29 @@ export default function Footer() {
   const { data: siteData } = useCmsSingleton<CmsSiteSettings | null>("siteSettings", null);
   const { data: cmsServices, usingCms: usingCmsServices } = useCmsCollection<CmsService>("service", []);
   const year = new Date().getFullYear();
-  const footerRef = useRef<HTMLElement>(null);
   const shaderSectionRef = useRef<HTMLElement>(null);
-  const returnTimeoutRef = useRef<number | undefined>(undefined);
-  const returnAnimationRef = useRef<AnimationPlaybackControls | null>(null);
-  const scheduleReturnRef = useRef<(delay?: number) => void>(() => undefined);
-  const revealIntentRef = useRef(0);
-  const revealIntentResetRef = useRef<number | undefined>(undefined);
-  const revealUnlockedUntilRef = useRef(0);
-  const lastTouchYRef = useRef<number | null>(null);
   const longPressTimeoutRef = useRef<number | undefined>(undefined);
-  const isShaderPressingRef = useRef(false);
-  const isReturningRef = useRef(false);
   const [isShaderHovered, setIsShaderHovered] = useState(false);
   const [isShaderAccelerated, setIsShaderAccelerated] = useState(false);
+  const [shaderInView, setShaderInView] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+
+  // Passive reveal only: never capture wheel/touch or force scroll position.
+  useEffect(() => {
+    const section = shaderSectionRef.current;
+    if (!section) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShaderInView(Boolean(entry?.isIntersecting));
+      },
+      { threshold: 0.22, rootMargin: "0px 0px -8% 0px" },
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
 
   const socialLinks = useMemo((): SocialLink[] => {
     const contactLink: SocialLink = {
@@ -527,216 +533,8 @@ export default function Footer() {
     }));
   }, [cmsServices, usingCmsServices, i18n.language, t]);
 
-  useEffect(() => {
-    const getFooterRestY = () => {
-      const footer = footerRef.current;
-      if (!footer) {
-        return null;
-      }
-
-      const footerBottom = footer.offsetTop + footer.offsetHeight;
-      return Math.max(0, footerBottom - window.innerHeight);
-    };
-
-    const returnToFooter = () => {
-      const restY = getFooterRestY();
-      if (restY === null || window.scrollY <= restY + 2) {
-        return;
-      }
-
-      returnAnimationRef.current?.stop();
-      isReturningRef.current = true;
-      if (shouldReduceMotion) {
-        window.scrollTo(0, restY);
-        isReturningRef.current = false;
-        return;
-      }
-
-      returnAnimationRef.current = animate(window.scrollY, restY, {
-        type: "spring",
-        stiffness: 270,
-        damping: 36,
-        mass: 0.72,
-        restDelta: 0.35,
-        restSpeed: 10,
-        onUpdate: (latest) => window.scrollTo(0, latest),
-        onComplete: () => {
-          isReturningRef.current = false;
-        },
-      });
-    };
-
-    const scheduleReturn = (delay = FOOTER_REVEAL_DELAY_MS) => {
-      window.clearTimeout(returnTimeoutRef.current);
-      if (isReturningRef.current || isShaderPressingRef.current) {
-        return;
-      }
-
-      returnTimeoutRef.current = window.setTimeout(returnToFooter, delay);
-    };
-    scheduleReturnRef.current = scheduleReturn;
-
-    const handleScroll = () => {
-      if (isReturningRef.current) {
-        return;
-      }
-
-      const restY = getFooterRestY();
-      if (restY !== null && window.scrollY > restY + 2) {
-        const revealDepth = window.scrollY - restY;
-        scheduleReturn(revealDepth > window.innerHeight * 0.18 ? FOOTER_REVEAL_DEEP_DELAY_MS : FOOTER_REVEAL_DELAY_MS);
-      }
-    };
-
-    const handleWheelIntent = (event: WheelEvent) => {
-      if (isReturningRef.current) {
-        returnAnimationRef.current?.stop();
-        isReturningRef.current = false;
-      }
-
-      const restY = getFooterRestY();
-      if (restY === null) {
-        return;
-      }
-      const wheelDeltaY = event.deltaY * (
-        event.deltaMode === WheelEvent.DOM_DELTA_LINE
-          ? 16
-          : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
-            ? window.innerHeight
-            : 1
-      );
-
-      if (
-        wheelDeltaY > 0 &&
-        window.scrollY >= restY - 2 &&
-        window.scrollY <= restY + FOOTER_REVEAL_PEEK_PX + 2 &&
-        performance.now() >= revealUnlockedUntilRef.current
-      ) {
-        event.preventDefault();
-        revealIntentRef.current += Math.min(wheelDeltaY, 100);
-        window.clearTimeout(revealIntentResetRef.current);
-
-        if (revealIntentRef.current >= FOOTER_REVEAL_INTENT_THRESHOLD) {
-          revealIntentRef.current = 0;
-          revealUnlockedUntilRef.current = performance.now() + 700;
-          window.scrollTo(0, restY + FOOTER_REVEAL_PEEK_PX);
-        } else {
-          const revealProgress =
-            revealIntentRef.current / FOOTER_REVEAL_INTENT_THRESHOLD;
-          window.scrollTo(0, restY + FOOTER_REVEAL_PEEK_PX * revealProgress);
-          revealIntentResetRef.current = window.setTimeout(() => {
-            revealIntentRef.current = 0;
-            scheduleReturn(FOOTER_REVEAL_DELAY_MS);
-          }, FOOTER_REVEAL_INTENT_RESET_MS);
-        }
-        return;
-      }
-
-      if (window.scrollY > restY + 2) {
-        if (isShaderPressingRef.current) {
-          window.clearTimeout(returnTimeoutRef.current);
-          return;
-        }
-
-        if (wheelDeltaY < 0) {
-          event.preventDefault();
-          window.clearTimeout(returnTimeoutRef.current);
-          returnToFooter();
-          return;
-        }
-
-        scheduleReturn(
-          wheelDeltaY > 28
-            ? FOOTER_REVEAL_DEEP_DELAY_MS
-            : FOOTER_REVEAL_DELAY_MS,
-        );
-        return;
-      }
-    };
-
-    const cancelReturn = () => {
-      window.clearTimeout(returnTimeoutRef.current);
-      if (isReturningRef.current) {
-        returnAnimationRef.current?.stop();
-        isReturningRef.current = false;
-      }
-    };
-
-    const handleTouchStart = (event: TouchEvent) => {
-      lastTouchYRef.current = event.touches[0]?.clientY ?? null;
-    };
-
-    const handleTouchMove = (event: TouchEvent) => {
-      const currentY = event.touches[0]?.clientY;
-      const previousY = lastTouchYRef.current;
-      lastTouchYRef.current = currentY ?? null;
-      if (currentY === undefined || previousY === null) {
-        return;
-      }
-
-      const deltaY = previousY - currentY;
-      const restY = getFooterRestY();
-      if (
-        deltaY > 0 &&
-        restY !== null &&
-        window.scrollY >= restY - 2 &&
-        window.scrollY <= restY + FOOTER_REVEAL_PEEK_PX + 2 &&
-        performance.now() >= revealUnlockedUntilRef.current
-      ) {
-        event.preventDefault();
-        revealIntentRef.current += Math.min(deltaY, 80);
-        const revealProgress = Math.min(
-          1,
-          revealIntentRef.current / FOOTER_REVEAL_INTENT_THRESHOLD,
-        );
-        window.scrollTo(0, restY + FOOTER_REVEAL_PEEK_PX * revealProgress);
-
-        if (revealProgress >= 1) {
-          revealIntentRef.current = 0;
-          revealUnlockedUntilRef.current = performance.now() + 900;
-        }
-        return;
-      }
-
-      cancelReturn();
-    };
-
-    const handleTouchEnd = () => {
-      lastTouchYRef.current = null;
-      revealIntentRef.current = 0;
-      scheduleReturn(FOOTER_REVEAL_DELAY_MS);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("wheel", handleWheelIntent, { passive: false });
-    window.addEventListener("touchstart", handleTouchStart, { passive: true });
-    window.addEventListener("touchmove", handleTouchMove, { passive: false });
-    window.addEventListener("touchend", handleTouchEnd, { passive: true });
-
-    return () => {
-      window.clearTimeout(returnTimeoutRef.current);
-      window.clearTimeout(revealIntentResetRef.current);
-      returnAnimationRef.current?.stop();
-      scheduleReturnRef.current = () => undefined;
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("wheel", handleWheelIntent);
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchmove", handleTouchMove);
-      window.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, [shouldReduceMotion]);
-
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: shouldReduceMotion ? "auto" : "smooth" });
-  };
-
-  const resetShaderReturnTimer = () => {
-    if (isShaderPressingRef.current) {
-      window.clearTimeout(returnTimeoutRef.current);
-      return;
-    }
-
-    scheduleReturnRef.current(FOOTER_REVEAL_DELAY_MS);
   };
 
   const handleShaderPointerMove = (event: PointerEvent<HTMLElement>) => {
@@ -751,12 +549,9 @@ export default function Footer() {
       y: event.clientY - rect.top,
     });
     setIsShaderHovered(true);
-    resetShaderReturnTimer();
   };
 
   const handleShaderPointerDown = () => {
-    isShaderPressingRef.current = true;
-    window.clearTimeout(returnTimeoutRef.current);
     window.clearTimeout(longPressTimeoutRef.current);
     longPressTimeoutRef.current = window.setTimeout(() => {
       setIsShaderAccelerated(true);
@@ -764,49 +559,42 @@ export default function Footer() {
   };
 
   const endShaderLongPress = () => {
-    isShaderPressingRef.current = false;
     window.clearTimeout(longPressTimeoutRef.current);
     setIsShaderAccelerated(false);
-    resetShaderReturnTimer();
   };
 
   const handleShaderPointerLeave = () => {
-    isShaderPressingRef.current = false;
     window.clearTimeout(longPressTimeoutRef.current);
     setIsShaderHovered(false);
     setIsShaderAccelerated(false);
-    scheduleReturnRef.current(FOOTER_REVEAL_DEEP_DELAY_MS);
   };
 
   return (
     <div>
-      <footer
-        ref={footerRef}
-        className="relative border-t border-[#e5e2e1]/80 bg-[#fcf9f8] dark:border-white/10 dark:bg-[#13100f]"
-      >
+      <footer className="relative border-t border-border-subtle bg-surface-page">
         <div className="mx-auto max-w-[1680px] px-6 pb-12 pt-16 sm:px-8 lg:px-12 lg:pb-12 lg:pt-20 xl:px-16">
           <div className="grid grid-cols-1 gap-12 min-[480px]:grid-cols-2 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-12 xl:gap-x-12">
             <div className="min-w-0 min-[480px]:col-span-2 lg:col-span-12 xl:col-span-4">
-              <p className="font-serif text-[clamp(2.35rem,3.2vw,3.35rem)] italic leading-none tracking-[-0.01em] text-[#1c1b1b] dark:text-[#f8f1ec]">
+              <p className="font-serif text-[clamp(2.35rem,3.2vw,3.35rem)] italic leading-none tracking-[-0.01em] text-text-primary">
                 Carole T.
               </p>
-              <p className="mt-4 text-[11px] font-semibold uppercase tracking-[3px] text-[#854d63] dark:text-[#f0adc4]">
+              <p className="mt-4 text-[11px] font-semibold uppercase tracking-[3px] text-text-accent">
                 {t("footer.role")}
               </p>
-              <p className="mt-5 max-w-[22rem] text-[15px] leading-7 text-[#5b4137] dark:text-[#dbc9c0]">
+              <p className="mt-5 max-w-[22rem] text-[15px] leading-7 text-text-secondary">
                 {t("footer.tagline")}
               </p>
-              <span className="mt-8 block h-px w-14 bg-[#f0adc4] dark:bg-[#f0adc4]/60" />
+              <span className="mt-8 block h-px w-14 bg-border-accent" />
               <div className="mt-7 flex flex-wrap gap-3">
                 {languages.map((language) => (
                   <button
                     key={language.code}
                     type="button"
                     onClick={() => setLang(language.code)}
-                    className={`inline-flex h-12 min-w-0 items-center justify-center gap-2 rounded-full border px-4 text-[11px] font-semibold uppercase tracking-[1.5px] transition sm:min-w-[8.25rem] ${
+                    className={`inline-flex h-12 min-w-0 items-center justify-center gap-2 rounded-full border px-4 text-[11px] font-semibold uppercase tracking-[1.5px] transition ${FOOTER_FOCUS_RING} sm:min-w-[8.25rem] ${
                       lang === language.code
-                        ? "border-[#854d63]/45 bg-[#ffd9e4]/70 text-[#854d63] dark:border-[#f0adc4]/50 dark:bg-[#854d63]/30 dark:text-[#f0adc4]"
-                        : "border-[#e5e2e1] bg-transparent text-[#5b4137] hover:border-[#854d63]/35 hover:text-[#854d63] dark:border-white/14 dark:text-[#cdb9ae] dark:hover:border-[#f0adc4]/40 dark:hover:text-[#f0adc4]"
+                        ? "border-border-accent bg-surface-accent text-text-accent"
+                        : "border-border-subtle bg-transparent text-text-muted hover:border-border-accent hover:text-text-accent"
                     }`}
                     aria-pressed={lang === language.code}
                   >
@@ -896,14 +684,14 @@ export default function Footer() {
             </FooterColumn>
           </div>
 
-          <div className="mt-14 flex flex-col gap-4 border-t border-[#e5e2e1]/90 pt-7 sm:flex-row sm:items-center sm:justify-between dark:border-white/12">
-            <p className="text-[11px] font-semibold uppercase tracking-[2.5px] text-[#5b4137] dark:text-[#cdb9ae]">
+          <div className="mt-14 flex flex-col gap-4 border-t border-border-subtle pt-7 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-[11px] font-semibold uppercase tracking-[2.5px] text-text-muted">
               © {year} {t("footer.copyright")}
             </p>
             <button
               type="button"
               onClick={scrollToTop}
-              className="inline-flex min-h-12 items-center gap-2 text-[11px] font-semibold uppercase tracking-[2.5px] text-[#5b4137] transition-colors hover:text-[#854d63] active:scale-[0.96] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
+              className={`inline-flex min-h-12 items-center gap-2 text-[11px] font-semibold uppercase tracking-[2.5px] text-text-muted transition-colors hover:text-text-accent active:scale-[0.96] ${FOOTER_FOCUS_RING}`}
             >
               {t("footer.backToTop")}
               <ArrowUpIcon className="size-4" />
@@ -915,7 +703,7 @@ export default function Footer() {
       <section
         ref={shaderSectionRef}
         aria-hidden="true"
-        className="relative h-[clamp(16rem,32vh,22rem)] overflow-hidden border-t border-[#f3cfda]/85"
+        className="relative h-[clamp(16rem,32vh,22rem)] overflow-hidden border-t border-border-accent-muted"
         onPointerEnter={(event) => {
           setIsShaderHovered(true);
           handleShaderPointerMove(event);
@@ -961,21 +749,33 @@ export default function Footer() {
         </svg>
 
         <div className="relative z-[3] flex h-full items-center px-6 sm:px-10 lg:px-16">
-          <div className="relative mx-auto w-full max-w-[1680px]">
+          <motion.div
+            className="relative mx-auto w-full max-w-[1680px]"
+            initial={false}
+            animate={
+              shouldReduceMotion
+                ? { opacity: 1, y: 0 }
+                : {
+                    opacity: shaderInView ? 1 : 0.42,
+                    y: shaderInView ? 0 : 14,
+                  }
+            }
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          >
             <svg
-              className="absolute -top-7 left-[min(100%,20rem)] size-5 text-[#854d63]/35"
+              className="absolute -top-7 left-[min(100%,20rem)] size-5 text-text-accent/35"
               viewBox="0 0 24 24"
               fill="currentColor"
               aria-hidden="true"
             >
               <path d="M12 0l2.2 7.8L22 10l-7.8 2.2L12 20l-2.2-7.8L2 10l7.8-2.2L12 0z" />
             </svg>
-            <p className="font-serif text-[clamp(1.45rem,2.5vw,2.25rem)] italic leading-[1.2] tracking-[-0.01em] text-[#1c1b1b] drop-shadow-[0_2px_18px_rgba(255,255,255,0.45)] dark:text-[#f8f1ec]">
+            <p className="font-serif text-[clamp(1.45rem,2.5vw,2.25rem)] italic leading-[1.2] tracking-[-0.01em] text-text-primary drop-shadow-[0_2px_18px_rgba(255,255,255,0.45)]">
               {t("footer.overscrollLine1")}
               <br />
               {t("footer.overscrollLine2")}
             </p>
-          </div>
+          </motion.div>
         </div>
 
         <motion.div

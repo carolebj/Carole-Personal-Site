@@ -200,8 +200,8 @@
   --surface-accent: rgb(133 77 99 / 0.3);
   --surface-accent-muted: rgb(133 77 99 / 0.2);
   --text-primary: #f8f1ec;
-  --text-secondary: #dbc9c0;
-  --text-muted: #cdb9ae;
+  --text-secondary: #e0d0c4;
+  --text-muted: #d6c4b8;
   --text-accent: var(--color-plum-200);
   --text-on-strong: #1c1415;
   --border-subtle: rgb(255 255 255 / 0.1);
