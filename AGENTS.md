@@ -15,11 +15,16 @@ développeurs. Les documents de guidage vivent dans **`docs/`**.
   MCP `browser_navigate` ; Codex/Claude Code via leur propre preview ; le
   navigateur système n'est qu'une option secondaire, en cas de bénéfice précis).
 - **`docs/project/MEMORY.md`** — mémoire produit/design vivante (contexte courant).
+- **`docs/project/CONTROL_CENTER.md`** — protocole et registre du centre de
+  contrôle exclusif de Carole Personal Site.
 - **`docs/archive/UI_AUDIT.md`** — checklist UI site public (terminée, archivée).
 
 ## Réflexes
 
 - Avant de coder : lire `docs/GUIDELINE.md` puis `docs/project/MEMORY.md`.
+- Toute tâche Carole doit aussi lire `docs/project/CONTROL_CENTER.md`, rester
+  dans ce projet, préserver les modifications existantes, signaler tout blocage
+  réel et transmettre au centre un rapport à un jalon utile ou en fin de mission.
 - Pour la todo courante, consulter et maintenir la liste TickTick
   `Carole - Personal site` du dossier `Work`.
 - Avant de toucher aux secrets ou de committer : lire `docs/SECURITY.md` et

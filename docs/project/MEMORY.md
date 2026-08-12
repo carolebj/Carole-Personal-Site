@@ -6,6 +6,22 @@ This file is the project-level memory for the Carole Personal Site repo. Keep it
 
 Last reviewed: 2026-08-12 WAT
 
+## Project Control Center
+
+- The exclusive control task is `🗼 Carole Personal Site — Centre de contrôle`
+  (`019ff632-f77f-7a33-be83-d9723b32e8f6`). Its operating protocol and compact
+  task register live in `docs/project/CONTROL_CENTER.md`.
+- Every Carole task must synchronize material milestones, real blockers and its
+  final report with that center. A secondary blocker is escalated while
+  independent work continues; only the affected action is paused.
+- Coordination stays lightweight and strictly limited to Carole Personal Site.
+  The center does not govern other projects, and the project memory does not
+  become an activity log.
+- The canonical replacement for the public `SparklesIcon` is D3-A, the
+  irregular editorial asterisk named “Équilibre éditorial”, with its validated
+  current nucleus. Centralize and reuse that exact glyph on public surfaces;
+  do not apply the replacement automatically to the admin icon map.
+
 ## Current Branch Workflow
 
 - Main production history lives on `main`.
