@@ -3,7 +3,7 @@ import {
   CheckIcon,
   EnvelopeIcon,
 } from "@heroicons/react/24/outline";
-import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "motion/react";
+import { animate, motion, useReducedMotion, type AnimationPlaybackControls } from "motion/react";
 import { useEffect, useMemo, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
@@ -17,10 +17,12 @@ const languages: { code: Lang; flag: string }[] = [
   { code: "fr", flag: "FR" },
   { code: "en", flag: "EN" },
 ];
+const FOOTER_REVEAL_DELAY_MS = 650;
+const FOOTER_REVEAL_DEEP_DELAY_MS = 900;
+const FOOTER_REVEAL_PEEK_PX = 56;
+const FOOTER_REVEAL_INTENT_THRESHOLD = 260;
+const FOOTER_REVEAL_INTENT_RESET_MS = 420;
 const SHADER_LONG_PRESS_MS = 320;
-const FOOTER_PULL_THRESHOLD = 96;
-const FOOTER_PULL_MAX_INTENT = 720;
-const FOOTER_PULL_RELEASE_MS = 120;
 const CAROLE_BEHANCE_URL = "https://www.behance.net/caroletonoukouen";
 const CAROLE_LINKEDIN_URL = "https://www.linkedin.com/in/caroletonoukouen/";
 
@@ -435,120 +437,22 @@ export default function Footer() {
   const { data: siteData } = useCmsSingleton<CmsSiteSettings | null>("siteSettings", null);
   const { data: cmsServices, usingCms: usingCmsServices } = useCmsCollection<CmsService>("service", []);
   const year = new Date().getFullYear();
+  const footerRef = useRef<HTMLElement>(null);
   const shaderSectionRef = useRef<HTMLElement>(null);
-  const longPressTimeoutRef = useRef<number | undefined>(undefined);
-  const pullReleaseTimeoutRef = useRef<number | undefined>(undefined);
-  const pullDeactivateTimeoutRef = useRef<number | undefined>(undefined);
-  const pullIntentRef = useRef(0);
+  const returnTimeoutRef = useRef<number | undefined>(undefined);
+  const returnAnimationRef = useRef<AnimationPlaybackControls | null>(null);
+  const scheduleReturnRef = useRef<(delay?: number) => void>(() => undefined);
+  const revealIntentRef = useRef(0);
+  const revealIntentResetRef = useRef<number | undefined>(undefined);
+  const revealUnlockedUntilRef = useRef(0);
   const lastTouchYRef = useRef<number | null>(null);
-  const pullProgress = useMotionValue(0);
-  const pullSpring = useSpring(pullProgress, {
-    stiffness: 360,
-    damping: 32,
-    mass: 0.68,
-    restDelta: 0.002,
-    restSpeed: 0.01,
-  });
-  const pullY = useTransform(pullSpring, [0, 1], ["100%", "0%"]);
+  const longPressTimeoutRef = useRef<number | undefined>(undefined);
+  const isShaderPressingRef = useRef(false);
+  const isShaderHoveredRef = useRef(false);
+  const isReturningRef = useRef(false);
   const [isShaderHovered, setIsShaderHovered] = useState(false);
   const [isShaderAccelerated, setIsShaderAccelerated] = useState(false);
-  const [isPullActive, setIsPullActive] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
-
-  // Recreate the elastic pull-beyond-footer moment without taking over scroll:
-  // listeners stay passive and only move this local decorative panel.
-  useEffect(() => {
-    if (shouldReduceMotion) {
-      pullProgress.set(0);
-      setIsPullActive(false);
-      return;
-    }
-
-    const isAtDocumentEnd = () =>
-      window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
-
-    const releasePull = () => {
-      window.clearTimeout(pullReleaseTimeoutRef.current);
-      window.clearTimeout(pullDeactivateTimeoutRef.current);
-      pullIntentRef.current = 0;
-      pullProgress.set(0);
-      pullDeactivateTimeoutRef.current = window.setTimeout(() => {
-        setIsPullActive(false);
-      }, 420);
-    };
-
-    const scheduleRelease = () => {
-      window.clearTimeout(pullReleaseTimeoutRef.current);
-      pullReleaseTimeoutRef.current = window.setTimeout(releasePull, FOOTER_PULL_RELEASE_MS);
-    };
-
-    const applyPullIntent = (deltaY: number) => {
-      if (deltaY <= 0 || !isAtDocumentEnd()) {
-        releasePull();
-        return;
-      }
-
-      window.clearTimeout(pullDeactivateTimeoutRef.current);
-      pullIntentRef.current = Math.min(
-        FOOTER_PULL_MAX_INTENT,
-        pullIntentRef.current + Math.min(deltaY, 120),
-      );
-      const normalized = Math.max(
-        0,
-        (pullIntentRef.current - FOOTER_PULL_THRESHOLD) /
-          (FOOTER_PULL_MAX_INTENT - FOOTER_PULL_THRESHOLD),
-      );
-      const resistedProgress = Math.pow(normalized, 0.72);
-      if (resistedProgress > 0) {
-        setIsPullActive(true);
-        pullProgress.set(resistedProgress);
-      }
-      scheduleRelease();
-    };
-
-    const handleWheel = (event: WheelEvent) => {
-      const modeMultiplier =
-        event.deltaMode === WheelEvent.DOM_DELTA_LINE
-          ? 16
-          : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
-            ? window.innerHeight
-            : 1;
-      applyPullIntent(event.deltaY * modeMultiplier);
-    };
-
-    const handleTouchStart = (event: TouchEvent) => {
-      lastTouchYRef.current = event.touches[0]?.clientY ?? null;
-    };
-
-    const handleTouchMove = (event: TouchEvent) => {
-      const currentY = event.touches[0]?.clientY;
-      const previousY = lastTouchYRef.current;
-      lastTouchYRef.current = currentY ?? null;
-      if (currentY === undefined || previousY === null) return;
-      applyPullIntent(previousY - currentY);
-    };
-
-    const handleTouchEnd = () => {
-      lastTouchYRef.current = null;
-      releasePull();
-    };
-
-    window.addEventListener("wheel", handleWheel, { passive: true });
-    window.addEventListener("touchstart", handleTouchStart, { passive: true });
-    window.addEventListener("touchmove", handleTouchMove, { passive: true });
-    window.addEventListener("touchend", handleTouchEnd, { passive: true });
-    window.addEventListener("touchcancel", handleTouchEnd, { passive: true });
-
-    return () => {
-      window.clearTimeout(pullReleaseTimeoutRef.current);
-      window.clearTimeout(pullDeactivateTimeoutRef.current);
-      window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchmove", handleTouchMove);
-      window.removeEventListener("touchend", handleTouchEnd);
-      window.removeEventListener("touchcancel", handleTouchEnd);
-    };
-  }, [pullProgress, shouldReduceMotion]);
 
   const socialLinks = useMemo((): SocialLink[] => {
     const contactLink: SocialLink = {
@@ -627,8 +531,209 @@ export default function Footer() {
     }));
   }, [cmsServices, usingCmsServices, i18n.language, t]);
 
+  useEffect(() => {
+    const getFooterRestY = () => {
+      const footer = footerRef.current;
+      if (!footer) return null;
+      return Math.max(0, footer.offsetTop + footer.offsetHeight - window.innerHeight);
+    };
+
+    const returnToFooter = (force = false) => {
+      const restY = getFooterRestY();
+      if (
+        restY === null ||
+        window.scrollY <= restY + 2 ||
+        (!force && isShaderHoveredRef.current)
+      ) {
+        return;
+      }
+
+      returnAnimationRef.current?.stop();
+      isReturningRef.current = true;
+      if (shouldReduceMotion) {
+        window.scrollTo(0, restY);
+        isReturningRef.current = false;
+        return;
+      }
+
+      returnAnimationRef.current = animate(window.scrollY, restY, {
+        type: "spring",
+        stiffness: 270,
+        damping: 36,
+        mass: 0.72,
+        restDelta: 0.35,
+        restSpeed: 10,
+        onUpdate: (latest) => window.scrollTo(0, latest),
+        onComplete: () => {
+          isReturningRef.current = false;
+        },
+      });
+    };
+
+    const scheduleReturn = (delay = FOOTER_REVEAL_DELAY_MS) => {
+      window.clearTimeout(returnTimeoutRef.current);
+      if (
+        isReturningRef.current ||
+        isShaderPressingRef.current ||
+        isShaderHoveredRef.current
+      ) {
+        return;
+      }
+      returnTimeoutRef.current = window.setTimeout(returnToFooter, delay);
+    };
+    scheduleReturnRef.current = scheduleReturn;
+
+    const handleScroll = () => {
+      if (isReturningRef.current || isShaderHoveredRef.current) return;
+      const restY = getFooterRestY();
+      if (restY !== null && window.scrollY > restY + 2) {
+        const revealDepth = window.scrollY - restY;
+        scheduleReturn(
+          revealDepth > window.innerHeight * 0.18
+            ? FOOTER_REVEAL_DEEP_DELAY_MS
+            : FOOTER_REVEAL_DELAY_MS,
+        );
+      }
+    };
+
+    const handleWheelIntent = (event: WheelEvent) => {
+      if (isReturningRef.current) {
+        returnAnimationRef.current?.stop();
+        isReturningRef.current = false;
+      }
+
+      const restY = getFooterRestY();
+      if (restY === null) return;
+      const wheelDeltaY =
+        event.deltaY *
+        (event.deltaMode === WheelEvent.DOM_DELTA_LINE
+          ? 16
+          : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+            ? window.innerHeight
+            : 1);
+
+      if (
+        wheelDeltaY > 0 &&
+        window.scrollY >= restY - 2 &&
+        window.scrollY <= restY + FOOTER_REVEAL_PEEK_PX + 2 &&
+        performance.now() >= revealUnlockedUntilRef.current
+      ) {
+        event.preventDefault();
+        revealIntentRef.current += Math.min(wheelDeltaY, 100);
+        window.clearTimeout(revealIntentResetRef.current);
+
+        if (revealIntentRef.current >= FOOTER_REVEAL_INTENT_THRESHOLD) {
+          revealIntentRef.current = 0;
+          revealUnlockedUntilRef.current = performance.now() + 700;
+          window.scrollTo(0, restY + FOOTER_REVEAL_PEEK_PX);
+        } else {
+          const revealProgress =
+            revealIntentRef.current / FOOTER_REVEAL_INTENT_THRESHOLD;
+          window.scrollTo(0, restY + FOOTER_REVEAL_PEEK_PX * revealProgress);
+          revealIntentResetRef.current = window.setTimeout(() => {
+            revealIntentRef.current = 0;
+            scheduleReturn();
+          }, FOOTER_REVEAL_INTENT_RESET_MS);
+        }
+        return;
+      }
+
+      if (window.scrollY > restY + 2) {
+        if (wheelDeltaY < 0) {
+          event.preventDefault();
+          window.clearTimeout(returnTimeoutRef.current);
+          returnToFooter(true);
+          return;
+        }
+        if (isShaderPressingRef.current || isShaderHoveredRef.current) {
+          window.clearTimeout(returnTimeoutRef.current);
+          return;
+        }
+        scheduleReturn(
+          wheelDeltaY > 28
+            ? FOOTER_REVEAL_DEEP_DELAY_MS
+            : FOOTER_REVEAL_DELAY_MS,
+        );
+      }
+    };
+
+    const cancelReturn = () => {
+      window.clearTimeout(returnTimeoutRef.current);
+      if (isReturningRef.current) {
+        returnAnimationRef.current?.stop();
+        isReturningRef.current = false;
+      }
+    };
+
+    const handleTouchStart = (event: TouchEvent) => {
+      lastTouchYRef.current = event.touches[0]?.clientY ?? null;
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      const currentY = event.touches[0]?.clientY;
+      const previousY = lastTouchYRef.current;
+      lastTouchYRef.current = currentY ?? null;
+      if (currentY === undefined || previousY === null) return;
+
+      const deltaY = previousY - currentY;
+      const restY = getFooterRestY();
+      if (
+        deltaY > 0 &&
+        restY !== null &&
+        window.scrollY >= restY - 2 &&
+        window.scrollY <= restY + FOOTER_REVEAL_PEEK_PX + 2 &&
+        performance.now() >= revealUnlockedUntilRef.current
+      ) {
+        event.preventDefault();
+        revealIntentRef.current += Math.min(deltaY, 80);
+        const revealProgress = Math.min(
+          1,
+          revealIntentRef.current / FOOTER_REVEAL_INTENT_THRESHOLD,
+        );
+        window.scrollTo(0, restY + FOOTER_REVEAL_PEEK_PX * revealProgress);
+        if (revealProgress >= 1) {
+          revealIntentRef.current = 0;
+          revealUnlockedUntilRef.current = performance.now() + 900;
+        }
+        return;
+      }
+      cancelReturn();
+    };
+
+    const handleTouchEnd = () => {
+      lastTouchYRef.current = null;
+      revealIntentRef.current = 0;
+      scheduleReturn();
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("wheel", handleWheelIntent, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+
+    return () => {
+      window.clearTimeout(returnTimeoutRef.current);
+      window.clearTimeout(revealIntentResetRef.current);
+      returnAnimationRef.current?.stop();
+      scheduleReturnRef.current = () => undefined;
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("wheel", handleWheelIntent);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [shouldReduceMotion]);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: shouldReduceMotion ? "auto" : "smooth" });
+  };
+
+  const resetShaderReturnTimer = () => {
+    window.clearTimeout(returnTimeoutRef.current);
+    if (!isShaderPressingRef.current && !isShaderHoveredRef.current) {
+      scheduleReturnRef.current();
+    }
   };
 
   const handleShaderPointerMove = (event: PointerEvent<HTMLElement>) => {
@@ -643,9 +748,13 @@ export default function Footer() {
       y: event.clientY - rect.top,
     });
     setIsShaderHovered(true);
+    isShaderHoveredRef.current = true;
+    window.clearTimeout(returnTimeoutRef.current);
   };
 
   const handleShaderPointerDown = () => {
+    isShaderPressingRef.current = true;
+    window.clearTimeout(returnTimeoutRef.current);
     window.clearTimeout(longPressTimeoutRef.current);
     longPressTimeoutRef.current = window.setTimeout(() => {
       setIsShaderAccelerated(true);
@@ -653,19 +762,27 @@ export default function Footer() {
   };
 
   const endShaderLongPress = () => {
+    isShaderPressingRef.current = false;
     window.clearTimeout(longPressTimeoutRef.current);
     setIsShaderAccelerated(false);
+    resetShaderReturnTimer();
   };
 
   const handleShaderPointerLeave = () => {
+    isShaderPressingRef.current = false;
+    isShaderHoveredRef.current = false;
     window.clearTimeout(longPressTimeoutRef.current);
     setIsShaderHovered(false);
     setIsShaderAccelerated(false);
+    scheduleReturnRef.current(FOOTER_REVEAL_DEEP_DELAY_MS);
   };
 
   return (
     <div>
-      <footer className="relative border-t border-border-subtle bg-surface-page">
+      <footer
+        ref={footerRef}
+        className="relative border-t border-border-subtle bg-surface-page"
+      >
         <div className="mx-auto max-w-[1680px] px-6 pb-12 pt-16 sm:px-8 lg:px-12 lg:pb-12 lg:pt-20 xl:px-16">
           <div className="grid grid-cols-1 gap-12 min-[480px]:grid-cols-2 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-12 xl:gap-x-12">
             <div className="min-w-0 min-[480px]:col-span-2 lg:col-span-12 xl:col-span-4">
@@ -794,13 +911,10 @@ export default function Footer() {
         </div>
       </footer>
 
-      <motion.section
+      <section
         ref={shaderSectionRef}
         aria-hidden="true"
-        style={{ y: pullY }}
-        className={`fixed inset-x-0 bottom-0 z-30 h-[clamp(16rem,32vh,22rem)] overflow-hidden border-t border-border-accent-muted shadow-[0_-24px_70px_rgba(58,42,35,0.16)] ${
-          isPullActive ? "pointer-events-auto" : "pointer-events-none"
-        }`}
+        className="relative h-[clamp(16rem,32vh,22rem)] overflow-hidden border-t border-border-accent-muted"
         onPointerEnter={(event) => {
           setIsShaderHovered(true);
           handleShaderPointerMove(event);
@@ -885,7 +999,7 @@ export default function Footer() {
         >
           {t("footer.holdToAccelerate")}
         </motion.div>
-      </motion.section>
+      </section>
     </div>
   );
 }
