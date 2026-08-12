@@ -129,13 +129,14 @@ n'a été vérifié pendant l'installation du centre.
 4. **Décisions séparées** — architecture SEO/deep-links, règle de publication
    bilingue du CMS et cadre légal/confidentialité restent soumis à validation
    humaine avant implémentation.
-5. **Git et production du 2026-08-12** — `dev` poussé à `e1d0b96`. `main`
+5. **Git et production du 2026-08-12** — `dev` poussé à `257fe3b`. `main`
    poussé sélectivement à `8c58cf3`, sans chemin Services, ServiceDetail,
-   services-dev, Client Brief ou estimateur/pricing. GitHub a créé le
-   déploiement Production `5873744903`, immédiatement marqué `failure` avec la
-   description « Deployment was blocked » avant tout build. La production reste
-   donc sur l'ancienne version ; le CLI courant n'a pas accès à Carole's Team.
-   Une action humaine depuis ce compte est requise avant vérification finale.
+   services-dev, Client Brief ou estimateur/pricing. Le premier déploiement a
+   été bloqué pendant que le dépôt était privé. Après son retour en public, le
+   commit vide de relance `c5d2fe0` a produit un déploiement Vercel réussi.
+   Production vérifiée sur `www.carolebj.com` : D3-A à 16 px dans le hero,
+   shader footer en section relative, page Services d'attente conservée, route
+   estimateur en Page introuvable, aucune erreur console ni overflow observé.
 
 ### Backlog opérationnel TickTick
 
