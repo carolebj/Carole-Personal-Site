@@ -96,8 +96,8 @@ n'a été vérifié pendant l'installation du centre.
 
 | Tâche | Identifiant | Statut réel | Rôle | Dernier résultat vérifiable | Attente suivante |
 |---|---|---|---|---|---|
-| Centre de contrôle | `019ff632-f77f-7a33-be83-d9723b32e8f6` | Actif | Coordination exclusive | Protocole installé ; photographie Git établie | Consolider les prochains rapports |
-| Intégrer les correctifs de l'audit | `019fa0d2-33a8-7a51-ac90-36be8d4ba280` | TERMINÉ localement — D3-A | Audit et validation des correctifs | D3-A intégré sur quatre usages publics et vérifié ; admin intact | Proposer un commit D3-A séparé ; aucun push sans autorisation |
+| Centre de contrôle | `019ff632-f77f-7a33-be83-d9723b32e8f6` | DÉCISION REQUISE — production | Coordination exclusive | `dev` et `main` poussés avec périmètres distincts ; déploiement Vercel `main` bloqué avant build | Faire relancer/autoriser le déploiement depuis Carole's Team, puis vérifier la production |
+| Intégrer les correctifs de l'audit | `019fa0d2-33a8-7a51-ac90-36be8d4ba280` | TERMINÉ — poussé sur dev | Audit et validation des correctifs | D3-A public, footer final, correctifs audit et documentation poussés sur `dev` à `e1d0b96` | Rester disponible ; aucune reprise sans nouvelle mission |
 
 ### Arbitrages remontés au centre
 
@@ -129,6 +129,13 @@ n'a été vérifié pendant l'installation du centre.
 4. **Décisions séparées** — architecture SEO/deep-links, règle de publication
    bilingue du CMS et cadre légal/confidentialité restent soumis à validation
    humaine avant implémentation.
+5. **Git et production du 2026-08-12** — `dev` poussé à `e1d0b96`. `main`
+   poussé sélectivement à `8c58cf3`, sans chemin Services, ServiceDetail,
+   services-dev, Client Brief ou estimateur/pricing. GitHub a créé le
+   déploiement Production `5873744903`, immédiatement marqué `failure` avec la
+   description « Deployment was blocked » avant tout build. La production reste
+   donc sur l'ancienne version ; le CLI courant n'a pas accès à Carole's Team.
+   Une action humaine depuis ce compte est requise avant vérification finale.
 
 ### Backlog opérationnel TickTick
 
