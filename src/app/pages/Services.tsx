@@ -2,8 +2,8 @@ import {
   ArrowRightIcon,
   ClipboardDocumentCheckIcon,
   PaintBrushIcon,
-  SparklesIcon,
 } from "@heroicons/react/24/outline";
+import { EditorialAsteriskIcon } from "../components/icons/EditorialAsteriskIcon";
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useMemo, useState, type MouseEvent } from "react";
 import { Link, useNavigate } from "react-router";
@@ -139,7 +139,7 @@ export default function Services() {
             <div className="p-7 sm:p-10 lg:p-12">
               <div className="flex flex-wrap items-center gap-3">
                 <span className="inline-flex size-11 items-center justify-center rounded-full bg-white text-text-accent shadow-[0_12px_34px_rgba(91,65,55,0.10)] dark:bg-white/8">
-                  {featureIsDesign ? <PaintBrushIcon className="size-5" /> : <SparklesIcon className="size-5" />}
+                  {featureIsDesign ? <PaintBrushIcon className="size-5" /> : <EditorialAsteriskIcon className="size-5" />}
                 </span>
                 <span className="text-[11px] font-semibold uppercase tracking-[2.4px] text-text-accent">
                   {t("services.featuredOffer")}

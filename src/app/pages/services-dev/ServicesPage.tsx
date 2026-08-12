@@ -2,8 +2,8 @@ import {
   ArrowRightIcon,
   CheckCircleIcon,
   ClipboardDocumentCheckIcon,
-  SparklesIcon,
 } from "@heroicons/react/24/outline";
+import { EditorialAsteriskIcon } from "../../components/icons/EditorialAsteriskIcon";
 import { motion } from "motion/react";
 import type React from "react";
 import { useMemo } from "react";
@@ -112,7 +112,7 @@ export default function ServicesPage() {
                     {index % 2 === 0 ? (
                       <ClipboardDocumentCheckIcon className="size-5" />
                     ) : (
-                      <SparklesIcon className="size-5" />
+                      <EditorialAsteriskIcon className="size-5" />
                     )}
                   </span>
                   <span className="text-[12px] font-semibold uppercase tracking-[2px] text-[#8d7b72] dark:text-text-muted">

@@ -2,9 +2,9 @@ import {
   ArrowPathIcon,
   ChatBubbleBottomCenterTextIcon,
   PencilSquareIcon,
-  SparklesIcon,
 } from "@heroicons/react/24/outline";
 import { motion, useReducedMotion } from "motion/react";
+import { EditorialAsteriskIcon } from "./icons/EditorialAsteriskIcon";
 
 const steps = [
   {
@@ -19,7 +19,7 @@ const steps = [
   },
   {
     label: "Clarté",
-    Icon: SparklesIcon,
+    Icon: EditorialAsteriskIcon,
     className: "right-[6%] top-10 rotate-[-2deg] bg-[#f6f3f2]",
   },
 ];

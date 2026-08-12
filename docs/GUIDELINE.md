@@ -280,6 +280,11 @@ Follow the existing codebase before introducing new patterns.
 - Prefer Heroicons for new icons
 - Use Lucide only when Heroicons lacks the needed symbol
 - Do not casually mix icon libraries inside a single component
+- Public surfaces use the canonical D3-A editorial asterisk from
+  `src/app/components/icons/EditorialAsteriskIcon.tsx` for the brand's “waouh”
+  signature. Do not reintroduce `SparklesIcon` for that public role or copy the
+  SVG path into individual components. The dashboard icon map is a separate
+  functional context.
 - The `ui/` directory contains reusable primitives; do not duplicate a primitive before checking there
 - For Heroicons, import from `@heroicons/react/24/outline` and size icons with Tailwind classes rather than a `size` prop
 
