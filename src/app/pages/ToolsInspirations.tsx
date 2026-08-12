@@ -188,7 +188,7 @@ function ResourceCard({
       onMouseLeave={() => setIsEngaged(false)}
       onFocus={() => setIsEngaged(true)}
       onBlur={() => setIsEngaged(false)}
-      className="group relative block h-full min-h-[24rem] w-full overflow-hidden rounded-xl border border-border-subtle bg-[#1c1b1b] shadow-[0_14px_38px_rgba(58,42,35,0.10)] outline-none transition-[box-shadow,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-white/30 hover:shadow-[0_24px_60px_rgba(58,42,35,0.18)] focus-visible:ring-2 focus-visible:ring-text-accent focus-visible:ring-offset-4 motion-reduce:transition-none dark:border-white/10 dark:focus-visible:ring-offset-[#171312]"
+      className="group relative block h-full min-h-[24rem] w-full overflow-hidden rounded-xl border border-border-subtle bg-[#1c1b1b] shadow-[0_14px_38px_rgba(58,42,35,0.10)] outline-none transition-[box-shadow,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-white/30 hover:shadow-[0_24px_60px_rgba(58,42,35,0.18)] focus-visible:ring-2 focus-visible:ring-[color:var(--focus-ring)] focus-visible:ring-offset-4 focus-visible:ring-offset-[color:var(--surface-page)] motion-reduce:transition-none dark:border-white/16"
     >
       <img
         src={imageUrl}
@@ -363,7 +363,7 @@ export default function ToolsInspirations() {
   const overviewLabel = i18n.language === "fr" ? "À propos" : "About";
 
   return (
-    <main className={PAGE_MAIN_SPACIOUS}>
+    <div className={PAGE_MAIN_SPACIOUS}>
       <section className="mx-auto max-w-[1060px] text-center">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -390,7 +390,7 @@ export default function ToolsInspirations() {
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              className="public-input h-12 w-full border-transparent bg-transparent pl-8 pr-0 text-[16px] text-text-primary placeholder:text-text-muted dark:text-text-primary dark:placeholder:text-[#cdb9ae]/68 sm:pr-24"
+              className="public-input h-12 w-full border-transparent bg-transparent pl-8 pr-0 text-[16px] text-text-primary placeholder:text-text-muted dark:text-text-primary dark:placeholder:text-text-muted sm:pr-24"
               placeholder={content.searchPlaceholder}
             />
             <span className="mt-2 block font-mono text-[12px] uppercase tracking-[1px] text-text-muted sm:absolute sm:right-0 sm:top-1/2 sm:mt-0 sm:-translate-y-1/2">
@@ -451,6 +451,6 @@ export default function ToolsInspirations() {
           {content.emptyState}
         </div>
       ) : null}
-    </main>
+    </div>
   );
 }

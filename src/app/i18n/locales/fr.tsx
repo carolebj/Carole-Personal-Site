@@ -1,4 +1,8 @@
 const fr = {
+  a11y: {
+    skipToContent: "Aller au contenu principal",
+  },
+
   nav: {
     home: "Accueil",
     services: "Services",
@@ -348,6 +352,13 @@ const fr = {
     success: "Merci, votre message a bien été envoyé à Carole.",
     sendError: "Le message n’a pas pu être envoyé. Réessayez dans quelques instants.",
     meetingLink: "Ou opter pour un rendez-vous",
+    errors: {
+      nameRequired: "Indiquez votre nom.",
+      emailRequired: "Indiquez votre adresse e-mail.",
+      emailInvalid: "L’adresse e-mail n’est pas valide.",
+      messageRequired: "Rédigez votre message.",
+      formSummary: "Certains champs demandent votre attention. Consultez les messages ci-dessous.",
+    },
   },
 
   blog: {
@@ -361,6 +372,7 @@ const fr = {
     latestEyebrow: "Dernières notes",
     latestTitle: "À lire maintenant",
     readArticle: "Lire l'article",
+    readArticleLabel: "Lire l'article : {{title}}",
     backToBlog: "Retour au blog",
     takeawaysTitle: "À retenir",
     allCategories: "Tous",
@@ -763,7 +775,8 @@ const fr = {
       { title: "Calendrier du CM 229", type: "Ressource", categories: ["Veille & inspiration", "Social media"], desc: "Un outil éditorial local mis à jour chaque année, avec dates importantes, inspirations de campagnes et conseils de professionnels du digital au Bénin.", link: "https://calendrierducm.bj/" },
       { title: "Women Techmakers Abomey-Calavi", type: "Communauté", categories: ["Femmes & numérique"], desc: "Une communauté de femmes passionnées par les technologies de programmation, portée par des sessions de renforcement de capacités, de networking et d'inspiration.", link: "https://www.linkedin.com/company/women-techmakers-abomey-calavi/" }
     ],
-    discoverBook: "Découvrir",
+    discoverBook: "Voir sur Google Books",
+    discoverBookLabel: "Consulter {{title}} sur Google Books (nouvel onglet)",
     readingsTitle: "Lectures & références",
     readingsSection1Desc: "Mes lectures repères pour affiner le regard, structurer les idées et nourrir la pratique.",
     readingsSection2Desc: "Newsletters et contenus courts, gardés comme des notes de veille utiles à consulter.",

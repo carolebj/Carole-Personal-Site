@@ -55,7 +55,7 @@ export default function Contact() {
   }, [mode]);
 
   return (
-    <main className={PAGE_MAIN_SPACIOUS}>
+    <div className={PAGE_MAIN_SPACIOUS}>
       <section className="mx-auto max-w-[1160px]">
         <div className="max-w-[860px]">
           <SectionEyebrow className="tracking-[4px]">{t("contactPage.eyebrow")}</SectionEyebrow>
@@ -143,6 +143,6 @@ export default function Contact() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

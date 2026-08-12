@@ -75,7 +75,7 @@ export default function Blog() {
   };
 
   return (
-    <main className={PAGE_MAIN}>
+    <div className={PAGE_MAIN}>
       <motion.section
         initial={reduceMotion ? false : { opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -93,6 +93,7 @@ export default function Blog() {
         <Link
           to={`/blog/${featuredPost.slug}`}
           viewTransition
+          aria-label={t("blog.readArticleLabel", { title: featuredPost.title })}
           className="group relative mx-auto block w-full max-w-[560px] overflow-hidden rounded-lg border border-border-accent/32 bg-white p-4 shadow-[0_24px_70px_rgba(28,27,27,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_90px_rgba(28,27,27,0.12)] dark:border-white/10 dark:bg-surface-panel"
         >
           <div
@@ -131,7 +132,7 @@ export default function Blog() {
                 {featuredPost.readingTime}
               </span>
             </div>
-            <span className="inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[1.4px] text-text-primary transition group-hover:text-text-accent dark:text-text-primary dark:group-hover:text-[#f0adc4]">
+            <span aria-hidden="true" className="inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[1.4px] text-text-primary transition group-hover:text-text-accent dark:text-text-primary dark:group-hover:text-[#f0adc4]">
               {t("blog.readArticle")}
               <ArrowRightIcon className="size-4 transition group-hover:translate-x-1" />
             </span>
@@ -193,6 +194,7 @@ export default function Blog() {
               key={post.slug}
               to={`/blog/${post.slug}`}
               viewTransition
+              aria-label={t("blog.readArticleLabel", { title: post.title })}
               className="group grid overflow-hidden rounded-lg border border-border-accent/28 bg-white shadow-[0_1px_2px_rgba(28,27,27,0.04)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(28,27,27,0.08)] dark:border-white/10 dark:bg-surface-panel sm:grid-cols-[12rem_1fr]"
             >
               <div
@@ -224,7 +226,7 @@ export default function Blog() {
                 <p className="mt-3 text-sm leading-6 text-text-secondary dark:text-text-secondary">
                   {post.excerpt}
                 </p>
-                <span className="mt-5 inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[1.3px] text-text-primary transition group-hover:text-text-accent dark:text-text-primary dark:group-hover:text-[#f0adc4]">
+                <span aria-hidden="true" className="mt-5 inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[1.3px] text-text-primary transition group-hover:text-text-accent dark:text-text-primary dark:group-hover:text-[#f0adc4]">
                   {t("blog.readArticle")}
                   <ArrowRightIcon className="size-4 transition group-hover:translate-x-1" />
                 </span>
@@ -238,6 +240,6 @@ export default function Blog() {
           </div>
         ) : null}
       </section>
-    </main>
+    </div>
   );
 }

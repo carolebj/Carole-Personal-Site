@@ -107,7 +107,7 @@ export default function Services() {
   };
 
   return (
-    <main className={`${PAGE_MAIN} overflow-x-clip bg-surface-page pb-24`}>
+    <div className={`${PAGE_MAIN} overflow-x-clip bg-surface-page pb-24`}>
       <motion.section
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
@@ -301,6 +301,6 @@ export default function Services() {
           {t("services.pageCta")}
         </Link>
       </motion.section>
-    </main>
+    </div>
   );
 }

@@ -6,7 +6,9 @@ import { toBlogPostViewModel } from "../../cms/adapters";
 import { cmsImageUrl, useCmsCollection } from "../../cms/cmsContent";
 import { isPublishedPost, localized, type CmsBlogPost, type CmsImage } from "../../cms/types";
 import type { PortableTextBlock } from "@portabletext/types";
+import { NotFoundView, useNotFoundSeo } from "../components/NotFoundPage";
 import { PAGE_MAIN } from "../components/layout/publicPage";
+import { resolveBySlug } from "../routing/resolveBySlug";
 import { useSeoOverride } from "../seo/SeoOverrideContext";
 import { BlogArticleContent } from "./BlogArticleContent";
 
@@ -50,12 +52,15 @@ export default function BlogArticle() {
         : legacyPosts,
     [usingCms, publishedCmsPosts, i18n.language, legacyPosts]
   );
-  const post = posts.find((item) => item.slug === slug) ?? posts[0];
-  const postIndex = Math.max(0, posts.findIndex((item) => item.slug === post.slug));
-  const cmsImage = cmsImageUrl(post.coverImage);
-  const postImage = usingCms
-    ? cmsImage
-    : blogImages[postIndex % blogImages.length] ?? blogImages[0];
+  const post = resolveBySlug(posts, slug);
+  const postIndex = post ? Math.max(0, posts.findIndex((item) => item.slug === post.slug)) : -1;
+  const cmsImage = cmsImageUrl(post?.coverImage);
+  const postImage = post
+    ? usingCms
+      ? cmsImage
+      : blogImages[postIndex % blogImages.length] ?? blogImages[0]
+    : undefined;
+  const notFoundSeo = useNotFoundSeo();
   const seoOverride = useMemo(
     () =>
       post
@@ -65,13 +70,17 @@ export default function BlogArticle() {
             image: postImage,
             ogType: "article",
           }
-        : null,
-    [post, postImage],
+        : notFoundSeo,
+    [post, postImage, notFoundSeo],
   );
   useSeoOverride(seoOverride);
 
+  if (!post) {
+    return <NotFoundView />;
+  }
+
   return (
-    <main className={PAGE_MAIN}>
+    <div className={PAGE_MAIN}>
       <motion.article
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -99,6 +108,6 @@ export default function BlogArticle() {
           }}
         />
       </motion.article>
-    </main>
+    </div>
   );
 }

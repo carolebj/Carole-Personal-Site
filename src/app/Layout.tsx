@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import { Outlet, ScrollRestoration, useLocation } from "react-router";
+import { useTranslation } from "react-i18next";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import EstimatorShell from "./components/EstimatorShell";
 import Seo from "./components/Seo";
+import { MAIN_CONTENT_ID, PAGE_SCROLL_MARGIN } from "./components/layout/publicPage";
 import { SeoOverrideProvider } from "./seo/SeoOverrideContext";
 import { HapticProvider } from "./interactions/HapticContext";
 import { ThemeProvider } from "./theme/ThemeContext";
@@ -11,6 +13,7 @@ import "./i18n/i18n";
 import { preloadPublicRoutes } from "./publicRouteModules";
 
 export default function Layout() {
+  const { t } = useTranslation();
   const { pathname } = useLocation();
   const isEstimatorRoute = pathname.replace(/\/+$/, "") === "/estimer-mon-projet";
 
@@ -40,10 +43,20 @@ export default function Layout() {
               </EstimatorShell>
             ) : (
               <>
+                <a
+                  href={`#${MAIN_CONTENT_ID}`}
+                  className="sr-only z-[100] rounded-md bg-action-strong px-4 py-2 text-text-on-strong focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page"
+                >
+                  {t("a11y.skipToContent")}
+                </a>
                 <header>
                   <Navbar />
                 </header>
-                <main>
+                <main
+                  id={MAIN_CONTENT_ID}
+                  tabIndex={-1}
+                  className={`outline-none ${PAGE_SCROLL_MARGIN}`}
+                >
                   <Outlet />
                 </main>
                 <Footer />

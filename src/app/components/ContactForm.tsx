@@ -1,7 +1,7 @@
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
-import { useState, type FormHTMLAttributes } from "react";
+import { useId, useState, type FormHTMLAttributes } from "react";
 import { useTranslation } from "react-i18next";
-import { shakeInvalidField } from "./contactFormUtils";
+import { getContactFieldError, shakeInvalidField } from "./contactFormUtils";
 import { isSuccessfulContactResponse } from "./contactResponse";
 
 type ContactFormVariant = "embedded" | "page";
@@ -23,6 +23,13 @@ const defaultBorder = "border-border-subtle dark:border-white/10";
 const inputBase =
   "t-input public-input border bg-surface-page text-text-primary dark:bg-white/5 dark:text-text-primary";
 
+const FIELD_NAMES = ["name", "email", "subject", "message"] as const;
+type FieldName = (typeof FIELD_NAMES)[number];
+
+function fieldErrorId(formId: string, name: FieldName) {
+  return `${formId}-${name}-error`;
+}
+
 export function ContactForm({
   variant = "embedded",
   className = "",
@@ -30,20 +37,32 @@ export function ContactForm({
   formProps,
 }: ContactFormProps) {
   const { t } = useTranslation();
-  const [invalidFields, setInvalidFields] = useState<string[]>([]);
-  const [formError, setFormError] = useState("");
+  const formId = useId();
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<FieldName, string>>>({});
   const [submitState, setSubmitState] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const isPage = variant === "page";
   const inputRadius = isPage ? "rounded-xl" : "rounded-md";
   const labelLayout = isPage ? "grid gap-2" : "block";
   const inputSpacing = isPage ? "" : "mt-2";
   const fieldRow = isPage ? "grid gap-5 sm:grid-cols-2" : "grid gap-4 sm:grid-cols-2";
+  const invalidFields = Object.keys(fieldErrors) as FieldName[];
+  const hasFieldErrors = invalidFields.length > 0;
+  const formAlertMessage =
+    submitState === "error"
+      ? t("contactSection.sendError")
+      : hasFieldErrors
+        ? t("contactSection.errors.formSummary")
+        : null;
 
-  const clearError = (name: string) => {
-    setInvalidFields((current) => current.filter((field) => field !== name));
-    if (formError) {
-      setFormError("");
-    }
+  const clearError = (name: FieldName) => {
+    setFieldErrors((current) => {
+      if (!current[name]) {
+        return current;
+      }
+      const next = { ...current };
+      delete next[name];
+      return next;
+    });
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -53,7 +72,7 @@ export function ContactForm({
     if (form.checkValidity()) {
       const formData = new FormData(form);
       setSubmitState("submitting");
-      setFormError("");
+      setFieldErrors({});
 
       try {
         const response = await fetch("/api/contact", {
@@ -86,26 +105,47 @@ export function ContactForm({
           element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement
       )
       .filter((element) => !element.validity.valid);
-    const invalidNames = invalidElements.map((element) => element.name).filter(Boolean);
-    const firstInvalid = invalidElements[0];
+    const nextErrors: Partial<Record<FieldName, string>> = {};
 
-    setInvalidFields(invalidNames);
-    setFormError(firstInvalid?.validationMessage ?? "");
+    for (const element of invalidElements) {
+      const name = element.name as FieldName;
+      if (FIELD_NAMES.includes(name)) {
+        nextErrors[name] = getContactFieldError(element, t);
+      }
+    }
 
-    window.setTimeout(() => shakeInvalidField(firstInvalid));
+    setFieldErrors(nextErrors);
+    window.setTimeout(() => shakeInvalidField(invalidElements[0]));
   };
 
-  const fieldClass = (name: string, extra = "") =>
+  const fieldClass = (name: FieldName, extra = "") =>
     `${inputBase} ${inputSpacing} ${inputRadius} ${extra} ${
-      invalidFields.includes(name) ? errorBorder : defaultBorder
+      fieldErrors[name] ? errorBorder : defaultBorder
     }`;
+
+  const renderFieldError = (name: FieldName) => {
+    const message = fieldErrors[name];
+    if (!message) {
+      return null;
+    }
+
+    return (
+      <span
+        id={fieldErrorId(formId, name)}
+        className="text-sm font-medium text-destructive dark:text-[#ff8aa1]"
+      >
+        {message}
+      </span>
+    );
+  };
 
   return (
     <form
+      id={formId}
       noValidate
       onSubmit={handleSubmit}
       {...formProps}
-      className={`t-input-wrap ${formError ? "is-error" : ""} ${className} ${formProps?.className ?? ""}`.trim()}
+      className={`t-input-wrap ${hasFieldErrors ? "is-error" : ""} ${className} ${formProps?.className ?? ""}`.trim()}
     >
       <div className="hidden" aria-hidden="true">
         <label>
@@ -120,34 +160,50 @@ export function ContactForm({
       ) : null}
 
       <div className={fieldRow}>
-        <label className={`t-input-wrap ${labelLayout} ${labelClass} ${invalidFields.includes("name") ? "is-error" : ""}`}>
+        <label
+          htmlFor={`${formId}-name`}
+          className={`t-input-wrap ${labelLayout} ${labelClass} ${fieldErrors.name ? "is-error" : ""}`}
+        >
           {t("contactSection.name")}
           <input
+            id={`${formId}-name`}
             name="name"
             autoComplete="name"
             required
+            aria-invalid={fieldErrors.name ? true : undefined}
+            aria-describedby={fieldErrors.name ? fieldErrorId(formId, "name") : undefined}
             onInput={() => clearError("name")}
             className={fieldClass("name", isPage ? "h-12 px-4" : "h-12 w-full px-4 text-base font-normal")}
           />
+          {renderFieldError("name")}
         </label>
-        <label className={`t-input-wrap ${labelLayout} ${labelClass} ${invalidFields.includes("email") ? "is-error" : ""}`}>
+        <label
+          htmlFor={`${formId}-email`}
+          className={`t-input-wrap ${labelLayout} ${labelClass} ${fieldErrors.email ? "is-error" : ""}`}
+        >
           {t("contactSection.email")}
           <input
+            id={`${formId}-email`}
             type="email"
             name="email"
             autoComplete="email"
             required
+            aria-invalid={fieldErrors.email ? true : undefined}
+            aria-describedby={fieldErrors.email ? fieldErrorId(formId, "email") : undefined}
             onInput={() => clearError("email")}
             className={fieldClass("email", isPage ? "h-12 px-4" : "h-12 w-full px-4 text-base font-normal")}
           />
+          {renderFieldError("email")}
         </label>
       </div>
 
       <label
-        className={`t-input-wrap ${isPage ? "grid gap-2" : "mt-4 block"} ${labelClass} ${invalidFields.includes("subject") ? "is-error" : ""}`}
+        htmlFor={`${formId}-subject`}
+        className={`t-input-wrap ${isPage ? "grid gap-2" : "mt-4 block"} ${labelClass}`}
       >
         {t("contactSection.subject")}
         <input
+          id={`${formId}-subject`}
           name="subject"
           autoComplete="off"
           onInput={() => clearError("subject")}
@@ -156,14 +212,18 @@ export function ContactForm({
       </label>
 
       <label
-        className={`t-input-wrap ${isPage ? "grid gap-2" : "mt-4 block"} ${labelClass} ${invalidFields.includes("message") ? "is-error" : ""}`}
+        htmlFor={`${formId}-message`}
+        className={`t-input-wrap ${isPage ? "grid gap-2" : "mt-4 block"} ${labelClass} ${fieldErrors.message ? "is-error" : ""}`}
       >
         {t("contactSection.message")}
         <textarea
+          id={`${formId}-message`}
           name="message"
           autoComplete="off"
           required
           rows={isPage ? undefined : 5}
+          aria-invalid={fieldErrors.message ? true : undefined}
+          aria-describedby={fieldErrors.message ? fieldErrorId(formId, "message") : undefined}
           onInput={() => clearError("message")}
           className={fieldClass(
             "message",
@@ -172,27 +232,30 @@ export function ContactForm({
               : "w-full resize-none px-4 py-3 text-base font-normal leading-7"
           )}
         />
+        {renderFieldError("message")}
       </label>
-
-      <p className={`t-error-msg text-sm font-medium text-destructive dark:text-[#ff8aa1] ${isPage ? "" : "mt-3"}`}>
-        {formError}
-      </p>
 
       {submitState === "success" ? (
         <p role="status" aria-live="polite" className="text-sm font-medium text-text-accent">
           {t("contactSection.success")}
         </p>
       ) : null}
-      {submitState === "error" ? (
-        <p role="alert" className="text-sm font-medium text-destructive dark:text-[#ff8aa1]">
-          {t("contactSection.sendError")}
+      {formAlertMessage ? (
+        <p
+          role="alert"
+          aria-live="assertive"
+          className={`text-sm font-medium text-destructive dark:text-[#ff8aa1] ${
+            submitState === "error" ? "" : "sr-only"
+          }`}
+        >
+          {formAlertMessage}
         </p>
       ) : null}
 
       <button
         type="submit"
         disabled={submitState === "submitting"}
-        className={`inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-full bg-action-strong px-6 text-[12px] font-semibold uppercase tracking-[1px] text-text-on-strong transition hover:bg-action-accent dark:bg-text-primary dark:text-[#1c1415] dark:hover:bg-text-accent dark:hover:text-text-on-strong ${
+        className={`inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-full bg-action-strong px-6 text-[12px] font-semibold uppercase tracking-[1px] text-text-on-strong transition hover:bg-action-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page dark:bg-text-primary dark:text-[#1c1415] dark:hover:bg-text-accent dark:hover:text-text-on-strong ${
           isPage ? "w-fit gap-3 px-7" : "mt-5 w-full justify-center gap-2 sm:w-auto"
         }`}
       >

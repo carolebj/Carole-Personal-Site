@@ -12,7 +12,10 @@ import { useTranslation } from "react-i18next";
 import { toServiceViewModel } from "../../cms/adapters";
 import { useCmsCollection } from "../../cms/cmsContent";
 import type { CmsService } from "../../cms/types";
+import { NotFoundView, useNotFoundSeo } from "../components/NotFoundPage";
 import { PAGE_MAIN } from "../components/layout/publicPage";
+import { SectionEyebrow } from "../components/SectionEyebrow";
+import { resolveBySlug, SERVICE_SLUG_ALIASES } from "../routing/resolveBySlug";
 import { useSeoOverride } from "../seo/SeoOverrideContext";
 
 type ServiceDetail = {
@@ -30,17 +33,6 @@ type ServiceDetail = {
   whatIsIncluded?: string[];
   targetAudience?: string[];
   concreteApplications?: string[];
-};
-
-const slugAliases: Record<string, string> = {
-  "direction-social-media": "communication-digitale",
-  "social-media-direction": "digital-communication",
-  "creation-contenu": "creation-contenus",
-  "content-creation": "creation-contenus",
-  "audit-conseil": "audit-consulting",
-  "graphic-design": "identite-visuelle",
-  "visual-identity": "identite-visuelle",
-  "design-graphique": "identite-visuelle",
 };
 
 function AnimatedDigits({ value }: { value: string }) {
@@ -69,8 +61,8 @@ export default function ServiceDetail() {
     }
     return t("services.items", { returnObjects: true }) as ServiceDetail[];
   }, [cmsServices, usingCmsServices, locale, t]);
-  const normalizedSlug = slug ? slugAliases[slug] ?? slug : "";
-  const service = services.find((item) => item.slug === normalizedSlug) ?? services[0];
+  const service = resolveBySlug(services, slug, SERVICE_SLUG_ALIASES);
+  const notFoundSeo = useNotFoundSeo();
   const seoOverride = useMemo(
     () =>
       service
@@ -78,28 +70,13 @@ export default function ServiceDetail() {
             title: `${service.title} ${service.accent} | Carole Tonoukouen`,
             description: service.detailIntro || service.description,
           }
-        : null,
-    [service],
+        : notFoundSeo,
+    [service, notFoundSeo],
   );
   useSeoOverride(seoOverride);
 
   if (!service) {
-    return (
-      <main className={`${PAGE_MAIN} px-5 pb-24 sm:px-8`}>
-        <div className="mx-auto max-w-[760px] rounded-lg border border-border-accent-muted bg-surface-panel p-8 text-center">
-          <p className="text-[12px] font-semibold uppercase tracking-[2px] text-text-accent">
-            {t("serviceDetail.eyebrow")}
-          </p>
-          <h1 className="mt-4 font-serif text-[42px] leading-[46px] text-text-primary">
-            {t("services.pageTitleStart")}
-          </h1>
-          <Link to="/services" className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-text-accent">
-            <ArrowLeftIcon className="size-4" />
-            {t("serviceDetail.back")}
-          </Link>
-        </div>
-      </main>
-    );
+    return <NotFoundView />;
   }
 
   const whatIsIncluded = service.whatIsIncluded?.length ? service.whatIsIncluded : service.bullets;
@@ -109,7 +86,7 @@ export default function ServiceDetail() {
   const briefUrl = `/services/${service.slug}/brief-client`;
 
   return (
-    <main className={`${PAGE_MAIN} overflow-hidden bg-surface-page pb-24`}>
+    <div className={`${PAGE_MAIN} overflow-hidden bg-surface-page pb-24`}>
       <motion.section
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
@@ -174,9 +151,9 @@ export default function ServiceDetail() {
       <section className="mx-auto mt-16 max-w-[1180px] px-5 sm:px-8 lg:px-0">
         <div className="grid gap-6 lg:grid-cols-[0.72fr_1.28fr]">
           <article className="rounded-lg bg-[#f8eee9] p-7 dark:bg-white/5 md:p-9">
-            <p className="text-[12px] font-semibold uppercase tracking-[3px] text-text-accent">
+            <SectionEyebrow as="h2">
               {t("serviceDetail.presentationBlockTitle")}
-            </p>
+            </SectionEyebrow>
             <p className="mt-6 text-[18px] leading-9 text-text-secondary">
               {service.presentation ?? service.description}
             </p>
@@ -203,12 +180,12 @@ export default function ServiceDetail() {
       <section className="mx-auto mt-16 max-w-[1180px] px-5 sm:px-8 lg:px-0">
         <div className="grid gap-8 lg:grid-cols-[18rem_1fr]">
           <div>
-            <p className="text-[12px] font-semibold uppercase tracking-[3px] text-text-accent">
+            <SectionEyebrow as="h2">
               {t("serviceDetail.includes")}
-            </p>
-            <h2 className="mt-4 font-serif text-[40px] leading-[44px] text-text-primary">
+            </SectionEyebrow>
+            <p className="mt-4 font-serif text-[40px] leading-[44px] text-text-primary">
               {t("serviceDetail.presentationBlockText")}
-            </h2>
+            </p>
           </div>
 
           <div className="grid gap-4">
@@ -343,6 +320,6 @@ export default function ServiceDetail() {
           </Link>
         </section>
       ) : null}
-    </main>
+    </div>
   );
 }

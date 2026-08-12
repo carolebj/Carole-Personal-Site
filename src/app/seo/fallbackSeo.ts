@@ -121,10 +121,26 @@ export function pathnameToSeoPageKey(pathname: string): SeoPageKey | null {
   if (pathname.startsWith("/carnet/outils-inspirations")) return "carnetResources";
   if (pathname.startsWith("/carnet/lectures-references")) return "carnetReadings";
   if (pathname.startsWith("/carnet/")) return "carnetResources";
-  return "home";
+  return null;
 }
 
+const notFoundSeo: { fr: SeoCopy; en: SeoCopy } = {
+  fr: {
+    title: "Page introuvable | Carole Tonoukouen",
+    description:
+      "La page que vous recherchez n'existe pas ou a été déplacée. Vérifiez l'adresse ou revenez à l'accueil.",
+  },
+  en: {
+    title: "Page not found | Carole Tonoukouen",
+    description:
+      "The page you are looking for does not exist or has been moved. Check the address or return home.",
+  },
+};
+
 export function getFallbackSeo(pathname: string, lang: "fr" | "en"): SeoCopy {
-  const key = pathnameToSeoPageKey(pathname) ?? (pathname.startsWith("/services/") ? "services" : "blog");
-  return fallbackByKey[key][lang];
+  const key = pathnameToSeoPageKey(pathname);
+  if (key) return fallbackByKey[key][lang];
+  // Detail routes (/blog/*, /services/*) rely on useSeoOverride for real meta.
+  // Without an override (soft-404), prefer not-found copy over section listing titles.
+  return notFoundSeo[lang];
 }

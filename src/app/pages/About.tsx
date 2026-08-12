@@ -107,7 +107,7 @@ export default function About() {
   const portraitSrc = usingCms ? cmsImageUrl(cmsAbout?.image) || aboutPortrait : aboutPortrait;
 
   return (
-    <main className="bg-surface-page text-text-primary">
+    <div className="bg-surface-page text-text-primary">
       <article className={`mx-auto max-w-[680px] px-5 pt-28 sm:px-8 md:pt-36 ${PAGE_SCROLL_MARGIN}`}>
         <motion.header
           {...fadeUp}
@@ -125,13 +125,13 @@ export default function About() {
           {...fadeUp}
           className={`mt-14 md:mt-16 ${aboutPanelSection}`}
         >
-          <SectionEyebrow>{content.identity.label}</SectionEyebrow>
+          <SectionEyebrow as="h2">{content.identity.label}</SectionEyebrow>
 
           <div className="mt-8 grid gap-8 md:grid-cols-[minmax(0,1fr)_200px] md:gap-x-10">
             <div>
-              <h2 className="font-serif text-[clamp(1.65rem,4vw,2.15rem)] leading-[1.15] tracking-[-0.02em] text-text-primary">
+              <h3 className="font-serif text-[clamp(1.65rem,4vw,2.15rem)] leading-[1.15] tracking-[-0.02em] text-text-primary">
                 {content.identity.greeting}
-              </h2>
+              </h3>
               <p className="mt-4 text-[15px] font-medium leading-7 text-text-muted md:text-[16px]">
                 {content.identity.role}
               </p>
@@ -157,7 +157,7 @@ export default function About() {
           {...fadeUpInView}
           className={`mt-8 md:mt-10 ${aboutPanelSection}`}
         >
-          <SectionEyebrow>{content.support.label}</SectionEyebrow>
+          <SectionEyebrow as="h2">{content.support.label}</SectionEyebrow>
           <div className="mt-8">
             <ProseBlock paragraphs={content.support.paragraphs} />
           </div>
@@ -167,7 +167,7 @@ export default function About() {
           {...fadeUpInView}
           className={`mt-8 md:mt-10 ${aboutPanelSection}`}
         >
-          <SectionEyebrow>{content.value.label}</SectionEyebrow>
+          <SectionEyebrow as="h2">{content.value.label}</SectionEyebrow>
           <div className="mt-8">
             <ProseBlock paragraphs={content.value.paragraphs} />
           </div>
@@ -209,6 +209,6 @@ export default function About() {
           </div>
         </div>
       </motion.section>
-    </main>
+    </div>
   );
 }

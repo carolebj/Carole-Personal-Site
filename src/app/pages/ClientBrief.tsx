@@ -49,6 +49,29 @@ type ActionState = { kind: ActionKind; phase: "email" | "code" | "success"; emai
 
 const emptyAction = (kind: ActionKind): ActionState => ({ kind, phase: "email", email: "", name: "", consent: false, code: "", idempotencyKey: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}` });
 
+const CLIENT_BRIEF_ACTION_ERRORS: Record<Locale, Record<string, string>> = {
+  fr: {
+    invalid_email: "Saisissez une adresse e-mail valide.",
+    invalid_code: "Le code est invalide ou expiré.",
+    delivery_failed: "Le code n’a pas pu être envoyé. Réessayez.",
+    brief_service_unavailable: "Le service est temporairement indisponible.",
+    invalid_fields: "Complétez votre nom et votre e-mail.",
+    request_failed: "Une erreur est survenue. Réessayez.",
+  },
+  en: {
+    invalid_email: "Enter a valid email address.",
+    invalid_code: "The code is invalid or has expired.",
+    delivery_failed: "The code could not be sent. Please try again.",
+    brief_service_unavailable: "The service is temporarily unavailable.",
+    invalid_fields: "Complete your name and email.",
+    request_failed: "Something went wrong. Please try again.",
+  },
+};
+
+function clientBriefActionError(code: string, locale: Locale) {
+  return CLIENT_BRIEF_ACTION_ERRORS[locale][code] ?? CLIENT_BRIEF_ACTION_ERRORS[locale].request_failed;
+}
+
 function localized(value: { fr: string; en: string }, locale: Locale) { return value[locale]; }
 
 function sectionCompletion(template: ClientBriefTemplate, draft: ClientBriefDraft, index: number) {
@@ -242,7 +265,7 @@ export default function ClientBrief() {
       }
     } catch (error) {
       const code = error instanceof Error ? error.message : "request_failed";
-      setActionError(locale === "fr" ? ({ invalid_email: "Saisissez une adresse e-mail valide.", invalid_code: "Le code est invalide ou expiré.", delivery_failed: "Le code n’a pas pu être envoyé. Réessayez.", brief_service_unavailable: "Le service est temporairement indisponible.", invalid_fields: "Complétez votre nom et votre e-mail." }[code] ?? "Une erreur est survenue. Réessayez.") : "Something went wrong. Please try again.");
+      setActionError(clientBriefActionError(code, locale));
     } finally { setActionBusy(false); }
   };
   const uploadAssets = async (files: FileList | null) => {
@@ -280,7 +303,7 @@ export default function ClientBrief() {
     setAction(null);
   };
 
-  return <main className={`${PAGE_MAIN} bg-surface-page pb-24 text-text-primary`}>
+  return <div className={`${PAGE_MAIN} bg-surface-page pb-24 text-text-primary`}>
     <div className="border-b border-border-subtle bg-surface-panel/60"><div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-4 px-5 py-4 sm:px-8"><Link to={`/services/${locale === "en" ? template.serviceKey : template.slug}`} className="inline-flex items-center gap-2 text-[12px] font-semibold text-text-accent"><ArrowLeftIcon className="size-4" />{locale === "fr" ? "Retour au service" : "Back to service"}</Link><div className="flex items-center gap-3 text-[11px] text-text-muted"><CheckCircleIcon className={`size-4 ${saved ? "text-[#3f8c6b]" : "text-text-muted"}`} />{saved ? (locale === "fr" ? "Brouillon enregistré sur cet appareil" : "Draft saved on this device") : (locale === "fr" ? "Enregistrement…" : "Saving…")}</div></div></div>
     <div className="mx-auto grid w-full min-w-0 max-w-[1240px] xl:grid-cols-[270px_minmax(0,1fr)]">
       <aside className="min-w-0 overflow-hidden border-b border-border-subtle px-5 py-7 sm:px-8 xl:sticky xl:top-[88px] xl:h-[calc(100dvh-88px)] xl:overflow-y-auto xl:border-b-0 xl:border-r xl:px-7 xl:py-10">
@@ -366,5 +389,5 @@ export default function ClientBrief() {
       { id: "review", title: "Ready for review", description: "Jump to review and test the final actions." },
       ...(template.serviceKey === "visual-identity" ? [{ id: "creative", title: "Creative direction", description: "See logo styles, colour palette and references." }] : []),
     ]} />
-  </main>;
+  </div>;
 }

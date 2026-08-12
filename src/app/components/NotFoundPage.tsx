@@ -1,9 +1,16 @@
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { motion } from "motion/react";
+import { useMemo } from "react";
 import { HomeIcon, MapIcon } from "@heroicons/react/24/outline";
+import { useSeoOverride } from "../seo/SeoOverrideContext";
 
-export default function NotFoundPage() {
+/**
+ * Client-side "not found" UI. The SPA host still serves index.html with HTTP 200;
+ * crawlers should honour the noindex robots meta rather than treat this as a
+ * real HTTP 404 unless the edge/adapter is configured separately.
+ */
+export function NotFoundView() {
   const { t } = useTranslation();
 
   return (
@@ -40,7 +47,7 @@ export default function NotFoundPage() {
             {t("errorPages.notFound.backHome")}
           </Link>
           <Link
-            to="/#projects"
+            to="/services"
             className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-[#e4bfb2]/70 bg-white px-5 text-sm font-semibold text-[#854d63] transition hover:-translate-y-0.5 hover:border-[#854d63]/40 hover:bg-[#fbf1ee] active:translate-y-0 dark:border-white/12 dark:bg-white/5 dark:text-[#f0adc4] dark:hover:bg-white/10"
           >
             <MapIcon className="size-4" />
@@ -50,4 +57,21 @@ export default function NotFoundPage() {
       </motion.div>
     </section>
   );
+}
+
+export function useNotFoundSeo() {
+  const { t } = useTranslation();
+  return useMemo(
+    () => ({
+      title: `${t("errorPages.notFound.title")} | Carole Tonoukouen`,
+      description: t("errorPages.notFound.description"),
+      robots: "noindex, nofollow",
+    }),
+    [t],
+  );
+}
+
+export default function NotFoundPage() {
+  useSeoOverride(useNotFoundSeo());
+  return <NotFoundView />;
 }
