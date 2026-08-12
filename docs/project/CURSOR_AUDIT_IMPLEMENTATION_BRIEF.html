@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Cahier des charges — premiers correctifs d’audit pour Cursor</title>
+  <style>
+    :root {
+      --paper: #fcfaf8;
+      --panel: #ffffff;
+      --panel-soft: #f6f1ef;
+      --ink: #211b1d;
+      --muted: #6c5e61;
+      --line: #e8ddda;
+      --plum: #854d63;
+      --plum-dark: #643448;
+      --rose: #f7dce5;
+      --peach: #f8e2d0;
+      --green: #256c4e;
+      --green-bg: #e8f4ee;
+      --amber: #8b5a13;
+      --amber-bg: #fff3dc;
+      --red: #9c2f3f;
+      --red-bg: #fbe9ec;
+      --blue: #315a83;
+      --blue-bg: #eaf2fa;
+      --shadow: 0 18px 55px rgba(64, 37, 47, 0.08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 92% 2%, rgba(247, 220, 229, 0.72), transparent 28rem),
+        var(--paper);
+      color: var(--ink);
+      font: 16px/1.65 Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: var(--plum-dark); text-underline-offset: 3px; }
+    code {
+      border: 1px solid var(--line);
+      border-radius: 0.35rem;
+      background: var(--panel-soft);
+      padding: 0.08rem 0.32rem;
+      font: 0.9em/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    main { width: min(1160px, calc(100% - 40px)); margin: 0 auto; padding: 56px 0 100px; }
+    header { max-width: 970px; padding: 40px 0 30px; }
+    .kicker {
+      margin: 0 0 12px;
+      color: var(--plum);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3, h4 { margin: 0; line-height: 1.15; text-wrap: balance; }
+    h1 { max-width: 900px; font-family: Newsreader, Georgia, serif; font-size: clamp(2.7rem, 6.5vw, 5.7rem); font-weight: 500; letter-spacing: -0.045em; }
+    h2 { margin-top: 70px; font-family: Newsreader, Georgia, serif; font-size: clamp(2rem, 3.8vw, 3.25rem); font-weight: 500; letter-spacing: -0.025em; }
+    h3 { font-size: 1.18rem; }
+    h4 { font-size: 0.96rem; }
+    p { margin: 0.7rem 0 0; }
+    ul, ol { margin: 0.7rem 0 0; padding-left: 1.25rem; }
+    li + li { margin-top: 0.38rem; }
+    .lede { max-width: 860px; margin-top: 24px; color: var(--muted); font-size: 1.16rem; }
+    .meta, .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+    .chip, .status {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 0.33rem 0.65rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .chip { border: 1px solid var(--line); background: rgba(255,255,255,0.65); color: var(--muted); }
+    .go { background: var(--green-bg); color: var(--green); }
+    .guard { background: var(--amber-bg); color: var(--amber); }
+    .stop { background: var(--red-bg); color: var(--red); }
+    .verify { background: var(--blue-bg); color: var(--blue); }
+    .hero-note, .callout {
+      margin-top: 28px;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--plum);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.84);
+      box-shadow: var(--shadow);
+      padding: 22px 24px;
+    }
+    .hero-note strong, .callout strong { color: var(--plum-dark); }
+    nav {
+      position: sticky;
+      top: 12px;
+      z-index: 10;
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(252,250,248,0.9);
+      box-shadow: 0 10px 32px rgba(64,37,47,0.06);
+      padding: 12px;
+      backdrop-filter: blur(16px);
+    }
+    nav ul { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+    nav a { display: block; border-radius: 9px; padding: 8px 11px; text-decoration: none; font-size: 0.8rem; font-weight: 700; }
+    nav a:hover, nav a:focus-visible { background: var(--rose); outline: none; }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; margin-top: 22px; }
+    .card {
+      grid-column: span 6;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--panel);
+      padding: 22px;
+      box-shadow: 0 9px 30px rgba(64,37,47,0.045);
+    }
+    .card.third { grid-column: span 4; }
+    .card.full { grid-column: 1 / -1; }
+    .card p { color: var(--muted); }
+    .lot {
+      margin-top: 24px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    .lot-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 25px; background: linear-gradient(135deg, #fff, var(--panel-soft)); }
+    .lot-head p { max-width: 780px; color: var(--muted); }
+    .lot-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--line); }
+    .lot-body > section { padding: 24px; }
+    .lot-body > section:nth-child(even) { border-left: 1px solid var(--line); }
+    .lot-body > section:nth-child(n+3) { border-top: 1px solid var(--line); }
+    .lot-body h4 { margin-bottom: 9px; color: var(--plum-dark); }
+    .checks { list-style: none; padding: 0; }
+    .checks li { position: relative; padding-left: 1.65rem; }
+    .checks li::before { position: absolute; left: 0; top: 0.05rem; content: "□"; color: var(--plum); font-weight: 900; }
+    .decision {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--panel);
+      padding: 20px;
+    }
+    .decision-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .decision h3 { flex: 1; min-width: 240px; }
+    .decision .why { color: var(--muted); }
+    .matrix { overflow-x: auto; margin-top: 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    th, td { padding: 14px 16px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+    th { background: var(--panel-soft); color: var(--muted); font-size: 0.73rem; letter-spacing: 0.06em; text-transform: uppercase; }
+    tr:last-child td { border-bottom: 0; }
+    .command { margin-top: 18px; overflow-x: auto; border-radius: 12px; background: #211b1d; color: #f9f1f3; padding: 18px 20px; font: 0.85rem/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre; }
+    .source-list { columns: 2; column-gap: 28px; }
+    .source-list li { break-inside: avoid; }
+    .mini { color: var(--muted); font-size: 0.86rem; }
+    footer { margin-top: 70px; border-top: 1px solid var(--line); padding-top: 24px; color: var(--muted); }
+    @media (max-width: 820px) {
+      main { width: min(100% - 24px, 1160px); padding-top: 24px; }
+      header { padding-top: 28px; }
+      .card, .card.third { grid-column: 1 / -1; }
+      .lot-body { grid-template-columns: 1fr; }
+      .lot-body > section:nth-child(even) { border-left: 0; }
+      .lot-body > section + section { border-top: 1px solid var(--line); }
+      .source-list { columns: 1; }
+    }
+    @media print {
+      body { background: #fff; }
+      main { width: auto; padding: 0; }
+      nav { display: none; }
+      .lot, .card, .decision, .callout, .hero-note { box-shadow: none; break-inside: avoid; }
+      h2 { break-before: page; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="kicker">Carole Portfolio · handoff d’exécution</p>
+    <h1>Cahier des charges des premiers correctifs d’audit</h1>
+    <p class="lede">Guide autonome pour Cursor/Grok : ce qui peut être traité immédiatement sur <code>dev</code>, les invariants à préserver, les arbitrages déjà rendus et les preuves attendues avant toute proposition de passage vers <code>main</code>.</p>
+    <div class="meta">
+      <span class="chip">Révision de référence : 79c7ac1</span>
+      <span class="chip">Branche : dev</span>
+      <span class="chip">Date : 27 juillet 2026</span>
+      <span class="chip">Production : main</span>
+    </div>
+    <div class="hero-note">
+      <strong>Mandat donné à Cursor.</strong> Agir avec autonomie sur les résultats observables, pas avec liberté de redéfinir le produit. Les choix techniques internes sont libres lorsqu’ils respectent les invariants, les limites de périmètre et les critères d’acceptation ci-dessous. En cas de conflit entre une recommandation d’audit et une décision déjà validée, la décision validée prévaut.
+    </div>
+  </header>
+
+  <nav aria-label="Sommaire">
+    <ul>
+      <li><a href="#mode">Mode d’emploi</a></li>
+      <li><a href="#ordre">Ordre autorisé</a></li>
+      <li><a href="#lot-1a">Lot 1A</a></li>
+      <li><a href="#lot-1b">Lot 1B</a></li>
+      <li><a href="#lot-1c">Lot 1C</a></li>
+      <li><a href="#arbitrages">Arbitrages</a></li>
+      <li><a href="#securite">Sécurité</a></li>
+      <li><a href="#suspendu">Suspendu</a></li>
+      <li><a href="#modeles">Modèles Cursor</a></li>
+      <li><a href="#verification">Vérification</a></li>
+      <li><a href="#handoff">Compte rendu</a></li>
+    </ul>
+  </nav>
+
+  <section id="mode">
+    <h2>1. Mode d’emploi et autorité du document</h2>
+    <div class="grid">
+      <article class="card third">
+        <span class="status go">Libre d’action</span>
+        <h3 style="margin-top:12px">Exécuter</h3>
+        <p>Cursor peut concevoir et implémenter la solution, modifier les fichiers nécessaires et ajouter les tests proportionnés sans demander une validation intermédiaire.</p>
+      </article>
+      <article class="card third">
+        <span class="status guard">Sous garde-fou</span>
+        <h3 style="margin-top:12px">Préparer seulement</h3>
+        <p>Cursor peut inspecter, documenter, tester localement ou préparer un diff, mais ne doit pas appliquer à distance ni trancher une décision produit.</p>
+      </article>
+      <article class="card third">
+        <span class="status stop">Suspendu</span>
+        <h3 style="margin-top:12px">Ne pas démarrer</h3>
+        <p>Le sujet exige une décision explicite de Steven, des données externes ou une validation juridique/éditoriale avant toute implémentation.</p>
+      </article>
+      <article class="card full">
+        <h3>Hiérarchie des sources</h3>
+        <ol>
+          <li>Instructions explicites de Steven et décisions durables dans <code>docs/project/MEMORY.md</code>.</li>
+          <li>Ce cahier des charges, qui consolide les arbitrages rendus après lecture des audits.</li>
+          <li><code>docs/GUIDELINE.md</code>, <code>docs/SECURITY.md</code> et <code>docs/workflows/AGENT_DEV.md</code>.</li>
+          <li>Les trois audits comme sources de constats, jamais comme ordres automatiques.</li>
+          <li>TickTick <em>Carole - Personal site</em> comme backlog opérationnel.</li>
+        </ol>
+        <p class="mini">Un niveau de gravité écrit dans un audit ne suffit pas à établir une vulnérabilité, une priorité produit ou l’autorisation de modifier la production.</p>
+      </article>
+    </div>
+    <div class="callout">
+      <strong>État Git à préserver.</strong> Au moment du cadrage, <code>dev</code> correspond à <code>origin/dev</code> au commit <code>79c7ac1</code>. Les trois fichiers d’audit sont non suivis par Git et appartiennent au travail en cours. Ne pas les supprimer, les déplacer, les ajouter à un commit ou les réécrire par accident. Inspecter le diff avant chaque lot. Aucun commit, push, merge ou déploiement n’est autorisé implicitement.
+    </div>
+    <article class="card full" style="margin-top:18px">
+      <h3>Usage attendu du MCP TickTick dans Cursor</h3>
+      <p>TickTick n’est pas une copie décorative du cahier des charges : c’est le suivi opérationnel partagé. Avant chaque lot, Cursor doit lire via MCP la tâche centrale des audits, la tâche du lot et leurs commentaires récents. Les commentaires peuvent contenir des précisions plus récentes que le corps initial d’une tâche.</p>
+      <ul>
+        <li>Rechercher une tâche existante avant d’en créer une afin d’éviter les doublons.</li>
+        <li>Ne mettre à jour que la tâche réellement travaillée et y joindre un commentaire bref : résultat, preuves, reste non vérifié et blocage éventuel.</li>
+        <li>Ne pas fermer une tâche à la simple existence d’un patch : les critères d’acceptation et les preuves doivent être satisfaits.</li>
+        <li>Ne pas créer, réaffecter ou reclasser massivement des tâches sans demande explicite.</li>
+        <li>Une priorité ou sévérité TickTick ne donne jamais, à elle seule, l’autorisation de toucher Production, <code>main</code>, Supabase ou Vercel.</li>
+      </ul>
+      <p class="mini">Si TickTick et ce document semblent diverger, suspendre uniquement le point contradictoire, rapporter les deux formulations et poursuivre les parties indépendantes.</p>
+    </article>
+  </section>
+
+  <section id="ordre">
+    <h2>2. Ordre d’intégration validé</h2>
+    <div class="matrix">
+      <table>
+        <thead><tr><th>Vague</th><th>Statut</th><th>Contenu</th><th>Pourquoi cet ordre</th></tr></thead>
+        <tbody>
+          <tr><td><strong>1</strong></td><td><span class="status go">Maintenant</span></td><td>Routage, faux contenus, 404 client, crawl dashboard, landmarks, formulaires, clavier et réparations visuelles structurelles.</td><td>Correctifs évidents, réversibles et peu dépendants de décisions produit.</td></tr>
+          <tr><td><strong>2</strong></td><td><span class="status guard">Après preuve</span></td><td>RLS CMS/Briefs, headers, stockage, traduction et sessions.</td><td>Le code révèle des risques, mais l’état Supabase/Vercel réel doit être observé avant migration ou configuration.</td></tr>
+          <tr><td><strong>3</strong></td><td><span class="status guard">Après Lot 1</span></td><td>Fondations du design system et migration progressive vers les tokens.</td><td>On répare d’abord la structure ; l’unification visuelle doit préserver les accents créatifs et éviter un redesign caché.</td></tr>
+          <tr><td><strong>4</strong></td><td><span class="status guard">Lot séparé</span></td><td>Refactor, dette, lazy loading et performance.</td><td>Le refactor ne doit pas élargir le diff des corrections fonctionnelles ni modifier le produit.</td></tr>
+          <tr><td><strong>5</strong></td><td><span class="status stop">Décision requise</span></td><td>SEO multilingue, rendu serveur/prerender, politique de publication bilingue, légal, contenus et preuves.</td><td>Ces sujets modifient des contrats publics, éditoriaux ou juridiques.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="lot-1a">
+    <h2>3. Lot 1A — routage, SEO de base et états introuvables</h2>
+    <article class="lot">
+      <div class="lot-head">
+        <div>
+          <span class="status go">Libre d’action</span>
+          <h3 style="margin-top:12px">Résultat attendu</h3>
+          <p>Aucune URL inconnue ne doit afficher silencieusement un article, un service ou le premier contenu disponible. Le visiteur reçoit un état introuvable explicite, cohérent et non indexable.</p>
+        </div>
+        <span class="chip">C1 · C2 · H4–H6 · H16 · H18 · S04 · S05 · S07 · V04</span>
+      </div>
+      <div class="lot-body">
+        <section>
+          <h4>Problèmes à corriger</h4>
+          <ul>
+            <li>Les slugs blog/service invalides peuvent se rabattre sur un contenu réel.</li>
+            <li>Le rewrite SPA sert <code>index.html</code> à toute route ; un composant 404 ne prouve donc pas un statut HTTP 404.</li>
+            <li><code>/dashboard</code> n’est pas exclu de <code>robots.txt</code> et ne porte pas de <code>noindex</code> spécifique.</li>
+            <li>Un lien <code>/#projects</code> vise une cible absente ou incohérente.</li>
+            <li>Le dashboard bascule en démo locale si les variables Supabase manquent.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>Changements autorisés</h4>
+          <ul>
+            <li>Supprimer tout fallback « premier item » sur les détails blog et service.</li>
+            <li>Router les slugs inconnus vers le composant NotFound et lui fournir titre, description, canonical et robots propres.</li>
+            <li>Ajouter <code>Disallow: /dashboard</code> et un <code>noindex,nofollow</code> dans le shell admin.</li>
+            <li>Corriger ou retirer <code>/#projects</code> selon la cible réelle déjà présente.</li>
+            <li>Actualiser <code>public/llms.txt</code> à partir des routes réellement publiques.</li>
+            <li>Rendre une build de production fail-closed si Supabase manque, tout en conservant un mode démo explicitement local/Preview si le contrat actuel l’exige.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>Liberté technique</h4>
+          <p>Cursor choisit le mécanisme React Router, les helpers de résolution, la forme des tests et la factorisation SEO. Il peut harmoniser <code>NotFoundPage</code> et <code>ErrorPage</code> avec les tokens existants si le comportement ne change pas au-delà du périmètre.</p>
+        </section>
+        <section>
+          <h4>Limites et arbitrages</h4>
+          <ul>
+            <li>Ne pas migrer la SPA vers SSR/prerender dans ce lot.</li>
+            <li>Ne pas modifier les URLs linguistiques ou introduire <code>/en/</code>.</li>
+            <li>Ne pas prétendre avoir un vrai HTTP 404 si seul le rendu React est corrigé.</li>
+            <li>Le mode démo sans Supabase est un défaut de configuration/UX, pas une preuve de fuite de données réelles.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>Critères d’acceptation</h4>
+          <ul class="checks">
+            <li>Un slug blog inconnu n’affiche aucun article réel.</li>
+            <li>Un slug service inconnu n’affiche aucun service réel.</li>
+            <li>La page introuvable possède title, description et robots adaptés dans le DOM.</li>
+            <li>La navigation retour/accueil reste fonctionnelle en FR et EN.</li>
+            <li><code>/dashboard</code> est absent du sitemap et non crawlable.</li>
+            <li>La différence entre 404 visuel et statut HTTP est documentée honnêtement.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>Preuves à joindre</h4>
+          <ul>
+            <li>Tests automatisés des résolveurs/slugs invalides.</li>
+            <li>Captures ou inspection DOM des métadonnées 404 et dashboard.</li>
+            <li>Résultat direct des routes en navigateur intégré, y compris après rechargement.</li>
+            <li>Si le statut HTTP est traité : preuve <code>curl -I</code> sur une Preview autorisée, pas seulement localhost.</li>
+          </ul>
+        </section>
+      </div>
+    </article>
+  </section>
+
+  <section id="lot-1b">
+    <h2>4. Lot 1B — accessibilité structurelle, formulaires et langue</h2>
+    <article class="lot">
+      <div class="lot-head">
+        <div>
+          <span class="status go">Libre d’action</span>
+          <h3 style="margin-top:12px">Résultat attendu</h3>
+          <p>Chaque route publique expose une structure sémantique unique et navigable ; les erreurs de formulaires sont identifiables, reliées aux champs et rédigées dans la langue active du site.</p>
+        </div>
+        <span class="chip">H7–H9 · AW-03 · AW-04 · AW-06 · AW-07 · CQ-02 · V01 · V09</span>
+      </div>
+      <div class="lot-body">
+        <section>
+          <h4>Landmark principal</h4>
+          <p>Conserver un seul <code>&lt;main&gt;</code> par document. Pour le shell public classique, la solution préférée est que <code>Layout</code> possède le landmark et que les pages rendent un conteneur neutre. L’Estimateur, le dashboard et les shells autonomes peuvent garder leur propre <code>main</code> lorsqu’ils ne sont pas imbriqués dans celui du Layout.</p>
+        </section>
+        <section>
+          <h4>Skip-link</h4>
+          <p>Ajouter avant la navigation un lien « Aller au contenu principal » visible au focus, ciblant un identifiant stable du landmark. Le focus après activation doit être perceptible et ne pas être masqué par le header fixe.</p>
+        </section>
+        <section>
+          <h4>ContactForm</h4>
+          <ul>
+            <li>Donner un identifiant stable à chaque champ et à son message.</li>
+            <li>Appliquer <code>aria-invalid</code> seulement quand le champ est invalide.</li>
+            <li>Relier le message par <code>aria-describedby</code>.</li>
+            <li>Utiliser une zone <code>role="alert"</code> ou <code>aria-live</code> adaptée sans annoncer deux fois la même erreur.</li>
+            <li>Conserver le focus et le shake comme compléments, jamais comme seuls signaux.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>Langue et erreurs</h4>
+          <ul>
+            <li>Ne pas afficher directement <code>validationMessage</code> du navigateur comme texte final : sa langue suit le système, pas nécessairement le site.</li>
+            <li>Mapper les erreurs requises/email/message vers les traductions du projet.</li>
+            <li>Préserver des messages Brief distincts en anglais au lieu d’un échec générique.</li>
+            <li>Rendre le fallback de chargement neutre ou bilingue sans dupliquer l’infrastructure i18n.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>Contenu et titres</h4>
+          <ul>
+            <li>Rendre les liens génériques descriptifs dans leur contexte accessible.</li>
+            <li>Corriger les niveaux de titres quand la sémantique est incorrecte.</li>
+            <li><strong>Ne pas réécrire la copy About :</strong> elle a été validée et publiée. Un changement de balise ne doit pas devenir une révision éditoriale.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>Critères d’acceptation</h4>
+          <ul class="checks">
+            <li>Un seul landmark main sur chaque route publique testée.</li>
+            <li>Skip-link utilisable entièrement au clavier.</li>
+            <li>Tous les champs invalides ont nom accessible, état et description associés.</li>
+            <li>Erreurs cohérentes en FR puis EN, indépendamment de la langue macOS/navigateur.</li>
+            <li>Focus visible dans Navbar, Footer, formulaires, modales et contrôles custom touchés par le diff.</li>
+            <li>Aucune régression sous <code>prefers-reduced-motion</code>.</li>
+          </ul>
+        </section>
+      </div>
+    </article>
+  </section>
+
+  <section id="lot-1c">
+    <h2>5. Lot 1C — réparations visuelles structurelles</h2>
+    <article class="lot">
+      <div class="lot-head">
+        <div>
+          <span class="status go">Libre, avec invariants</span>
+          <h3 style="margin-top:12px">Résultat attendu</h3>
+          <p>Retirer les comportements qui entravent la navigation et réparer les états d’accessibilité sans aplatir la direction créative du site.</p>
+        </div>
+        <span class="chip">V03 · V06 · V09 · V11 · DS-01 partiel</span>
+      </div>
+      <div class="lot-body">
+        <section>
+          <h4>Footer : supprimer le scroll hijack</h4>
+          <p>Le footer intercepte aujourd’hui <code>wheel</code>/<code>touchmove</code>, appelle <code>preventDefault()</code> et pilote <code>window.scrollTo()</code>. Retirer cette prise de contrôle globale : l’utilisateur doit toujours pouvoir remonter ou descendre naturellement.</p>
+        </section>
+        <section>
+          <h4>Footer : préserver l’intention</h4>
+          <p>La vague colorée et l’idée d’un « pull beyond footer » temporaire sont validées. Cursor peut conserver une révélation visuelle déclenchée par intersection, progression de scroll passive ou interaction locale avec le shader, à condition qu’elle ne bloque, ne renvoie ni ne contraigne le scroll.</p>
+        </section>
+        <section>
+          <h4>Focus et tokens</h4>
+          <ul>
+            <li>Utiliser le token sémantique <code>--focus-ring</code> au lieu d’un hex répété.</li>
+            <li>Conserver un contraste visible en clair et sombre.</li>
+            <li>Ne pas supprimer les outlines sans remplacement équivalent.</li>
+            <li>La migration de quelques états touchés est autorisée ; la refonte exhaustive du design system reste un lot séparé.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>Contrastes sombres</h4>
+          <p>Corriger les couples texte muted/surface et les cards Carnet uniquement avec des tokens ou variables cohérents. Vérifier les paires réelles ; ne pas éclaircir globalement tout le thème sombre sur une impression subjective.</p>
+        </section>
+        <section>
+          <h4>Liberté technique</h4>
+          <p>Cursor peut simplifier fortement la logique du footer, choisir IntersectionObserver, motion values ou CSS, et extraire des helpers. L’objectif est la liberté de scroll et la stabilité du rendu, pas la conservation ligne à ligne du mécanisme actuel.</p>
+        </section>
+        <section>
+          <h4>Critères d’acceptation</h4>
+          <ul class="checks">
+            <li>Aucun listener global non passif n’annule wheel/touch pour le footer.</li>
+            <li>Le footer reste visuellement intentionnel en desktop, mobile et reduced-motion.</li>
+            <li>Le shader ne provoque pas de saut ou retour automatique.</li>
+            <li>Focus visible et contrastes vérifiés sur les composants touchés.</li>
+          </ul>
+        </section>
+      </div>
+    </article>
+  </section>
+
+  <section id="arbitrages">
+    <h2>6. Arbitrages déjà rendus — à ne pas rouvrir silencieusement</h2>
+
+    <article class="decision">
+      <div class="decision-top"><span class="status stop">Ne pas recompresser</span><h3>Vidéo About : qualité d’image prioritaire</h3></div>
+      <p class="why">L’audit recommande de réduire le poids, mais des essais réels ont montré que les variantes <code>288 × 360</code> et <code>384 × 480</code> dégradent visiblement le rendu image-like sur écrans haute densité.</p>
+      <ul>
+        <li>Actif accepté : <code>src/assets/carole-about-motion.mp4</code>, H.264/AVC <code>avc1</code>, <code>720 × 900</code>, environ 6,2 MiB, 10 secondes.</li>
+        <li>Ne pas remplacer par HEVC/H.265 : Chrome/Linux doit pouvoir décoder la vidéo.</li>
+        <li>Ne pas réduire la résolution ou la netteté au nom d’un score de poids.</li>
+        <li>Optimisations autorisées : lazy-mount hors viewport, <code>preload="metadata"</code>, poster statique, chargement conditionnel et mesure réseau.</li>
+        <li>Préserver le contrôle reduced-motion : pas d’autoplay/hover automatique, mais lecture explicite disponible.</li>
+      </ul>
+    </article>
+
+    <article class="decision">
+      <div class="decision-top"><span class="status guard">Préserver l’intention</span><h3>Footer : effet oui, contrainte de navigation non</h3></div>
+      <p class="why">La direction créative de la vague est validée. L’audit a raison sur l’interception du scroll, pas sur la nécessité de supprimer toute personnalité au footer.</p>
+    </article>
+
+    <article class="decision">
+      <div class="decision-top"><span class="status guard">CMS autoritaire</span><h3>Contenus publics et bilinguisme</h3></div>
+      <p class="why">Lorsqu’une lecture Supabase réussit, le CMS est la source de vérité. Ne pas réintroduire un fallback i18n champ par champ qui masque des traductions absentes et fabrique un patchwork FR/EN. La politique de blocage à la publication reste à décider.</p>
+    </article>
+
+    <article class="decision">
+      <div class="decision-top"><span class="status stop">Aucune invention</span><h3>Copy, clients, résultats et témoignages</h3></div>
+      <p class="why">Ne créer aucun KPI, client, témoignage, cas d’usage, autorisation ou attribution. La copy About est déjà validée ; les autres passes éditoriales disposent de tâches séparées et doivent être proposées avant publication CMS.</p>
+    </article>
+
+    <article class="decision">
+      <div class="decision-top"><span class="status guard">Turnstile d’abord</span><h3>Anti-abus du formulaire de contact</h3></div>
+      <p class="why">Décision actuelle : Cloudflare Turnstile en mode Managed, vérifié côté serveur, en conservant le honeypot et les validations. Répondre par un succès neutre au honeypot pour ne pas instruire les bots. Ne pas ajouter Redis, Upstash ou un nouveau Worker avant qu’un abus réel justifie ce coût et cette complexité.</p>
+    </article>
+
+    <article class="decision">
+      <div class="decision-top"><span class="status guard">Coûts bornés</span><h3>Traduction IA</h3></div>
+      <p class="why">Le flux serveur → Worker → AI Gateway → OpenAI et la confirmation de coût dans le dashboard sont à préserver. Ajouter un rôle éditeur explicite et des bornes cohérentes est souhaité ; ne jamais exposer une clé OpenAI au navigateur ni contourner les budgets/rate limits du fournisseur.</p>
+    </article>
+  </section>
+
+  <section id="securite">
+    <h2>7. Sécurité — ce que Cursor peut préparer, sans appliquer</h2>
+    <div class="callout">
+      <strong>Règle de gouvernance.</strong> Le scan Codex Security profond a été interrompu pour maîtriser les crédits. Ses données partielles n’ont pas été validées et ne constituent pas un rapport. Le triage statique des 21 constats du troisième audit reste la base de planification, avec les niveaux ci-dessous.
+    </div>
+    <div class="matrix">
+      <table>
+        <thead><tr><th>Classe</th><th>Constats</th><th>Traitement autorisé</th></tr></thead>
+        <tbody>
+          <tr><td><span class="status go">Confirmé dans le dépôt</span></td><td>S01, S02, S03, S06, S10, S14</td><td>Analyser le chemin, écrire tests et migration/config locale. Pour RLS : ne rien appliquer avant inspection live et export.</td></tr>
+          <tr><td><span class="status verify">À vérifier</span></td><td>S09, S11, S12, S15, S21</td><td>Mesurer headers et limites effectives, documenter la portée du token, vérifier comptes/MFA en lecture seule. Ne pas présenter comme exploitation confirmée.</td></tr>
+          <tr><td><span class="status guard">Autre catégorie</span></td><td>S04, S05, S07, S08, S13, S16–S20</td><td>Traiter comme SEO, dette ou defense in depth selon le cas. Ne pas gonfler la sévérité sécurité.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid">
+      <article class="card">
+        <h3>RLS et schéma</h3>
+        <ul>
+          <li>Inspecter d’abord les policies réellement appliquées, le signup et les comptes autorisés.</li>
+          <li>Exporter avant toute migration.</li>
+          <li>Préparer une migration additive pour remplacer « tout authenticated » par un rôle éditeur explicite.</li>
+          <li>Fermer l’INSERT anon legacy tout en préservant la lecture historique admin.</li>
+          <li>Les migrations, pas <code>schema.sql</code>, sont la source de vérité actuelle ; réaligner le fichier documentaire.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>API, headers et stockage</h3>
+        <ul>
+          <li>Préparer une CSP progressive : report-only avant enforcement.</li>
+          <li>Ne pas ajouter une CSP stricte sans inventaire des scripts, styles, médias et services externes.</li>
+          <li>Vérifier la taille réelle du body contact au-delà du seul <code>Content-Length</code>.</li>
+          <li>Ajouter MIME/taille au bucket public <code>media</code> après lecture de la configuration live.</li>
+          <li>Préserver le webhook Resend signé, les limites d’attachments et l’échappement des emails sortants.</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section id="suspendu">
+    <h2>8. Sujets explicitement hors du premier passage</h2>
+    <div class="matrix">
+      <table>
+        <thead><tr><th>Sujet</th><th>Pourquoi il est suspendu</th><th>Ce qui est permis</th></tr></thead>
+        <tbody>
+          <tr><td>SSR, prerender, vraies 404 host et stratégie <code>/en/</code></td><td>Choix d’architecture et d’URLs publiques avec impacts SEO/redirections.</td><td>Documenter les options et limites ; ne pas migrer.</td></tr>
+          <tr><td>Publication bilingue CMS</td><td>Il faut choisir entre blocage FR+EN et publication locale partielle explicite.</td><td>Identifier les points de validation ; ne pas imposer une règle.</td></tr>
+          <tr><td>Mentions légales, confidentialité, APDP, crédits</td><td>Titulaire, coordonnées, obligations et textes exigent une validation humaine compétente.</td><td>Cartographier les surfaces collectrices et les emplacements de liens.</td></tr>
+          <tr><td>Refonte ou réécriture visuelle</td><td>L’audit demande une cohérence système, pas un nouveau design.</td><td>Migrer localement les composants touchés vers les tokens sans changer leur identité.</td></tr>
+          <tr><td>Suppression de dépendances, primitives ou données</td><td>Une présence dans le dépôt ne prouve pas l’absence d’usage ; les données/révisions peuvent être historiques.</td><td>Produire une preuve d’absence d’usage et une stratégie de retour arrière.</td></tr>
+          <tr><td>Copywriting public</td><td>Les faits, preuves et formulations doivent être proposés et validés avant publication.</td><td>Corriger uniquement sémantique HTML, labels techniques et erreurs fonctionnelles prévues par le lot.</td></tr>
+          <tr><td>Production, <code>main</code>, Supabase/Vercel live</td><td>Aucune autorisation implicite de déployer, pousser ou modifier des comptes/secrets/policies.</td><td>Inspection en lecture seule et compte rendu factuel.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="modeles">
+    <h2>9. Recommandations de modèles Cursor — conseil, pas attribution rigide</h2>
+    <p class="lede">Le modèle proposé indique le meilleur rapport aptitude/coût pour le type de travail. Cursor peut adapter ce routage si le contexte l’exige, mais le choix du modèle ne modifie jamais le périmètre, les garde-fous ou les preuves attendues.</p>
+    <div class="callout">
+      <strong>Principe économique.</strong> Utiliser le mode standard/non-Fast pour les longues lectures, les lots autonomes et les revues complètes. Réserver Fast à une boucle courte où la latence bloque réellement le travail. Aux tarifs publics consultés le 27 juillet 2026, Composer 2.5 Fast coûte environ 6× son mode standard par token ; Grok 4.5 Fast coûte environ 2× en entrée et 3× en sortie. Fast n’améliore donc pas automatiquement la pertinence d’un long raisonnement.
+    </div>
+
+    <div class="matrix" style="margin-top:18px">
+      <table>
+        <thead><tr><th>Configuration conseillée</th><th>Usage recommandé</th><th>À éviter</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Composer 2.5 · Standard</strong><br><span class="status go">Choix par défaut</span></td><td>Implémentation multi-fichiers, tests, routage, ARIA/i18n, migrations de tokens limitées, refactors routiniers et mise à jour factuelle de TickTick.</td><td>Ne pas lui demander de trancher seul une architecture publique ou une migration de sécurité distante.</td></tr>
+          <tr><td><strong>Composer 2.5 · Fast</strong><br><span class="status guard">Boucle courte</span></td><td>Petit correctif isolé, erreur de compilation, ajustement ARIA ponctuel, itération edit-test de quelques minutes.</td><td>Pas de lecture intégrale des audits, de premier passage d’un lot ni de scan long : le surcoût est disproportionné.</td></tr>
+          <tr><td><strong>Grok 4.5 · Medium · non-Fast</strong><br><span class="status go">Analyse/revue</span></td><td>Conception du comportement footer, frontière 404 client/HTTP, revue accessibilité transversale, CSP, sessions, synthèse de plusieurs audits et revue finale d’un diff conséquent.</td><td>Ne pas le consommer pour le formatage, les renommages mécaniques ou les corrections évidentes.</td></tr>
+          <tr><td><strong>Grok 4.5 · High · non-Fast</strong><br><span class="status guard">Risque élevé</span></td><td>Threat model, matrice RLS, plan de migration réversible, chemins d’attaque, stratégie SSR/prerender/URLs et revue indépendante d’un changement de sécurité critique.</td><td>Pas de routine ; High doit être justifié par une décision réellement difficile ou irréversible.</td></tr>
+          <tr><td><strong>Grok 4.5 · Low</strong></td><td>Lecture ciblée, commande ou validation simple lorsque Grok est déjà le modèle actif.</td><td>Composer standard reste généralement le choix plus naturel pour l’exécution courante.</td></tr>
+          <tr><td><strong>Grok 4.5 · Fast</strong><br><span class="status stop">Exception</span></td><td>Débloquer une question courte et urgente lorsque quelques secondes ont une valeur concrète.</td><td>Jamais pour un audit, un threat model, une revue complète ou une session autonome longue.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid" style="margin-top:18px">
+      <article class="card">
+        <h3>Lot 1A · routage et 404</h3>
+        <p><strong>Par défaut :</strong> Composer 2.5 Standard implémente et teste. Si la frontière entre 404 React et vrai statut HTTP devient structurante, Grok 4.5 Medium réalise une courte analyse en lecture seule puis revoit le diff.</p>
+      </article>
+      <article class="card">
+        <h3>Lot 1B · accessibilité et langue</h3>
+        <p><strong>Par défaut :</strong> Composer 2.5 Standard traite landmarks, skip-link, formulaires et messages. Grok 4.5 Medium n’est utile qu’en revue transversale des choix de structure ou d’annonce accessible.</p>
+      </article>
+      <article class="card">
+        <h3>Lot 1C · footer et contrastes</h3>
+        <p><strong>Binôme recommandé :</strong> Grok 4.5 Medium propose le comportement minimal préservant l’intention ; Composer 2.5 Standard l’implémente et vérifie les variantes responsive/reduced-motion.</p>
+      </article>
+      <article class="card">
+        <h3>Lot 2 · sécurité et RLS</h3>
+        <p><strong>Après autorisation :</strong> Grok 4.5 High prépare le threat model et la matrice de policies en lecture seule ; Composer 2.5 Standard écrit tests et migration locale ; Grok High effectue la revue finale. Aucune application distante implicite.</p>
+      </article>
+      <article class="card">
+        <h3>Design system, dette et vidéo</h3>
+        <p><strong>Par défaut :</strong> Composer 2.5 Standard. Pour la vidéo, il peut optimiser le chargement sans réencoder. Grok Medium intervient seulement si le comportement de mouvement ou l’architecture des tokens est réellement remis en jeu.</p>
+      </article>
+      <article class="card">
+        <h3>Option sobre en crédits</h3>
+        <p>Composer 2.5 Standard peut réaliser seul les Lots 1A et 1B avec les critères de ce document. Ajouter Grok uniquement pour les points ambigus ou la revue finale à risque, plutôt que de faire exécuter tout le lot deux fois.</p>
+      </article>
+    </div>
+
+    <article class="decision" style="margin-top:18px">
+      <div class="decision-top"><span class="status guard">Coordination</span><h3>Un seul modèle écrit à la fois dans un même lot</h3></div>
+      <p class="why">Le second modèle intervient comme analyste ou reviewer après stabilisation du diff. Ne pas faire modifier simultanément les mêmes fichiers par Composer et Grok. La revue doit citer les critères du lot et signaler uniquement les écarts observables.</p>
+      <p class="mini">Grok 4.5 documente officiellement les efforts Low, Medium et High ; si le sélecteur Cursor ne les expose pas dans la session courante, choisir le mode de raisonnement disponible le plus proche. Pour Composer 2.5, les sources consultées décrivent une calibration d’effort adaptative : ne pas inventer un réglage Low/Medium/High absent de l’interface.</p>
+    </article>
+  </section>
+
+  <section id="verification">
+    <h2>10. Protocole de vérification obligatoire</h2>
+    <p class="lede">Un lot n’est pas terminé parce que le code paraît juste. Cursor doit fournir des preuves proportionnées au risque et distinguer ce qui a été exécuté de ce qui reste non observé.</p>
+    <div class="grid">
+      <article class="card">
+        <h3>Contrôles communs</h3>
+        <div class="command">npm run typecheck
+npm run test:unit
+npm run build
+npm run security:scan
+git diff --check</div>
+        <p class="mini">Ne pas lancer de formatter ou réécriture mécanique globale non prévue.</p>
+      </article>
+      <article class="card">
+        <h3>Contrôle CMS conditionnel</h3>
+        <p>Si le diff touche <code>src/admin</code>, <code>src/cms</code>, le seed, les ressources CMS ou les pages Carnet :</p>
+        <div class="command">npm run cms:verify</div>
+        <p class="mini">Exiger la sortie « Vérification dashboard OK », puis ouvrir l’unique <code>AGENT_PREVIEW_URL</code> dans le navigateur intégré de Cursor.</p>
+      </article>
+      <article class="card full">
+        <h3>Matrice navigateur minimale</h3>
+        <ul class="checks">
+          <li>Desktop et mobile étroit ; clair et sombre.</li>
+          <li>Navigation clavier complète, focus visible et skip-link.</li>
+          <li>FR puis EN sur routes, erreurs et états de chargement.</li>
+          <li><code>prefers-reduced-motion</code> activé.</li>
+          <li>Slugs invalides blog et services après navigation interne et rechargement direct.</li>
+          <li>Console sans nouvelle erreur ; aucun overflow horizontal introduit.</li>
+          <li>Pour le footer : wheel, trackpad, clavier, touch et retour vers le haut sans capture du scroll.</li>
+          <li>Pour la vidéo : poster, chargement différé, lecture disponible, H.264 720×900 préservé.</li>
+        </ul>
+      </article>
+    </div>
+    <div class="callout">
+      <strong>Revue indépendante avant livraison.</strong> Après les checks, relire le diff comme un reviewer distinct : périmètre, régressions, secrets, données, accessibilité, comportement responsive et écarts aux arbitrages. Ne pas committer automatiquement. Quand un jalon cohérent est prêt, signaler seulement qu’un commit pourrait être utile.
+    </div>
+  </section>
+
+  <section id="handoff">
+    <h2>11. Format du compte rendu attendu de Cursor</h2>
+    <p>Pour permettre une validation rapide par Codex, le rapport de fin de lot doit rester factuel et compact :</p>
+    <div class="command">LOT : 1A / 1B / 1C
+
+RÉSULTAT
+- Comportements effectivement corrigés
+
+FICHIERS
+- Chemins modifiés et rôle de chaque changement
+
+ARBITRAGES RESPECTÉS
+- Invariants préservés
+- Choix techniques autonomes effectués
+
+PREUVES
+- Commandes exécutées + résultat
+- Routes/scénarios testés dans le navigateur
+- Captures ou observations utiles
+
+RESTE NON VÉRIFIÉ / BLOQUÉ
+- Production, statut HTTP, environnement distant, décision attendue
+
+GIT
+- Branche et HEAD de départ
+- Résumé du diff
+- Aucun commit/push/merge, sauf autorisation explicite</div>
+    <p class="mini">Ne pas masquer une limitation sous « tout est bon ». Une preuve locale ne doit pas devenir une affirmation sur Production.</p>
+  </section>
+
+  <section id="sources">
+    <h2>12. Sources de référence</h2>
+    <ul class="source-list">
+      <li><a href="./SITE_FULL_AUDIT.html">SITE_FULL_AUDIT.html</a> — audit transversal, 51 findings.</li>
+      <li><a href="./SITE_DEEP_AUDIT.html">SITE_DEEP_AUDIT.html</a> — design system, écriture et qualité de code.</li>
+      <li><a href="./SITE_SECURITY_VISUAL_AUDIT.html">SITE_SECURITY_VISUAL_AUDIT.html</a> — audit croisé sécurité/visuel.</li>
+      <li><a href="../GUIDELINE.md">GUIDELINE.md</a> — guide canonique du dépôt.</li>
+      <li><a href="./MEMORY.md">MEMORY.md</a> — décisions produit/design durables.</li>
+      <li><a href="../SECURITY.md">SECURITY.md</a> — secrets, RLS et garde-fous de coût.</li>
+      <li><a href="../workflows/AGENT_DEV.md">AGENT_DEV.md</a> — vérification CMS et navigateur Cursor.</li>
+      <li><a href="https://ticktick.com/webapp/#p/6a18860c6c021170c4d2f399/tasks/6a66a11f8f08f8252583a470">TickTick — centre des trois audits</a>.</li>
+      <li><a href="https://ticktick.com/webapp/#p/6a18860c6c021170c4d2f399/tasks/6a66a1518f08c8cc5dec8ad7">TickTick — Lot 1A</a>.</li>
+      <li><a href="https://ticktick.com/webapp/#p/6a18860c6c021170c4d2f399/tasks/6a66a1558f08070d6c3a2de7">TickTick — Lot 1B</a>.</li>
+      <li><a href="https://ticktick.com/webapp/#p/6a18860c6c021170c4d2f399/tasks/6a66a15f8f08bf71b4474f59">TickTick — Lot 2 RLS</a>.</li>
+      <li><a href="https://ticktick.com/webapp/#p/6a18860c6c021170c4d2f399/tasks/6a66eada8f08cc25a06a83c3">TickTick — Lot 2B sécurité</a>.</li>
+      <li><a href="https://cursor.com/changelog/composer-2-5">Cursor — Composer 2.5</a> : capacités et tarifs Standard/Fast.</li>
+      <li><a href="https://cursor.com/blog/grok-4-5">Cursor — Grok 4.5</a> : positionnement, capacités et tarifs Standard/Fast.</li>
+      <li><a href="https://prod.cursor.com/en-US/composer">Cursor — Composer</a> : modèle de coding, calibration adaptative et usages recommandés.</li>
+      <li><a href="https://docs.x.ai/developers/model-capabilities/text/reasoning">xAI — Reasoning</a> : niveaux Low, Medium et High de Grok 4.5.</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p><strong>Cahier des charges d’exécution — audits 2026.</strong> Document de handoff pour Cursor/Grok, préparé depuis <code>dev</code> au commit <code>79c7ac1</code>. Il n’autorise ni publication, ni modification distante, ni décision produit implicite.</p>
+  </footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,1190 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Audit croisé sécurité &amp; qualité visuelle — Carole Personal Site (dev)</title>
+  <style>
+    :root{
+      --ink:#2f1832;--muted:#6f6071;--paper:#fffaf7;--panel:#fff;--line:#eadfe6;
+      --accent:#c84f66;--soft:#f8e3e4;--plum:#eee6f1;
+      --crit:#8b1e2d;--crit-bg:#fce8eb;--high:#9a4a12;--high-bg:#fff1e4;
+      --med:#6b5a1e;--med-bg:#fbf5d9;--low:#3d5a45;--low-bg:#e8f2eb;
+      --ok:#2f5d3a;--ok-bg:#e7f3ea;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.65}
+    main{width:min(1120px,calc(100% - 40px));margin:auto;padding:64px 0 96px}
+    header{max-width:920px;margin-bottom:40px}
+    h1,h2,h3{font-family:Georgia,serif;line-height:1.12}
+    h1{margin:0 0 18px;font-size:clamp(2.3rem,6vw,4.4rem);font-weight:500;letter-spacing:-.045em}
+    h2{margin:0 0 18px;font-size:clamp(1.65rem,3.4vw,2.5rem);font-weight:500}
+    h3{margin:0 0 10px;font-size:1.22rem}
+    p{margin:0 0 1em}
+    section{margin-top:52px}
+    .eyebrow,.label{color:var(--accent);font-size:.76rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
+    .lede{color:var(--muted);font-size:1.1rem;max-width:48rem}
+    .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+    .pill{border:1px solid var(--line);border-radius:999px;background:#fff;padding:7px 12px;color:var(--muted);font-size:.84rem}
+    .pill.tag-c{background:var(--crit-bg);border-color:#e3a0ab;color:var(--crit)}
+    .pill.tag-h{background:var(--high-bg);border-color:#ecc9a4;color:var(--high)}
+    .pill.tag-m{background:var(--med-bg);border-color:#e0d190;color:var(--med)}
+    .pill.tag-l{background:var(--low-bg);border-color:#9ec9a8;color:var(--low)}
+    .pill.tag-ok{background:var(--ok-bg);border-color:#9ec9a8;color:var(--ok)}
+    .pill.tag-both{background:var(--soft);border-color:#e3a0ab;color:var(--accent)}
+    .pill.tag-a{background:#eef3ff;border-color:#c5d4f5;color:#334e8a}
+    .pill.tag-b{background:#f3eef8;border-color:#d4c4da;color:#5a3d6e}
+    .panel,.card,.finding{border:1px solid var(--line);background:var(--panel);box-shadow:0 16px 42px rgb(47 24 50/.05)}
+    .panel{border-radius:24px;padding:clamp(20px,4vw,36px)}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    .card{border-radius:16px;padding:18px 20px}.card p:last-child{margin:0}
+    .number{display:grid;width:30px;height:30px;margin-bottom:10px;place-items:center;border-radius:50%;background:var(--soft);color:var(--accent);font-weight:800;font-size:.85rem}
+    .signal{border-left:4px solid var(--accent);border-radius:0 14px 14px 0;background:var(--soft);padding:14px 16px;margin:0 0 14px}
+    .signal.ok{border-left-color:var(--ok);background:var(--ok-bg)}
+    .signal.warn{border-left-color:var(--high);background:var(--high-bg)}
+    .signal.prod{border-left-color:#6b5a1e;background:var(--med-bg)}
+    table{width:100%;border-collapse:collapse;font-size:.92rem}
+    th,td{padding:11px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+    th{color:var(--muted);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+    td:first-child{font-weight:700}
+    ul{margin:0;padding-left:1.2rem}li+li{margin-top:6px}
+    ol.priority{margin:0;padding-left:1.35rem}ol.priority li+li{margin-top:10px}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.84em;background:var(--plum);padding:.1em .35em;border-radius:4px}
+    a{color:var(--accent)}
+    .sev{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+    .sev-c{background:var(--crit-bg);color:var(--crit)}
+    .sev-h{background:var(--high-bg);color:var(--high)}
+    .sev-m{background:var(--med-bg);color:var(--med)}
+    .sev-l{background:var(--low-bg);color:var(--low)}
+    .sev-ok{background:var(--ok-bg);color:var(--ok)}
+    .stat{font-family:Georgia,serif;font-size:2.2rem;line-height:1;margin:0 0 6px;font-weight:500}
+    .stat-label{color:var(--muted);font-size:.82rem;margin:0}
+    .finding{border-radius:16px;padding:18px 20px;margin-top:12px}
+    .finding-head{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+    .finding-id{color:var(--muted);font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    .finding h3{margin:0;font-size:1.1rem;max-width:42rem}
+    .finding .meta-row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px}
+    .finding .loc{font-size:.84rem;color:var(--muted)}
+    .finding .body>p:last-child{margin-bottom:0}
+    .quote{margin:8px 0 0;padding:10px 12px;border-radius:10px;background:var(--plum);font-size:.9rem;color:var(--ink)}
+    .check{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:start;padding:9px 0;border-bottom:1px solid var(--line)}
+    .check:last-child{border-bottom:0}
+    .box{width:18px;height:18px;margin-top:3px;border:1.5px solid var(--line);border-radius:4px;background:#fff}
+    .box.fail{background:var(--crit-bg);border-color:#e3a0ab}
+    .box.warn{background:var(--high-bg);border-color:#ecc9a4}
+    .box.pass{background:var(--ok-bg);border-color:#9ec9a8}
+    .box.partial{background:var(--med-bg);border-color:#e0d190}
+    .box.na{background:var(--plum);border-color:#d4c4da}
+    .dim{color:var(--muted);font-size:.84rem}
+    .wave{border-radius:16px;border:1px solid var(--line);background:#fff;padding:18px 20px;margin-top:12px}
+    .wave h3{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}
+    .sticky-nav{position:sticky;top:0;z-index:5;margin:0 0 8px;padding:12px 0;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid transparent}
+    .sticky-nav.scrolled{border-bottom-color:var(--line)}
+    .sticky-nav ul{display:flex;flex-wrap:wrap;gap:8px 14px;list-style:none;margin:0;padding:0;font-size:.8rem}
+    .sticky-nav a{color:var(--muted);text-decoration:none}.sticky-nav a:hover{color:var(--accent)}
+    .src-map{font-size:.82rem;color:var(--muted)}
+    @media(max-width:860px){
+      main{width:calc(100% - 24px);padding-top:40px}
+      .grid,.grid-3,.grid-4{grid-template-columns:1fr}
+      .panel{border-radius:18px}
+      table.responsive,table.responsive tbody,table.responsive tr,table.responsive td{display:block}
+      table.responsive thead{display:none}
+      table.responsive tr{padding:12px 0;border-bottom:1px solid var(--line)}
+      table.responsive td{width:100%!important;padding:6px 0;border:0}
+      .check{grid-template-columns:22px 1fr}
+      .check .dim{grid-column:2}
+    }
+    @media print{
+      .sticky-nav{display:none}
+      body{background:#fff}
+      .panel,.card,.finding,.wave{box-shadow:none}
+      a{color:inherit;text-decoration:none}
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">Audit croisé · sécurité &amp; qualité visuelle · sans corrective</p>
+    <h1>Audit croisé<br>sécurité &amp; qualité visuelle</h1>
+    <p class="lede">Fusion de deux audits indépendants (lecture seule) sur la branche <code>dev</code>. Les observations sont dédupliquées, le consensus est explicite, et chaque finding porte une sévérité consolidée. Aucun correctif applicatif n’a été appliqué&nbsp;: ce document est un livrable de priorisation.</p>
+    <div class="meta">
+      <span class="pill">Branche <strong>dev</strong></span>
+      <span class="pill">Commit <code>79c7ac1</code></span>
+      <span class="pill">Dual model · Grok 4.5 + Composer 2.5</span>
+      <span class="pill">Lecture seule</span>
+      <span class="pill">27 juil 2026</span>
+    </div>
+  </header>
+
+  <nav class="sticky-nav" aria-label="Sommaire">
+    <ul>
+      <li><a href="#methode">Méthode</a></li>
+      <li><a href="#scorecard">Scorecard</a></li>
+      <li><a href="#consensus">Consensus</a></li>
+      <li><a href="#secu">Sécurité</a></li>
+      <li><a href="#visuel">Visuel</a></li>
+      <li><a href="#forts">Points forts</a></li>
+      <li><a href="#top10">Top 10 sécu</a></li>
+      <li><a href="#top5">Top 5 visuel</a></li>
+      <li><a href="#checkin">Check-in</a></li>
+      <li><a href="#vagues">Vagues</a></li>
+      <li><a href="#complements">Compléments</a></li>
+    </ul>
+  </nav>
+
+  <!-- ===================== MÉTHODE ===================== -->
+  <section id="methode">
+    <h2>1. Méthode</h2>
+    <div class="grid">
+      <article class="card">
+        <span class="number">A</span>
+        <h3>Auditeur A — Grok 4.5</h3>
+        <p>Id session <code>cffb10e3-dc09-42a0-b534-2113d225af98</code>. Revue lecture seule sécurité (RLS, APIs, headers, crawl) et qualité visuelle (landmarks, tokens, contrastes).</p>
+      </article>
+      <article class="card">
+        <span class="number">B</span>
+        <h3>Auditeur B — Composer 2.5</h3>
+        <p>Id session <code>310bb072-63d9-4ee6-9360-2dc41b16143d</code>. Revue lecture seule indépendante, avec points uniques (Resend inbound HTML, sessionToken localStorage, scroll footer) et positifs déjà verrouillés.</p>
+      </article>
+      <article class="card">
+        <span class="number">3</span>
+        <h3>Fusion</h3>
+        <p>Les deux jeux d’observations sont croisés. Un finding vu par les deux devient <strong>Consensus</strong>. Les observations uniques restent étiquetées <strong>Grok seul</strong> ou <strong>Composer seul</strong>. Sévérité&nbsp;: on garde le plus haut niveau sauf surestimation claire (désaccord noté).</p>
+      </article>
+      <article class="card">
+        <span class="number">4</span>
+        <h3>Principe</h3>
+        <p>Le risque zéro n’existe pas. Mieux vaut prévenir (RLS stricte, anti-abus, headers, noindex dashboard) que soigner un incident PII ou un spam Resend. Document seul — aucun fix code dans ce passage.</p>
+      </article>
+    </div>
+    <div class="signal warn" style="margin-top:16px">
+      <strong>Règle de consolidation.</strong> CRITICAL + HIGH → CRITICAL. HIGH + MED → HIGH. Si le niveau haut paraît surestimé, on le note explicitement sans abaisser silencieusement. Les IDs sources (GROK-S##, CMP-S##, V##) sont rappelés sous chaque finding fusionné.
+    </div>
+  </section>
+
+  <!-- ===================== SCORECARD ===================== -->
+  <section id="scorecard">
+    <h2>2. Scorecard consensus</h2>
+    <div class="panel">
+      <p class="label" style="margin-bottom:14px">Sécurité (findings fusionnés)</p>
+      <div class="grid-4">
+        <div>
+          <p class="stat" style="color:var(--crit)">2</p>
+          <p class="stat-label">Critiques</p>
+        </div>
+        <div>
+          <p class="stat" style="color:var(--high)">5</p>
+          <p class="stat-label">Hautes</p>
+        </div>
+        <div>
+          <p class="stat" style="color:var(--med)">9</p>
+          <p class="stat-label">Moyennes</p>
+        </div>
+        <div>
+          <p class="stat" style="color:var(--low)">5</p>
+          <p class="stat-label">Basses</p>
+        </div>
+      </div>
+      <p style="margin:18px 0 0;color:var(--muted)">Total sécurité&nbsp;: <strong>21 findings</strong> (FUS-S01 → FUS-S21) · dont <strong>8 en consensus</strong>.</p>
+    </div>
+
+    <div class="panel" style="margin-top:14px">
+      <p class="label" style="margin-bottom:14px">Qualité visuelle (findings fusionnés)</p>
+      <div class="grid-4">
+        <div>
+          <p class="stat" style="color:var(--crit)">0</p>
+          <p class="stat-label">Critiques</p>
+        </div>
+        <div>
+          <p class="stat" style="color:var(--high)">3</p>
+          <p class="stat-label">Hautes</p>
+        </div>
+        <div>
+          <p class="stat" style="color:var(--med)">6</p>
+          <p class="stat-label">Moyennes</p>
+        </div>
+        <div>
+          <p class="stat" style="color:var(--low)">2</p>
+          <p class="stat-label">Basses</p>
+        </div>
+      </div>
+      <p style="margin:18px 0 0;color:var(--muted)">Total visuel&nbsp;: <strong>11 findings</strong> (FUS-V01 → FUS-V11) · dont <strong>2 en consensus</strong> · + points forts séparés.</p>
+    </div>
+
+    <div class="grid" style="margin-top:14px">
+      <article class="card">
+        <p class="stat" style="color:var(--accent)">32</p>
+        <p class="stat-label">Findings actionnables fusionnés</p>
+      </article>
+      <article class="card">
+        <p class="stat" style="color:var(--ok)">10</p>
+        <p class="stat-label">En consensus (vus par les deux)</p>
+      </article>
+    </div>
+
+    <div class="signal" style="margin-top:16px">
+      <strong>Verdict croisé.</strong> Deux critiques sécurité bloquent une confiance prod&nbsp;: insert anon sur <code>design_brief_submissions</code>, et RLS «&nbsp;tout authenticated = editor&nbsp;» (PII briefs). Côté visuel, le consensus porte sur les landmarks imbriqués (<code>&lt;main&gt;</code>) et la dette hex/tokens — le scroll hijack footer (Composer seul) est le troisième HIGH à traiter tôt.
+    </div>
+  </section>
+
+  <!-- ===================== CONSENSUS ===================== -->
+  <section id="consensus">
+    <h2>3. Consensus — vus par les deux</h2>
+    <p class="lede">Tableau d’accord uniquement. Les findings uniques sont dans les sections fusionnées ci-dessous.</p>
+    <div class="panel" style="overflow-x:auto">
+      <table class="responsive">
+        <thead>
+          <tr>
+            <th>ID fusion</th>
+            <th>Sujet</th>
+            <th>Grok</th>
+            <th>Composer</th>
+            <th>Sévérité consolidée</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="#FUS-S01">FUS-S01</a></td>
+            <td>INSERT anon <code>design_brief_submissions</code></td>
+            <td>GROK-S01 CRITICAL</td>
+            <td>CMP-S02 HIGH</td>
+            <td><span class="sev sev-c">Critique</span></td>
+            <td>Plus haut conservé (spam / pollution PII)</td>
+          </tr>
+          <tr>
+            <td><a href="#FUS-S02">FUS-S02</a></td>
+            <td>RLS authenticated = editor (+ PII briefs)</td>
+            <td>GROK-S05 HIGH</td>
+            <td>CMP-S01 CRITICAL</td>
+            <td><span class="sev sev-c">Critique</span></td>
+            <td>Composer élève pour surface PII — retenu</td>
+          </tr>
+          <tr>
+            <td><a href="#FUS-S03">FUS-S03</a></td>
+            <td><code>/api/contact</code> sans rate-limit</td>
+            <td>GROK-S02 HIGH</td>
+            <td>CMP-S04 HIGH</td>
+            <td><span class="sev sev-h">Haute</span></td>
+            <td>Accord total</td>
+          </tr>
+          <tr>
+            <td><a href="#FUS-S04">FUS-S04</a></td>
+            <td>Dashboard démo si <code>VITE_*</code> absents</td>
+            <td>GROK-S04 HIGH</td>
+            <td>CMP-S06 HIGH</td>
+            <td><span class="sev sev-h">Haute</span></td>
+            <td>Accord total</td>
+          </tr>
+          <tr>
+            <td><a href="#FUS-S05">FUS-S05</a></td>
+            <td><code>/dashboard</code> crawlable / indexable</td>
+            <td>GROK-S06 HIGH</td>
+            <td>CMP-S05 HIGH</td>
+            <td><span class="sev sev-h">Haute</span></td>
+            <td>Accord total</td>
+          </tr>
+          <tr>
+            <td><a href="#FUS-S06">FUS-S06</a></td>
+            <td>Drift <code>schema.sql</code> (brief-assets, policies)</td>
+            <td>GROK-S07 MED</td>
+            <td>CMP-S03 HIGH</td>
+            <td><span class="sev sev-h">Haute</span></td>
+            <td>Désaccord&nbsp;: MED vs HIGH → HIGH retenu (doc ≠ réalité)</td>
+          </tr>
+          <tr>
+            <td><a href="#FUS-S08">FUS-S08</a></td>
+            <td>CORS translate <code>*</code></td>
+            <td>GROK-S08 MED</td>
+            <td>CMP-S11 MED</td>
+            <td><span class="sev sev-m">Moyenne</span></td>
+            <td>Accord total</td>
+          </tr>
+          <tr>
+            <td><a href="#FUS-S09">FUS-S09</a></td>
+            <td>Headers sécurité HTTP absents</td>
+            <td>GROK-S09 MED</td>
+            <td>CMP-S09 MED</td>
+            <td><span class="sev sev-m">Moyenne</span></td>
+            <td>Accord total</td>
+          </tr>
+          <tr>
+            <td><a href="#FUS-V01">FUS-V01</a></td>
+            <td><code>&lt;main&gt;</code> imbriqués (landmarks)</td>
+            <td>V01 HIGH</td>
+            <td>V01 HIGH</td>
+            <td><span class="sev sev-h">Haute</span></td>
+            <td>Accord total</td>
+          </tr>
+          <tr>
+            <td><a href="#FUS-V02">FUS-V02</a></td>
+            <td>Hex / hardcodes vs tokens design</td>
+            <td>V02 HIGH</td>
+            <td>V03 MED</td>
+            <td><span class="sev sev-h">Haute</span></td>
+            <td>Désaccord&nbsp;: HIGH vs MED → HIGH (dette systémique)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===================== SÉCURITÉ ===================== -->
+  <section id="secu">
+    <h2>4. Findings fusionnés — sécurité</h2>
+    <p class="lede">IDs <code>FUS-S##</code>. Origine&nbsp;: <span class="pill tag-both">Consensus</span> <span class="pill tag-a">Grok seul</span> <span class="pill tag-b">Composer seul</span>.</p>
+
+    <!-- FUS-S01 -->
+    <article class="finding" id="FUS-S01">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S01</p>
+          <h3>INSERT anon ouvert sur <code>design_brief_submissions</code></h3>
+        </div>
+        <span class="sev sev-c">Critique</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-both">Consensus</span>
+        <span class="pill">RLS</span><span class="pill">PII</span><span class="pill">Spam</span>
+      </div>
+      <p class="loc">Sources&nbsp;: GROK-S01 CRITICAL · CMP-S02 HIGH → consolidé CRITICAL</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Policy d’insert pour le rôle <code>anon</code> (ou équivalent public) sur la table des briefs. N’importe quel client peut écrire des lignes contenant des données personnelles sans passer par une API contrôlée.</p>
+        <p><strong>Fix.</strong> Retirer l’insert anon&nbsp;; n’autoriser l’écriture que via Edge Function / route serveur authentifiée + validation + rate-limit&nbsp;; audit des lignes existantes.</p>
+      </div>
+    </article>
+
+    <!-- FUS-S02 -->
+    <article class="finding" id="FUS-S02">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S02</p>
+          <h3>RLS&nbsp;: tout compte authenticated = éditeur CMS (+ PII briefs)</h3>
+        </div>
+        <span class="sev sev-c">Critique</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-both">Consensus</span>
+        <span class="pill">RLS</span><span class="pill">Auth</span><span class="pill">PII</span>
+      </div>
+      <p class="loc">Sources&nbsp;: GROK-S05 HIGH · CMP-S01 CRITICAL → consolidé CRITICAL (élévation Composer justifiée par PII)</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Policies trop larges&nbsp;: un utilisateur Auth valide obtient des droits d’édition CMS (et potentiellement lecture/écriture sur des briefs contenant PII), sans rôle métier (admin/editor) ni allowlist.</p>
+        <p><strong>Fix.</strong> Introduire une table/claim de rôles&nbsp;; restreindre SELECT/UPDATE/DELETE aux rôles attendus&nbsp;; séparer policies briefs vs contenu éditorial&nbsp;; revoir les comptes existants.</p>
+      </div>
+    </article>
+
+    <!-- FUS-S03 -->
+    <article class="finding" id="FUS-S03">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S03</p>
+          <h3><code>/api/contact</code> sans rate-limit</h3>
+        </div>
+        <span class="sev sev-h">Haute</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-both">Consensus</span>
+        <span class="pill">API</span><span class="pill">Anti-abus</span>
+      </div>
+      <p class="loc">Sources&nbsp;: GROK-S02 HIGH · CMP-S04 HIGH</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Endpoint contact exposé sans plafond IP/session visible (spam e-mail via Resend, coût, harcèlement).</p>
+        <p><strong>Fix.</strong> Rate-limit (Vercel / Upstash / middleware) + honeypot / captcha soft + logs d’abus&nbsp;; conserver la validation déjà présente.</p>
+      </div>
+    </article>
+
+    <!-- FUS-S04 -->
+    <article class="finding" id="FUS-S04">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S04</p>
+          <h3>Dashboard en mode démo si variables <code>VITE_*</code> absentes</h3>
+        </div>
+        <span class="sev sev-h">Haute</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-both">Consensus</span>
+        <span class="pill">Auth</span><span class="pill">Config</span>
+      </div>
+      <p class="loc">Sources&nbsp;: GROK-S04 HIGH · CMP-S06 HIGH</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Absence / mauvaises valeurs des env Vite peuvent basculer le dashboard en login démo libre, élargissant la surface sans Auth réel.</p>
+        <p><strong>Fix.</strong> Fail-closed en prod&nbsp;: pas de démo si <code>import.meta.env.PROD</code>&nbsp;; asserts au boot&nbsp;; documenter les env obligatoires.</p>
+      </div>
+    </article>
+
+    <!-- FUS-S05 -->
+    <article class="finding" id="FUS-S05">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S05</p>
+          <h3><code>/dashboard</code> crawlable / indexable</h3>
+        </div>
+        <span class="sev sev-h">Haute</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-both">Consensus</span>
+        <span class="pill">SEO</span><span class="pill">Surface</span>
+      </div>
+      <p class="loc">Sources&nbsp;: GROK-S06 HIGH · CMP-S05 HIGH</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Route admin absente de <code>robots.txt</code> / meta noindex / sitemap exclusion claire → risque d’indexation de l’UI CMS.</p>
+        <p><strong>Fix.</strong> <code>Disallow: /dashboard</code>, meta <code>noindex,nofollow</code> sur le shell admin, vérifier hors sitemap.</p>
+      </div>
+    </article>
+
+    <!-- FUS-S06 -->
+    <article class="finding" id="FUS-S06">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S06</p>
+          <h3>Drift <code>schema.sql</code> vs réalité (brief-assets, policies)</h3>
+        </div>
+        <span class="sev sev-h">Haute</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-both">Consensus</span>
+        <span class="pill">Supabase</span><span class="pill">Doc</span>
+      </div>
+      <p class="loc">Sources&nbsp;: GROK-S07 MED · CMP-S03 HIGH → consolidé HIGH · désaccord noté</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Le fichier schema versionné ne reflète pas les policies live (ex. upload anon brief-assets côté Grok&nbsp;; désync générale côté Composer). Opérer depuis le SQL local induit une fausse confiance.</p>
+        <p><strong>Fix.</strong> Dump / migrations comme source de vérité&nbsp;; aligner <code>schema.sql</code>&nbsp;; CI qui compare policies distantes.</p>
+      </div>
+    </article>
+
+    <!-- FUS-S07 -->
+    <article class="finding" id="FUS-S07">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S07</p>
+          <h3>Soft-404 SPA&nbsp;: HTTP 200 sur pages introuvables</h3>
+        </div>
+        <span class="sev sev-h">Haute</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-a">Grok seul</span>
+        <span class="pill">SEO</span><span class="pill">Routing</span>
+      </div>
+      <p class="loc">Source&nbsp;: GROK-S03 HIGH</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Fallbacks client (blog/services) servent un contenu «&nbsp;trouvé&nbsp;» sous statut 200, ce qui fausse le crawl et peut indexer du contenu trompeur.</p>
+        <p><strong>Fix.</strong> Vrai 404 (ou redirect) côté routeur / adaptateur host&nbsp;; <code>noindex</code> sur NotFound&nbsp;; jamais de fallback silencieux vers le premier item CMS.</p>
+      </div>
+    </article>
+
+    <!-- FUS-S08 -->
+    <article class="finding" id="FUS-S08">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S08</p>
+          <h3>CORS translate en <code>*</code></h3>
+        </div>
+        <span class="sev sev-m">Moyenne</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-both">Consensus</span>
+        <span class="pill">API</span><span class="pill">CORS</span>
+      </div>
+      <p class="loc">Sources&nbsp;: GROK-S08 MED · CMP-S11 MED</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Endpoint de traduction autorise une origine wildcard, élargissant l’appel cross-site si l’auth seule ne suffit pas.</p>
+        <p><strong>Fix.</strong> Allowlist <code>www.carolebj.com</code> (+ preview connues)&nbsp;; refuser le reste.</p>
+      </div>
+    </article>
+
+    <!-- FUS-S09 -->
+    <article class="finding" id="FUS-S09">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S09</p>
+          <h3>Headers de sécurité HTTP absents / incomplets</h3>
+        </div>
+        <span class="sev sev-m">Moyenne</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-both">Consensus</span>
+        <span class="pill">Headers</span>
+      </div>
+      <p class="loc">Sources&nbsp;: GROK-S09 MED · CMP-S09 MED</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Pas (ou peu) de CSP, HSTS, <code>X-Frame-Options</code> / <code>frame-ancestors</code>, <code>Referrer-Policy</code>, <code>Permissions-Policy</code> au niveau host.</p>
+        <p><strong>Fix.</strong> Définir headers dans <code>vercel.json</code> / config host&nbsp;; CSP progressive (report-only puis enforce).</p>
+      </div>
+    </article>
+
+    <!-- FUS-S10 -->
+    <article class="finding" id="FUS-S10">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S10</p>
+          <h3>Bucket media sans contrainte MIME / taille</h3>
+        </div>
+        <span class="sev sev-m">Moyenne</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-a">Grok seul</span>
+        <span class="pill">Storage</span>
+      </div>
+      <p class="loc">Source&nbsp;: GROK-S10 MED</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Upload media sans allowlist MIME ni plafond de taille côté bucket → abus stockage / contenu inattendu.</p>
+        <p><strong>Fix.</strong> Policies Storage + validation serveur&nbsp;; types image/vidéo attendus&nbsp;; max size.</p>
+      </div>
+    </article>
+
+    <!-- FUS-S11 -->
+    <article class="finding" id="FUS-S11">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S11</p>
+          <h3>Content-Length déclaré / contrôlé sur contact</h3>
+        </div>
+        <span class="sev sev-m">Moyenne</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-a">Grok seul</span>
+        <span class="pill">API</span>
+      </div>
+      <p class="loc">Source&nbsp;: GROK-S11 MED</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Gestion du corps de requête contact fragile face aux payloads trop grands ou Content-Length trompeur.</p>
+        <p><strong>Fix.</strong> Cap explicite de body size côté handler&nbsp;; rejeter 413&nbsp;; ne pas faire confiance au seul header client.</p>
+      </div>
+    </article>
+
+    <!-- FUS-S12 -->
+    <article class="finding" id="FUS-S12">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S12</p>
+          <h3>Translate sans plafond / quota Vercel</h3>
+        </div>
+        <span class="sev sev-m">Moyenne</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-b">Composer seul</span>
+        <span class="pill">API</span><span class="pill">Coût</span>
+      </div>
+      <p class="loc">Source&nbsp;: CMP-S07 MED</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Endpoint translate sans rate-limit / budget clair → abus de quota (coût fournisseur + cold starts).</p>
+        <p><strong>Fix.</strong> Rate-limit + plafond tokens/jour&nbsp;; auth renforcée (voir FUS-S14)&nbsp;; CORS restreint (FUS-S08).</p>
+      </div>
+    </article>
+
+    <!-- FUS-S13 -->
+    <article class="finding" id="FUS-S13">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S13</p>
+          <h3>Inbound Resend HTML non assaini</h3>
+        </div>
+        <span class="sev sev-m">Moyenne</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-b">Composer seul</span>
+        <span class="pill">XSS</span><span class="pill">E-mail</span>
+      </div>
+      <p class="loc">Source&nbsp;: CMP-S08 MED · UNIQUE Composer</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Contenu HTML entrant (webhook / forward Resend) potentiellement rendu ou stocké sans assainissement → XSS stocké ou injection dans outils internes.</p>
+        <p><strong>Fix.</strong> Sanitize (allowlist tags) ou stocker texte brut&nbsp;; ne jamais injecter HTML inbound dans le dashboard sans escape.</p>
+      </div>
+    </article>
+
+    <!-- FUS-S14 -->
+    <article class="finding" id="FUS-S14">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S14</p>
+          <h3>Translate protégé par auth seule (surface large)</h3>
+        </div>
+        <span class="sev sev-m">Moyenne</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-b">Composer seul</span>
+        <span class="pill">API</span><span class="pill">Auth</span>
+      </div>
+      <p class="loc">Source&nbsp;: CMP-S10 MED</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Si l’endpoint translate n’exige qu’une session Auth générique (sans rôle éditeur), tout compte valide peut consommer le service.</p>
+        <p><strong>Fix.</strong> Restreindre aux rôles CMS&nbsp;; secret serveur&nbsp;; corréler avec FUS-S02 / FUS-S12.</p>
+      </div>
+    </article>
+
+    <!-- FUS-S15 -->
+    <article class="finding" id="FUS-S15">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S15</p>
+          <h3><code>sessionToken</code> brief en <code>localStorage</code> (XSS → hijack)</h3>
+        </div>
+        <span class="sev sev-m">Moyenne</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-b">Composer seul</span>
+        <span class="pill">XSS</span><span class="pill">Brief</span>
+      </div>
+      <p class="loc">Source&nbsp;: CMP-S12 MED · UNIQUE Composer</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Token de session brief persisté en <code>localStorage</code>&nbsp;: tout XSS même limité peut s’approprier la session de soumission.</p>
+        <p><strong>Fix.</strong> Cookie <code>HttpOnly</code> / <code>Secure</code> / <code>SameSite</code> si possible&nbsp;; sinon durée courte + binding serveur&nbsp;; CSP (FUS-S09).</p>
+      </div>
+    </article>
+
+    <!-- FUS-S16 -->
+    <article class="finding" id="FUS-S16">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S16</p>
+          <h3><code>DesignBrief.tsx</code> legacy encore présent</h3>
+        </div>
+        <span class="sev sev-m">Moyenne</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-b">Composer seul</span>
+        <span class="pill">Surface</span><span class="pill">Legacy</span>
+      </div>
+      <p class="loc">Source&nbsp;: CMP-S13 MED</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Composant / parcours brief legacy coexiste avec le flux actuel → double surface d’attaque et de bugs.</p>
+        <p><strong>Fix.</strong> Supprimer routes mortes ou les isoler derrière flag&nbsp;; un seul chemin de soumission.</p>
+      </div>
+    </article>
+
+    <!-- FUS-S17 -->
+    <article class="finding" id="FUS-S17">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S17</p>
+          <h3>URLs CMS / media non restreintes</h3>
+        </div>
+        <span class="sev sev-l">Basse</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-a">Grok seul</span>
+        <span class="pill">CMS</span>
+      </div>
+      <p class="loc">Source&nbsp;: GROK-S12 LOW</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Champs URL CMS acceptent des schémas / hosts larges (phishing soft, tracking).</p>
+        <p><strong>Fix.</strong> Allowlist <code>https:</code> + domaines connus&nbsp;; bloquer <code>javascript:</code> / data URI.</p>
+      </div>
+    </article>
+
+    <!-- FUS-S18 -->
+    <article class="finding" id="FUS-S18">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S18</p>
+          <h3><code>dangerouslySetInnerHTML</code> (surface limitée)</h3>
+        </div>
+        <span class="sev sev-l">Basse</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-a">Grok seul</span>
+        <span class="pill">XSS</span>
+      </div>
+      <p class="loc">Source&nbsp;: GROK-S13 LOW</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Usages existants mais périmètre restreint&nbsp;; risque résiduel si le contenu CMS n’est pas assaini à la source.</p>
+        <p><strong>Fix.</strong> Sanitize à l’écriture CMS&nbsp;; audit des call-sites&nbsp;; CSP.</p>
+      </div>
+    </article>
+
+    <!-- FUS-S19 -->
+    <article class="finding" id="FUS-S19">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S19</p>
+          <h3>Surface dépendances (supply-chain)</h3>
+        </div>
+        <span class="sev sev-l">Basse</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-a">Grok seul</span>
+        <span class="pill">Deps</span>
+      </div>
+      <p class="loc">Source&nbsp;: GROK-S14 LOW</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Surface npm non négligeable&nbsp;; pas de signal d’incident immédiat, mais dette de veille.</p>
+        <p><strong>Fix.</strong> <code>npm audit</code> / Dependabot&nbsp;; élaguer deps mortes (lien audit profond).</p>
+      </div>
+    </article>
+
+    <!-- FUS-S20 -->
+    <article class="finding" id="FUS-S20">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S20</p>
+          <h3>Liens navbar legacy</h3>
+        </div>
+        <span class="sev sev-l">Basse</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-b">Composer seul</span>
+        <span class="pill">Nav</span>
+      </div>
+      <p class="loc">Source&nbsp;: CMP-S14 LOW</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Entrées de navigation vers parcours legacy / morts → confusion + surface résiduelle.</p>
+        <p><strong>Fix.</strong> Aligner nav sur routes vivantes&nbsp;; retirer dead links.</p>
+      </div>
+    </article>
+
+    <!-- FUS-S21 -->
+    <article class="finding" id="FUS-S21">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-S21</p>
+          <h3>Pas de MFA sur comptes CMS</h3>
+        </div>
+        <span class="sev sev-l">Basse</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-b">Composer seul</span>
+        <span class="pill">Auth</span>
+      </div>
+      <p class="loc">Source&nbsp;: CMP-S15 LOW</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Auth Supabase sans MFA obligatoire pour un site mono-éditeur — acceptable à court terme, faible pour PII.</p>
+        <p><strong>Fix.</strong> Activer MFA pour les rôles admin/editor une fois FUS-S02 en place.</p>
+      </div>
+    </article>
+  </section>
+
+  <!-- ===================== VISUEL ===================== -->
+  <section id="visuel">
+    <h2>5. Findings fusionnés — qualité visuelle</h2>
+    <p class="lede">IDs <code>FUS-V##</code>. Même nomenclature d’origine.</p>
+
+    <article class="finding" id="FUS-V01">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-V01</p>
+          <h3><code>&lt;main&gt;</code> imbriqués (landmarks a11y)</h3>
+        </div>
+        <span class="sev sev-h">Haute</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-both">Consensus</span>
+        <span class="pill">A11y</span><span class="pill">HTML</span>
+      </div>
+      <p class="loc">Sources&nbsp;: Grok V01 HIGH · Composer V01 HIGH</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Layout expose déjà un <code>&lt;main&gt;</code>&nbsp;; certaines pages (ex. About / shells outils) en ajoutent un second → landmarks invalides pour lecteurs d’écran.</p>
+        <p><strong>Fix.</strong> Un seul <code>&lt;main&gt;</code> (Layout)&nbsp;; pages en <code>&lt;div&gt;</code> / sections&nbsp;; helper <code>PAGE_MAIN</code> sans balise landmark.</p>
+      </div>
+    </article>
+
+    <article class="finding" id="FUS-V02">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-V02</p>
+          <h3>Hex / hardcodes vs tokens design system</h3>
+        </div>
+        <span class="sev sev-h">Haute</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-both">Consensus</span>
+        <span class="pill">Design system</span>
+      </div>
+      <p class="loc">Sources&nbsp;: Grok V02 HIGH · Composer V03 MED → consolidé HIGH</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Contournement massif des tokens (<code>tokens.css</code>) via hex Tailwind arbitraires sur shell, outils, erreurs — About reste la référence «&nbsp;0 hex&nbsp;».</p>
+        <p><strong>Fix.</strong> Migrer vers <code>bg-surface-*</code> / <code>text-text-*</code> / <code>bg-action-accent</code>&nbsp;; interdire les hex dans les nouvelles PR (lint / revue).</p>
+      </div>
+    </article>
+
+    <article class="finding" id="FUS-V03">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-V03</p>
+          <h3>Footer&nbsp;: scroll hijack</h3>
+        </div>
+        <span class="sev sev-h">Haute</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-b">Composer seul</span>
+        <span class="pill">UX</span><span class="pill">Motion</span>
+      </div>
+      <p class="loc">Source&nbsp;: Composer V02 HIGH · UNIQUE</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Comportement de scroll du footer qui capture / détourne le défilement — sensation de perte de contrôle, surtout clavier / trackpad.</p>
+        <p><strong>Fix.</strong> Retirer le hijack ou le limiter à une animation non bloquante&nbsp;; respecter <code>prefers-reduced-motion</code>.</p>
+      </div>
+    </article>
+
+    <article class="finding" id="FUS-V04">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-V04</p>
+          <h3>Page 404&nbsp;: dialecte visuel divergent</h3>
+        </div>
+        <span class="sev sev-m">Moyenne</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-a">Grok seul</span>
+        <span class="pill">Design</span>
+      </div>
+      <p class="loc">Source&nbsp;: Grok V03 MED</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> NotFound / ErrorPage parlent un autre dialecte (couleurs, typo, CTA) que le parcours About / Services tokenisés.</p>
+        <p><strong>Fix.</strong> Aligner sur PageHero + tokens&nbsp;; même CTA accent.</p>
+      </div>
+    </article>
+
+    <article class="finding" id="FUS-V05">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-V05</p>
+          <h3>Estimateur / Brief&nbsp;: hex locaux</h3>
+        </div>
+        <span class="sev sev-m">Moyenne</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-a">Grok seul</span>
+        <span class="pill">Outils</span>
+      </div>
+      <p class="loc">Source&nbsp;: Grok V04 MED · sous-ensemble de FUS-V02</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Parcours Estimateur et Brief portent beaucoup de hex inline — rupture nette avec le design system.</p>
+        <p><strong>Fix.</strong> Vague tokens dédiée outils&nbsp;; partager boutons / surfaces avec le site.</p>
+      </div>
+    </article>
+
+    <article class="finding" id="FUS-V06">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-V06</p>
+          <h3>Contraste dark&nbsp;: textes muted insuffisants</h3>
+        </div>
+        <span class="sev sev-m">Moyenne</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-a">Grok seul</span>
+        <span class="pill">A11y</span><span class="pill">Contraste</span>
+      </div>
+      <p class="loc">Source&nbsp;: Grok V05 MED</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> En thème dark, certains <code>muted</code> / secondaires tombent sous un contraste confortable (WCAG AA).</p>
+        <p><strong>Fix.</strong> Recaler tokens dark <code>text-muted</code>&nbsp;; vérifier paires critiques (nav, footer, cards).</p>
+      </div>
+    </article>
+
+    <article class="finding" id="FUS-V07">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-V07</p>
+          <h3><code>PageHero</code> sous-adopté</h3>
+        </div>
+        <span class="sev sev-m">Moyenne</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-b">Composer seul</span>
+        <span class="pill">Composants</span>
+      </div>
+      <p class="loc">Source&nbsp;: Composer V04 MED</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Helper PageHero présent mais peu utilisé — chaque page réinvente hero / eyebrow.</p>
+        <p><strong>Fix.</strong> Migrer Contact, outils, erreurs vers PageHero&nbsp;; documenter le pattern dans MEMORY.</p>
+      </div>
+    </article>
+
+    <article class="finding" id="FUS-V08">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-V08</p>
+          <h3>About hors helper <code>PAGE_MAIN</code></h3>
+        </div>
+        <span class="sev sev-m">Moyenne</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-b">Composer seul</span>
+        <span class="pill">Layout</span>
+      </div>
+      <p class="loc">Source&nbsp;: Composer V05 MED</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> About, pourtant référence tokens, ne suit pas le wrapper <code>PAGE_MAIN</code> commun → écarts de spacing / landmark.</p>
+        <p><strong>Fix.</strong> Brancher About sur le helper sans réintroduire un second <code>&lt;main&gt;</code> (FUS-V01).</p>
+      </div>
+    </article>
+
+    <article class="finding" id="FUS-V09">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-V09</p>
+          <h3>Focus rings incomplets</h3>
+        </div>
+        <span class="sev sev-m">Moyenne</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-b">Composer seul</span>
+        <span class="pill">A11y</span><span class="pill">Clavier</span>
+      </div>
+      <p class="loc">Source&nbsp;: Composer V06 MED</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Certains contrôles custom / liens perdent l’indicateur de focus visible.</p>
+        <p><strong>Fix.</strong> Token focus ring unique&nbsp;; audit clavier Navbar / Footer / formulaires.</p>
+      </div>
+    </article>
+
+    <article class="finding" id="FUS-V10">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-V10</p>
+          <h3>Carnet — cards dark peu lisibles</h3>
+        </div>
+        <span class="sev sev-l">Basse</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-a">Grok seul</span>
+        <span class="pill">Carnet</span>
+      </div>
+      <p class="loc">Source&nbsp;: Grok V06 LOW</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Cards du carnet en dark manquent de séparation / contraste.</p>
+        <p><strong>Fix.</strong> Ajuster surface card dark + bordure token.</p>
+      </div>
+    </article>
+
+    <article class="finding" id="FUS-V11">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">FUS-V11</p>
+          <h3>Couleur de focus encore en hex</h3>
+        </div>
+        <span class="sev sev-l">Basse</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill tag-b">Composer seul</span>
+        <span class="pill">Tokens</span>
+      </div>
+      <p class="loc">Source&nbsp;: Composer V07 LOW</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Anneaux / outlines de focus définis en hex plutôt qu’en token sémantique.</p>
+        <p><strong>Fix.</strong> Variable <code>--focus-ring</code> branchée light/dark&nbsp;; lier à FUS-V09.</p>
+      </div>
+    </article>
+  </section>
+
+  <!-- ===================== POINTS FORTS ===================== -->
+  <section id="forts">
+    <h2>6. Points forts — déjà verrouillé</h2>
+    <div class="signal ok">
+      <strong>Ne pas casser.</strong> Ces garde-fous sont confirmés surtout par Composer (S16–S18) et le socle CMS noté par Grok. Toute remediation doit les préserver.
+    </div>
+    <div class="grid" style="margin-top:14px">
+      <article class="card">
+        <span class="sev sev-ok">OK</span>
+        <h3 style="margin-top:10px">Cron / jobs planifiés</h3>
+        <p>CMP-S16&nbsp;: mécanismes cron / maintenance vus comme sains (pas de secret exposé côté client).</p>
+      </article>
+      <article class="card">
+        <span class="sev sev-ok">OK</span>
+        <h3 style="margin-top:10px">E-mails sortants échappés</h3>
+        <p>CMP-S17&nbsp;: contenus injectés dans les e-mails Resend (contact) correctement échappés — garder ce pattern pour tout nouveau mailer.</p>
+      </article>
+      <article class="card">
+        <span class="sev sev-ok">OK</span>
+        <h3 style="margin-top:10px">Préfixe <code>VITE_*</code> respecté</h3>
+        <p>CMP-S18&nbsp;: pas de secrets serveur emballés sous <code>VITE_</code> — seul le publishable / public est exposé au bundle.</p>
+      </article>
+      <article class="card">
+        <span class="sev sev-ok">OK</span>
+        <h3 style="margin-top:10px">Socle CMS Supabase</h3>
+        <p>Grok&nbsp;: architecture CMS (Auth + tables + localized) mature&nbsp;; le problème est la granularité RLS, pas l’absence de modèle.</p>
+      </article>
+      <article class="card">
+        <span class="sev sev-ok">OK</span>
+        <h3 style="margin-top:10px">Touch targets (positif visuel)</h3>
+        <p>Composer V08 LOW positif&nbsp;: zones tactiles globalement suffisantes sur nav / CTA principaux.</p>
+      </article>
+      <article class="card">
+        <span class="sev sev-ok">OK</span>
+        <h3 style="margin-top:10px">About comme référence tokens</h3>
+        <p>Page About ≈ 0 hex&nbsp;: cible de migration pour FUS-V02 / FUS-V05 (déjà noté dans l’audit profond).</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===================== TOP 10 SÉCU ===================== -->
+  <section id="top10">
+    <h2>7. Top 10 priorités remediation — sécurité</h2>
+    <div class="panel">
+      <ol class="priority">
+        <li><strong><a href="#FUS-S02">FUS-S02</a></strong> — Rôles RLS (authenticated ≠ editor) + cloisonnement PII briefs.</li>
+        <li><strong><a href="#FUS-S01">FUS-S01</a></strong> — Fermer INSERT anon sur <code>design_brief_submissions</code>.</li>
+        <li><strong><a href="#FUS-S03">FUS-S03</a></strong> — Rate-limit <code>/api/contact</code> (+ honeypot).</li>
+        <li><strong><a href="#FUS-S04">FUS-S04</a></strong> — Fail-closed&nbsp;: interdire démo login en production.</li>
+        <li><strong><a href="#FUS-S05">FUS-S05</a></strong> — <code>robots</code> + <code>noindex</code> dashboard.</li>
+        <li><strong><a href="#FUS-S06">FUS-S06</a></strong> — Réaligner migrations / <code>schema.sql</code> avec policies live.</li>
+        <li><strong><a href="#FUS-S07">FUS-S07</a></strong> — Soft-404 → vrais 404 / pas de fallback CMS.</li>
+        <li><strong><a href="#FUS-S09">FUS-S09</a></strong> + <strong><a href="#FUS-S08">FUS-S08</a></strong> — Headers sécu + CORS translate allowlist.</li>
+        <li><strong><a href="#FUS-S13">FUS-S13</a></strong> + <strong><a href="#FUS-S15">FUS-S15</a></strong> — Sanitize inbound Resend HTML&nbsp;; sortir sessionToken du <code>localStorage</code>.</li>
+        <li><strong><a href="#FUS-S10">FUS-S10</a></strong> + <strong><a href="#FUS-S12">FUS-S12</a></strong> — MIME/taille Storage&nbsp;; plafond translate.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===================== TOP 5 VISUEL ===================== -->
+  <section id="top5">
+    <h2>8. Top 5 priorités — qualité visuelle</h2>
+    <div class="panel">
+      <ol class="priority">
+        <li><strong><a href="#FUS-V01">FUS-V01</a></strong> — Un seul landmark <code>&lt;main&gt;</code> (Layout).</li>
+        <li><strong><a href="#FUS-V03">FUS-V03</a></strong> — Retirer / sécuriser le scroll hijack footer.</li>
+        <li><strong><a href="#FUS-V02">FUS-V02</a></strong> (+ <a href="#FUS-V05">V05</a>) — Migration hex → tokens (shell puis outils).</li>
+        <li><strong><a href="#FUS-V09">FUS-V09</a></strong> (+ <a href="#FUS-V11">V11</a>) — Focus rings visibles + tokenisés.</li>
+        <li><strong><a href="#FUS-V07">FUS-V07</a></strong> (+ <a href="#FUS-V04">V04</a>, <a href="#FUS-V08">V08</a>) — PageHero / PAGE_MAIN / 404 alignés.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===================== CHECK-IN ===================== -->
+  <section id="checkin">
+    <h2>9. Check-in exhaustif</h2>
+
+    <h3 style="margin-top:8px">9.1 Sécurité</h3>
+    <div class="panel">
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>RLS rôles (pas «&nbsp;any auth = editor&nbsp;»)</div><span class="dim">FUS-S02 · fail</span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Pas d’INSERT anon sur tables PII / briefs</div><span class="dim">FUS-S01 · fail</span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Rate-limit contact</div><span class="dim">FUS-S03 · fail</span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Prod fail-closed (pas de démo login)</div><span class="dim">FUS-S04 · fail</span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Dashboard non indexable</div><span class="dim">FUS-S05 · fail</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Schema / migrations = réalité Supabase</div><span class="dim">FUS-S06 · warn</span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Soft-404 absents (vrais 404)</div><span class="dim">FUS-S07 · fail</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>CORS translate allowlist</div><span class="dim">FUS-S08 · warn</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Headers sécu (CSP, HSTS, frame, referrer)</div><span class="dim">FUS-S09 · warn</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Storage MIME + taille</div><span class="dim">FUS-S10 · warn</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Body size contact borné</div><span class="dim">FUS-S11 · warn</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Quota / rate-limit translate</div><span class="dim">FUS-S12 · warn</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Inbound e-mail HTML assaini</div><span class="dim">FUS-S13 · warn</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Translate réservé aux rôles CMS</div><span class="dim">FUS-S14 · warn</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Session brief hors localStorage XSS</div><span class="dim">FUS-S15 · warn</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Pas de parcours DesignBrief legacy</div><span class="dim">FUS-S16 · warn</span></div>
+      <div class="check"><span class="box partial" aria-hidden="true"></span><div>URLs CMS restreintes</div><span class="dim">FUS-S17 · partial</span></div>
+      <div class="check"><span class="box partial" aria-hidden="true"></span><div>HTML CMS / dangerouslySetInnerHTML maîtrisé</div><span class="dim">FUS-S18 · partial</span></div>
+      <div class="check"><span class="box partial" aria-hidden="true"></span><div>Veille dépendances</div><span class="dim">FUS-S19 · partial</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Nav sans liens legacy</div><span class="dim">FUS-S20 · warn</span></div>
+      <div class="check"><span class="box na" aria-hidden="true"></span><div>MFA éditeurs</div><span class="dim">FUS-S21 · nice-to-have</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Cron / jobs sans secret client</div><span class="dim">CMP-S16 · pass</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>E-mails sortants échappés</div><span class="dim">CMP-S17 · pass</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Pas de secret sous <code>VITE_*</code></div><span class="dim">CMP-S18 · pass</span></div>
+    </div>
+
+    <h3 style="margin-top:28px">9.2 Qualité visuelle</h3>
+    <div class="panel">
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Un seul <code>&lt;main&gt;</code> par document</div><span class="dim">FUS-V01 · fail</span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Tokens utilisés (pas de hex massifs)</div><span class="dim">FUS-V02 · fail</span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Scroll footer non hijacké</div><span class="dim">FUS-V03 · fail</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>404 / Error dans le même dialecte</div><span class="dim">FUS-V04 · warn</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Estimateur / Brief tokenisés</div><span class="dim">FUS-V05 · warn</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Contraste muted dark ≥ AA</div><span class="dim">FUS-V06 · warn</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>PageHero adopté sur pages clés</div><span class="dim">FUS-V07 · warn</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>About sur <code>PAGE_MAIN</code></div><span class="dim">FUS-V08 · warn</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Focus rings complets</div><span class="dim">FUS-V09 · warn</span></div>
+      <div class="check"><span class="box partial" aria-hidden="true"></span><div>Carnet cards dark lisibles</div><span class="dim">FUS-V10 · partial</span></div>
+      <div class="check"><span class="box partial" aria-hidden="true"></span><div>Focus color tokenisée</div><span class="dim">FUS-V11 · partial</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Touch targets principaux OK</div><span class="dim">Composer V08 · pass</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>About = référence 0 hex</div><span class="dim">socle · pass</span></div>
+    </div>
+  </section>
+
+  <!-- ===================== VAGUES ===================== -->
+  <section id="vagues">
+    <h2>10. Vagues de remediation A → D</h2>
+
+    <div class="wave" id="vague-a">
+      <h3>Vague A — sécurité bloquante <span class="sev sev-c">P0</span></h3>
+      <ul>
+        <li>FUS-S02 rôles RLS + séparation PII briefs</li>
+        <li>FUS-S01 fermeture INSERT anon</li>
+        <li>FUS-S03 rate-limit contact</li>
+        <li>FUS-S04 fail-closed démo</li>
+        <li>FUS-S05 noindex / robots dashboard</li>
+        <li>FUS-S06 réalignement schema / migrations</li>
+      </ul>
+      <p class="dim" style="margin:12px 0 0">Critère de sortie&nbsp;: aucun INSERT anon PII, aucun Auth «&nbsp;éditeur par défaut&nbsp;», contact borné, dashboard non crawlable, démo impossible en prod.</p>
+    </div>
+
+    <div class="wave" id="vague-b">
+      <h3>Vague B — durcissement API &amp; SEO <span class="sev sev-h">P1</span></h3>
+      <ul>
+        <li>FUS-S07 soft-404 → vrais 404</li>
+        <li>FUS-S08 + FUS-S09 CORS allowlist + headers sécu</li>
+        <li>FUS-S10 Storage MIME / taille</li>
+        <li>FUS-S11 body size contact</li>
+        <li>FUS-S12 + FUS-S14 plafond &amp; rôle translate</li>
+        <li>FUS-S13 sanitize inbound Resend HTML</li>
+        <li>FUS-S15 sessionToken hors localStorage</li>
+      </ul>
+    </div>
+
+    <div class="wave" id="vague-c">
+      <h3>Vague C — qualité visuelle structurelle <span class="sev sev-h">P1</span></h3>
+      <ul>
+        <li>FUS-V01 un seul <code>&lt;main&gt;</code></li>
+        <li>FUS-V03 retirer scroll hijack footer</li>
+        <li>FUS-V02 + FUS-V05 migration hex → tokens (shell puis outils)</li>
+        <li>FUS-V09 + FUS-V11 focus rings tokenisés</li>
+        <li>FUS-V07 + FUS-V08 PageHero / PAGE_MAIN</li>
+        <li>FUS-V04 dialecte 404 aligné</li>
+      </ul>
+    </div>
+
+    <div class="wave" id="vague-d">
+      <h3>Vague D — polish &amp; dette basse <span class="sev sev-m">P2</span></h3>
+      <ul>
+        <li>FUS-S16 retirer DesignBrief legacy</li>
+        <li>FUS-S17–S21 URLs CMS, innerHTML, deps, nav legacy, MFA</li>
+        <li>FUS-V06 contraste muted dark</li>
+        <li>FUS-V10 cards Carnet dark</li>
+      </ul>
+      <p class="dim" style="margin:12px 0 0">Compléter ensuite avec <a href="./SITE_FULL_AUDIT.html">audit complet</a> et <a href="./SITE_DEEP_AUDIT.html">audit profond</a> pour le hors-scope (copy, dead code, perf).</p>
+    </div>
+  </section>
+
+  <!-- ===================== COMPLÉMENTS ===================== -->
+  <section id="complements">
+    <h2>11. Compléments</h2>
+    <div class="grid">
+      <article class="card">
+        <span class="number">1</span>
+        <h3><a href="./SITE_FULL_AUDIT.html">SITE_FULL_AUDIT.html</a></h3>
+        <p>Audit site large (SEO, CMS, a11y, perf, légal). Ce rapport croisé ne le remplace pas&nbsp;: il priorise le cluster sécurité + qualité visuelle.</p>
+      </article>
+      <article class="card">
+        <span class="number">2</span>
+        <h3><a href="./SITE_DEEP_AUDIT.html">SITE_DEEP_AUDIT.html</a></h3>
+        <p>Audit structurel design system, copyright et qualité de code (hex quantifiés, Home géant, shadcn mort). À lire avant Vague C/D.</p>
+      </article>
+    </div>
+    <div class="signal prod" style="margin-top:16px">
+      <strong>Périmètre de ce fichier.</strong> Fusion uniquement des deux audits sécurité + visuel (Grok 4.5 + Composer 2.5) sur <code>dev</code> @ <code>79c7ac1</code>. Lecture seule — aucun correctif applicatif dans ce passage.
+    </div>
+  </section>
+
+  <footer>
+    <p><strong>Audit croisé sécurité &amp; qualité visuelle</strong> · branche <code>dev</code> · commit <code>79c7ac1</code> · 27 juil 2026 · Dual model Grok 4.5 + Composer 2.5 · lecture seule.</p>
+    <p>Compteurs&nbsp;: <strong>21</strong> findings sécurité (2 critiques · 5 hautes · 9 moyennes · 5 basses) · <strong>11</strong> findings visuels (0 critique · 3 hautes · 6 moyennes · 2 basses) · <strong>32</strong> findings actionnables · <strong>10</strong> en consensus · <strong>6</strong> points forts listés · IDs <code>FUS-S01–S21</code> + <code>FUS-V01–V11</code>.</p>
+    <p>Sources sessions&nbsp;: Grok <code>cffb10e3-dc09-42a0-b534-2113d225af98</code> · Composer <code>310bb072-63d9-4ee6-9360-2dc41b16143d</code>.</p>
+  </footer>
+</main>
+<script>
+  (function(){
+    var nav=document.querySelector('.sticky-nav');
+    if(!nav)return;
+    var onScroll=function(){nav.classList.toggle('scrolled',window.scrollY>8)};
+    onScroll();
+    window.addEventListener('scroll',onScroll,{passive:true});
+  })();
+</script>
+</body>
+</html>

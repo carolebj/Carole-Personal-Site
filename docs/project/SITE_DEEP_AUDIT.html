@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Audit profond — design system, copyright &amp; code (branche dev)</title>
+  <style>
+    :root{
+      --ink:#2f1832;--muted:#6f6071;--paper:#fffaf7;--panel:#fff;--line:#eadfe6;
+      --accent:#c84f66;--soft:#f8e3e4;--plum:#eee6f1;
+      --crit:#8b1e2d;--crit-bg:#fce8eb;--high:#9a4a12;--high-bg:#fff1e4;
+      --med:#6b5a1e;--med-bg:#fbf5d9;--low:#3d5a45;--low-bg:#e8f2eb;
+      --ok:#2f5d3a;--ok-bg:#e7f3ea;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.65}
+    main{width:min(1120px,calc(100% - 40px));margin:auto;padding:64px 0 96px}
+    header{max-width:920px;margin-bottom:36px}
+    h1,h2,h3{font-family:Georgia,serif;line-height:1.12}
+    h1{margin:0 0 18px;font-size:clamp(2.3rem,6vw,4.4rem);font-weight:500;letter-spacing:-.045em}
+    h2{margin:0 0 16px;font-size:clamp(1.65rem,3.4vw,2.5rem);font-weight:500}
+    h3{margin:0 0 10px;font-size:1.22rem}
+    p{margin:0 0 1em}
+    section{margin-top:52px}
+    .eyebrow,.label{color:var(--accent);font-size:.76rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
+    .lede{color:var(--muted);font-size:1.1rem;max-width:48rem}
+    .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+    .pill{border:1px solid var(--line);border-radius:999px;background:#fff;padding:7px 12px;color:var(--muted);font-size:.84rem}
+    .panel,.card,.finding{border:1px solid var(--line);background:var(--panel);box-shadow:0 16px 42px rgb(47 24 50/.05)}
+    .panel{border-radius:24px;padding:clamp(20px,4vw,36px)}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    .card{border-radius:16px;padding:18px 20px}.card p:last-child{margin:0}
+    .number{display:grid;width:30px;height:30px;margin-bottom:10px;place-items:center;border-radius:50%;background:var(--soft);color:var(--accent);font-weight:800;font-size:.85rem}
+    .signal{border-left:4px solid var(--accent);border-radius:0 14px 14px 0;background:var(--soft);padding:14px 16px;margin:0 0 14px}
+    .signal.ok{border-left-color:var(--ok);background:var(--ok-bg)}
+    .signal.warn{border-left-color:var(--high);background:var(--high-bg)}
+    table{width:100%;border-collapse:collapse;font-size:.92rem}
+    th,td{padding:11px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+    th{color:var(--muted);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+    td:first-child{font-weight:700}
+    ul{margin:0;padding-left:1.2rem}li+li{margin-top:6px}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.84em;background:var(--plum);padding:.1em .35em;border-radius:4px}
+    a{color:var(--accent)}
+    .sev{display:inline-flex;border-radius:999px;padding:3px 10px;font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+    .sev-c{background:var(--crit-bg);color:var(--crit)}
+    .sev-h{background:var(--high-bg);color:var(--high)}
+    .sev-m{background:var(--med-bg);color:var(--med)}
+    .sev-l{background:var(--low-bg);color:var(--low)}
+    .sev-ok{background:var(--ok-bg);color:var(--ok)}
+    .stat{font-family:Georgia,serif;font-size:2.2rem;line-height:1;margin:0 0 6px;font-weight:500}
+    .stat-label{color:var(--muted);font-size:.82rem;margin:0}
+    .finding{border-radius:16px;padding:18px 20px;margin-top:12px}
+    .finding-head{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+    .finding-id{color:var(--muted);font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    .finding h3{margin:0;font-size:1.1rem;max-width:40rem}
+    .finding .meta-row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px}
+    .finding .loc{font-size:.84rem;color:var(--muted)}
+    .finding .fix>p:last-child{margin-bottom:0}
+    .quote{margin:8px 0 0;padding:10px 12px;border-radius:10px;background:var(--plum);font-size:.9rem;color:var(--ink)}
+    .check{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:start;padding:9px 0;border-bottom:1px solid var(--line)}
+    .check:last-child{border-bottom:0}
+    .box{width:18px;height:18px;margin-top:3px;border:1.5px solid var(--line);border-radius:4px;background:#fff}
+    .box.fail{background:var(--crit-bg);border-color:#e3a0ab}
+    .box.warn{background:var(--high-bg);border-color:#ecc9a4}
+    .box.pass{background:var(--ok-bg);border-color:#9ec9a8}
+    .box.partial{background:var(--med-bg);border-color:#e0d190}
+    .dim{color:var(--muted);font-size:.84rem}
+    .wave{border-radius:16px;border:1px solid var(--line);background:#fff;padding:18px 20px;margin-top:12px}
+    .bar-wrap{margin-top:8px}.bar{height:10px;border-radius:999px;background:var(--plum);overflow:hidden}
+    .bar>i{display:block;height:100%;background:var(--accent);border-radius:999px}
+    footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}
+    .sticky-nav{position:sticky;top:0;z-index:5;margin:0 0 8px;padding:12px 0;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(8px)}
+    .sticky-nav ul{display:flex;flex-wrap:wrap;gap:8px 14px;list-style:none;margin:0;padding:0;font-size:.8rem}
+    .sticky-nav a{color:var(--muted);text-decoration:none}.sticky-nav a:hover{color:var(--accent)}
+    @media(max-width:860px){
+      main{width:calc(100% - 24px);padding-top:40px}
+      .grid,.grid-3,.grid-4{grid-template-columns:1fr}
+      .panel{border-radius:18px}
+      table,tbody,tr,td{display:block}thead{display:none}
+      tr{padding:12px 0;border-bottom:1px solid var(--line)}
+      td{width:100%!important;padding:6px 0;border:0}
+    }
+  </style>
+</head>
+<body>
+<main>
+  <nav class="sticky-nav" aria-label="Sommaire">
+    <ul>
+      <li><a href="#resume">Résumé</a></li>
+      <li><a href="#perimetre">Périmètre</a></li>
+      <li><a href="#scorecard">Scorecard</a></li>
+      <li><a href="#design-system">Design system</a></li>
+      <li><a href="#copyright">Copyright &amp; parcours</a></li>
+      <li><a href="#ecriture">Écriture accessible</a></li>
+      <li><a href="#code">Qualité code</a></li>
+      <li><a href="#checkin">Check-in</a></li>
+      <li><a href="#vagues">Vagues</a></li>
+    </ul>
+  </nav>
+
+  <header>
+    <p class="eyebrow">Audit profond · couche structurelle</p>
+    <h1>Design system, copyright<br>&amp; qualité de code</h1>
+    <p class="lede">Second passage, complémentaire à <a href="./SITE_FULL_AUDIT.html"><code>SITE_FULL_AUDIT.html</code></a>. Ici l’objectif n’est plus seulement «&nbsp;est-ce que ça marche&nbsp;?&nbsp;», mais «&nbsp;est-ce que le système (tokens, copy, helpers) est respecté et scalable&nbsp;?&nbsp;». Aucune corrective appliquée.</p>
+    <div class="meta">
+      <span class="pill">Périmètre : branche <strong>dev</strong></span>
+      <span class="pill">Commit <code>79c7ac1</code></span>
+      <span class="pill">27 juillet 2026</span>
+      <span class="pill">Lecture seule · pas de fix</span>
+    </div>
+  </header>
+
+  <section id="resume">
+    <h2>Synthèse exécutive</h2>
+    <div class="grid-4">
+      <article class="card"><p class="stat" style="color:var(--crit)">9</p><p class="stat-label">Critiques structurelles</p></article>
+      <article class="card"><p class="stat" style="color:var(--high)">15</p><p class="stat-label">Hautes</p></article>
+      <article class="card"><p class="stat" style="color:var(--med)">9</p><p class="stat-label">Moyennes</p></article>
+      <article class="card"><p class="stat" style="color:var(--low)">1</p><p class="stat-label">Basse / dette</p></article>
+    </div>
+    <div class="panel" style="margin-top:18px">
+      <div class="signal"><strong>Verdict.</strong> Le design system existe et est déjà bien appliqué sur About et ServiceDetail (dev). Le shell (Layout, Navbar, Footer), Home et les outils (Estimateur, Brief) le contournent massivement : ~731 hex dans <code>src/app</code>, CTA plum recopié dans 9+ fichiers, trois dialectes visuels encore actifs. Côté copyright, seul About est validé (14 juil. 2026) ; le parcours Accueil → Services → Contact répète les mêmes promesses et CTAs. Côté code, <code>Home.tsx</code> (3008 L) et ~4950 L de primitives UI mortes dominent la dette.</div>
+      <div class="grid" style="margin-top:8px">
+        <article class="card"><span class="number">1</span><h3>Ce qui est solide</h3><p><code>tokens.css</code> sémantique + dark, helpers <code>PAGE_MAIN</code> / <code>SectionEyebrow</code> / <code>PageHero</code>, About en référence 0 hex, ContactForm partagé Home/Contact, CMS <code>localized()</code> central.</p></article>
+        <article class="card"><span class="number">2</span><h3>Ce qui fuit</h3><p>Hex Tailwind arbitraires, copy inline Estimateur/Brief (~152 ternaires), <code>localized</code> shadowée 3×, nested <code>&lt;main&gt;</code>, PageHero sous-adopté, shadcn quasi inutilisé.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="perimetre">
+    <h2>Périmètre &amp; méthode</h2>
+    <div class="grid-3">
+      <article class="card"><h3>Inclus</h3><ul>
+        <li>Design system &amp; tokens (<code>tokens.css</code>, pages publiques)</li>
+        <li>Parcours copywriting FR/EN</li>
+        <li>Écriture accessible &amp; microcopy</li>
+        <li>Copyright / attributions / légal copy</li>
+        <li>DRY, helpers, perf code, dead code</li>
+      </ul></article>
+      <article class="card"><h3>Hors scope (déjà couvert)</h3><ul>
+        <li>RLS / anti-abus contact → <a href="./SITE_FULL_AUDIT.html">audit complet</a></li>
+        <li>Soft-404 blog/services (rappel croisé seulement)</li>
+        <li>Correctifs ou commits</li>
+      </ul></article>
+      <article class="card"><h3>Méthode</h3><ul>
+        <li>Grep quantitatif hex / tokens / i18n</li>
+        <li>Lecture ciblée pages &amp; locales</li>
+        <li>Référence positive : About (0 hex)</li>
+        <li>Source de vérité : <strong>dev</strong></li>
+      </ul></article>
+    </div>
+  </section>
+
+  <section id="scorecard">
+    <h2>Scorecard par dimension</h2>
+    <div class="panel" style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Dimension</th><th>État</th><th>Signal clé</th><th>Priorité</th></tr></thead>
+        <tbody>
+          <tr><td>Tokens / surfaces</td><td><span class="sev sev-c">Faible</span></td><td>~731 hex ; Layout/Footer hors tokens</td><td>P0</td></tr>
+          <tr><td>CTA / composants partagés</td><td><span class="sev sev-c">Faible</span></td><td>Pattern <code>#854d63</code> ×167 ; pas de PrimaryButton</td><td>P0</td></tr>
+          <tr><td>Adoption PageHero / SectionEyebrow</td><td><span class="sev sev-h">Partiel</span></td><td>PageHero sur 4 pages seulement</td><td>P1</td></tr>
+          <tr><td>Parcours copyright</td><td><span class="sev sev-h">Partiel</span></td><td>About OK ; Services/Home/Contact à passer</td><td>P1</td></tr>
+          <tr><td>Parité FR/EN</td><td><span class="sev sev-c">Fragile</span></td><td>EN→FR silencieux ; Carnet/CV <code>publishLocales: fr</code></td><td>P0</td></tr>
+          <tr><td>Écriture accessible</td><td><span class="sev sev-h">Partiel</span></td><td>Jargon services ; h2 corps ; CTAs vagues</td><td>P1</td></tr>
+          <tr><td>Copyright légal / ©</td><td><span class="sev sev-c">Manquant</span></td><td>« © 2026 Communication digitale. » sans titulaire</td><td>P0</td></tr>
+          <tr><td>DRY / helpers</td><td><span class="sev sev-h">Faible</span></td><td>3× localized ; SEO override copié ; motion presets</td><td>P1</td></tr>
+          <tr><td>Taille modules</td><td><span class="sev sev-c">Critique</span></td><td>Home 3008 L · Navbar 1211 · Footer 1001</td><td>P0</td></tr>
+          <tr><td>Dead code / UI kit</td><td><span class="sev sev-h">Élevé</span></td><td>~45 primitives shadcn mortes (~4950 L)</td><td>P1</td></tr>
+          <tr><td>Perf front</td><td><span class="sev sev-h">À traiter</span></td><td>Vidéo 6,2 Mo · Infinity · preload estimateur</td><td>P1</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===================== DESIGN SYSTEM ===================== -->
+  <section id="design-system">
+    <h2>1. Design system &amp; tokens</h2>
+    <p class="lede">Les sémantiques existent déjà (<code>bg-surface-page</code>, <code>text-text-accent</code>, <code>bg-action-accent</code>, <code>--shadow-panel</code>). Le problème n’est pas l’absence de système, c’est le contournement.</p>
+
+    <h3 style="margin-top:28px">1.1 Quantification</h3>
+    <div class="grid-3">
+      <article class="card">
+        <p class="stat">~731</p>
+        <p class="stat-label">Occurrences hex dans <code>src/app</code></p>
+        <div class="bar-wrap"><div class="bar"><i style="width:92%"></i></div></div>
+      </article>
+      <article class="card">
+        <p class="stat">#854d63</p>
+        <p class="stat-label">167× — déjà <code>--color-plum-500</code> / <code>action-accent</code></p>
+      </article>
+      <article class="card">
+        <p class="stat">0</p>
+        <p class="stat-label">Hex dans About.tsx (référence cible)</p>
+      </article>
+    </div>
+
+    <div class="panel" style="margin-top:16px;overflow-x:auto">
+      <table>
+        <thead><tr><th>Fichier</th><th>Hex (lignes)</th><th>Tokens sém.</th><th>Dialecte</th></tr></thead>
+        <tbody>
+          <tr><td><code>Home.tsx</code></td><td>44</td><td>71</td><td>Mixte</td></tr>
+          <tr><td><code>Navbar.tsx</code></td><td>42</td><td>28</td><td>Portfolio hex</td></tr>
+          <tr><td><code>DesignBrief.tsx</code> (orphelin)</td><td>37</td><td>68</td><td>Mixte</td></tr>
+          <tr><td><code>ReadingsReferences.tsx</code></td><td>20</td><td>13</td><td>Carnet</td></tr>
+          <tr><td><code>Footer.tsx</code></td><td>19</td><td>0</td><td>Portfolio hex pur</td></tr>
+          <tr><td><code>ProjectEstimator.tsx</code></td><td>17</td><td>61</td><td>Mixte + status colors</td></tr>
+          <tr><td><code>ClientBrief.tsx</code></td><td>16</td><td>28</td><td>Mixte + success/amber</td></tr>
+          <tr><td><code>About.tsx</code></td><td>0</td><td>15</td><td>Tokens (référence)</td></tr>
+          <tr><td><code>services-dev/ServiceDetailPage.tsx</code></td><td>0</td><td>40</td><td>Tokens (référence)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">DS-01</span><span class="sev sev-c">Critique</span></div>
+      <h3>Shell Layout hors design system</h3>
+      <div class="meta-row"><span class="loc"><code>Layout.tsx:34</code></span></div>
+      <div class="fix">
+        <p>Le conteneur racine hardcode <code>bg-[#fcf9f8]</code>, <code>text-[#1c1b1b]</code>, <code>dark:bg-[#13100f]</code>, selection hex — alors que <code>bg-surface-page</code> / <code>text-text-primary</code> existent et gèrent déjà le dark via <code>.dark</code> dans <code>tokens.css</code>.</p>
+        <p><strong>Fix recommandé :</strong> migrer le shell une fois ; toute la cascade hérite correctement.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">DS-02</span><span class="sev sev-c">Critique</span></div>
+      <h3>Footer 100 % hex — 0 token sémantique</h3>
+      <div class="meta-row"><span class="loc"><code>Footer.tsx</code> (~19 lignes hex, 0 usage surface/text tokens)</span></div>
+      <div class="fix">
+        <p>Surfaces, textes, hovers, dark et eyebrows <code>tracking-[3px] text-[#854d63]</code> sont tous manuels. <code>SectionEyebrow</code> n’est pas utilisé.</p>
+        <p><strong>Fix :</strong> même migration que About ; eyebrows → composant partagé.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">DS-03</span><span class="sev sev-c">Critique</span></div>
+      <h3>CTA plum dupliqué au lieu de <code>bg-action-accent</code></h3>
+      <div class="meta-row"><span class="loc">Navbar, Services, Estimator, ErrorPage, NotFound, RouteErrorBoundary…</span></div>
+      <div class="fix">
+        <p>Pattern recopié :</p>
+        <div class="quote"><code>bg-[#854d63] hover:bg-[#6a364b] dark:bg-[#d79caf] dark:text-[#1c1415] dark:hover:bg-[#f0adc4]</code></div>
+        <p>Équivalents tokens déjà prêts : <code>bg-action-accent</code>, <code>hover:bg-action-accent-hover</code>, <code>text-text-on-strong</code> (dark redéfini dans <code>.dark</code>).</p>
+        <p><strong>Fix :</strong> extrait <code>PrimaryCta</code> / classes utilitaires une seule fois ; supprimer les 9+ copies.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">DS-04</span><span class="sev sev-h">Haute</span></div>
+      <h3>Trois dialectes visuels toujours actifs</h3>
+      <div class="meta-row"><span class="loc">Aligné <code>docs/archive/UI_AUDIT.md</code> — non résolu</span></div>
+      <div class="fix">
+        <ul>
+          <li><strong>Portfolio hex</strong> — Navbar, Home, Footer, Error (#854d63, #fcf9f8, #ffd9e4)</li>
+          <li><strong>Carnet</strong> — Readings / Tools / Book (#22201f, #8f4f68, #f7df75)</li>
+          <li><strong>Tokens</strong> — About, ServiceDetail (dev) — cible</li>
+        </ul>
+        <p>Le carnet peut garder une hiérarchie documentaire, mais ses <em>contrôles UI</em> (filtres, textes, bordures) devraient partager les tokens de surface.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">DS-05</span><span class="sev sev-h">Haute</span></div>
+      <h3>Dark mode : hex + <code>dark:bg-white/5</code> au lieu des variables</h3>
+      <div class="meta-row"><span class="loc">Navbar (~43 dark hex), DesignBrief, Home, Estimator, Footer</span></div>
+      <div class="fix">
+        <p><code>.dark</code> redéfinit déjà <code>--surface-*</code>, <code>--text-*</code>, <code>--border-subtle</code>. Les fichiers re-spécifient des hex dark et des opacités blanches, ce qui casse la cohérence et complique tout ajustement de palette.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">DS-06</span><span class="sev sev-h">Haute</span></div>
+      <h3>États success / warning hors tokens (Brief &amp; Estimateur)</h3>
+      <div class="meta-row"><span class="loc"><code>ClientBrief.tsx</code>, <code>ProjectEstimator.tsx</code>, <code>VisualIdentityQuestionFrame.tsx</code></span></div>
+      <div class="fix">
+        <p>Vert <code>#3f8c6b</code> / amber <code>#d7b168</code> / rose sélection <code>#fff5f8</code> — aucune sémantique <code>--status-success</code> / <code>--status-warning</code> dans <code>tokens.css</code>. Quatrième palette informelle.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">DS-07</span><span class="sev sev-h">Haute</span></div>
+      <h3><code>serviceStyle.ts</code> : accents services en hex Tailwind</h3>
+      <div class="meta-row"><span class="loc"><code>src/app/components/serviceStyle.ts</code></span></div>
+      <div class="fix">
+        <p>Centralise les accents… en hex (<code>#ffd9e4</code>, <code>#ffdcbd</code>…) alors que les primitives <code>--color-rose-100</code> / peach existent. Doublon partiel avec des arrays dans Home.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">DS-08</span><span class="sev sev-m">Moyenne</span></div>
+      <h3>Ombres, tracking, radius, typo — aucune échelle partagée</h3>
+      <div class="meta-row"><span class="loc">~50 ombres rgba · 28 tracking arbitraires · radius 16/20/22/28/32</span></div>
+      <div class="fix">
+        <ul>
+          <li><code>--shadow-panel</code> n’est utilisé que ~3× (About, ServiceDetail) ; CTA utilise 6× <code>shadow-[0_16px_34px_rgba(133,77,99,0.18)]</code></li>
+          <li><code>tracking-[3px]</code> ×18 souvent hors <code>SectionEyebrow</code> ; <code>tracking-[2px]</code> ×49 (surtout Estimateur)</li>
+          <li>Estimateur répète 8× le même clamp serif display</li>
+        </ul>
+        <p><strong>Fix :</strong> utilitaires <code>text-display-lg</code>, <code>tracking-eyebrow</code>, <code>shadow-cta</code> dans le thème Tailwind.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">DS-09</span><span class="sev sev-m">Moyenne</span></div>
+      <h3>PageHero / SectionEyebrow / PAGE_MAIN sous-adoptés</h3>
+      <div class="meta-row"><span class="loc"><code>publicPage.ts</code>, <code>PageHero.tsx</code>, <code>SectionEyebrow.tsx</code></span></div>
+      <div class="fix">
+        <p><code>PageHero</code> : Blog, Readings, Tools, Services-dev seulement. Réinventé sur Contact, Services, ServiceDetail, Cv, ClientBrief, Estimateur, DesignBrief.</p>
+        <p>About utilise <code>SectionEyebrow</code> mais un padding <code>pt-28</code> ad hoc au lieu de <code>PAGE_MAIN</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== COPYRIGHT ===================== -->
+  <section id="copyright">
+    <h2>2. Copyright &amp; parcours éditorial</h2>
+    <p class="lede">Ici «&nbsp;copyright&nbsp;» désigne à la fois le <em>parcours de copywriting</em> (voix, CTAs, progression) et les mentions © / légales / attributions.</p>
+
+    <div class="signal ok"><strong>Déjà validé.</strong> Page À propos — passe rédac publiée le <strong>14 juillet 2026</strong> (bloc unique «&nbsp;Comment je vous accompagne&nbsp;»). Hero + teaser Accueil réalignés Figma le 17 juillet (visuel + wording hero), sans passe rédactionnelle site-wide.</div>
+
+    <h3 style="margin-top:28px">2.1 Carte du parcours</h3>
+    <div class="panel" style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Étape</th><th>Rôle attendu</th><th>État copy</th><th>Problème dominant</th></tr></thead>
+        <tbody>
+          <tr><td>Home hero</td><td>Promesse + CTA</td><td><span class="sev sev-m">Partiel</span></td><td>Aligné Figma ; CTAs / traits encore bruts</td></tr>
+          <tr><td>Manifesto / teaser</td><td>Conviction</td><td><span class="sev sev-h">À passer</span></td><td>Même champ lexical que hero/services</td></tr>
+          <tr><td>About</td><td>Confiance</td><td><span class="sev sev-ok">Validé</span></td><td>Structure titres (eyebrow ≠ h2) à renforcer</td></tr>
+          <tr><td>Services / détail</td><td>Offre</td><td><span class="sev sev-h">À passer</span></td><td>Jargon, densité, calques EN, meta labels</td></tr>
+          <tr><td>Brief / Estimateur</td><td>Conversion</td><td><span class="sev sev-m">Fonctionnel</span></td><td>Hors fil Accueil ; copy inline ; erreurs EN</td></tr>
+          <tr><td>Contact</td><td>Action</td><td><span class="sev sev-m">OK</span></td><td>Pas de lien légal ; validation HTML5 langue OS</td></tr>
+          <tr><td>Blog</td><td>Preuve</td><td><span class="sev sev-m">Partiel</span></td><td>Contenu 2026-06 ; a11y writing / alt</td></tr>
+          <tr><td>Carnet / CV</td><td>Ressources</td><td><span class="sev sev-h">Fragile EN</span></td><td><code>publishLocales: fr</code> → patchwork EN</td></tr>
+          <tr><td>Footer © / légal</td><td>Confiance légale</td><td><span class="sev sev-c">Manquant</span></td><td>Pas de pages ; © sans titulaire</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">CP-01</span><span class="sev sev-c">Critique</span></div>
+      <h3>Copyright footer incomplet</h3>
+      <div class="meta-row"><span class="loc"><code>footer.copyright</code> → rendu <code>Footer.tsx</code></span></div>
+      <div class="fix">
+        <div class="quote">© 2026 Communication digitale. / © 2026 Digital communication.</div>
+        <p>Pas de nom de titulaire (Carole Tonoukouen / entité), pas de lien vers mentions. Formule marketing, pas mention ©.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">CP-02</span><span class="sev sev-c">Critique</span></div>
+      <h3>Aucune page Mentions / Confidentialité</h3>
+      <div class="meta-row"><span class="loc"><code>routes.tsx</code> · footer · formulaires</span></div>
+      <div class="fix">
+        <p>Contact, Brief, Estimateur et Cal collectent des données personnelles. Aucune route légale, aucun lien. (Confirmé aussi dans l’audit complet.)</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">CP-03</span><span class="sev sev-h">Haute</span></div>
+      <h3>CTAs contact non différenciés sur le parcours</h3>
+      <div class="meta-row"><span class="loc">i18n Home / Services / ServiceDetail / About</span></div>
+      <div class="fix">
+        <ul>
+          <li>Hero : «&nbsp;Discutons-en&nbsp;» → <code>/contact</code></li>
+          <li>Services : «&nbsp;Parler de mon besoin&nbsp;» → <code>/contact</code></li>
+          <li>Détail : «&nbsp;Discutons de ce besoin&nbsp;» → <code>/contact</code></li>
+          <li>About : «&nbsp;Me contacter&nbsp;» → <code>/contact</code></li>
+        </ul>
+        <p>Même destination, même intention. L’estimateur (<code>/estimer-mon-projet</code>) et le brief client restent hors du fil principal (méga-menu seulement).</p>
+        <p><strong>Fix copy :</strong> différencier (ex. Accueil = échange ouvert · Service = cadrer cette offre · Détail = brief ou RDV).</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">CP-04</span><span class="sev sev-h">Haute</span></div>
+      <h3>Promesses répétées sans progression</h3>
+      <div class="meta-row"><span class="loc">Home hero → manifesto → about teaser → services</span></div>
+      <div class="fix">
+        <p>Champ lexical saturé : clarté / structure / cohérence / régularité. About <em>page</em> a été nettoyée ; le tunnel amont ne l’a pas été. Le lecteur avance sans gagner de nouvelle information.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">CP-05</span><span class="sev sev-h">Haute</span></div>
+      <h3>Parité EN : calques et registre marketing</h3>
+      <div class="meta-row"><span class="loc"><code>en.tsx</code> services / nav</span></div>
+      <div class="fix">
+        <ul>
+          <li>«&nbsp;Talk about my need&nbsp;», «&nbsp;Choose the right frame&nbsp;», «&nbsp;vague zones&nbsp;», «&nbsp;milestone launching phases&nbsp;»</li>
+          <li>«&nbsp;Trending offer&nbsp;» pour «&nbsp;Offre en vogue&nbsp;»</li>
+          <li>«&nbsp;Notebook&nbsp;» pour Carnet — appauvrit l’identité</li>
+          <li>«&nbsp;Our Services&nbsp;» pour une activité solo</li>
+        </ul>
+        <p>MEMORY exige une <em>transcréation</em> (badge «&nbsp;Making wow happen&nbsp;» est le bon niveau) ; le corps Services n’y est pas.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">CP-06</span><span class="sev sev-h">Haute</span></div>
+      <h3>Attributions tierces absentes du site public</h3>
+      <div class="meta-row"><span class="loc">Unsplash (blog fallbacks) · Google Books · Cal.com</span></div>
+      <div class="fix">
+        <p>Crédits éventuellement dans <code>ATTRIBUTIONS.md</code>, pas exposés (footer ou page Crédits). Risque copyright / licence sur images Unsplash encore servies en fallback.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">CP-07</span><span class="sev sev-m">Moyenne</span></div>
+      <h3>Microcopy «&nbsp;dashboard&nbsp;» sur pages publiques</h3>
+      <div class="meta-row"><span class="loc"><code>serviceDetail.metric</code> «&nbsp;Métrique utile&nbsp;» · <code>presentationBlockText</code> en h2</span></div>
+      <div class="fix">
+        <p>Labels internes / méta exposés au visiteur. Le bloc présentation servi en <code>&lt;h2&gt;</code> alors que c’est du corps («&nbsp;Cette partie rassemble les livrables…&nbsp;»).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ACCESSIBLE WRITING ===================== -->
+  <section id="ecriture">
+    <h2>3. Écriture accessible</h2>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">AW-01</span><span class="sev sev-c">Critique</span></div>
+      <h3>Fallback silencieux EN → FR dans <code>localized()</code></h3>
+      <div class="meta-row"><span class="loc"><code>src/cms/types.ts:216–222</code></span></div>
+      <div class="fix">
+        <div class="quote"><code>return value[locale] || value.fr || value.en || fallback;</code></div>
+        <p>En locale <code>en</code>, un champ sans anglais affiche le français sans signal. Combiné à <code>publishLocales: "fr"</code> (témoignages, Carnet, CV), l’expérience EN devient un patchwork invisible pour l’éditrice.</p>
+        <p><strong>Fix :</strong> badge «&nbsp;Traduction à venir&nbsp;» / exiger EN à la publication / ne pas tomber sur FR silencieusement en preview publique.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">AW-02</span><span class="sev sev-h">Haute</span></div>
+      <h3>Jargon et phrases denses (Services)</h3>
+      <div class="meta-row"><span class="loc">i18n services · pages détail</span></div>
+      <div class="fix">
+        <p>«&nbsp;Analyse sémantique et graphique&nbsp;», «&nbsp;Roadmaps éditoriales&nbsp;», «&nbsp;objectifs business&nbsp;», «&nbsp;Notion prêts à l’usage&nbsp;». Blocs de 40–50 mots. Pour une écriture accessible : une idée par phrase, résultat client d’abord, jargon en second.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">AW-03</span><span class="sev sev-h">Haute</span></div>
+      <h3>Erreurs Brief EN aplaties + Contact = langue du navigateur</h3>
+      <div class="meta-row"><span class="loc"><code>ClientBrief.tsx:245</code> · <code>ContactForm.tsx</code></span></div>
+      <div class="fix">
+        <p>Brief : en anglais, tous les codes d’erreur → «&nbsp;Something went wrong…&nbsp;». Contact : <code>validationMessage</code> HTML5 suit la langue OS, pas <code>portfolio-lang</code>.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">AW-04</span><span class="sev sev-h">Haute</span></div>
+      <h3>Liens / CTA peu descriptifs</h3>
+      <div class="meta-row"><span class="loc">Carnet «&nbsp;Découvrir&nbsp;» · cartes blog «&nbsp;Lire l’article&nbsp;»</span></div>
+      <div class="fix">
+        <p>«&nbsp;Découvrir&nbsp;» n’indique ni Google Books ni nouvel onglet. Les libellés génériques nuisent aux lecteurs d’écran qui naviguent par liste de liens.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">AW-05</span><span class="sev sev-m">Moyenne</span></div>
+      <h3>Langage exclusif / biais</h3>
+      <div class="meta-row"><span class="loc">CV «&nbsp;Jeune professionnelle&nbsp;» · cibles «&nbsp;Entrepreneurs / Porteurs&nbsp;»</span></div>
+      <div class="fix">
+        <p>Signal d’âge dans le CV ; génériques masculins sur les cibles services. About validé conserve «&nbsp;porteurs de projets&nbsp;» (nuance mineure). Accueil : «&nbsp;Coffee lover&nbsp;» en anglais dans un trio FR.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">AW-06</span><span class="sev sev-m">Moyenne</span></div>
+      <h3>Hiérarchie titres (About &amp; Services)</h3>
+      <div class="meta-row"><span class="loc">About SectionEyebrow en <code>&lt;p&gt;</code> · ServiceDetail présentation en <code>&lt;h2&gt;</code></span></div>
+      <div class="fix">
+        <p>Les labels de section About ne sont pas exposés comme titres. À l’inverse, du corps est promu h2 sur les services. Impact structure documentaire (TOC lecteur d’écran) sans changer le fond validé.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">AW-07</span><span class="sev sev-m">Moyenne</span></div>
+      <h3>HydrateFallback FR-only</h3>
+      <div class="meta-row"><span class="loc"><code>routes.tsx:28</code> «&nbsp;Chargement…&nbsp;»</span></div>
+      <div class="fix">
+        <p>Flash français pour les visiteurs EN pendant le lazy-load des routes.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CODE QUALITY ===================== -->
+  <section id="code">
+    <h2>4. Qualité &amp; optimisation du code</h2>
+
+    <h3>4.1 Taille des modules</h3>
+    <div class="grid-3">
+      <article class="card"><p class="stat">3008</p><p class="stat-label">lignes · <code>Home.tsx</code> (eager)</p></article>
+      <article class="card"><p class="stat">1211</p><p class="stat-label">lignes · <code>Navbar.tsx</code></p></article>
+      <article class="card"><p class="stat">1001</p><p class="stat-label">lignes · <code>Footer.tsx</code></p></article>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">CQ-01</span><span class="sev sev-c">Critique</span></div>
+      <h3>Monolithe Home : coût premier chargement</h3>
+      <div class="meta-row"><span class="loc"><code>Home.tsx</code> · <code>routes.tsx</code> (eager, non lazy)</span></div>
+      <div class="fix">
+        <ul>
+          <li>~20 helpers/composants internes (tunings DEV, bento, testimonials, confetti)</li>
+          <li>Vidéo about <strong>6,2 Mo</strong> importée sync</li>
+          <li>7× <code>repeat: Infinity</code> (gated reduced-motion)</li>
+          <li>Mesure texte sync (pretext) dans le rendu bento</li>
+          <li>~26 <code>localized()</code> + patterns <code>usingCms ? … : t()</code> qui devraient vivre dans des adapters</li>
+        </ul>
+        <p><strong>Fix :</strong> découper sections ; lazy-mount vidéo hors viewport ; panels DEV hors bundle prod.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">CQ-02</span><span class="sev sev-c">Critique</span></div>
+      <h3>Nested <code>&lt;main&gt;</code> généralisé</h3>
+      <div class="meta-row"><span class="loc"><code>Layout.tsx:46–48</code> + ~15 pages</span></div>
+      <div class="fix">
+        <p>Layout wrappe l’Outlet dans <code>&lt;main&gt;</code> ; About, Contact, Blog, Services, Cv, Brief, etc. rendent un second <code>&lt;main&gt;</code>. Home est le seul outlier cohérent. Landmark unique requis pour l’a11y.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">CQ-03</span><span class="sev sev-c">Critique</span></div>
+      <h3>~4950 lignes de primitives UI mortes</h3>
+      <div class="meta-row"><span class="loc"><code>src/app/components/ui/*</code></span></div>
+      <div class="fix">
+        <p>Usages hors kit : <code>slider</code>, <code>tooltip</code>, <code>cn</code>. ~45 autres modules (button, dialog, sidebar 726 L, chart, carousel…) = 0 import public/admin utile — plus deps Radix / cmdk / vaul / recharts / embla inutilisées.</p>
+        <p><strong>Fix :</strong> purger ou isoler dans un package non bundlé ; alléger <code>package.json</code>.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">CQ-04</span><span class="sev sev-h">Haute</span></div>
+      <h3>i18n contournée : ~152 ternaires inline</h3>
+      <div class="meta-row"><span class="loc">58× <code>locale === "fr"</code> · 94× <code>isEnglish ?</code> · DesignBrief 72 strings FR-only</span></div>
+      <div class="fix">
+        <p>Estimateur et Brief portent leur copy dans le composant (<code>{ fr, en }</code>) au lieu de <code>t()</code> / CMS. Incohérent avec le reste du site ; rend les passes rédac TickTick plus difficiles.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">CQ-05</span><span class="sev sev-h">Haute</span></div>
+      <h3>Helpers manquants / logique tripliquée</h3>
+      <div class="meta-row"><span class="loc">cms · pages · admin</span></div>
+      <div class="fix">
+        <table>
+          <thead><tr><th>Domaine</th><th>Problème</th><th>Où</th></tr></thead>
+          <tbody>
+            <tr><td><code>localized()</code></td><td>3 implémentations</td><td><code>cms/types.ts</code> (canon) · shadow ClientBrief · shadow AdminPreview</td></tr>
+            <tr><td>SEO override</td><td>même useMemo recopié</td><td>BlogArticle, ServiceDetail, ClientBrief, Estimator, DesignBrief…</td></tr>
+            <tr><td><code>useMotionSafe</code></td><td>1 seul consumer (Blog)</td><td>~20 fichiers motion avec presets ad hoc</td></tr>
+            <tr><td>Erreurs champs</td><td>3 styles a11y</td><td>ClientBrief OK · ContactForm sans aria-invalid · ui/form jamais utilisé</td></tr>
+            <tr><td>Empty states</td><td>pas de composant partagé</td><td>Blog / Carnet / ServiceDetail</td></tr>
+            <tr><td><code>fetch("/api/…")</code></td><td>5 call sites, 0 client</td><td>contact · client-brief · project-estimate · translate</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">CQ-06</span><span class="sev sev-h">Haute</span></div>
+      <h3>Code mort / pages orphelines</h3>
+      <div class="meta-row"><span class="loc">hors routes</span></div>
+      <div class="fix">
+        <ul>
+          <li><code>DesignBrief.tsx</code> — 952 L (route redirigée)</li>
+          <li><code>services-dev/*</code> — 0 import route</li>
+          <li><code>ServicesUnderConstruction.tsx</code> — 0 import</li>
+          <li>Clés i18n <code>servicesConstruction</code> / <code>nav.comingSoon</code> fantômes</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">CQ-07</span><span class="sev sev-h">Haute</span></div>
+      <h3>Perf : lazy incomplet + preload agressif</h3>
+      <div class="meta-row"><span class="loc"><code>routes.tsx</code> · <code>publicRouteModules.ts</code></span></div>
+      <div class="fix">
+        <p>Home et Services sont eager. Le preload idle charge aussi Estimateur + ClientBrief («&nbsp;lightweight&nbsp;» contredit). Seul CalMeetingEmbed est vraiment <code>React.lazy</code> côté page.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">CQ-08</span><span class="sev sev-m">Moyenne</span></div>
+      <h3>Type safety : casts <code>as</code> sur <code>returnObjects</code></h3>
+      <div class="meta-row"><span class="loc">Home 19 · Estimator 16 · services questionnaires 19…</span></div>
+      <div class="fix">
+        <p>Les tableaux i18n sont castés sans validation runtime. Fragile si la forme CMS diverge. <code>any</code> rare (<code>navigator.userLanguage</code>).</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">CQ-09</span><span class="sev sev-m">Moyenne</span></div>
+      <h3>Deux pipelines de corps de texte</h3>
+      <div class="meta-row"><span class="loc">PortableText (blog) vs <code>bodyToParagraphs</code> (Home)</span></div>
+      <div class="fix">
+        <p>Cohérent aujourd’hui (blog riche / home plaintext), mais le CMS peut diverger. Documenter le contrat ou unifier via le reader partagé.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-head"><span class="finding-id">CQ-10</span><span class="sev sev-l">Basse</span></div>
+      <h3>Images : <code>cmsImageUrl</code> contourné</h3>
+      <div class="meta-row"><span class="loc"><code>ToolsInspirations.tsx:261</code> lit <code>r.image?.url</code> direct</span></div>
+      <div class="fix">
+        <p>Helper trivial (<code>image?.url</code>) — soit l’enrichir (alt, placeholder), soit l’utiliser partout pour un seul point d’évolution.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CHECK-IN ===================== -->
+  <section id="checkin">
+    <h2>5. Check-in exhaustif</h2>
+    <p class="dim">Légende : pass = conforme · partial = partiel · warn = écart notable · fail = non conforme.</p>
+
+    <div class="panel" style="margin-top:12px">
+      <h3>Design system</h3>
+      <div class="check"><span class="box pass"></span><div>Tokens sémantiques définis (<code>tokens.css</code>)</div><span class="sev sev-ok">Pass</span></div>
+      <div class="check"><span class="box pass"></span><div>Dark mode via variables <code>.dark</code></div><span class="sev sev-ok">Pass</span></div>
+      <div class="check"><span class="box pass"></span><div>About / ServiceDetail-dev sans hex</div><span class="sev sev-ok">Pass</span></div>
+      <div class="check"><span class="box fail"></span><div>Layout / Footer / Navbar sur tokens</div><span class="sev sev-c">Fail</span></div>
+      <div class="check"><span class="box fail"></span><div>CTA unique (<code>action-accent</code>)</div><span class="sev sev-c">Fail</span></div>
+      <div class="check"><span class="box warn"></span><div>Un seul dialecte surface publique</div><span class="sev sev-h">Warn</span></div>
+      <div class="check"><span class="box warn"></span><div>PageHero / SectionEyebrow généralisés</div><span class="sev sev-h">Warn</span></div>
+      <div class="check"><span class="box fail"></span><div>Status success/warning tokenisés</div><span class="sev sev-c">Fail</span></div>
+      <div class="check"><span class="box partial"></span><div><code>PAGE_MAIN</code> sur toutes les pages</div><span class="sev sev-m">Partial</span></div>
+      <div class="check"><span class="box warn"></span><div>Ombres / tracking / display scale</div><span class="sev sev-h">Warn</span></div>
+    </div>
+
+    <div class="panel" style="margin-top:16px">
+      <h3>Copyright &amp; parcours</h3>
+      <div class="check"><span class="box pass"></span><div>About — passe rédac validée</div><span class="sev sev-ok">Pass</span></div>
+      <div class="check"><span class="box partial"></span><div>Home hero aligné Figma</div><span class="sev sev-m">Partial</span></div>
+      <div class="check"><span class="box warn"></span><div>Progression sémantique Accueil → Services</div><span class="sev sev-h">Warn</span></div>
+      <div class="check"><span class="box warn"></span><div>CTAs différenciés par étape</div><span class="sev sev-h">Warn</span></div>
+      <div class="check"><span class="box warn"></span><div>EN transcréé (pas calqué)</div><span class="sev sev-h">Warn</span></div>
+      <div class="check"><span class="box fail"></span><div>Pages légales + liens footer</div><span class="sev sev-c">Fail</span></div>
+      <div class="check"><span class="box fail"></span><div>Mention © avec titulaire</div><span class="sev sev-c">Fail</span></div>
+      <div class="check"><span class="box fail"></span><div>Attributions Unsplash / Books / Cal</div><span class="sev sev-c">Fail</span></div>
+      <div class="check"><span class="box warn"></span><div>Estimateur dans le parcours principal</div><span class="sev sev-h">Warn</span></div>
+      <div class="check"><span class="box partial"></span><div>Blog / témoignages passés contenu</div><span class="sev sev-m">Partial</span></div>
+    </div>
+
+    <div class="panel" style="margin-top:16px">
+      <h3>Écriture accessible</h3>
+      <div class="check"><span class="box fail"></span><div>Pas de fallback EN→FR silencieux</div><span class="sev sev-c">Fail</span></div>
+      <div class="check"><span class="box warn"></span><div>Services en langage clair</div><span class="sev sev-h">Warn</span></div>
+      <div class="check"><span class="box warn"></span><div>Libellés de liens descriptifs</div><span class="sev sev-h">Warn</span></div>
+      <div class="check"><span class="box warn"></span><div>Erreurs formulaires i18n + ARIA</div><span class="sev sev-h">Warn</span></div>
+      <div class="check"><span class="box partial"></span><div>Hiérarchie titres cohérente</div><span class="sev sev-m">Partial</span></div>
+      <div class="check"><span class="box warn"></span><div>Langage inclusif / non âgiste</div><span class="sev sev-h">Warn</span></div>
+      <div class="check"><span class="box fail"></span><div>Loading bilingue</div><span class="sev sev-c">Fail</span></div>
+    </div>
+
+    <div class="panel" style="margin-top:16px">
+      <h3>Code</h3>
+      <div class="check"><span class="box fail"></span><div>Home découpé / lazy vidéo</div><span class="sev sev-c">Fail</span></div>
+      <div class="check"><span class="box fail"></span><div>Un seul landmark <code>&lt;main&gt;</code></div><span class="sev sev-c">Fail</span></div>
+      <div class="check"><span class="box fail"></span><div>UI kit mort purgé</div><span class="sev sev-c">Fail</span></div>
+      <div class="check"><span class="box warn"></span><div>Copy Estimateur/Brief dans i18n ou module dédié</div><span class="sev sev-h">Warn</span></div>
+      <div class="check"><span class="box warn"></span><div><code>useMotionSafe</code> généralisé</div><span class="sev sev-h">Warn</span></div>
+      <div class="check"><span class="box warn"></span><div>Helper <code>usePageSeo</code> + <code>apiPost</code></div><span class="sev sev-h">Warn</span></div>
+      <div class="check"><span class="box fail"></span><div>Une seule implémentation <code>localized</code></div><span class="sev sev-c">Fail</span></div>
+      <div class="check"><span class="box warn"></span><div>Pages orphelines retirées</div><span class="sev sev-h">Warn</span></div>
+      <div class="check"><span class="box partial"></span><div>Routes lourdes lazy + preload intentionnel</div><span class="sev sev-m">Partial</span></div>
+    </div>
+  </section>
+
+  <!-- ===================== WAVES ===================== -->
+  <section id="vagues">
+    <h2>6. Vagues recommandées (sans exécution)</h2>
+    <p class="dim">Ordre pensé pour <code>dev</code> → validation → <code>main</code>. Ne pas mélanger avec les correctifs sécurité de l’audit complet sans prioriser.</p>
+
+    <div class="wave">
+      <h3><span class="sev sev-c">Vague A</span> — Fondations système</h3>
+      <ul>
+        <li>Migrer Layout → tokens ; Footer + Navbar surfaces/textes/bordures</li>
+        <li>Extraire CTA <code>action-accent</code> (PrimaryCta)</li>
+        <li>Résoudre nested <code>&lt;main&gt;</code></li>
+        <li>Unifier <code>localized</code> (supprimer shadows)</li>
+      </ul>
+    </div>
+
+    <div class="wave">
+      <h3><span class="sev sev-h">Vague B</span> — Copyright &amp; confiance</h3>
+      <ul>
+        <li>Pages Mentions + Confidentialité FR/EN + liens footer/formulaires</li>
+        <li>Reformuler © avec titulaire</li>
+        <li>Politique EN manquant (badge ou exigence publication)</li>
+        <li>Attributions / page Crédits</li>
+      </ul>
+    </div>
+
+    <div class="wave">
+      <h3><span class="sev sev-h">Vague C</span> — Passe rédac Services + Accueil</h3>
+      <ul>
+        <li>Services + détail : jargon, hiérarchie, CTAs différenciés, EN transcréé</li>
+        <li>Accueil : supprimer répétitions lexicales post-About</li>
+        <li>Microcopy Brief/Estimateur/Contact (erreurs i18n)</li>
+        <li>Chaque page = tâche TickTick top-level (MEMORY)</li>
+      </ul>
+    </div>
+
+    <div class="wave">
+      <h3><span class="sev sev-m">Vague D</span> — Dette code &amp; perf</h3>
+      <ul>
+        <li>Découper Home ; lazy vidéo ; DEV panels hors prod</li>
+        <li>Purger ui/ mort + deps ; supprimer DesignBrief / services-dev orphelins</li>
+        <li>Helpers : <code>usePageSeo</code>, <code>apiPost</code>, empty state, motion presets</li>
+        <li>Tokens status + migrer carnet UI ; généraliser PageHero</li>
+      </ul>
+    </div>
+
+    <div class="panel" style="margin-top:20px">
+      <h3>Lien avec l’audit complet</h3>
+      <p>Ce document <strong>ne remplace pas</strong> <a href="./SITE_FULL_AUDIT.html"><code>SITE_FULL_AUDIT.html</code></a>. Les bloquants sécu/SEO (soft-404, RLS, anti-abus contact) restent Vague 0 de l’autre rapport. Ici : dette de <em>système</em> qui ralentit chaque future feature si elle n’est pas traitée.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p><strong>Audit profond — design system, copyright &amp; code</strong> · Branche <code>dev</code> @ <code>79c7ac1</code> · 27 juillet 2026 · Lecture seule · 34 findings structurés (9C / 15H / 9M / 1L) + check-in · Complément de <code>SITE_FULL_AUDIT.html</code>.</p>
+  </footer>
+</main>
+</body>
+</html>

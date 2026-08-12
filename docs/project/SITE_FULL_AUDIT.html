@@ -1,0 +1,926 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Audit complet du site — Carole Personal Site (branche dev)</title>
+  <style>
+    :root{
+      --ink:#2f1832;--muted:#6f6071;--paper:#fffaf7;--panel:#fff;--line:#eadfe6;
+      --accent:#c84f66;--soft:#f8e3e4;--plum:#eee6f1;
+      --crit:#8b1e2d;--crit-bg:#fce8eb;--high:#9a4a12;--high-bg:#fff1e4;
+      --med:#6b5a1e;--med-bg:#fbf5d9;--low:#3d5a45;--low-bg:#e8f2eb;
+      --ok:#2f5d3a;--ok-bg:#e7f3ea;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.65}
+    main{width:min(1120px,calc(100% - 40px));margin:auto;padding:64px 0 96px}
+    header{max-width:900px;margin-bottom:40px}
+    h1,h2,h3{font-family:Georgia,serif;line-height:1.12}
+    h1{margin:0 0 18px;font-size:clamp(2.4rem,6.5vw,4.8rem);font-weight:500;letter-spacing:-.045em}
+    h2{margin:0 0 18px;font-size:clamp(1.7rem,3.6vw,2.6rem);font-weight:500}
+    h3{margin:0 0 10px;font-size:1.28rem}
+    p{margin:0 0 1em}
+    section{margin-top:56px}
+    .eyebrow,.label{color:var(--accent);font-size:.76rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
+    .lede{color:var(--muted);font-size:1.12rem;max-width:46rem}
+    .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+    .pill{border:1px solid var(--line);border-radius:999px;background:#fff;padding:7px 12px;color:var(--muted);font-size:.84rem}
+    .panel,.card,.finding{border:1px solid var(--line);background:var(--panel);box-shadow:0 16px 42px rgb(47 24 50/.05)}
+    .panel{border-radius:24px;padding:clamp(22px,4vw,40px)}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    .card{border-radius:18px;padding:20px 22px}.card p:last-child{margin:0}
+    .number{display:grid;width:32px;height:32px;margin-bottom:12px;place-items:center;border-radius:50%;background:var(--soft);color:var(--accent);font-weight:800;font-size:.9rem}
+    .signal{border-left:4px solid var(--accent);border-radius:0 14px 14px 0;background:var(--soft);padding:16px 18px;margin:0 0 16px}
+    .signal.prod{border-left-color:#6b5a1e;background:var(--med-bg)}
+    .signal.ok{border-left-color:var(--ok);background:var(--ok-bg)}
+    table{width:100%;border-collapse:collapse;font-size:.93rem}
+    th,td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+    th{color:var(--muted);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase}
+    td:first-child{font-weight:700}
+    ul{margin:0;padding-left:1.2rem}li+li{margin-top:7px}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;background:var(--plum);padding:.1em .35em;border-radius:4px}
+    a{color:var(--accent)}
+    .toc a{color:var(--ink);text-decoration:none}.toc a:hover{color:var(--accent)}
+    .sev{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+    .sev-c{background:var(--crit-bg);color:var(--crit)}
+    .sev-h{background:var(--high-bg);color:var(--high)}
+    .sev-m{background:var(--med-bg);color:var(--med)}
+    .sev-l{background:var(--low-bg);color:var(--low)}
+    .sev-ok{background:var(--ok-bg);color:var(--ok)}
+    .stat{font-family:Georgia,serif;font-size:2.4rem;line-height:1;margin:0 0 6px;font-weight:500}
+    .stat-label{color:var(--muted);font-size:.84rem;margin:0}
+    .finding{border-radius:18px;padding:20px 22px;margin-top:14px}
+    .finding-head{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+    .finding-id{color:var(--muted);font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    .finding h3{margin:0;font-size:1.15rem;max-width:38rem}
+    .finding .meta-row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 12px}
+    .finding .loc{font-size:.86rem;color:var(--muted)}
+    .finding .fix>p:last-child{margin-bottom:0}
+    .check{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid var(--line)}
+    .check:last-child{border-bottom:0}
+    .box{width:18px;height:18px;margin-top:3px;border:1.5px solid var(--line);border-radius:4px;background:#fff}
+    .box.fail{background:var(--crit-bg);border-color:#e3a0ab}
+    .box.warn{background:var(--high-bg);border-color:#ecc9a4}
+    .box.pass{background:var(--ok-bg);border-color:#9ec9a8}
+    .box.na{background:var(--plum);border-color:#d4c4da}
+    .dim{color:var(--muted);font-size:.84rem}
+    .wave{border-radius:18px;border:1px solid var(--line);background:#fff;padding:20px 22px;margin-top:14px}
+    .wave h3{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}
+    .sticky-nav{position:sticky;top:0;z-index:5;margin:0 0 8px;padding:12px 0;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid transparent}
+    .sticky-nav.scrolled{border-bottom-color:var(--line)}
+    .sticky-nav ul{display:flex;flex-wrap:wrap;gap:8px 14px;list-style:none;margin:0;padding:0;font-size:.82rem}
+    .sticky-nav a{color:var(--muted);text-decoration:none}.sticky-nav a:hover{color:var(--accent)}
+    @media(max-width:860px){
+      main{width:calc(100% - 24px);padding-top:40px}
+      .grid,.grid-3,.grid-4{grid-template-columns:1fr}
+      .panel{border-radius:18px}
+      table.responsive,table.responsive tbody,table.responsive tr,table.responsive td{display:block}
+      table.responsive thead{display:none}
+      table.responsive tr{padding:14px 0;border-bottom:1px solid var(--line)}
+      table.responsive td{width:100%!important;padding:6px 0;border:0}
+      .check{grid-template-columns:22px 1fr}
+      .check .dim{grid-column:2}
+    }
+    @media print{
+      .sticky-nav{display:none}
+      body{background:#fff}
+      .panel,.card,.finding,.wave{box-shadow:none}
+      a{color:inherit;text-decoration:none}
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">Audit site · rapport de check-in · sans corrective</p>
+    <h1>Audit complet<br>du site Carole</h1>
+    <p class="lede">Revue minutieuse du site public, du CMS/dashboard, des APIs, du SEO, de l’accessibilité, de la performance et de la cohérence design. Aucune modification n’a été appliquée&nbsp;: ce document sert de base de priorisation avant les correctifs sur <code>dev</code>.</p>
+    <div class="meta">
+      <span class="pill">Périmètre : branche <strong>dev</strong></span>
+      <span class="pill">Commit <code>79c7ac1</code></span>
+      <span class="pill">Date : 27 juillet 2026</span>
+      <span class="pill">Domaine canonique : www.carolebj.com</span>
+      <span class="pill">Statut : diagnostic seul</span>
+    </div>
+  </header>
+
+  <nav class="sticky-nav" aria-label="Sommaire">
+    <ul>
+      <li><a href="#cadre">Cadre</a></li>
+      <li><a href="#synthese">Synthèse</a></li>
+      <li><a href="#scorecard">Scorecard</a></li>
+      <li><a href="#critique">Critique</a></li>
+      <li><a href="#haute">Haute</a></li>
+      <li><a href="#moyenne">Moyenne</a></li>
+      <li><a href="#basse">Basse</a></li>
+      <li><a href="#checkin">Check-in</a></li>
+      <li><a href="#vagues">Vagues</a></li>
+    </ul>
+  </nav>
+
+  <section id="cadre">
+    <h2>1. Cadre de l’audit</h2>
+    <div class="grid">
+      <article class="card">
+        <span class="number">1</span>
+        <h3>Source de vérité</h3>
+        <p>Branche <code>dev</code> du dépôt local, synchronisée avec <code>origin/dev</code>. Les recommandations de correctifs doivent être ancrées ici, puis validées avant merge vers <code>main</code>.</p>
+      </article>
+      <article class="card">
+        <span class="number">2</span>
+        <h3>Méthode</h3>
+        <p>Revue de code ciblée (<code>src/app</code>, <code>src/admin</code>, <code>src/cms</code>, <code>api/</code>, <code>supabase/</code>, <code>public/</code>), lecture des docs projet (<code>GUIDELINE</code>, <code>MEMORY</code>, <code>SECURITY</code>, UI audit archivé), et signaux navigateur sur la production comme complément uniquement.</p>
+      </article>
+      <article class="card">
+        <span class="number">3</span>
+        <h3>Hors périmètre</h3>
+        <p>Aucune corrective, aucun commit, aucune modification CMS. Les labs gitignorés (<code>labs/</code>, <code>plans/</code>) sont hors audit applicatif. TickTick reste le backlog opérationnel&nbsp;; ce rapport ne le remplace pas.</p>
+      </article>
+      <article class="card">
+        <span class="number">4</span>
+        <h3>Échelle de criticité</h3>
+        <p><strong>Critique</strong>&nbsp;: casse UX/SEO/sécurité/légal. <strong>Haute</strong>&nbsp;: qualité majeure. <strong>Moyenne</strong>&nbsp;: polish / dette. <strong>Basse</strong>&nbsp;: nice-to-have. Les preuves «&nbsp;production / main&nbsp;» sont étiquetées séparément.</p>
+      </article>
+    </div>
+
+    <div class="signal prod" style="margin-top:18px">
+      <strong>Signal complémentaire — production / main.</strong>
+      Des vérifications navigateur ont été faites sur <code>https://www.carolebj.com</code> (déploiement typiquement aligné sur <code>main</code>). Elles confirment certains bugs encore présents côté code <code>dev</code> (ex. soft-404 blog), mais ne doivent pas remplacer l’état de <code>dev</code>. Notamment, <code>main</code> sert encore le placeholder <code>ServicesUnderConstruction</code> pour les services, alors que <code>dev</code> expose déjà <code>Services.tsx</code> / <code>ServiceDetail.tsx</code> (voir <code>src/app/pages/services-dev/README.md</code>).
+    </div>
+  </section>
+
+  <section id="synthese">
+    <h2>2. Synthèse exécutive</h2>
+    <div class="panel">
+      <div class="grid-4">
+        <div>
+          <p class="stat" style="color:var(--crit)">7</p>
+          <p class="stat-label">Critiques</p>
+        </div>
+        <div>
+          <p class="stat" style="color:var(--high)">18</p>
+          <p class="stat-label">Hautes</p>
+        </div>
+        <div>
+          <p class="stat" style="color:var(--med)">16</p>
+          <p class="stat-label">Moyennes</p>
+        </div>
+        <div>
+          <p class="stat" style="color:var(--low)">10</p>
+          <p class="stat-label">Basses</p>
+        </div>
+      </div>
+      <p style="margin:22px 0 0;color:var(--muted)">Total recensé : <strong>51 findings</strong> actionnables + points positifs notés dans le check-in. Le site est mature (CMS Supabase, SEO client, formulaires Resend, design editorial), mais plusieurs défauts structurels empêchent un merge <code>dev → main</code> serein sans passe prioritaire.</p>
+    </div>
+
+    <div class="signal" style="margin-top:18px">
+      <strong>Verdict.</strong> Trois clusters dominent&nbsp;: (1)&nbsp;intégrité des URLs dynamiques (soft-404 blog/services), (2)&nbsp;surface de sécurité CMS/API (RLS trop permissive pour tout compte authentifié, anti-abus contact, insert anon legacy briefs), (3)&nbsp;dette a11y/SEO/légale (landmarks, skip-link, pages légales, sitemap, robots dashboard). Le reste est cohérence design, i18n et nettoyage legacy.
+    </div>
+
+    <div class="panel" style="margin-top:18px;overflow-x:auto">
+      <table class="responsive">
+        <thead>
+          <tr><th>Priorité merge</th><th>Pourquoi</th><th>Findings clés</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Bloquant avant prod</td>
+            <td>Contenu faux indexé, spam, élévation de privilèges CMS, conformité PII</td>
+            <td>C1–C7</td>
+          </tr>
+          <tr>
+            <td>Avant validation Carole</td>
+            <td>UX clavier/mobile, SEO crawl, flash contenu, perf mobile</td>
+            <td>H1–H12, H16–H18</td>
+          </tr>
+          <tr>
+            <td>Sprint polish</td>
+            <td>Tokens, i18n hardcodes, legacy, tests manquants</td>
+            <td>H13–H15, M*, L*</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="scorecard">
+    <h2>3. Scorecard par dimension</h2>
+    <div class="panel" style="overflow-x:auto">
+      <table class="responsive">
+        <thead>
+          <tr><th>Dimension</th><th>État sur <code>dev</code></th><th>Note</th><th>Commentaire</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Routing &amp; pages</td>
+            <td><span class="sev sev-h">Fragile</span></td>
+            <td>C</td>
+            <td>Surface riche (estimateur, briefs, carnet, CV). Soft-404 blog/services. Placeholder services seulement sur <code>main</code>.</td>
+          </tr>
+          <tr>
+            <td>SEO &amp; crawl</td>
+            <td><span class="sev sev-h">Fragile</span></td>
+            <td>C+</td>
+            <td>Meta client solides ; SPA shell, sitemap statique, pas de hreflang, dashboard crawlable, <code>llms.txt</code> obsolète.</td>
+          </tr>
+          <tr>
+            <td>Accessibilité</td>
+            <td><span class="sev sev-h">Fragile</span></td>
+            <td>C</td>
+            <td>Focus ring &amp; reduced-motion partiels OK. Nested <code>&lt;main&gt;</code>, pas de skip-link, ContactForm sans ARIA erreurs, CV via menu contextuel.</td>
+          </tr>
+          <tr>
+            <td>i18n FR/EN</td>
+            <td><span class="sev sev-m">Correct</span></td>
+            <td>B-</td>
+            <td>Infrastructure mature. Hardcodes FR, EN→FR silencieux, flash i18n→CMS.</td>
+          </tr>
+          <tr>
+            <td>Design / tokens</td>
+            <td><span class="sev sev-m">Correct</span></td>
+            <td>B-</td>
+            <td>Direction claire. Trois dialectes encore actifs (hex portfolio / carnet / tokens).</td>
+          </tr>
+          <tr>
+            <td>Motion &amp; perf</td>
+            <td><span class="sev sev-m">Correct</span></td>
+            <td>B-</td>
+            <td>Home Infinity gated. Vidéo about ~6,2&nbsp;Mo, Motion inégal, fonts Google externes.</td>
+          </tr>
+          <tr>
+            <td>Contact / email</td>
+            <td><span class="sev sev-h">Fragile</span></td>
+            <td>C+</td>
+            <td>Resend + template HTML OK. Anti-abus durable manquant (documenté dans MEMORY).</td>
+          </tr>
+          <tr>
+            <td>CMS / RLS / admin</td>
+            <td><span class="sev sev-c">À risque</span></td>
+            <td>D+</td>
+            <td>Séparation draft/public bonne pour <code>anon</code>. Tout <code>authenticated</code> = éditeur complet ; writes directs sur snapshot public.</td>
+          </tr>
+          <tr>
+            <td>APIs serveur</td>
+            <td><span class="sev sev-m">Correct</span></td>
+            <td>B</td>
+            <td>Keepalive/inbound solides. Contact &amp; translate sous-protégés (rate limit / CORS / plafond).</td>
+          </tr>
+          <tr>
+            <td>Légal / confiance</td>
+            <td><span class="sev sev-c">À risque</span></td>
+            <td>D</td>
+            <td>Collecte PII (contact, Cal, briefs, estimateur) sans pages Mentions / Confidentialité visibles.</td>
+          </tr>
+          <tr>
+            <td>Qualité eng. (tests/lint)</td>
+            <td><span class="sev sev-m">Correct</span></td>
+            <td>C+</td>
+            <td>Unit tests ciblés + <code>cms:verify</code>. Pas de lint/format scripts ; trous translate/RLS/E2E publish.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= CRITICAL ================= -->
+  <section id="critique">
+    <h2>4. Findings — Critique</h2>
+    <p class="lede">À traiter avant toute exposition production des pages dynamiques de <code>dev</code>, et avant d’élargir l’accès Auth.</p>
+
+    <article class="finding" id="C1">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">C1</p>
+          <h3>Soft-404 blog : un slug invalide affiche un autre article</h3>
+        </div>
+        <span class="sev sev-c">Critique</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill">SEO</span><span class="pill">Routing</span><span class="pill">Contenu</span>
+      </div>
+      <p class="loc">Fichier : <code>src/app/pages/BlogArticle.tsx</code> (~L53) — <code>posts.find(...) ?? posts[0]</code></p>
+      <div class="body">
+        <p><strong>Preuve code (<code>dev</code>).</strong> Si le slug n’existe pas, le premier article publié est servi en HTTP&nbsp;200 avec ses meta SEO. Les crawlers indexent du contenu sous une URL fantôme.</p>
+        <p><strong>Signal production / main.</strong> Confirmé le 27/07/2026 sur <code>/blog/this-slug-should-not-exist-xyz</code> → article «&nbsp;Case study: rebuilding visibility…&nbsp;» (HTTP&nbsp;200, title de l’article).</p>
+        <p><strong>Correctif recommandé.</strong> Si aucun match → <code>NotFoundPage</code> / réponse 404 + <code>noindex</code>. Ne jamais fallback sur <code>posts[0]</code>.</p>
+      </div>
+    </article>
+
+    <article class="finding" id="C2">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">C2</p>
+          <h3>Soft-404 services : un slug inconnu affiche le premier service</h3>
+        </div>
+        <span class="sev sev-c">Critique</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill">SEO</span><span class="pill">Routing</span><span class="pill">Spécifique à <code>dev</code></span>
+      </div>
+      <p class="loc">Fichier : <code>src/app/pages/ServiceDetail.tsx</code> (~L72–73) — même pattern <code>?? services[0]</code></p>
+      <div class="body">
+        <p><strong>Preuve code (<code>dev</code>).</strong> La branche empty (~L86) ne se déclenche que si la liste est vide. Un mauvais slug sert le premier service + SEO override incorrect. Miroir aussi dans <code>services-dev/ServiceDetailPage.tsx</code>.</p>
+        <p><strong>Signal production / main.</strong> Sur <code>main</code>, les services sont encore un placeholder («&nbsp;The services are taking shape&nbsp;»). Le soft-404 devient critique dès le merge des pages <code>dev</code>.</p>
+        <p><strong>Correctif recommandé.</strong> 404 réelle si slug (après alias) introuvable ; ne pas utiliser <code>services[0]</code> comme secours.</p>
+      </div>
+    </article>
+
+    <article class="finding" id="C3">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">C3</p>
+          <h3>Tout utilisateur Supabase Auth = éditeur CMS complet</h3>
+        </div>
+        <span class="sev sev-c">Critique</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill">Sécurité</span><span class="pill">CMS</span><span class="pill">RLS</span>
+      </div>
+      <p class="loc">Migrations : <code>20260610194517_editorial_workflow.sql</code>, <code>20260610195227_harden_cms_rls.sql</code> — policies <code>auth.uid() is not null</code></p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Aucun allowlist email / claim <code>app_metadata.role</code> / table <code>cms_editors</code>. Un compte Auth créé (signup, invite, fuite credential) peut lire/écrire documents, briefs, médias et publier.</p>
+        <p><strong>Correctif recommandé.</strong> Désactiver signup public ; policies basées sur rôle éditeur ; documenter dans <code>SECURITY.md</code> la liste des comptes autorisés.</p>
+      </div>
+    </article>
+
+    <article class="finding" id="C4">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">C4</p>
+          <h3>Écriture directe possible sur <code>cms_public_documents</code></h3>
+        </div>
+        <span class="sev sev-c">Critique</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill">Sécurité</span><span class="pill">CMS</span>
+      </div>
+      <p class="loc">Grants <code>insert, update, delete</code> sur <code>cms_public_documents</code> pour <code>authenticated</code></p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Un client authentifié peut contourner <code>cms_publish_document</code> / validation UI et pousser un snapshot public arbitraire immédiatement.</p>
+        <p><strong>Correctif recommandé.</strong> <code>revoke insert, update, delete</code> pour <code>authenticated</code> ; n’autoriser que les RPC contrôlées (<code>cms_publish_*</code>, trash, etc.).</p>
+      </div>
+    </article>
+
+    <article class="finding" id="C5">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">C5</p>
+          <h3>Formulaire contact sans anti-abus durable</h3>
+        </div>
+        <span class="sev sev-c">Critique</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill">Sécurité</span><span class="pill">API</span><span class="pill">Coût</span>
+      </div>
+      <p class="loc"><code>api/contact.js</code> — honeypot + validation seulement ; MEMORY ~L291–292</p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Pas de rate-limit IP/email, pas de captcha, pas de proof-of-work. Spam → coût Resend + saturation Gmail. Le projet le reconnaît déjà comme hardening restant.</p>
+        <p><strong>Correctif recommandé.</strong> Rate limit (Upstash / Vercel KV), option Turnstile, alerte seuil ; répondre 200 «&nbsp;fake success&nbsp;» au honeypot (voir aussi M*).</p>
+      </div>
+    </article>
+
+    <article class="finding" id="C6">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">C6</p>
+          <h3>Collecte de données personnelles sans pages légales</h3>
+        </div>
+        <span class="sev sev-c">Critique</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill">Légal</span><span class="pill">Confiance</span>
+      </div>
+      <p class="loc">Contact, Cal.com, ClientBrief, ProjectEstimator — aucune route Mentions / Confidentialité / RGPD dans <code>routes.tsx</code></p>
+      <div class="body">
+        <p><strong>Preuve.</strong> Footer et formulaires ne pointent vers aucune politique. PII collectées (email, messages, briefs, pièces jointes).</p>
+        <p><strong>Correctif recommandé.</strong> Pages Mentions légales + Politique de confidentialité FR/EN, liens footer + formulaires, finalité / durée / destinataires / droits.</p>
+      </div>
+    </article>
+
+    <article class="finding" id="C7">
+      <div class="finding-head">
+        <div>
+          <p class="finding-id">C7</p>
+          <h3>Insert anonyme illimité sur <code>design_brief_submissions</code> (legacy)</h3>
+        </div>
+        <span class="sev sev-c">Critique</span>
+      </div>
+      <div class="meta-row">
+        <span class="pill">Sécurité</span><span class="pill">Spam / PII</span>
+      </div>
+      <p class="loc"><code>supabase/migrations/20260620135500_design_brief_submissions.sql</code> ; encore reflété dans <code>schema.sql</code> — <code>for insert to anon with check (true)</code></p>
+      <div class="body">
+        <p><strong>Preuve.</strong> La clé publishable suffit pour spammer JSON/PII via REST, même si la route UI <code>/services/brief-design</code> redirige vers le nouveau brief client. Policy storage anon upload retirée plus tard, mais insert table reste.</p>
+        <p><strong>Correctif recommandé.</strong> Drop policy / revoke insert anon ; conserver lecture admin ; soumissions uniquement via endpoints serveur rate-limités.</p>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= HIGH ================= -->
+  <section id="haute">
+    <h2>5. Findings — Haute</h2>
+
+    <article class="finding" id="H1">
+      <div class="finding-head"><div><p class="finding-id">H1</p><h3>SEO SPA : meta deep-links uniquement côté client</h3></div><span class="sev sev-h">Haute</span></div>
+      <p class="loc"><code>index.html</code> + <code>Seo.tsx</code> + rewrite Vercel catch-all</p>
+      <p>Le shell HTML reste celui de la home FR. Crawl sans JS / previews sociales faibles sur deep links. <strong>Fix :</strong> prerender/SSR ou meta par route au build pour pages clés.</p>
+    </article>
+
+    <article class="finding" id="H2">
+      <div class="finding-head"><div><p class="finding-id">H2</p><h3>Pas de <code>hreflang</code> / URLs par langue</h3></div><span class="sev sev-h">Haute</span></div>
+      <p class="loc"><code>Seo.tsx</code>, <code>i18n.tsx</code> (<code>localStorage portfolio-lang</code>)</p>
+      <p>Langue client-only ; canonical unique sans locale. <strong>Fix :</strong> stratégie URL (<code>/en/…</code> ou query) + alternate hreflang + <code>x-default</code>.</p>
+    </article>
+
+    <article class="finding" id="H3">
+      <div class="finding-head"><div><p class="finding-id">H3</p><h3>Sitemap incomplet</h3></div><span class="sev sev-h">Haute</span></div>
+      <p class="loc"><code>public/sitemap.xml</code></p>
+      <p>Pages statiques seulement. Absents : <code>/services/:slug</code>, <code>/blog/:slug</code>, <code>/estimer-mon-projet</code>, briefs. <strong>Fix :</strong> génération depuis CMS publié + <code>lastmod</code>.</p>
+    </article>
+
+    <article class="finding" id="H4">
+      <div class="finding-head"><div><p class="finding-id">H4</p><h3><code>/dashboard</code> indexable</h3></div><span class="sev sev-h">Haute</span></div>
+      <p class="loc"><code>public/robots.txt</code> — <code>Allow: /</code> ; pas de <code>noindex</code> admin</p>
+      <p><strong>Fix :</strong> <code>Disallow: /dashboard</code> + meta robots noindex dans <code>AdminApp</code>.</p>
+    </article>
+
+    <article class="finding" id="H5">
+      <div class="finding-head"><div><p class="finding-id">H5</p><h3>404 SEO mappé comme «&nbsp;home&nbsp;»</h3></div><span class="sev sev-h">Haute</span></div>
+      <p class="loc"><code>src/app/seo/fallbackSeo.ts</code> — <code>pathnameToSeoPageKey</code></p>
+      <p>Chemins inconnus → clé <code>home</code> ; title/description home sur 404. <strong>Fix :</strong> clé <code>notFound</code> + <code>noindex</code>.</p>
+    </article>
+
+    <article class="finding" id="H6">
+      <div class="finding-head"><div><p class="finding-id">H6</p><h3>Lien 404 cassé vers <code>/#projects</code></h3></div><span class="sev sev-h">Haute</span></div>
+      <p class="loc"><code>NotFoundPage.tsx</code> ~L43</p>
+      <p>Home a <code>#home</code>, <code>#services</code>, <code>#testimonials</code>, <code>#contact</code> — pas <code>#projects</code>. Label i18n dit «&nbsp;Explore services&nbsp;». <strong>Fix :</strong> <code>/services</code> ou <code>/#services</code>.</p>
+    </article>
+
+    <article class="finding" id="H7">
+      <div class="finding-head"><div><p class="finding-id">H7</p><h3>Landmarks <code>&lt;main&gt;</code> imbriqués</h3></div><span class="sev sev-h">Haute</span></div>
+      <p class="loc"><code>Layout.tsx</code> ~L46–48 + pages About, Blog, Contact, Services, Carnet, CV, etc.</p>
+      <p>Deux landmarks <code>main</code> (confirmé aussi en a11y tree production). Home est OK (sections seules). <strong>Fix :</strong> un seul <code>main</code> — Layout ou pages, pas les deux.</p>
+    </article>
+
+    <article class="finding" id="H8">
+      <div class="finding-head"><div><p class="finding-id">H8</p><h3>Pas de skip link</h3></div><span class="sev sev-h">Haute</span></div>
+      <p class="loc"><code>Layout.tsx</code> / <code>Navbar.tsx</code></p>
+      <p>Aucun «&nbsp;Aller au contenu&nbsp;». <strong>Fix :</strong> lien skip focusable avant la nav, cible l’unique <code>main</code>.</p>
+    </article>
+
+    <article class="finding" id="H9">
+      <div class="finding-head"><div><p class="finding-id">H9</p><h3>ContactForm : erreurs non exposées aux technologies d’assistance</h3></div><span class="sev sev-h">Haute</span></div>
+      <p class="loc"><code>ContactForm.tsx</code> — labels OK ; pas de <code>aria-invalid</code> / <code>aria-describedby</code></p>
+      <p>ClientBrief gère déjà le pattern correctement. <strong>Fix :</strong> aligner ContactForm sur ClientBrief.</p>
+    </article>
+
+    <article class="finding" id="H10">
+      <div class="finding-head"><div><p class="finding-id">H10</p><h3>CV et haptics principalement via menu contextuel logo</h3></div><span class="sev sev-h">Haute</span></div>
+      <p class="loc"><code>Navbar.tsx</code> ~L533–630 ; Footer sans <code>/cv</code> ni <code>/blog</code></p>
+      <p>Découvrabilité faible (mobile, clavier, lecteurs d’écran). <strong>Fix :</strong> entrées footer/menu accessibles ; toggle haptics aussi ailleurs.</p>
+    </article>
+
+    <article class="finding" id="H11">
+      <div class="finding-head"><div><p class="finding-id">H11</p><h3>CMS autoritaire + champ vide = UI vide</h3></div><span class="sev sev-h">Haute</span></div>
+      <p class="loc"><code>Home.tsx</code> pattern <code>usingCms ? localized(...) : t(...)</code> ; MEMORY</p>
+      <p>Une lecture CMS réussie avec champ vide n’utilise plus le fallback i18n. <strong>Fix :</strong> fallback champ-par-champ si localized vide, ou validation publication stricte.</p>
+    </article>
+
+    <article class="finding" id="H12">
+      <div class="finding-head"><div><p class="finding-id">H12</p><h3>Flash i18n → CMS au premier paint</h3></div><span class="sev sev-h">Haute</span></div>
+      <p class="loc"><code>cmsContent.ts</code> — état initial <code>usingCms: false</code></p>
+      <p>Flicker copy/SEO possible. <strong>Fix :</strong> skeleton / attendre CMS avant paint éditorial, ou SSR.</p>
+    </article>
+
+    <article class="finding" id="H13">
+      <div class="finding-head"><div><p class="finding-id">H13</p><h3>Asset about motion ~6,2&nbsp;Mo</h3></div><span class="sev sev-h">Haute</span></div>
+      <p class="loc"><code>Home.tsx</code> + MEMORY (H.264 720×900, <code>preload="metadata"</code>)</p>
+      <p>Poids mobile élevé malgré fallback image. <strong>Fix :</strong> variante compressée / poster-only mobile / lazy mount hors viewport (sans descendre sous ~720×900 pour le rendu retina).</p>
+    </article>
+
+    <article class="finding" id="H14">
+      <div class="finding-head"><div><p class="finding-id">H14</p><h3>Footer : interception wheel/touch (scroll hijack)</h3></div><span class="sev sev-h">Haute</span></div>
+      <p class="loc"><code>Footer.tsx</code> ~L591–698</p>
+      <p>Listeners non-passive pour le reveal shader. <strong>Fix :</strong> désactiver sous reduced-motion, ne pas bloquer scroll assistif, opt-in plus clair.</p>
+    </article>
+
+    <article class="finding" id="H15">
+      <div class="finding-head"><div><p class="finding-id">H15</p><h3>Trois dialectes design encore actifs</h3></div><span class="sev sev-h">Haute</span></div>
+      <p class="loc">Layout/Navbar/Footer/Home (hex) ; Carnet (<code>#EAEAEA</code>…) ; About/ServiceDetail (tokens) — aligné <code>docs/archive/UI_AUDIT.md</code></p>
+      <p><strong>Fix :</strong> migrer vers <code>tokens.css</code> ; carnet garde sa hiérarchie documentaire mais partage surfaces/texte/bordures.</p>
+    </article>
+
+    <article class="finding" id="H16">
+      <div class="finding-head"><div><p class="finding-id">H16</p><h3><code>llms.txt</code> obsolète / inexact</h3></div><span class="sev sev-h">Haute</span></div>
+      <p class="loc"><code>public/llms.txt</code></p>
+      <p>«&nbsp;Carnet&nbsp;» pointe vers <code>/blog</code> ; positionnement et routes carnet/services/estimateur absents ou faux. <strong>Fix :</strong> aligner sur sitemap + rôle actuel (chargée de communication digitale).</p>
+    </article>
+
+    <article class="finding" id="H17">
+      <div class="finding-head"><div><p class="finding-id">H17</p><h3><code>/api/translate</code> : CORS ouvert, plafond faible côté Vercel</h3></div><span class="sev sev-h">Haute</span></div>
+      <p class="loc"><code>api/translate.js</code> (<code>ALLOWED_ORIGIN</code> défaut <code>*</code>) ; Worker a <code>MAX_TRANSLATION_CHARS</code></p>
+      <p>Tout JWT authentifié = quota AI. <strong>Fix :</strong> origin prod obligatoire, max chars Vercel, rate limit par user, allowlist éditeur.</p>
+    </article>
+
+    <article class="finding" id="H18">
+      <div class="finding-head"><div><p class="finding-id">H18</p><h3>Preview/prod sans <code>VITE_SUPABASE_*</code> → dashboard démo «&nbsp;login libre&nbsp;»</h3></div><span class="sev sev-h">Haute</span></div>
+      <p class="loc"><code>src/lib/supabase.ts</code>, <code>LoginScreen.tsx</code>, <code>store.ts</code> <code>demoSignIn</code></p>
+      <p>Sans env, toute combinaison email/mot de passe ouvre le dashboard localStorage. Pas de fuite Supabase, mais faux sentiment de prod. <strong>Fix :</strong> fail closed en build prod si vars absentes.</p>
+    </article>
+  </section>
+
+  <!-- ================= MEDIUM ================= -->
+  <section id="moyenne">
+    <h2>6. Findings — Moyenne</h2>
+
+    <div class="panel" style="overflow-x:auto">
+      <table class="responsive">
+        <thead>
+          <tr><th>ID</th><th>Finding</th><th>Lieu</th><th>Recommandation</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="sev sev-m">M1</span></td>
+            <td>Chaînes FR hardcodées (i18n incomplet)</td>
+            <td><code>routes.tsx</code> «&nbsp;Chargement…&nbsp;», Navbar carnet, ToolsInspirations «&nbsp;Recherche&nbsp;», ServiceWorkbench, EstimatorShell</td>
+            <td>Clés i18n FR/EN</td>
+          </tr>
+          <tr>
+            <td><span class="sev sev-m">M2</span></td>
+            <td>EN CMS manquant → fallback FR silencieux</td>
+            <td><code>types.ts</code> <code>localized</code></td>
+            <td>Signal éditorial dashboard ; preview «&nbsp;missing&nbsp;»</td>
+          </tr>
+          <tr>
+            <td><span class="sev sev-m">M3</span></td>
+            <td>Images blog Unsplash en fallback i18n</td>
+            <td><code>Blog.tsx</code> / <code>BlogArticle.tsx</code></td>
+            <td>Assets locaux ou CMS uniquement</td>
+          </tr>
+          <tr>
+            <td><span class="sev sev-m">M4</span></td>
+            <td>Covers blog <code>alt=""</code> + <code>aria-hidden</code></td>
+            <td><code>Blog.tsx</code></td>
+            <td>Alt CMS localisé si image informative</td>
+          </tr>
+          <tr>
+            <td><span class="sev sev-m">M5</span></td>
+            <td>Google Fonts bloquantes dans le shell</td>
+            <td><code>index.html</code></td>
+            <td>Self-host / subset / preload critique</td>
+          </tr>
+          <tr>
+            <td><span class="sev sev-m">M6</span></td>
+            <td>Meta shell sans accents FR</td>
+            <td><code>index.html</code> («&nbsp;chargee&nbsp;», «&nbsp;strategie&nbsp;»)</td>
+            <td>Orthographe correcte alignée SEO fallback</td>
+          </tr>
+          <tr>
+            <td><span class="sev sev-m">M7</span></td>
+            <td>Honeypot contact renvoie 400 (info bots)</td>
+            <td><code>api/contact.js</code></td>
+            <td>200 fake success</td>
+          </tr>
+          <tr>
+            <td><span class="sev sev-m">M8</span></td>
+            <td>Panels Contact form + Cal toujours montés</td>
+            <td><code>Contact.tsx</code></td>
+            <td>Unmount panel fermé (perf / focus)</td>
+          </tr>
+          <tr>
+            <td><span class="sev sev-m">M9</span></td>
+            <td>Code mort / legacy</td>
+            <td><code>DesignBrief.tsx</code>, <code>ServicesUnderConstruction.tsx</code>, <code>services-dev/*</code>, i18n <code>nav.comingSoon</code></td>
+            <td>Supprimer ou isoler hors bundle public après merge</td>
+          </tr>
+          <tr>
+            <td><span class="sev sev-m">M10</span></td>
+            <td>Structured data Person minimal</td>
+            <td><code>Seo.tsx</code></td>
+            <td><code>WebSite</code> + <code>BreadcrumbList</code> + <code>Article</code></td>
+          </tr>
+          <tr>
+            <td><span class="sev sev-m">M11</span></td>
+            <td>Session admin via <code>getSession()</code> local</td>
+            <td><code>admin/data.ts</code>, <code>translate.ts</code></td>
+            <td><code>getUser()</code> au boot + <code>SIGNED_OUT</code></td>
+          </tr>
+          <tr>
+            <td><span class="sev sev-m">M12</span></td>
+            <td>Featured service multi-writes sans transaction</td>
+            <td><code>AdminApp.tsx</code></td>
+            <td>RPC SQL atomique</td>
+          </tr>
+          <tr>
+            <td><span class="sev sev-m">M13</span></td>
+            <td>Validation schéma client-only</td>
+            <td><code>admin/validation.ts</code> vs RPCs publish</td>
+            <td>Checks SQL / limites Storage ; valider dans RPC</td>
+          </tr>
+          <tr>
+            <td><span class="sev sev-m">M14</span></td>
+            <td>Comparaison non timing-safe de <code>CRON_SECRET</code></td>
+            <td><code>api/supabase-keepalive.js</code></td>
+            <td>Constant-time comme le Worker</td>
+          </tr>
+          <tr>
+            <td><span class="sev sev-m">M15</span></td>
+            <td>Motion pages sans garde uniforme</td>
+            <td>NotFound, ErrorPage, RouteErrorBoundary, parties Services</td>
+            <td>Standardiser <code>useMotionSafe</code></td>
+          </tr>
+          <tr>
+            <td><span class="sev sev-m">M16</span></td>
+            <td>Tests absents sur zones sensibles</td>
+            <td><code>tests/</code> — pas de translate / RLS / publish E2E</td>
+            <td>Compléter suite + policy tests SQL</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= LOW ================= -->
+  <section id="basse">
+    <h2>7. Findings — Basse</h2>
+    <div class="panel" style="overflow-x:auto">
+      <table class="responsive">
+        <thead>
+          <tr><th>ID</th><th>Finding</th><th>Note</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="sev sev-l">L1</span></td><td>Clé i18n <code>nav.comingSoon</code> orpheline</td><td>Supprimer après retrait placeholder</td></tr>
+          <tr><td><span class="sev sev-l">L2</span></td><td>Watermark «&nbsp;Oops&nbsp;» non traduit (ErrorPage)</td><td>i18n ou retirer</td></tr>
+          <tr><td><span class="sev sev-l">L3</span></td><td>Dimensions <code>og:image</code> seulement pour image défaut</td><td>Exposer dims CMS si connues</td></tr>
+          <tr><td><span class="sev sev-l">L4</span></td><td>Manifest PWA <code>lang: "fr"</code> fixe</td><td>Acceptable ; documenter</td></tr>
+          <tr><td><span class="sev sev-l">L5</span></td><td>Preload idle charge aussi ClientBrief/Estimator</td><td>Preload selon intent nav</td></tr>
+          <tr><td><span class="sev sev-l">L6</span></td><td>Contraste texte muted dark à vérifier (#cdb9ae)</td><td>Audit contrast AA ciblé</td></tr>
+          <tr><td><span class="sev sev-l">L7</span></td><td><code>ServiceWorkbench</code> hors route publique active</td><td>Nettoyage avec placeholder</td></tr>
+          <tr><td><span class="sev sev-l">L8</span></td><td>Canonical preview peut utiliser <code>window.location.origin</code></td><td>Forcer siteUrl CMS / env</td></tr>
+          <tr><td><span class="sev sev-l">L9</span></td><td>Redirect <code>/admin</code> aplatit les deep-links</td><td>Optionnel <code>/admin/:path* → /dashboard/:path*</code></td></tr>
+          <tr><td><span class="sev sev-l">L10</span></td><td><code>isPublishedPost</code> filtre client redondant / trompeur</td><td>Se fier à la présence dans <code>cms_public_documents</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= CHECK-IN ================= -->
+  <section id="checkin">
+    <h2>8. Check-in exhaustif</h2>
+    <p class="lede">Matrice de contrôle complète. Légende&nbsp;: <span class="sev sev-ok">OK</span> conforme · <span class="sev sev-h">Partiel</span> · <span class="sev sev-c">Échec</span> · <span class="sev sev-l">N/A</span>.</p>
+
+    <div class="panel" style="margin-top:18px">
+      <h3>8.1 Site public — pages &amp; navigation</h3>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Accueil composé (hero, manifesto, about, services, testimonials, contact)</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Pages About, Blog, Contact, CV, Carnet (outils + lectures)</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Services détaillés actifs sur <code>dev</code> (placeholder encore sur <code>main</code>)</div><span class="dim"><span class="sev sev-h">Partiel</span> H15/M9</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Estimateur <code>/estimer-mon-projet</code> + briefs client</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>404 réelle pour slugs blog/services invalides</div><span class="dim"><span class="sev sev-c">Échec</span> C1–C2</span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Lien secondaire 404 pointe vers une ancre existante</div><span class="dim"><span class="sev sev-c">Échec</span> H6</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Footer expose CV / Blog / pages légales</div><span class="dim"><span class="sev sev-h">Partiel</span> H10 / C6</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Redirect <code>/admin</code> → <code>/dashboard</code></div><span class="dim"><span class="sev sev-ok">OK</span> L9</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Error boundary + NotFound routés</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+    </div>
+
+    <div class="panel" style="margin-top:18px">
+      <h3>8.2 SEO &amp; découvrabilité</h3>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Composant SEO client (title, description, OG, Twitter, canonical)</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Overrides articles / services / pages CMS <code>seoPages</code></div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Prerender / meta HTML par deep-link</div><span class="dim"><span class="sev sev-h">Partiel</span> H1</span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>hreflang FR/EN</div><span class="dim"><span class="sev sev-c">Échec</span> H2</span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Sitemap inclut slugs dynamiques</div><span class="dim"><span class="sev sev-c">Échec</span> H3</span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div><code>robots.txt</code> exclut le dashboard</div><span class="dim"><span class="sev sev-c">Échec</span> H4</span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>404 = noindex + meta dédiées</div><span class="dim"><span class="sev sev-c">Échec</span> H5</span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div><code>llms.txt</code> aligné routes &amp; positionnement</div><span class="dim"><span class="sev sev-c">Échec</span> H16</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>JSON-LD riche (WebSite / Article / Breadcrumb)</div><span class="dim"><span class="sev sev-h">Partiel</span> M10</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>OG image 1200×630 dédiée en public</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+    </div>
+
+    <div class="panel" style="margin-top:18px">
+      <h3>8.3 Accessibilité</h3>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Un seul landmark <code>main</code> par page</div><span class="dim"><span class="sev sev-c">Échec</span> H7</span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Skip link «&nbsp;Aller au contenu&nbsp;»</div><span class="dim"><span class="sev sev-c">Échec</span> H8</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Focus visible (tokens / ring)</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Formulaire contact : erreurs liées ARIA</div><span class="dim"><span class="sev sev-h">Partiel</span> H9</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>ClientBrief : <code>aria-invalid</code> / describedby</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div><code>prefers-reduced-motion</code> respecté partout</div><span class="dim"><span class="sev sev-h">Partiel</span> M15 / H14</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Home Infinity animations gated</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Cibles tactiles ≥ 48px (guideline projet)</div><span class="dim"><span class="sev sev-h">Partiel</span> dots/nav à revalider</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Découvrabilité CV / haptics clavier</div><span class="dim"><span class="sev sev-h">Partiel</span> H10</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Alts images blog informatifs</div><span class="dim"><span class="sev sev-h">Partiel</span> M4</span></div>
+    </div>
+
+    <div class="panel" style="margin-top:18px">
+      <h3>8.4 i18n &amp; contenu CMS</h3>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Infrastructure i18next FR/EN + persistance langue</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Lecteur public = <code>cms_public_documents</code> uniquement</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Pas de fuite brouillon → site public détectée</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Fallback champ vide CMS → i18n</div><span class="dim"><span class="sev sev-h">Partiel</span> H11</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Pas de flash contenu au chargement</div><span class="dim"><span class="sev sev-h">Partiel</span> H12</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Parité FR/EN sans hardcodes</div><span class="dim"><span class="sev sev-h">Partiel</span> M1–M2</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>About copywriting pass validée / publiée (14/07/2026)</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Passe copy site-wide restantes (MEMORY / TickTick)</div><span class="dim"><span class="sev sev-h">Partiel</span> backlog</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Workflow éditorial (draft / publish / trash / revisions)</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div><code>cms:verify</code> disponible et documenté</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+    </div>
+
+    <div class="panel" style="margin-top:18px">
+      <h3>8.5 Design system &amp; motion</h3>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Direction visuelle documentée (cream / plum / Newsreader)</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div><code>tokens.css</code> source sémantique existe</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Adoption tokens sur toutes les pages publiques</div><span class="dim"><span class="sev sev-c">Échec</span> H15</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Dark mode + theme switcher</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Layout scale 13″ MacBook respectée</div><span class="dim"><span class="sev sev-h">Partiel</span> revalider post-merge services</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Motion uniforme via <code>useMotionSafe</code></div><span class="dim"><span class="sev sev-h">Partiel</span> M15</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Easter egg hero + reduced-motion play explicite</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+    </div>
+
+    <div class="panel" style="margin-top:18px">
+      <h3>8.6 Performance</h3>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Route-level code splitting public</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Cache immutable assets Vercel documenté</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Cooldown 30s CMS après échec réseau</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Poids média about adapté mobile</div><span class="dim"><span class="sev sev-c">Échec</span> H13</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Fonts non bloquantes / self-host</div><span class="dim"><span class="sev sev-h">Partiel</span> M5</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Portraits hero WebP thème-spécifiques</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Cal.com lazy-loadé</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+    </div>
+
+    <div class="panel" style="margin-top:18px">
+      <h3>8.7 Contact, email &amp; APIs</h3>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Endpoint <code>/api/contact</code> serveur-only Resend</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Échappement HTML valeurs visiteur</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Inbound webhook signé + forward Gmail</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Keepalive cron protégé par <code>CRON_SECRET</code></div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Anti-abus durable contact</div><span class="dim"><span class="sev sev-c">Échec</span> C5</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Translate CORS + plafond + rate limit</div><span class="dim"><span class="sev sev-h">Partiel</span> H17</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Comparaison timing-safe cron</div><span class="dim"><span class="sev sev-h">Partiel</span> M14</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Secrets Resend / Worker hors préfixe <code>VITE_</code></div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+    </div>
+
+    <div class="panel" style="margin-top:18px">
+      <h3>8.8 CMS / dashboard / RLS</h3>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Auth email/password Supabase pour écritures UI</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Allowlist éditeur (pas «&nbsp;any authenticated&nbsp;»)</div><span class="dim"><span class="sev sev-c">Échec</span> C3</span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Snapshot public writable uniquement via RPC</div><span class="dim"><span class="sev sev-c">Échec</span> C4</span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Insert anon legacy design_brief fermé</div><span class="dim"><span class="sev sev-c">Échec</span> C7</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Dirty state / beforeunload / toasts save</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Corbeille 30j + revisions</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Validation publish côté serveur</div><span class="dim"><span class="sev sev-h">Partiel</span> M13</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Fail closed si env Supabase absente en prod</div><span class="dim"><span class="sev sev-h">Partiel</span> H18</span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Mode démo localStorage intentionnel en local</div><span class="dim"><span class="sev sev-ok">OK</span> (local)</span></div>
+    </div>
+
+    <div class="panel" style="margin-top:18px">
+      <h3>8.9 Légal, confiance &amp; ops</h3>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Mentions légales</div><span class="dim"><span class="sev sev-c">Échec</span> C6</span></div>
+      <div class="check"><span class="box fail" aria-hidden="true"></span><div>Politique de confidentialité</div><span class="dim"><span class="sev sev-c">Échec</span> C6</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Consentement / information formulaires</div><span class="dim"><span class="sev sev-h">Partiel</span></span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Scan secrets pre-commit documenté</div><span class="dim"><span class="sev sev-ok">OK</span></span></div>
+      <div class="check"><span class="box pass" aria-hidden="true"></span><div>Domaine canonique www + redirect apex</div><span class="dim"><span class="sev sev-ok">OK</span> (ops)</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Lint / format scripts package</div><span class="dim"><span class="sev sev-h">Partiel</span> absents</span></div>
+      <div class="check"><span class="box warn" aria-hidden="true"></span><div>Couverture tests zones sensibles</div><span class="dim"><span class="sev sev-h">Partiel</span> M16</span></div>
+    </div>
+
+    <div class="signal ok" style="margin-top:22px">
+      <strong>Points solides à préserver.</strong> Séparation draft/public pour lecteurs anon ; workflow éditorial ; contact Resend + inbound signé ; keepalive cron ; tokens sémantiques déjà adoptés sur About/ServiceDetail ; reduced-motion sur hero ; assets locaux optimisés (WebP/AVIF) ; route lazy-loading ; documentation projet (GUIDELINE / MEMORY / SECURITY) à jour.
+    </div>
+  </section>
+
+  <!-- ================= WAVES ================= -->
+  <section id="vagues">
+    <h2>9. Vagues de remediation recommandées</h2>
+    <p class="lede">Ordre proposé pour <code>dev</code>. Aucune vague n’a été exécutée dans le cadre de cet audit.</p>
+
+    <div class="wave">
+      <h3><span class="sev sev-c">Vague A</span> Bloquants — intégrité &amp; sécurité</h3>
+      <ul>
+        <li>C1 Soft-404 blog → vraie 404</li>
+        <li>C2 Soft-404 services → vraie 404 (avant merge pages services)</li>
+        <li>C3–C4 RLS éditeur + revoke writes directs snapshot public</li>
+        <li>C7 Fermer insert anon <code>design_brief_submissions</code></li>
+        <li>C5 Rate-limit / captcha contact</li>
+        <li>C6 Pages légales + liens footer/formulaires</li>
+      </ul>
+    </div>
+
+    <div class="wave">
+      <h3><span class="sev sev-h">Vague B</span> A11y &amp; SEO crawl</h3>
+      <ul>
+        <li>H7–H9 Nested main, skip-link, ContactForm ARIA</li>
+        <li>H4–H6 robots dashboard, SEO 404, lien <code>/#projects</code></li>
+        <li>H3 Sitemap dynamique ; H16 <code>llms.txt</code></li>
+        <li>H10 Entrées CV/Blog/haptics accessibles</li>
+        <li>H14 Footer scroll hijack sous reduced-motion</li>
+      </ul>
+    </div>
+
+    <div class="wave">
+      <h3><span class="sev sev-h">Vague C</span> Contenu, perf, design</h3>
+      <ul>
+        <li>H11–H12 Fallback champ / anti-flash CMS</li>
+        <li>H13 Poids vidéo about</li>
+        <li>H15 Unification tokens (suite UI_AUDIT archivé)</li>
+        <li>H1–H2 Prerender / hreflang (décision produit)</li>
+        <li>H17–H18 Harden translate + fail closed dashboard</li>
+      </ul>
+    </div>
+
+    <div class="wave">
+      <h3><span class="sev sev-m">Vague D</span> Dette &amp; polish</h3>
+      <ul>
+        <li>M1–M16 + L1–L10</li>
+        <li>Nettoyage legacy DesignBrief / ServicesUnderConstruction au moment du merge</li>
+        <li>Élargir tests (translate, RLS, publish)</li>
+        <li>Passe copywriting restante via TickTick (hors About déjà validée)</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="ecart-main">
+    <h2>10. Écarts notables <code>dev</code> vs production / <code>main</code></h2>
+    <div class="panel" style="overflow-x:auto">
+      <table class="responsive">
+        <thead>
+          <tr><th>Sujet</th><th>Branche <code>dev</code></th><th>Production / <code>main</code> (signal)</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Pages Services</td>
+            <td><code>Services.tsx</code> / <code>ServiceDetail.tsx</code> actifs</td>
+            <td>Placeholder <code>ServicesUnderConstruction</code> («&nbsp;taking shape&nbsp;»)</td>
+          </tr>
+          <tr>
+            <td>Soft-404 blog</td>
+            <td>Présent dans le code</td>
+            <td>Confirmé en live (article coworking servi)</td>
+          </tr>
+          <tr>
+            <td>Soft-404 services</td>
+            <td>Présent dans le code → prioritaire avant merge</td>
+            <td>Masqué par le placeholder</td>
+          </tr>
+          <tr>
+            <td>Nested <code>&lt;main&gt;</code></td>
+            <td>Présent (Layout + pages)</td>
+            <td>Visible dans l’a11y tree</td>
+          </tr>
+          <tr>
+            <td>CMS / APIs</td>
+            <td>Même backend Supabase partagé (MEMORY)</td>
+            <td>Même surface RLS / contact — impact immédiat</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="signal prod" style="margin-top:16px">
+      <strong>Implication workflow.</strong> Les correctifs C1–C2, H7 et la vague A sécurité doivent être faits sur <code>dev</code> puis validés avant merge. Corriger seulement sur <code>main</code> créerait un écart et un risque de régression au prochain merge services.
+    </div>
+  </section>
+
+  <section id="annexes">
+    <h2>11. Annexes</h2>
+    <div class="grid">
+      <article class="card">
+        <h3>Sources consultées</h3>
+        <ul>
+          <li><code>docs/GUIDELINE.md</code>, <code>docs/SECURITY.md</code>, <code>docs/project/MEMORY.md</code></li>
+          <li><code>docs/archive/UI_AUDIT.md</code> (vague UI historique)</li>
+          <li>Code <code>src/app</code>, <code>src/admin</code>, <code>src/cms</code>, <code>api/</code>, <code>supabase/</code>, <code>public/</code></li>
+          <li>Navigateur sur <code>www.carolebj.com</code> (complément main)</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>Ce que ce rapport n’est pas</h3>
+        <ul>
+          <li>Pas un backlog TickTick (à y reporter après validation)</li>
+          <li>Pas un audit juridique formel (avocat / DPO)</li>
+          <li>Pas un Lighthouse score chiffré exhaustif</li>
+          <li>Pas une revue pixel-perfect Figma page par page</li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="panel" style="margin-top:18px">
+      <h3>Index des findings</h3>
+      <p style="margin:0;color:var(--muted);font-size:.95rem">
+        <strong>Critique :</strong> C1–C7 ·
+        <strong>Haute :</strong> H1–H18 ·
+        <strong>Moyenne :</strong> M1–M16 ·
+        <strong>Basse :</strong> L1–L10 ·
+        Total <strong>51</strong>
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <p><strong>Périmètre :</strong> branche <code>dev</code> · commit <code>79c7ac1</code> · 27 juillet 2026.</p>
+    <p>Rapport de diagnostic uniquement — aucune corrective appliquée. Style aligné sur les audits projet (<code>ABOUT_COPY_AUDIT.html</code>). Pour l’exécution, reporter les items validés dans TickTick <em>Carole - Personal site</em> (dossier Work) et implémenter sur <code>dev</code>.</p>
+  </footer>
+</main>
+</body>
+</html>
