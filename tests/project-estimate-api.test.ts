@@ -9,13 +9,41 @@ import handler, {
   validateProjectEstimatePayload,
 } from "../api/project-estimate.js";
 
+const FIXTURE_NOW = "2026-07-15T12:00:00Z";
+
 const originalFetch = globalThis.fetch;
+const originalDate = globalThis.Date;
 const originalSupabaseUrl = process.env.SUPABASE_URL;
 const originalServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const originalHashPepper = process.env.ESTIMATOR_HASH_PEPPER;
 
+function withFixedClock(isoTimestamp, fn) {
+  const fixedMs = Date.parse(isoTimestamp);
+  class MockDate extends originalDate {
+    constructor(...args) {
+      if (args.length === 0) {
+        super(fixedMs);
+      } else if (args.length === 1) {
+        super(args[0]);
+      } else {
+        super(...args);
+      }
+    }
+    static now() {
+      return fixedMs;
+    }
+  }
+  MockDate.parse = originalDate.parse;
+  MockDate.UTC = originalDate.UTC;
+  globalThis.Date = MockDate;
+  return Promise.resolve(fn()).finally(() => {
+    globalThis.Date = originalDate;
+  });
+}
+
 afterEach(() => {
   globalThis.fetch = originalFetch;
+  globalThis.Date = originalDate;
   if (originalSupabaseUrl === undefined) delete process.env.SUPABASE_URL;
   else process.env.SUPABASE_URL = originalSupabaseUrl;
   if (originalServiceRoleKey === undefined) delete process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -356,7 +384,7 @@ test("pricing context rejects USD snapshots older than the validated seven-day w
     supabaseUrl: "https://project.supabase.co",
     serviceRoleKey: "service-role-test-key",
     fetchImpl,
-    now: new Date("2026-07-15T12:00:00Z"),
+    now: new Date(FIXTURE_NOW),
   });
   assert.equal(context, null);
 });
@@ -393,7 +421,7 @@ test("pricing context rejects a catalog rule targeting brief-only shared-profile
     supabaseUrl: "https://project.supabase.co",
     serviceRoleKey: "service-role-test-key",
     fetchImpl,
-    now: new Date("2026-07-15T12:00:00Z"),
+    now: new Date(FIXTURE_NOW),
   });
   assert.equal(context, null);
 });
@@ -455,27 +483,29 @@ test("endpoint persists a server-derived manual review without inventing amounts
     return jsonResponse({ error: "unexpected call" }, 500);
   };
 
-  const response = responseRecorder();
-  await handler({
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "idempotency-key": "manual-review-action-0001",
-      "x-forwarded-for": "192.0.2.10",
-    },
-    body: {
-      serviceIds: ["editorial-strategy"],
-      currency: "XOF",
-      answers: { "editorial.scope": "custom" },
-      profile,
-    },
-  }, response);
+  await withFixedClock(FIXTURE_NOW, async () => {
+    const response = responseRecorder();
+    await handler({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "idempotency-key": "manual-review-action-0001",
+        "x-forwarded-for": "192.0.2.10",
+      },
+      body: {
+        serviceIds: ["editorial-strategy"],
+        currency: "XOF",
+        answers: { "editorial.scope": "custom" },
+        profile,
+      },
+    }, response);
 
-  assert.equal(response.statusCode, 201);
-  assert.equal(response.body.estimate.status, "manual-review");
-  assert.equal(response.body.estimate.totalXof, null);
-  assert.equal(response.body.estimateId, "66666666-6666-4666-8666-666666666666");
-  assert.equal(paths.includes("/rest/v1/rpc/record_project_estimate"), true);
+    assert.equal(response.statusCode, 201);
+    assert.equal(response.body.estimate.status, "manual-review");
+    assert.equal(response.body.estimate.totalXof, null);
+    assert.equal(response.body.estimateId, "66666666-6666-4666-8666-666666666666");
+    assert.equal(paths.includes("/rest/v1/rpc/record_project_estimate"), true);
+  });
 });
 
 test("endpoint loads an active model, calculates server-side and persists through the protected RPC", async () => {
@@ -536,54 +566,56 @@ test("endpoint loads an active model, calculates server-side and persists throug
     return jsonResponse({ error: "unexpected" }, 500);
   };
 
-  const response = responseRecorder();
-  await handler({
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "idempotency-key": "estimate-action-0000001",
-      "x-forwarded-for": "192.0.2.11",
-    },
-    body: { serviceIds: ["editorial-strategy"], currency: "EUR", answers: {}, profile },
-  }, response);
+  await withFixedClock(FIXTURE_NOW, async () => {
+    const response = responseRecorder();
+    await handler({
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "idempotency-key": "estimate-action-0000001",
+        "x-forwarded-for": "192.0.2.11",
+      },
+      body: { serviceIds: ["editorial-strategy"], currency: "EUR", answers: {}, profile },
+    }, response);
 
-  assert.equal(response.statusCode, 201);
-  assert.equal(response.body.estimateId, "44444444-4444-4444-8444-444444444444");
-  assert.equal(response.body.expiresAt, "2026-07-30T12:00:00.000Z");
-  assert.equal(response.body.estimate.status, "estimated");
-  assert.deepEqual(response.body.estimate.totalXof, { lower: 100_000, upper: 150_000 });
-  assert.deepEqual(response.body.estimate.services[0].calculationScope, {
-    baseScope: {
-      source: "catalog-base-range",
-      pricingStatus: "configured",
-      entries: [],
-    },
-    inclusions: [],
-    volumes: [],
-    options: [],
-    exclusions: [],
+    assert.equal(response.statusCode, 201);
+    assert.equal(response.body.estimateId, "44444444-4444-4444-8444-444444444444");
+    assert.equal(response.body.expiresAt, "2026-07-30T12:00:00.000Z");
+    assert.equal(response.body.estimate.status, "estimated");
+    assert.deepEqual(response.body.estimate.totalXof, { lower: 100_000, upper: 150_000 });
+    assert.deepEqual(response.body.estimate.services[0].calculationScope, {
+      baseScope: {
+        source: "catalog-base-range",
+        pricingStatus: "configured",
+        entries: [],
+      },
+      inclusions: [],
+      volumes: [],
+      options: [],
+      exclusions: [],
+    });
+    assert.match(response.body.estimateToken, /^[A-Za-z0-9_-]{40,}$/);
+
+    const rpc = calls.find((call) => new URL(call.url).pathname === "/rest/v1/rpc/record_project_estimate");
+    const rateLimit = calls.find((call) => new URL(call.url).pathname === "/rest/v1/rpc/consume_estimator_rate_limit");
+    const persisted = JSON.parse(rpc.options.body);
+    const rateLimitPayload = JSON.parse(rateLimit.options.body);
+    assert.match(rateLimitPayload.p_scope_hash, /^[a-f0-9]{64}$/);
+    assert.equal(JSON.stringify(rateLimitPayload).includes("192.0.2.11"), false);
+    assert.match(persisted.p_session_token_hash, /^[a-f0-9]{64}$/);
+    assert.match(persisted.p_idempotency_key_hash, /^[a-f0-9]{64}$/);
+    assert.equal(persisted.p_pricing_model_version, 3);
+    assert.equal(persisted.p_result_status, "estimated");
+    assert.equal(persisted.p_exchange_rate_snapshot_id, "22222222-2222-4222-8222-222222222222");
+    assert.equal(persisted.p_rate_source_url, "https://www.bceao.int/eur");
+    assert.deepEqual(persisted.p_answers.profile, profile);
+    assert.equal("email" in persisted.p_answers.profile, false);
+    assert.equal(persisted.p_expires_at, undefined);
+    assert.equal(calls.some((call) => new URL(call.url).pathname === "/rest/v1/project_estimates"), false);
+    for (const call of calls) {
+      assert.equal(call.options.headers.Authorization, "Bearer service-role-test-key");
+    }
   });
-  assert.match(response.body.estimateToken, /^[A-Za-z0-9_-]{40,}$/);
-
-  const rpc = calls.find((call) => new URL(call.url).pathname === "/rest/v1/rpc/record_project_estimate");
-  const rateLimit = calls.find((call) => new URL(call.url).pathname === "/rest/v1/rpc/consume_estimator_rate_limit");
-  const persisted = JSON.parse(rpc.options.body);
-  const rateLimitPayload = JSON.parse(rateLimit.options.body);
-  assert.match(rateLimitPayload.p_scope_hash, /^[a-f0-9]{64}$/);
-  assert.equal(JSON.stringify(rateLimitPayload).includes("192.0.2.11"), false);
-  assert.match(persisted.p_session_token_hash, /^[a-f0-9]{64}$/);
-  assert.match(persisted.p_idempotency_key_hash, /^[a-f0-9]{64}$/);
-  assert.equal(persisted.p_pricing_model_version, 3);
-  assert.equal(persisted.p_result_status, "estimated");
-  assert.equal(persisted.p_exchange_rate_snapshot_id, "22222222-2222-4222-8222-222222222222");
-  assert.equal(persisted.p_rate_source_url, "https://www.bceao.int/eur");
-  assert.deepEqual(persisted.p_answers.profile, profile);
-  assert.equal("email" in persisted.p_answers.profile, false);
-  assert.equal(persisted.p_expires_at, undefined);
-  assert.equal(calls.some((call) => new URL(call.url).pathname === "/rest/v1/project_estimates"), false);
-  for (const call of calls) {
-    assert.equal(call.options.headers.Authorization, "Bearer service-role-test-key");
-  }
 });
 
 test("idempotent retries derive the same protected session while distinct actions remain separate", () => {
