@@ -23,7 +23,7 @@ const defaultBorder = "border-border-subtle dark:border-white/10";
 const inputBase =
   "t-input public-input border bg-surface-page text-text-primary dark:bg-white/5 dark:text-text-primary";
 
-const FIELD_NAMES = ["name", "email", "subject", "message"] as const;
+const FIELD_NAMES = ["subject", "message", "name", "email"] as const;
 type FieldName = (typeof FIELD_NAMES)[number];
 
 function fieldErrorId(formId: string, name: FieldName) {
@@ -44,7 +44,7 @@ export function ContactForm({
   const inputRadius = isPage ? "rounded-xl" : "rounded-md";
   const labelLayout = isPage ? "grid gap-2" : "block";
   const inputSpacing = isPage ? "" : "mt-2";
-  const fieldRow = isPage ? "grid gap-5 sm:grid-cols-2" : "grid gap-4 sm:grid-cols-2";
+  const fieldRow = isPage ? "grid gap-5 sm:grid-cols-2" : "mt-4 grid gap-4 sm:grid-cols-2";
   const invalidFields = Object.keys(fieldErrors) as FieldName[];
   const hasFieldErrors = invalidFields.length > 0;
   const formAlertMessage =
@@ -159,6 +159,44 @@ export function ContactForm({
         </h2>
       ) : null}
 
+      <label
+        htmlFor={`${formId}-subject`}
+        className={`t-input-wrap ${isPage ? "grid gap-2" : "block"} ${labelClass}`}
+      >
+        {t("contactSection.subject")}
+        <input
+          id={`${formId}-subject`}
+          name="subject"
+          autoComplete="off"
+          onInput={() => clearError("subject")}
+          className={fieldClass("subject", isPage ? "h-12 px-4" : "h-12 w-full px-4 text-base font-normal")}
+        />
+      </label>
+
+      <label
+        htmlFor={`${formId}-message`}
+        className={`t-input-wrap ${isPage ? "grid gap-2" : "mt-4 block"} ${labelClass} ${fieldErrors.message ? "is-error" : ""}`}
+      >
+        {t("contactSection.message")}
+        <textarea
+          id={`${formId}-message`}
+          name="message"
+          autoComplete="off"
+          required
+          rows={isPage ? undefined : 5}
+          aria-invalid={fieldErrors.message ? true : undefined}
+          aria-describedby={fieldErrors.message ? fieldErrorId(formId, "message") : undefined}
+          onInput={() => clearError("message")}
+          className={fieldClass(
+            "message",
+            isPage
+              ? "min-h-44 resize-y px-4 py-3"
+              : "w-full resize-none px-4 py-3 text-base font-normal leading-7"
+          )}
+        />
+        {renderFieldError("message")}
+      </label>
+
       <div className={fieldRow}>
         <label
           htmlFor={`${formId}-name`}
@@ -196,44 +234,6 @@ export function ContactForm({
           {renderFieldError("email")}
         </label>
       </div>
-
-      <label
-        htmlFor={`${formId}-subject`}
-        className={`t-input-wrap ${isPage ? "grid gap-2" : "mt-4 block"} ${labelClass}`}
-      >
-        {t("contactSection.subject")}
-        <input
-          id={`${formId}-subject`}
-          name="subject"
-          autoComplete="off"
-          onInput={() => clearError("subject")}
-          className={fieldClass("subject", isPage ? "h-12 px-4" : "h-12 w-full px-4 text-base font-normal")}
-        />
-      </label>
-
-      <label
-        htmlFor={`${formId}-message`}
-        className={`t-input-wrap ${isPage ? "grid gap-2" : "mt-4 block"} ${labelClass} ${fieldErrors.message ? "is-error" : ""}`}
-      >
-        {t("contactSection.message")}
-        <textarea
-          id={`${formId}-message`}
-          name="message"
-          autoComplete="off"
-          required
-          rows={isPage ? undefined : 5}
-          aria-invalid={fieldErrors.message ? true : undefined}
-          aria-describedby={fieldErrors.message ? fieldErrorId(formId, "message") : undefined}
-          onInput={() => clearError("message")}
-          className={fieldClass(
-            "message",
-            isPage
-              ? "min-h-44 resize-y px-4 py-3"
-              : "w-full resize-none px-4 py-3 text-base font-normal leading-7"
-          )}
-        />
-        {renderFieldError("message")}
-      </label>
 
       {submitState === "success" ? (
         <p role="status" aria-live="polite" className="text-sm font-medium text-text-accent">
