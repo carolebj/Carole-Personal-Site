@@ -82,7 +82,7 @@
     "react-popper": "2.3.0",
     "react-resizable-panels": "2.1.7",
     "react-responsive-masonry": "2.7.1",
-    "react-router": "^7.18.1",
+    "react-router": "^7.18.3",
     "react-slick": "0.31.0",
     "recharts": "2.15.2",
     "resend": "^6.17.2",
@@ -99,7 +99,7 @@
     "playwright": "^1.60.0",
     "tailwindcss": "4.1.12",
     "typescript": "^6.0.2",
-    "vite": "6.3.5"
+    "vite": "6.4.3"
   },
   "peerDependencies": {
     "react": "18.3.1",
@@ -118,7 +118,7 @@
   },
   "pnpm": {
     "overrides": {
-      "vite": "6.3.5"
+      "vite": "6.4.3"
     }
   }
 }
