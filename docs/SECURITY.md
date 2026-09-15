@@ -130,6 +130,13 @@ dépense si l'endpoint est abusé. À configurer impérativement :
 - Les médias remplacés restent conservés tant qu'une copie de travail, un
   snapshot public ou une révision les référence. `npm run cms:media:cleanup`
   simule le nettoyage ; ajouter `-- --apply` uniquement après revue de la liste.
+- Les pièces privées de `brief-assets` suivent un inventaire séparé :
+  `npm run brief-assets:cleanup` est strictement en lecture seule. Il protège les
+  chemins du Design Brief (`design_brief_submissions.asset_paths`) et du Client
+  Brief moderne (`brief_assets`, charges de `brief_submissions`, challenges en
+  attente et journal de suppression), ainsi que les objets de moins de 30 jours,
+  les âges inconnus et les chemins inattendus. Le mode `--apply` est refusé : le
+  bucket partagé exige une stratégie de suppression coordonnée séparée.
 
 ## 7. Rotation des secrets
 

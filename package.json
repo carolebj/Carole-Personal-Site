@@ -13,6 +13,7 @@
     "cms:export": "node --env-file=.env.local scripts/export-cms.mjs",
     "cms:reset": "node --env-file=.env.local scripts/reset-cms.mjs",
     "cms:media:cleanup": "node --env-file=.env.local scripts/cleanup-cms-media.mjs",
+    "brief-assets:cleanup": "node --env-file=.env.local scripts/cleanup-design-brief-assets.mjs",
     "cms:trash:cleanup": "node --env-file=.env.local scripts/cleanup-cms-trash.mjs",
     "cms:verify": "node --env-file=.env.local scripts/verify-dashboard.mjs",
     "playwright:install": "playwright install chromium",

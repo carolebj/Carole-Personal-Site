@@ -49,6 +49,7 @@ npm run cms:backfill -- --apply # complète, versionne et republie sans écraser
 npm run cms:export    # sauvegarde JSON locale avant migration/maintenance
 npm run cms:verify    # checks headless non destructifs sur /dashboard
 npm run cms:media:cleanup # simulation des médias orphelins de plus de 30 jours
+npm run brief-assets:cleanup # inventaire en lecture seule des pièces privées de briefs
 npm run cms:trash:cleanup # simulation des éléments expirés de la corbeille
 npm run cms:reset -- --confirm=RESET_CMS # remise à zéro volontaire et destructive
 ```
