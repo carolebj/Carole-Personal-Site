@@ -10,6 +10,17 @@ import {
 import { motion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
 import { getSupabase, isSupabaseConfigured } from "../../lib/supabase";
+import {
+  DESIGN_BRIEF_FILE_TYPES,
+  DESIGN_BRIEF_MAX_FILE_BYTES,
+  DESIGN_BRIEF_MAX_FILES,
+  DesignBriefApiError,
+  designBriefUploadForRetry,
+  invalidateExpiredDesignBriefUploads,
+  prepareDesignBriefUpload,
+  submitDesignBrief,
+  type DesignBriefUploadedAsset,
+} from "../designBrief/api";
 import { PAGE_MAIN } from "../components/layout/publicPage";
 import { useSeoOverride } from "../seo/SeoOverrideContext";
 
@@ -44,13 +55,16 @@ type LogoStyle = {
 };
 
 type InspirationFile = {
+  id: string;
   file: File;
   previewUrl: string;
+  uploaded?: DesignBriefUploadedAsset;
 };
 
 type StoredDraft = {
   answers?: Answers;
   colors?: Array<string | null>;
+  submissionId?: string;
 };
 
 declare global {
@@ -63,6 +77,30 @@ declare global {
 
 const STORAGE_KEY = "carole-design-brief";
 const EMPTY_COLORS = [null, null, null, null, null] as Array<string | null>;
+const SUBMISSION_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function readStoredDraft(): StoredDraft | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    if (!stored) return null;
+    const parsed = JSON.parse(stored) as unknown;
+    return isStoredDraft(parsed) ? parsed : { answers: parsed as Answers };
+  } catch {
+    return null;
+  }
+}
+
+function designBriefErrorMessage(error: unknown) {
+  if (!(error instanceof DesignBriefApiError)) {
+    return error instanceof Error ? error.message : "La soumission a échoué.";
+  }
+  if (error.code === "rate_limit_exceeded") return "Trop de tentatives ont été effectuées. Patientez avant de réessayer.";
+  if (error.code === "invalid_asset" || error.code === "expired_asset" || error.code === "asset_verification_failed") return "Un fichier ne respecte pas les limites autorisées ou n'a pas pu être vérifié.";
+  if (error.code === "submission_conflict") return "Ce brouillon a déjà été soumis avec un autre contenu. Réinitialisez-le avant un nouvel envoi.";
+  if (error.code === "invalid_answers") return "Certaines réponses dépassent les limites acceptées. Vérifiez les champs les plus longs.";
+  return "Le service de soumission est temporairement indisponible. Vos réponses restent enregistrées dans ce navigateur.";
+}
 
 const logoStyles: LogoStyle[] = [
   {
@@ -370,13 +408,6 @@ function toggleListValue(current: AnswerValue | undefined, option: string, max?:
   return [...values, option];
 }
 
-function splitLinks(value: AnswerValue | undefined) {
-  return getAnswerText(value)
-    .split(/\s+/)
-    .map((item) => item.trim())
-    .filter((item) => /^https?:\/\//i.test(item));
-}
-
 function isStoredDraft(value: unknown): value is StoredDraft {
   return Boolean(value && typeof value === "object" && "answers" in value);
 }
@@ -471,28 +502,19 @@ function QuestionField({
 
 export default function DesignBrief() {
   const [answers, setAnswers] = useState<Answers>(() => {
-    if (typeof window === "undefined") return {};
-    try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
-      if (!stored) return {};
-      const parsed = JSON.parse(stored) as unknown;
-      return isStoredDraft(parsed) ? parsed.answers ?? {} : (parsed as Answers);
-    } catch {
-      return {};
-    }
+    return readStoredDraft()?.answers ?? {};
   });
   const [colors, setColors] = useState<Array<string | null>>(() => {
-    if (typeof window === "undefined") return EMPTY_COLORS;
-    try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
-      if (!stored) return EMPTY_COLORS;
-      const parsed = JSON.parse(stored) as StoredDraft;
-      return Array.isArray(parsed.colors) ? parsed.colors : EMPTY_COLORS;
-    } catch {
-      return EMPTY_COLORS;
-    }
+    const stored = readStoredDraft();
+    return Array.isArray(stored?.colors) ? stored.colors : EMPTY_COLORS;
+  });
+  const [submissionId, setSubmissionId] = useState(() => {
+    const stored = readStoredDraft()?.submissionId;
+    return stored && SUBMISSION_ID_PATTERN.test(stored) ? stored : crypto.randomUUID();
   });
   const [files, setFiles] = useState<InspirationFile[]>([]);
+  const [fileError, setFileError] = useState("");
+  const [website, setWebsite] = useState("");
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [submitError, setSubmitError] = useState("");
 
@@ -516,8 +538,8 @@ export default function DesignBrief() {
   );
 
   useEffect(() => {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers, colors }));
-  }, [answers, colors]);
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers, colors, submissionId }));
+  }, [answers, colors, submissionId]);
 
   useEffect(() => {
     return () => files.forEach((item) => URL.revokeObjectURL(item.previewUrl));
@@ -546,9 +568,21 @@ export default function DesignBrief() {
 
   const addFiles = (fileList: FileList | null) => {
     if (!fileList) return;
+    const allowedTypes = new Set<string>(DESIGN_BRIEF_FILE_TYPES);
+    const candidates = Array.from(fileList);
+    const valid = candidates.filter((file) => allowedTypes.has(file.type) && file.size > 0 && file.size <= DESIGN_BRIEF_MAX_FILE_BYTES);
+    const accepted = valid.slice(0, Math.max(0, DESIGN_BRIEF_MAX_FILES - files.length));
+    if (valid.length !== candidates.length) {
+      setFileError("Chaque fichier doit être un PNG, JPG, WebP, GIF ou PDF de 5 Mo maximum.");
+    } else if (accepted.length !== candidates.length) {
+      setFileError(`Vous pouvez joindre jusqu'à ${DESIGN_BRIEF_MAX_FILES} fichiers.`);
+    } else {
+      setFileError("");
+    }
     setFiles((current) => [
       ...current,
-      ...Array.from(fileList).map((file) => ({
+      ...accepted.map((file) => ({
+        id: crypto.randomUUID(),
         file,
         previewUrl: URL.createObjectURL(file),
       })),
@@ -561,6 +595,9 @@ export default function DesignBrief() {
     setAnswers({});
     setColors(EMPTY_COLORS);
     setFiles([]);
+    setFileError("");
+    setWebsite("");
+    setSubmissionId(crypto.randomUUID());
     window.localStorage.removeItem(STORAGE_KEY);
   };
 
@@ -575,48 +612,47 @@ export default function DesignBrief() {
     setSubmitState("submitting");
     setSubmitError("");
 
-    const submissionId = crypto.randomUUID();
-    const assetPaths: string[] = [];
-
     try {
+      const assets: DesignBriefUploadedAsset[] = [];
       for (const item of files) {
-        const extension = item.file.name.split(".").pop() ?? "file";
-        const path = `${submissionId}/${crypto.randomUUID()}.${extension}`;
-        const { error } = await sb.storage.from("brief-assets").upload(path, item.file, {
+        const uploadedForRetry = designBriefUploadForRetry(item.uploaded);
+        if (uploadedForRetry) {
+          assets.push(uploadedForRetry);
+          continue;
+        }
+        const prepared = await prepareDesignBriefUpload({
+          submissionId,
+          website,
+          file: { name: item.file.name, mimeType: item.file.type, size: item.file.size },
+        });
+        const { error } = await sb.storage.from("brief-assets").uploadToSignedUrl(prepared.path, prepared.token, item.file, {
           cacheControl: "3600",
-          upsert: false,
+          contentType: item.file.type,
         });
         if (error) {
           throw new Error(`Le fichier « ${item.file.name} » n'a pas pu être stocké (${error.message}). Le brief n'a pas été soumis afin de ne pas perdre le contexte.`);
         }
-        assetPaths.push(path);
+        const uploaded = { path: prepared.path, name: item.file.name, mimeType: item.file.type, size: item.file.size, receipt: prepared.receipt, expiresAt: prepared.expiresAt };
+        assets.push(uploaded);
+        setFiles((current) => current.map((candidate) => candidate.id === item.id ? { ...candidate, uploaded } : candidate));
       }
 
-      const answersWithAttachments: Answers = {
-        ...answers,
-        ...(files.length > 0 ? { inspirationFileNames: files.map((item) => item.file.name) } : {}),
-      };
-
-      const { error } = await sb.from("design_brief_submissions").insert({
-        id: submissionId,
-        client_name: getAnswerText(answers.clientName) || null,
-        contact_name: getAnswerText(answers.contactPerson) || null,
-        contact_email: getAnswerText(answers.contactEmail) || null,
-        project_type: getAnswerText(answers.projectType) || getAnswerText(answers.guidanceNeed) || null,
-        answers: answersWithAttachments,
-        logo_styles: selectedLogoStyles,
-        color_palette: selectedColors,
-        inspiration_links: splitLinks(answers.inspirationLinks),
-        asset_paths: assetPaths,
+      await submitDesignBrief({
+        submissionId,
+        answers,
+        colors: selectedColors,
+        assets,
+        website,
       });
-
-      if (error) throw error;
 
       setSubmitState("success");
       window.localStorage.removeItem(STORAGE_KEY);
     } catch (error) {
+      if (error instanceof DesignBriefApiError && error.code === "expired_asset") {
+        setFiles((current) => invalidateExpiredDesignBriefUploads(current));
+      }
       setSubmitState("error");
-      setSubmitError(error instanceof Error ? error.message : "La soumission a échoué.");
+      setSubmitError(designBriefErrorMessage(error));
     }
   };
 
@@ -628,6 +664,10 @@ export default function DesignBrief() {
         transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
         className="mx-auto max-w-[1180px]"
       >
+        <label className="absolute -left-[10000px] top-auto size-px overflow-hidden" aria-hidden="true">
+          Site web
+          <input name="website" value={website} onChange={(event) => setWebsite(event.target.value)} autoComplete="off" tabIndex={-1} />
+        </label>
         <div className="border-b border-border-subtle pb-8">
           <p className="text-[12px] font-semibold uppercase tracking-[3px] text-text-accent">Brief graphisme</p>
           <h1 className="mt-5 max-w-[850px] font-serif text-[42px] leading-[46px] text-text-primary sm:text-[62px] sm:leading-[66px]">
@@ -798,7 +838,7 @@ export default function DesignBrief() {
                         <DocumentArrowUpIcon className="size-6 text-text-accent dark:text-[#f0adc4]" />
                         <span className="mt-2 text-[13px] font-semibold text-text-primary dark:text-[#f8f1ec]">Ajouter des fichiers d'inspiration</span>
                         <span className="mt-1 text-[12px] leading-5 text-text-muted dark:text-[#d8c7bf]">PNG, JPG, WebP, GIF ou PDF, 5 Mo maximum par fichier.</span>
-                        <input type="file" multiple accept="image/png,image/jpeg,image/webp,image/gif,application/pdf" className="sr-only" onChange={(event) => addFiles(event.target.files)} />
+                        <input type="file" multiple accept="image/png,image/jpeg,image/webp,image/gif,application/pdf" className="sr-only" onChange={(event) => { addFiles(event.target.files); event.currentTarget.value = ""; }} />
                       </label>
                       {files.length > 0 ? (
                         <div className="grid gap-2 sm:grid-cols-2">
@@ -814,6 +854,7 @@ export default function DesignBrief() {
                           ))}
                         </div>
                       ) : null}
+                      {fileError ? <p role="alert" className="mt-3 text-[12px] text-destructive">{fileError}</p> : null}
                     </div>
                   </div>
                 ) : null}
