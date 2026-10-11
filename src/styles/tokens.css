@@ -143,6 +143,12 @@
   --text-muted: var(--color-ink-600);
   --text-accent: var(--color-plum-500);
   --text-on-strong: var(--color-paper-50);
+  --text-on-accent: var(--color-white);
+  --selection-background: var(--color-rose-100);
+  --selection-foreground: #4a1c30;
+  --nav-text-secondary: var(--color-ink-700);
+  --nav-border-control: var(--color-paper-300);
+  --nav-border-divider: rgb(229 226 225 / 0.7);
   --border-subtle: rgb(229 226 225 / 0.8);
   --border-accent: rgb(228 191 178 / 0.55);
   --border-accent-muted: rgb(228 191 178 / 0.35);
@@ -204,6 +210,12 @@
   --text-muted: #d6c4b8;
   --text-accent: var(--color-plum-200);
   --text-on-strong: #1c1415;
+  --text-on-accent: #1c1415;
+  --selection-background: var(--color-plum-500);
+  --selection-foreground: var(--color-white);
+  --nav-text-secondary: #dbc9c0;
+  --nav-border-control: rgb(255 255 255 / 0.15);
+  --nav-border-divider: rgb(255 255 255 / 0.1);
   --border-subtle: rgb(255 255 255 / 0.1);
   --border-accent: rgb(240 173 196 / 0.35);
   --border-accent-muted: rgb(240 173 196 / 0.2);
@@ -275,6 +287,12 @@
   --color-text-muted: var(--text-muted);
   --color-text-accent: var(--text-accent);
   --color-text-on-strong: var(--text-on-strong);
+  --color-text-on-accent: var(--text-on-accent);
+  --color-selection-background: var(--selection-background);
+  --color-selection-foreground: var(--selection-foreground);
+  --color-nav-text-secondary: var(--nav-text-secondary);
+  --color-nav-border-control: var(--nav-border-control);
+  --color-nav-border-divider: var(--nav-border-divider);
   --color-border-subtle: var(--border-subtle);
   --color-border-accent: var(--border-accent);
   --color-border-accent-muted: var(--border-accent-muted);

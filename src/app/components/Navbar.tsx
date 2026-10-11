@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import caroleLogoSymbol from "../../assets/logos/carole-CT-logo.svg";
 import blogAbstractEditorial from "../../assets/blog/blog-abstract-editorial.svg";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { plumCtaClasses } from "./ui/plumCta";
 import { useHaptics } from "../interactions/HapticContext";
 import { useTheme, type ThemePreference } from "../theme/ThemeContext";
 import { toBlogPostViewModel, toServiceViewModel } from "../../cms/adapters";
@@ -145,7 +146,7 @@ function ThemeSwitcher({
   if (compact) {
     return (
       <div
-        className="inline-flex items-center justify-center rounded-full border border-[#e5e2e1] bg-white/72 p-1 dark:border-white/15 dark:bg-white/5"
+        className="inline-flex items-center justify-center rounded-full border border-nav-border-control bg-white/72 p-1 dark:bg-white/5"
         role="radiogroup"
         aria-label={t("nav.theme")}
       >
@@ -163,8 +164,8 @@ function ThemeSwitcher({
                   onClick={() => chooseTheme(value)}
                   className={`relative flex size-12 items-center justify-center rounded-full transition ${
                     isActive
-                      ? "text-[#854d63] dark:text-[#f0adc4]"
-                      : "text-[#6d625d] hover:text-[#854d63] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
+                      ? "text-text-accent"
+                      : "text-[#6d625d] hover:text-text-accent dark:text-[#cdb9ae] dark:hover:text-text-accent"
                   }`}
                 >
                   <Icon className="relative z-10 size-4" />
@@ -180,9 +181,9 @@ function ThemeSwitcher({
               <TooltipContent
                 side="bottom"
                 sideOffset={8}
-                className="max-w-[210px] rounded-lg border border-[#e4bfb2]/70 bg-white px-3 py-2 text-left text-[#5b4137] shadow-[0_16px_44px_rgba(28,27,27,0.14)] dark:border-white/12 dark:bg-[#171312] dark:text-[#dbc9c0]"
+                className="max-w-[210px] rounded-lg border border-[#e4bfb2]/70 bg-surface-panel px-3 py-2 text-left text-nav-text-secondary shadow-[0_16px_44px_rgba(28,27,27,0.14)] dark:border-white/12"
               >
-                <p className="text-[12px] font-semibold text-[#1c1b1b] dark:text-[#f8f1ec]">
+                <p className="text-[12px] font-semibold text-text-primary">
                   {t(`nav.${labelKey}`)}
                 </p>
                 <p className="mt-1 text-[11px] leading-4">{t(`nav.${descriptionKey}`)}</p>
@@ -199,7 +200,7 @@ function ThemeSwitcher({
       initial={false}
       animate={{ width: isOpen ? 156 : 52 }}
       transition={{ type: "spring", stiffness: 430, damping: 32 }}
-      className="relative flex h-[52px] items-center justify-end overflow-hidden rounded-full border border-[#e5e2e1] bg-white/74 text-[#5b4137] shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur-xl dark:border-white/15 dark:bg-white/5 dark:text-[#f8f1ec]"
+      className="relative flex h-[52px] items-center justify-end overflow-hidden rounded-full border border-nav-border-control bg-white/74 text-[#5b4137] shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur-xl dark:bg-white/5 dark:text-[#f8f1ec]"
       role="radiogroup"
       aria-label={t("nav.theme")}
       onMouseLeave={() => setIsOpen(false)}
@@ -228,8 +229,8 @@ function ThemeSwitcher({
                       onClick={() => chooseTheme(value)}
                       className={`relative flex size-12 items-center justify-center rounded-full transition ${
                         isActive
-                          ? "text-[#854d63] dark:text-[#f0adc4]"
-                          : "text-[#8d7b72] hover:text-[#854d63] dark:text-[#cdb9ae] dark:hover:text-[#f0adc4]"
+                          ? "text-text-accent"
+                          : "text-[#8d7b72] hover:text-text-accent dark:text-[#cdb9ae] dark:hover:text-text-accent"
                       }`}
                     >
                       <Icon className="relative z-10 size-[18px]" />
@@ -245,9 +246,9 @@ function ThemeSwitcher({
                   <TooltipContent
                     side="bottom"
                     sideOffset={8}
-                    className="max-w-[220px] rounded-lg border border-[#e4bfb2]/70 bg-white px-3 py-2 text-left text-[#5b4137] shadow-[0_16px_44px_rgba(28,27,27,0.14)] dark:border-white/12 dark:bg-[#171312] dark:text-[#dbc9c0]"
+                    className="max-w-[220px] rounded-lg border border-[#e4bfb2]/70 bg-surface-panel px-3 py-2 text-left text-nav-text-secondary shadow-[0_16px_44px_rgba(28,27,27,0.14)] dark:border-white/12"
                   >
-                    <p className="text-[12px] font-semibold text-[#1c1b1b] dark:text-[#f8f1ec]">
+                    <p className="text-[12px] font-semibold text-text-primary">
                       {t(`nav.${labelKey}`)}
                     </p>
                     <p className="mt-1 text-[11px] leading-4">{t(`nav.${descriptionKey}`)}</p>
@@ -269,7 +270,7 @@ function ThemeSwitcher({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.86 }}
             transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-            className="relative z-10 flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full transition hover:bg-[#ffd9e4]/44 hover:text-[#854d63] active:scale-[0.96] dark:hover:bg-[#854d63]/30 dark:hover:text-[#f0adc4]"
+            className="relative z-10 flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full transition hover:bg-[#ffd9e4]/44 hover:text-text-accent active:scale-[0.96] dark:hover:bg-[#854d63]/30"
             aria-label={t("nav.openTheme")}
             aria-expanded={isOpen}
           >
@@ -561,7 +562,7 @@ export default function Navbar() {
       initial={false}
       animate={isCompact && !isForcedOpen ? { y: -112, opacity: 0 } : { y: 0, opacity: 1 }}
       transition={{ duration: 0.24, ease: "easeOut" }}
-      className="fixed inset-x-0 top-0 z-50 border-b border-[#e5e2e1]/70 bg-white/82 backdrop-blur-xl dark:border-white/10 dark:bg-[#171312]/82"
+      className="fixed inset-x-0 top-0 z-50 border-b border-nav-border-divider bg-surface-panel/82 backdrop-blur-xl"
     >
       <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-5 sm:px-8 md:h-[88px] lg:px-8">
         <Link
@@ -569,7 +570,7 @@ export default function Navbar() {
           to="/"
           onClick={() => window.scrollTo({ top: 0, behavior: shouldReduceMotion ? "auto" : "smooth" })}
           onContextMenu={handleLogoContextMenu}
-          className="flex min-h-12 min-w-12 items-center gap-2 text-[#1c1b1b] dark:text-[#f8f1ec]"
+          className="flex min-h-12 min-w-12 items-center gap-2 text-text-primary"
           aria-label="Carole Tonoukouen"
         >
           <img
@@ -589,12 +590,12 @@ export default function Navbar() {
           <div
             ref={logoMenuRef}
             data-origin="top-left"
-            className={`t-dropdown fixed left-[max(1.25rem,calc((100vw-1200px)/2+1.25rem))] top-[76px] z-[70] w-72 overflow-hidden rounded-lg border border-[#e5e2e1]/80 bg-white p-2 shadow-[0_24px_70px_rgba(28,27,27,0.16)] dark:border-white/10 dark:bg-[#171312] ${logoDropdownPhase === "open" ? "is-open" : "is-closing"}`}
+            className={`t-dropdown fixed left-[max(1.25rem,calc((100vw-1200px)/2+1.25rem))] top-[76px] z-[70] w-72 overflow-hidden rounded-lg border border-[#e5e2e1]/80 bg-surface-panel p-2 shadow-[0_24px_70px_rgba(28,27,27,0.16)] dark:border-white/10 ${logoDropdownPhase === "open" ? "is-open" : "is-closing"}`}
           >
             <Link
               to="/cv"
               onClick={() => setIsLogoMenuOpen(false)}
-              className="flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium text-[#5b4137] transition hover:bg-[#ffd9e4]/35 hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
+              className="flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium text-nav-text-secondary transition hover:bg-[#ffd9e4]/35 hover:text-text-accent dark:hover:bg-white/8"
             >
               <DocumentTextIcon className="size-5" />
               <span className="flex-1">{t("nav.cv")}</span>
@@ -603,7 +604,7 @@ export default function Navbar() {
             <Link
               to="/services/brief-design"
               onClick={() => setIsLogoMenuOpen(false)}
-              className="mt-1 flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium text-[#5b4137] transition hover:bg-[#ffd9e4]/35 hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
+              className="mt-1 flex items-center gap-3 rounded-md px-3 py-3 text-sm font-medium text-nav-text-secondary transition hover:bg-[#ffd9e4]/35 hover:text-text-accent dark:hover:bg-white/8"
             >
               <PencilSquareIcon className="size-5" />
               <span className="flex-1">{t("nav.designBrief")}</span>
@@ -612,7 +613,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={toggleHaptics}
-              className="mt-1 flex w-full items-center gap-3 rounded-md px-3 py-3 text-left text-sm font-medium text-[#5b4137] transition hover:bg-[#ffd9e4]/35 hover:text-[#854d63] dark:text-[#dbc9c0] dark:hover:bg-white/8 dark:hover:text-[#f0adc4]"
+              className="mt-1 flex w-full items-center gap-3 rounded-md px-3 py-3 text-left text-sm font-medium text-nav-text-secondary transition hover:bg-[#ffd9e4]/35 hover:text-text-accent dark:hover:bg-white/8"
             >
               <span
                 className="t-icon-swap size-5"
@@ -641,8 +642,8 @@ export default function Navbar() {
             const isHighlighted = hoveredNavId === link.id || isActive || (link.hasMenu && isServicesOpen) || (link.hasCarnetMenu && isCarnetOpen);
             const linkClass = `portfolio-nav-link group relative z-10 inline-flex h-12 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-[13px] font-semibold capitalize leading-4 tracking-[1.4px] transition-colors duration-300 xl:px-4 xl:tracking-[1.8px] ${
               isHighlighted
-                ? "text-[#854d63] dark:text-[#f0adc4]"
-                : "text-[#5b4137] dark:text-[#dbc9c0]"
+                ? "text-text-accent"
+                : "text-nav-text-secondary"
             }`;
 
             const hoverBackground = isHighlighted ? (
@@ -983,7 +984,7 @@ export default function Navbar() {
           <ThemeSwitcher />
           <Link
             to="/contact"
-            className="inline-flex h-[52px] items-center whitespace-nowrap rounded-full bg-[#854d63] px-5 text-[13px] font-semibold uppercase leading-4 tracking-[1.6px] text-white shadow-sm transition hover:bg-[#6a364b] dark:bg-[#d79caf] dark:text-[#1c1415] dark:hover:bg-[#f0adc4] xl:px-6 xl:text-[14px] xl:tracking-[2px]"
+            className={`${plumCtaClasses()} inline-flex h-[52px] items-center whitespace-nowrap rounded-full px-5 text-[13px] font-semibold uppercase leading-4 tracking-[1.6px] shadow-sm transition xl:px-6 xl:text-[14px] xl:tracking-[2px]`}
           >
             {t("nav.contact")}
           </Link>
@@ -992,7 +993,7 @@ export default function Navbar() {
         <button
           type="button"
           aria-label={t("nav.menu")}
-          className="flex size-12 items-center justify-center rounded-full border border-[#e5e2e1] text-[#1c1b1b] dark:border-white/15 dark:text-[#f8f1ec] lg:hidden"
+          className="flex size-12 items-center justify-center rounded-full border border-nav-border-control text-text-primary lg:hidden"
           onClick={() => {
             setIsMobileMenuOpen((current) => {
               if (current) {
@@ -1021,7 +1022,7 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.18 }}
-            className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-[#e5e2e1]/70 bg-white px-5 py-6 shadow-xl dark:border-white/10 dark:bg-[#171312] sm:px-6 lg:hidden"
+            className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-nav-border-divider bg-surface-panel px-5 py-6 shadow-xl sm:px-6 lg:hidden"
           >
             <div className="flex flex-col gap-3">
               {navLinks.map((link) => {
@@ -1029,11 +1030,11 @@ export default function Navbar() {
                   const isAccordionOpen = openMobileAccordion === "services";
 
                   return (
-                    <div key={link.id} className="overflow-hidden rounded-lg bg-[#fcf9f8] dark:bg-white/5">
+                    <div key={link.id} className="overflow-hidden rounded-lg bg-surface-panel-muted">
                       <button
                         type="button"
                         onClick={() => setOpenMobileAccordion((current) => (current === "services" ? null : "services"))}
-                        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-[12px] font-semibold uppercase tracking-[1.6px] text-[#854d63] transition hover:text-[#6a364b] dark:text-[#f0adc4] dark:hover:text-[#f8f1ec]"
+                        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-[12px] font-semibold uppercase tracking-[1.6px] text-text-accent transition hover:text-[#6a364b] dark:hover:text-[#f8f1ec]"
                         aria-expanded={isAccordionOpen}
                         aria-controls="mobile-services-panel"
                       >
@@ -1058,7 +1059,7 @@ export default function Navbar() {
                                   setIsMobileMenuOpen(false);
                                   setOpenMobileAccordion(null);
                                 }}
-                                  className="rounded-md py-2 text-[14px] font-semibold leading-5 text-[#854d63] dark:text-[#f0adc4]"
+                                  className="rounded-md py-2 text-[14px] font-semibold leading-5 text-text-accent"
                               >
                                 {t("nav.allServices")}
                               </Link>
@@ -1088,7 +1089,7 @@ export default function Navbar() {
                                           setIsMobileMenuOpen(false);
                                           setOpenMobileAccordion(null);
                                         }}
-                                        className="rounded-md py-2 text-[14px] font-medium leading-5 text-[#5b4137] dark:text-[#dbc9c0]"
+                                        className="rounded-md py-2 text-[14px] font-medium leading-5 text-nav-text-secondary"
                                       >
                                         {service.title} {service.accent}
                                       </Link>
@@ -1103,7 +1104,7 @@ export default function Navbar() {
                                   setIsMobileMenuOpen(false);
                                   setOpenMobileAccordion(null);
                                 }}
-                                className="mt-2 rounded-md border border-[#854d63]/15 bg-white/70 px-3 py-3 text-[13px] font-semibold leading-5 text-[#854d63] dark:border-[#f0adc4]/20 dark:bg-white/5 dark:text-[#f0adc4]"
+                                className="mt-2 rounded-md border border-[#854d63]/15 bg-white/70 px-3 py-3 text-[13px] font-semibold leading-5 text-text-accent dark:border-[#f0adc4]/20 dark:bg-white/5"
                               >
                                 {t("nav.highlight")} · {menuHighlight.title}
                               </Link>
@@ -1120,11 +1121,11 @@ export default function Navbar() {
                   const isAccordionOpen = openMobileAccordion === "carnet";
 
                   return (
-                    <div key={link.id} className="overflow-hidden rounded-lg bg-[#fcf9f8] dark:bg-white/5">
+                    <div key={link.id} className="overflow-hidden rounded-lg bg-surface-panel-muted">
                       <button
                         type="button"
                         onClick={() => setOpenMobileAccordion((current) => (current === "carnet" ? null : "carnet"))}
-                        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-[12px] font-semibold uppercase tracking-[1.6px] text-[#854d63] transition hover:text-[#6a364b] dark:text-[#f0adc4] dark:hover:text-[#f8f1ec]"
+                        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-[12px] font-semibold uppercase tracking-[1.6px] text-text-accent transition hover:text-[#6a364b] dark:hover:text-[#f8f1ec]"
                         aria-expanded={isAccordionOpen}
                       >
                         <span>{link.name}</span>
@@ -1147,7 +1148,7 @@ export default function Navbar() {
                                   setIsMobileMenuOpen(false);
                                   setOpenMobileAccordion(null);
                                 }}
-                                className="rounded-md py-2 text-[14px] font-medium leading-5 text-[#5b4137] dark:text-[#dbc9c0]"
+                                className="rounded-md py-2 text-[14px] font-medium leading-5 text-nav-text-secondary"
                               >
                                 {t("nav.toolsAndInspirations")}
                               </Link>
@@ -1157,7 +1158,7 @@ export default function Navbar() {
                                   setIsMobileMenuOpen(false);
                                   setOpenMobileAccordion(null);
                                 }}
-                                className="rounded-md py-2 text-[14px] font-medium leading-5 text-[#5b4137] dark:text-[#dbc9c0]"
+                                className="rounded-md py-2 text-[14px] font-medium leading-5 text-nav-text-secondary"
                               >
                                 {t("nav.readingsAndReferences")}
                               </Link>
@@ -1175,7 +1176,7 @@ export default function Navbar() {
                       key={link.id}
                       to={link.href}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="rounded-lg bg-[#fcf9f8] px-4 py-4 text-[16px] font-medium capitalize leading-5 tracking-[0.6px] text-[#5b4137] dark:bg-white/5 dark:text-[#dbc9c0]"
+                      className="rounded-lg bg-surface-panel-muted px-4 py-4 text-[16px] font-medium capitalize leading-5 tracking-[0.6px] text-nav-text-secondary"
                     >
                       {link.name}
                     </Link>
@@ -1187,7 +1188,7 @@ export default function Navbar() {
                     key={link.href}
                     href={link.href}
                     onClick={(event) => scrollToSection(event, link.href)}
-                    className="rounded-lg bg-[#fcf9f8] px-4 py-4 text-[16px] font-medium capitalize leading-5 tracking-[0.6px] text-[#5b4137] dark:bg-white/5 dark:text-[#dbc9c0]"
+                    className="rounded-lg bg-surface-panel-muted px-4 py-4 text-[16px] font-medium capitalize leading-5 tracking-[0.6px] text-nav-text-secondary"
                   >
                     {link.name}
                   </a>
@@ -1197,7 +1198,7 @@ export default function Navbar() {
               <Link
                 to="/contact"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="mt-2 inline-flex h-12 items-center justify-center whitespace-nowrap rounded-full bg-[#854d63] px-5 text-[12px] font-semibold uppercase leading-4 tracking-[1px] text-white dark:bg-[#d79caf] dark:text-[#1c1415]"
+                className={`${plumCtaClasses({ hover: false })} mt-2 inline-flex h-12 items-center justify-center whitespace-nowrap rounded-full px-5 text-[12px] font-semibold uppercase leading-4 tracking-[1px]`}
               >
                 {t("nav.contact")}
               </Link>
