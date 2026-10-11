@@ -639,18 +639,18 @@ const en = {
     titleStart: "Choose how",
     titleAccent: "to connect",
     description:
-      "You can send me a detailed request or schedule a call directly depending on how urgent and specific your need is.",
+      "To tell me about your needs, send a message or suggest a time for a call.",
     formOption: "Send a request",
     formOptionDescription: "I will respond with a clear next step within up to 48 hours.",
-    meetingOption: "Schedule a call",
-    meetingOptionDescription: "Book a slot to discuss your need, priorities, and expected support.",
+    meetingOption: "Request a call",
+    meetingOptionDescription: "Choose a 45-minute slot to discuss your needs. Carole will review your request within 24 hours and reply by email.",
     formTitle: "Describe your need",
     meetingTitle: "Book a time",
     meetingDescription: "Choose the time that works for you so we can talk through your request directly.",
     meetingCta: "Book a call",
     calendarTitle: "Appointment calendar with Carole",
-    bookingSubmittedTitle: "Appointment request sent.",
-    bookingSubmittedDescription: "The calendar is available again. Carole will confirm or suggest an adjustment after reviewing the request.",
+    bookingSubmittedTitle: "Your appointment request has been sent.",
+    bookingSubmittedDescription: "Carole will review your request within 24 hours. You will receive an email to let you know whether it has been confirmed or declined.",
   },
 
   serviceDetail: {

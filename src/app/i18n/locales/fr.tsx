@@ -639,18 +639,18 @@ const fr = {
     titleStart: "Choisissez la façon",
     titleAccent: "d'échanger",
     description:
-      "Vous pouvez m'envoyer une demande détaillée ou programmer directement un rendez-vous selon l'urgence et le niveau de précision souhaité.",
+      "Pour présenter votre besoin, envoyez un message ou proposez un créneau de rendez-vous.",
     formOption: "Envoyer une demande",
     formOptionDescription: "Je vous répondrai avec une prochaine étape claire dans un délai pouvant aller jusqu'à 48 heures.",
-    meetingOption: "Programmer un rendez-vous",
-    meetingOptionDescription: "Réservez un créneau pour discuter de votre besoin, de vos priorités et du type d'accompagnement attendu.",
+    meetingOption: "Demander un rendez-vous",
+    meetingOptionDescription: "Choisissez un créneau de 45 minutes pour échanger sur votre besoin. Carole examinera votre demande sous 24 heures et vous répondra par email.",
     formTitle: "Décrivez votre besoin",
     meetingTitle: "Réserver un créneau",
     meetingDescription: "Choisissez directement le créneau qui vous convient pour que nous puissions échanger.",
     meetingCta: "Réserver un rendez-vous",
     calendarTitle: "Calendrier de rendez-vous avec Carole",
-    bookingSubmittedTitle: "Demande de rendez-vous envoyée.",
-    bookingSubmittedDescription: "Le calendrier est de nouveau disponible. Carole confirmera ou proposera un ajustement après examen de la demande.",
+    bookingSubmittedTitle: "Votre demande de rendez-vous a été envoyée.",
+    bookingSubmittedDescription: "Carole examinera votre demande sous 24 heures. Vous recevrez un email pour vous informer de sa confirmation ou de son refus.",
   },
 
   serviceDetail: {
