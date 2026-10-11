@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { plumCtaClasses } from "./ui/plumCta";
 import { useTranslation } from "react-i18next";
 import { motion } from "motion/react";
 import { useMemo } from "react";
@@ -41,7 +42,7 @@ export function NotFoundView() {
         <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
             to="/"
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-[#854d63] px-5 text-sm font-semibold text-white shadow-[0_16px_34px_rgba(133,77,99,0.18)] transition hover:-translate-y-0.5 hover:bg-[#6a364b] active:translate-y-0 dark:bg-[#d79caf] dark:text-[#1c1415] dark:hover:bg-[#f0adc4]"
+            className={`${plumCtaClasses()} inline-flex h-11 items-center justify-center gap-2 rounded-md px-5 text-sm font-semibold shadow-[0_16px_34px_rgba(133,77,99,0.18)] transition hover:-translate-y-0.5 active:translate-y-0`}
           >
             <HomeIcon className="size-4" />
             {t("errorPages.notFound.backHome")}
