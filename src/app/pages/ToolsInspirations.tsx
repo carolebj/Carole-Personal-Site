@@ -7,6 +7,7 @@ import { localized } from "../../cms/types";
 import { useCmsCollection } from "../../cms/cmsContent";
 import { PageHero } from "../components/PageHero";
 import { PAGE_MAIN_SPACIOUS } from "../components/layout/publicPage";
+import { useDropdownSound } from "../interactions/HapticContext";
 import calendrierCm229Image from "../../assets/resources/calendrier-cm229.webp";
 import laveiyeImage from "../../assets/resources/laveiye.webp";
 import leDepotImage from "../../assets/resources/le-depot.webp";
@@ -50,6 +51,8 @@ function TypeScopeSelect({
   const rootRef = useRef<HTMLDivElement>(null);
   const listboxId = useId();
   const labelId = useId();
+  const soundId = `tools-type-${listboxId}`;
+  useDropdownSound(soundId, open);
 
   useEffect(() => {
     if (!open) return;
@@ -70,7 +73,7 @@ function TypeScopeSelect({
   }, [open]);
 
   return (
-    <div ref={rootRef} className="relative shrink-0 text-left">
+    <div ref={rootRef} data-sound-dropdown={soundId} className="relative shrink-0 text-left">
       <p
         id={labelId}
         className="mb-2 text-[11px] font-semibold uppercase tracking-[1.4px] text-text-muted dark:text-text-muted"
