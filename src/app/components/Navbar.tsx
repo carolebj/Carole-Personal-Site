@@ -351,7 +351,6 @@ export default function Navbar() {
     const normalizedServices = services.map((service, index) => ({
       ...service,
       menuKey: getServiceMenuKey(service.slug, index),
-      menuIndex: index + 1,
     }));
     const groups: Array<{
       key: string;
@@ -775,12 +774,9 @@ export default function Navbar() {
                                         <Link
                                           to={`/services/${service.slug}`}
                                           onClick={() => setIsServicesOpen(false)}
-                                          className="group flex gap-3 rounded-xl px-2 py-2.5 transition hover:bg-surface-page-muted"
+                                          className="group block rounded-xl px-2 py-2.5 transition hover:bg-surface-page-muted"
                                         >
-                                          <span className="mt-0.5 text-[10px] font-semibold tracking-[1px] text-text-accent">
-                                            {String(service.menuIndex).padStart(2, "0")}
-                                          </span>
-                                          <span className="min-w-0">
+                                          <span className="block min-w-0">
                                             <span className="block text-[14px] font-semibold leading-5 text-text-primary group-hover:text-text-accent">
                                               {service.title} {service.accent}
                                             </span>
@@ -913,12 +909,9 @@ export default function Navbar() {
                               <Link
                                 to="/carnet/outils-inspirations"
                                 onClick={() => setIsCarnetOpen(false)}
-                                className="group flex items-start gap-3 rounded-xl px-2 py-3 text-left transition-colors duration-300 hover:bg-surface-page-muted"
+                                className="group block rounded-xl px-2 py-3 text-left transition-colors duration-300 hover:bg-surface-page-muted"
                               >
-                                <span className="mt-0.5 text-[10px] font-semibold tracking-[1px] text-text-accent">
-                                  01
-                                </span>
-                                <span className="min-w-0 leading-5">
+                                <span className="block min-w-0 leading-5">
                                   <span className="block text-[14px] font-semibold text-text-primary group-hover:text-text-accent">
                                     {t("nav.toolsAndInspirations")}
                                   </span>
@@ -932,12 +925,9 @@ export default function Navbar() {
                               <Link
                                 to="/carnet/lectures-references"
                                 onClick={() => setIsCarnetOpen(false)}
-                                className="group flex items-start gap-3 rounded-xl px-2 py-3 text-left transition-colors duration-300 hover:bg-surface-page-muted"
+                                className="group block rounded-xl px-2 py-3 text-left transition-colors duration-300 hover:bg-surface-page-muted"
                               >
-                                <span className="mt-0.5 text-[10px] font-semibold tracking-[1px] text-text-accent">
-                                  02
-                                </span>
-                                <span className="min-w-0 leading-5">
+                                <span className="block min-w-0 leading-5">
                                   <span className="block text-[14px] font-semibold text-text-primary group-hover:text-text-accent">
                                     {t("nav.readingsAndReferences")}
                                   </span>
