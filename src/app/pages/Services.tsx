@@ -30,8 +30,6 @@ type Service = {
   concreteApplications?: string[];
 };
 
-const serviceNumbers = ["01", "02", "03", "04", "05", "06"];
-
 function isDesignService(service: Service) {
   return ["identite-visuelle", "visual-identity", "design-graphique", "graphic-design"].includes(service.slug);
 }
@@ -180,11 +178,8 @@ export default function Services() {
                 {t("services.includedPreview")}
               </p>
               <div className="mt-8 grid content-start gap-5">
-                {(featureService.whatIsIncluded ?? featureService.bullets).slice(0, 4).map((item, index) => (
-                  <div key={item} className="grid grid-cols-[2.5rem_1fr] gap-4 border-t border-border-accent-muted pt-5 first:border-t-0 first:pt-0">
-                    <span className="font-serif text-[28px] italic leading-none text-text-accent">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
+                {(featureService.whatIsIncluded ?? featureService.bullets).slice(0, 4).map((item) => (
+                  <div key={item} className="border-t border-border-accent-muted pt-5 first:border-t-0 first:pt-0">
                     <p className="text-[15px] leading-7 text-text-secondary">{item}</p>
                   </div>
                 ))}
@@ -203,7 +198,7 @@ export default function Services() {
             {t("services.serviceMap")}
           </p>
           <div className="mt-4 flex gap-2 overflow-x-auto pb-2 lg:mt-5 lg:grid lg:gap-1 lg:overflow-visible lg:border-l lg:border-border-accent-muted lg:pb-0 lg:pl-5">
-            {services.map((service, index) => (
+            {services.map((service) => (
               <a
                 key={service.slug}
                 href={`#${service.slug}`}
@@ -215,7 +210,7 @@ export default function Services() {
                     : "border-border-subtle bg-surface-panel/60 text-text-secondary hover:border-border-accent hover:text-text-accent lg:-ml-[21px] lg:border-l-transparent lg:bg-transparent lg:pl-9"
                 }`}
               >
-                {serviceNumbers[index] ?? String(index + 1).padStart(2, "0")} {service.title} {service.accent}
+                {service.title} {service.accent}
               </a>
             ))}
           </div>
@@ -223,7 +218,6 @@ export default function Services() {
 
         <div className="grid gap-4">
           {regularServices.map((service, index) => {
-            const serviceIndex = services.findIndex((item) => item.slug === service.slug);
             const accent = servicesPageAccents[index % servicesPageAccents.length];
             const previewItems = (service.whatIsIncluded ?? service.bullets).slice(0, 2);
 
@@ -238,10 +232,7 @@ export default function Services() {
                 className={`group grid gap-7 rounded-lg border ${accent.border} ${PAGE_SCROLL_MARGIN} bg-surface-panel p-5 transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(91,65,55,0.09)] dark:border-white/10 dark:bg-surface-panel sm:p-7 lg:grid-cols-[0.78fr_1fr_auto] lg:items-center`}
               >
                 <div>
-                  <p className="text-[12px] font-semibold uppercase tracking-[2px] text-text-muted">
-                    {serviceNumbers[serviceIndex] ?? String(serviceIndex + 1).padStart(2, "0")}
-                  </p>
-                  <h3 className="mt-4 font-serif text-[34px] leading-[38px] text-text-primary">
+                  <h3 className="font-serif text-[34px] leading-[38px] text-text-primary">
                     {service.title} <span className={`italic ${accent.text}`}>{service.accent}</span>
                   </h3>
                 </div>

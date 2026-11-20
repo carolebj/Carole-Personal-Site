@@ -160,15 +160,12 @@ export default function ServiceDetail() {
           </article>
 
           <div className="grid gap-3 md:grid-cols-3">
-            {service.bullets.map((bullet, index) => (
+            {service.bullets.map((bullet) => (
               <article
                 key={bullet}
-                className="flex min-h-[11rem] flex-col justify-between rounded-lg border border-border-accent-muted bg-surface-panel p-5"
+                className="rounded-lg border border-border-accent-muted bg-surface-panel p-5"
               >
-                <span className="font-serif text-[30px] italic leading-none text-text-accent">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <p className="mt-8 text-[14px] font-semibold uppercase leading-6 tracking-[1px] text-text-secondary">
+                <p className="text-[14px] font-semibold uppercase leading-6 tracking-[1px] text-text-secondary">
                   {bullet}
                 </p>
               </article>
@@ -189,14 +186,11 @@ export default function ServiceDetail() {
           </div>
 
           <div className="grid gap-4">
-            {whatIsIncluded.map((item, index) => (
+            {whatIsIncluded.map((item) => (
               <article
                 key={item}
-                className="grid gap-4 rounded-lg border border-border-accent-muted bg-surface-panel p-5 transition duration-300 hover:border-border-accent sm:grid-cols-[3rem_1fr]"
+                className="rounded-lg border border-border-accent-muted bg-surface-panel p-5 transition duration-300 hover:border-border-accent"
               >
-                <span className="font-serif text-[30px] italic leading-none text-text-accent">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
                 <p className="text-[16px] leading-7 text-text-secondary">{item}</p>
               </article>
             ))}
