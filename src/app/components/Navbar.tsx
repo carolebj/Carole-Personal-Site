@@ -20,7 +20,7 @@ import caroleLogoSymbol from "../../assets/logos/carole-CT-logo.svg";
 import blogAbstractEditorial from "../../assets/blog/blog-abstract-editorial.svg";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { plumCtaClasses } from "./ui/plumCta";
-import { useHaptics } from "../interactions/HapticContext";
+import { useDropdownSound, useHaptics } from "../interactions/HapticContext";
 import { useTheme, type ThemePreference } from "../theme/ThemeContext";
 import { toBlogPostViewModel, toServiceViewModel } from "../../cms/adapters";
 import { cmsImageUrl, useCmsCollection } from "../../cms/cmsContent";
@@ -131,6 +131,7 @@ function ThemeSwitcher({
   const { t } = useTranslation();
   const { theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  useDropdownSound("theme", isOpen);
   const ActiveIcon = themeOptions.find((option) => option.value === theme)?.Icon ?? ComputerDesktopIcon;
   const orderedThemeOptions = [
     ...themeOptions.filter((option) => option.value !== theme),
@@ -161,6 +162,7 @@ function ThemeSwitcher({
                   role="radio"
                   aria-checked={isActive}
                   aria-label={t(`nav.${labelKey}`)}
+                  data-sound={isActive ? undefined : "select"}
                   onClick={() => chooseTheme(value)}
                   className={`relative flex size-12 items-center justify-center rounded-full transition ${
                     isActive
@@ -197,6 +199,7 @@ function ThemeSwitcher({
 
   return (
     <motion.div
+      data-sound-dropdown="theme"
       initial={false}
       animate={{ width: isOpen ? 156 : 52 }}
       transition={{ type: "spring", stiffness: 430, damping: 32 }}
@@ -226,6 +229,7 @@ function ThemeSwitcher({
                       role="radio"
                       aria-checked={isActive}
                       aria-label={t(`nav.${labelKey}`)}
+                      data-sound={isActive ? undefined : "select"}
                       onClick={() => chooseTheme(value)}
                       className={`relative flex size-12 items-center justify-center rounded-full transition ${
                         isActive
@@ -300,6 +304,12 @@ export default function Navbar() {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isCarnetOpen, setIsCarnetOpen] = useState(false);
   const [isLogoMenuOpen, setIsLogoMenuOpen] = useState(false);
+  useDropdownSound("services", isServicesOpen);
+  useDropdownSound("carnet", isCarnetOpen);
+  useDropdownSound("logo", isLogoMenuOpen);
+  useDropdownSound("mobile", isMobileMenuOpen);
+  useDropdownSound("mobile-services", openMobileAccordion === "services");
+  useDropdownSound("mobile-carnet", openMobileAccordion === "carnet");
   const [hoveredNavId, setHoveredNavId] = useState<string | null>(null);
   const [isCompact, setIsCompact] = useState(false);
   const [isForcedOpen, setIsForcedOpen] = useState(false);
@@ -559,6 +569,7 @@ export default function Navbar() {
     </AnimatePresence>
 
     <motion.nav
+      data-sound-selections="true"
       initial={false}
       animate={isCompact && !isForcedOpen ? { y: -112, opacity: 0 } : { y: 0, opacity: 1 }}
       transition={{ duration: 0.24, ease: "easeOut" }}
@@ -589,6 +600,7 @@ export default function Navbar() {
         {logoDropdownPhase !== "closed" ? (
           <div
             ref={logoMenuRef}
+            data-sound-dropdown="logo"
             data-origin="top-left"
             className={`t-dropdown fixed left-[max(1.25rem,calc((100vw-1200px)/2+1.25rem))] top-[76px] z-[70] w-72 overflow-hidden rounded-lg border border-[#e5e2e1]/80 bg-surface-panel p-2 shadow-[0_24px_70px_rgba(28,27,27,0.16)] dark:border-white/10 ${logoDropdownPhase === "open" ? "is-open" : "is-closing"}`}
           >
@@ -613,6 +625,9 @@ export default function Navbar() {
             <button
               type="button"
               onClick={toggleHaptics}
+              data-haptic-silent="true"
+              role="switch"
+              aria-checked={hapticsEnabled}
               className="mt-1 flex w-full items-center gap-3 rounded-md px-3 py-3 text-left text-sm font-medium text-nav-text-secondary transition hover:bg-[#ffd9e4]/35 hover:text-text-accent dark:hover:bg-white/8"
             >
               <span
@@ -659,6 +674,7 @@ export default function Navbar() {
                 <li
                   key={link.href}
                   ref={servicesMenuRef}
+                  data-sound-dropdown="services"
                   className="relative"
                   onMouseEnter={() => {
                     cancelDesktopDropdownClose();
@@ -826,6 +842,7 @@ export default function Navbar() {
                 <li
                   key={link.href}
                   ref={carnetMenuRef}
+                  data-sound-dropdown="carnet"
                   className="relative"
                   onMouseEnter={() => {
                     cancelDesktopDropdownClose();
@@ -984,6 +1001,7 @@ export default function Navbar() {
           <ThemeSwitcher />
           <Link
             to="/contact"
+            data-sound="primary"
             className={`${plumCtaClasses()} inline-flex h-[52px] items-center whitespace-nowrap rounded-full px-5 text-[13px] font-semibold uppercase leading-4 tracking-[1.6px] shadow-sm transition xl:px-6 xl:text-[14px] xl:tracking-[2px]`}
           >
             {t("nav.contact")}
@@ -993,6 +1011,7 @@ export default function Navbar() {
         <button
           type="button"
           aria-label={t("nav.menu")}
+          data-sound-trigger="true"
           className="flex size-12 items-center justify-center rounded-full border border-nav-border-control text-text-primary lg:hidden"
           onClick={() => {
             setIsMobileMenuOpen((current) => {
@@ -1018,6 +1037,7 @@ export default function Navbar() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
+            data-sound-dropdown="mobile"
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
@@ -1046,6 +1066,7 @@ export default function Navbar() {
                           <motion.div
                             key="mobile-services"
                             id="mobile-services-panel"
+                            data-sound-dropdown="mobile-services"
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
@@ -1135,6 +1156,7 @@ export default function Navbar() {
                         {isAccordionOpen ? (
                           <motion.div
                             key="mobile-carnet"
+                            data-sound-dropdown="mobile-carnet"
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
@@ -1197,6 +1219,7 @@ export default function Navbar() {
               <ThemeSwitcher compact />
               <Link
                 to="/contact"
+                data-sound="primary"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={`${plumCtaClasses({ hover: false })} mt-2 inline-flex h-12 items-center justify-center whitespace-nowrap rounded-full px-5 text-[12px] font-semibold uppercase leading-4 tracking-[1px]`}
               >
